@@ -23,8 +23,8 @@ MODERN      := 1
 
 SHELL := /bin/bash -o pipefail
 
-ELF = $(ROM:.gba=.elf)
-MAP = $(ROM:.gba=.map)
+ELF = $(ROM:.exe=.elf)
+MAP = $(ROM:.exe=.map)
 
 C_SUBDIR = src
 GFLIB_SUBDIR = gflib
