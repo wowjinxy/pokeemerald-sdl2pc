@@ -1,4 +1,4 @@
-MysteryEventScript_MysticTicket:: @ 867550B
+MysteryEventScript_MysticTicket:: /* 867550B*/
 	setvaddress MysteryEventScript_MysticTicket
 	lock
 	faceplayer
@@ -23,14 +23,14 @@ MysteryEventScript_MysticTicket:: @ 867550B
 	release
 	end
 
-MysticTicket_NoBagSpace: @ 867556F
+MysticTicket_NoBagSpace: /* 867556F*/
 	vmessage sText_MysticTicketBagFull
 	waitmessage
 	waitbuttonpress
 	release
 	end
 
-MysticTicket_Obtained: @ 8675578
+MysticTicket_Obtained: /* 8675578*/
 	vmessage sText_MysticTicketThankYou
 	waitmessage
 	waitbuttonpress

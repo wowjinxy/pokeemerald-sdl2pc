@@ -14,7 +14,7 @@
 	.section script_data, "aw", %progbits
 	
 .align 2
-gBattleScriptsForMoveEffects:: @ 82D86A8
+gBattleScriptsForMoveEffects:: /* 82D86A8*/
 	.4byte BattleScript_EffectHit
 	.4byte BattleScript_EffectSleep
 	.4byte BattleScript_EffectPoisonHit
@@ -4445,7 +4445,7 @@ BattleScript_FlushMessageBox::
 BattleScript_PalacePrintFlavorText::
 	setbyte gBattleCommunication + 1, 0
 BattleScript_PalaceTryBattlerFlavorText::
-	palaceflavortext BS_ATTACKER @ BS_ATTACKER here overwritten by gBattleCommunication + 1
+	palaceflavortext BS_ATTACKER /* BS_ATTACKER here overwritten by gBattleCommunication + 1*/
 	jumpifbyte CMP_NOT_EQUAL, gBattleCommunication, TRUE, BattleScript_PalaceEndFlavorText
 	printfromtable gBattlePalaceFlavorTextTable
 	waitmessage 0x40
@@ -4470,7 +4470,7 @@ BattleScript_ArenaTurnBeginning::
 	volumeup
 	end2
 	
-BattleScript_82DB8E0:: @ Unused battlescript
+BattleScript_82DB8E0:: /* Unused battlescript*/
 	playse SE_DING_DONG
 	various14 BS_ATTACKER
 	arenajudmengtstring BS_TARGET

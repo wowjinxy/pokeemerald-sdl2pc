@@ -1,9 +1,9 @@
-MysteryEventScript_SurfPichu:: @ 8674D3D
+MysteryEventScript_SurfPichu:: /* 8674D3D*/
 	setvaddress MysteryEventScript_SurfPichu
 	vgoto_if_unset FLAG_MYSTERY_EVENT_DONE, SurfPichu_GiveIfPossible
 	returnram
 
-SurfPichu_GiveIfPossible: @ 8674D4C
+SurfPichu_GiveIfPossible: /* 8674D4C*/
 	specialvar VAR_EVENT_PICHU_SLOT, CalculatePlayerPartyCount
 	compare VAR_EVENT_PICHU_SLOT, PARTY_SIZE
 	vgoto_if_eq SurfPichu_FullParty
@@ -19,7 +19,7 @@ SurfPichu_GiveIfPossible: @ 8674D4C
 	release
 	end
 
-SurfPichu_FullParty: @ 8674D73
+SurfPichu_FullParty: /* 8674D73*/
 	lock
 	faceplayer
 	vmessage sText_FullParty
@@ -28,7 +28,7 @@ SurfPichu_FullParty: @ 8674D73
 	release
 	end
 
-SurfPichu_GiveEgg: @ 8674D7E
+SurfPichu_GiveEgg: /* 8674D7E*/
 	giveegg SPECIES_PICHU
 	setmoneventlegal VAR_EVENT_PICHU_SLOT
 	setmonmetlocation VAR_EVENT_PICHU_SLOT, METLOC_FATEFUL_ENCOUNTER
@@ -44,23 +44,23 @@ SurfPichu_GiveEgg: @ 8674D7E
 	vgoto_if_eq SurfPichu_Slot5
 	return
 
-SurfPichu_Slot1: @ 8674DC0
+SurfPichu_Slot1: /* 8674DC0*/
 	setmonmove 1, 2, MOVE_SURF
 	return
 
-SurfPichu_Slot2:: @ 8674DC6
+SurfPichu_Slot2:: /* 8674DC6*/
 	setmonmove 2, 2, MOVE_SURF
 	return
 
-SurfPichu_Slot3: @ 8674DCC
+SurfPichu_Slot3: /* 8674DCC*/
 	setmonmove 3, 2, MOVE_SURF
 	return
 
-SurfPichu_Slot4: @ 8674DD2
+SurfPichu_Slot4: /* 8674DD2*/
 	setmonmove 4, 2, MOVE_SURF
 	return
 
-SurfPichu_Slot5: @ 8674DD8
+SurfPichu_Slot5: /* 8674DD8*/
 	setmonmove 5, 2, MOVE_SURF
 	return
 

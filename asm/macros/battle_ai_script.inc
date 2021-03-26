@@ -551,7 +551,7 @@
 	.4byte \param2
 	.endm
 	
-@ useful script macros
+/* useful script macros*/
 	.macro get_curr_move_type
 	get_type AI_TYPE_MOVE
 	.endm

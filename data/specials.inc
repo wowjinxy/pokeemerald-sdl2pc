@@ -7,7 +7,7 @@
 
 .set __special__, 0
 		.align 2
-gSpecials:: @ 81DBA64
+gSpecials:: /* 81DBA64*/
 	def_special HealPlayerParty
 	def_special SetCableClubWarp
 	def_special DoCableClubWarp
@@ -516,7 +516,7 @@ gSpecials:: @ 81DBA64
 	def_special LinkRetireStatusWithBattleTowerPartner
 	def_special BattleTowerReconnectLink
 	def_special CallTrainerHillFunction
-	def_special Script_DoRayquazaScene @ Listed twice
+	def_special Script_DoRayquazaScene /* Listed twice*/
 	def_special LoopWingFlapSE
 	def_special DestroyMewEmergingGrassSprite
 	def_special ShowBerryCrushRankings

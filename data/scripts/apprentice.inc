@@ -1,16 +1,16 @@
 .set LOCALID_APPRENTICE, 6
 
-BattleFrontier_BattleTowerLobby_EventScript_Apprentice:: @ 82B688D
+BattleFrontier_BattleTowerLobby_EventScript_Apprentice:: /* 82B688D*/
 	lock
 	faceplayer
 	apprentice_gavelvlmode
 	compare VAR_RESULT, FALSE
 	goto_if_eq Apprentice_EventScript_FirstMeeting
 	apprentice_shouldcheckgone
-	compare VAR_0x8004, FALSE  @ Always TRUE here
+	compare VAR_0x8004, FALSE  /* Always TRUE here*/
 	goto_if_eq Apprentice_EventScript_AskQuestion
 	goto_if_set FLAG_DAILY_APPRENTICE_LEAVES, Apprentice_EventScript_Gone
-Apprentice_EventScript_AskQuestion: @ 82B68BE
+Apprentice_EventScript_AskQuestion: /* 82B68BE*/
 	apprentice_getquestion
 	compare VAR_RESULT, APPRENTICE_QUESTION_WHICH_MON
 	goto_if_eq Apprentice_EventScript_UseWhichMon
@@ -26,10 +26,10 @@ Apprentice_EventScript_AskQuestion: @ 82B68BE
 	releaseall
 	end
 
-Apprentice_EventScript_FirstMeeting: @ 82B6900
+Apprentice_EventScript_FirstMeeting: /* 82B6900*/
 	apprentice_buff 0, APPRENTICE_BUFF_NAME
 	apprentice_msg FALSE, APPRENTICE_MSG_PLEASE_TEACH
-Apprentice_EventScript_WhichLvlMode: @ 82B6925
+Apprentice_EventScript_WhichLvlMode: /* 82B6925*/
 	apprentice_menu APPRENTICE_ASK_YES_NO
 	compare VAR_RESULT, 1
 	goto_if_eq Apprentice_EventScript_RejectTeach
@@ -47,12 +47,12 @@ Apprentice_EventScript_WhichLvlMode: @ 82B6925
 	goto Apprentice_EventScript_Leave
 	end
 
-@ Its impossible to fully reject an Apprentice, they just keep asking for you to teach them
-Apprentice_EventScript_RejectTeach: @ 82B69BB
+/* Its impossible to fully reject an Apprentice, they just keep asking for you to teach them*/
+Apprentice_EventScript_RejectTeach: /* 82B69BB*/
 	apprentice_msg FALSE, APPRENTICE_MSG_REJECT
 	goto Apprentice_EventScript_WhichLvlMode
 
-Apprentice_EventScript_UseWhichMon: @ 82B69D3
+Apprentice_EventScript_UseWhichMon: /* 82B69D3*/
 	apprentice_initquestion APPRENTICE_QUESTION_WHICH_MON
 	apprentice_buff 0, APPRENTICE_BUFF_SPECIES1
 	apprentice_buff 1, APPRENTICE_BUFF_SPECIES2
@@ -80,24 +80,24 @@ Apprentice_EventScript_UseWhichMon: @ 82B69D3
 	goto Apprentice_EventScript_Leave
 	end
 
-Apprentice_EventScript_ChoseFirstMon: @ 82B6ABA
+Apprentice_EventScript_ChoseFirstMon: /* 82B6ABA*/
 	setvar VAR_0x8007, APPRENTICE_BUFF_SPECIES1
 	return
 
-Apprentice_EventScript_ChoseSecondMon: @ 82B6AC0
+Apprentice_EventScript_ChoseSecondMon: /* 82B6AC0*/
 	setvar VAR_0x8007, APPRENTICE_BUFF_SPECIES2
 	return
 
-Apprentice_EventScript_LastMonSelected: @ 82B6AC6
+Apprentice_EventScript_LastMonSelected: /* 82B6AC6*/
 	apprentice_randomizequestions
 	return
 
-Apprentice_EventScript_UseWhatHeldItem: @ 82B6ACF
+Apprentice_EventScript_UseWhatHeldItem: /* 82B6ACF*/
 	apprentice_initquestion APPRENTICE_QUESTION_WHAT_ITEM
 	apprentice_buff 0, APPRENTICE_BUFF_SPECIES3
 	apprentice_msg TRUE, APPRENTICE_MSG_WHAT_HELD_ITEM
 	apprentice_freequestion
-Apprentice_EventScript_ChooseHoldItem: @ 82B6B09
+Apprentice_EventScript_ChooseHoldItem: /* 82B6B09*/
 	fadescreen FADE_TO_BLACK
 	setvar VAR_RESULT, 0
 	apprentice_openbag
@@ -117,7 +117,7 @@ Apprentice_EventScript_ChooseHoldItem: @ 82B6B09
 	goto Apprentice_EventScript_Leave
 	end
 
-Apprentice_EventScript_ConfirmHoldNothing: @ 82B6B81
+Apprentice_EventScript_ConfirmHoldNothing: /* 82B6B81*/
 	apprentice_initquestion APPRENTICE_QUESTION_WHAT_ITEM
 	apprentice_buff 0, APPRENTICE_BUFF_SPECIES3
 	apprentice_msg FALSE, APPRENTICE_MSG_HOLD_NOTHING
@@ -125,7 +125,7 @@ Apprentice_EventScript_ConfirmHoldNothing: @ 82B6B81
 	apprentice_freequestion
 	compare VAR_RESULT, 0
 	goto_if_eq Apprentice_EventScript_ChooseHoldItem
-Apprentice_EventScript_HoldNothing: @ 82B6BD4
+Apprentice_EventScript_HoldNothing: /* 82B6BD4*/
 	apprentice_msg TRUE, APPRENTICE_MSG_THANKS_NO_HELD_ITEM
 	apprentice_answeredquestion
 	call Apprentice_EventScript_SetHideFlags
@@ -136,9 +136,9 @@ Apprentice_EventScript_HoldNothing: @ 82B6BD4
 	goto Apprentice_EventScript_Leave
 	end
 
-@ Because Battle Tower mons may not hold the same item, the player must suggest a
-@ different item if theyve already told the Apprentice to use it for another mon
-Apprentice_EventScript_AlreadySuggestedItem: @ 82B6C0C
+/* Because Battle Tower mons may not hold the same item, the player must suggest a*/
+/* different item if theyve already told the Apprentice to use it for another mon*/
+Apprentice_EventScript_AlreadySuggestedItem: /* 82B6C0C*/
 	apprentice_initquestion APPRENTICE_QUESTION_WHAT_ITEM
 	apprentice_buff 0, APPRENTICE_BUFF_ITEM
 	apprentice_buff 1, APPRENTICE_BUFF_SPECIES3
@@ -150,7 +150,7 @@ Apprentice_EventScript_AlreadySuggestedItem: @ 82B6C0C
 	goto Apprentice_EventScript_HoldNothing
 	end
 
-Apprentice_EventScript_UseWhichMove: @ 82B6C77
+Apprentice_EventScript_UseWhichMove: /* 82B6C77*/
 	apprentice_initquestion APPRENTICE_QUESTION_WHICH_MOVE
 	apprentice_buff 0, APPRENTICE_BUFF_SPECIES3
 	apprentice_buff 1, APPRENTICE_BUFF_MOVE1
@@ -175,15 +175,15 @@ Apprentice_EventScript_UseWhichMove: @ 82B6C77
 	goto Apprentice_EventScript_Leave
 	end
 
-Apprentice_EventScript_ChoseMove1: @ 82B6D50
+Apprentice_EventScript_ChoseMove1: /* 82B6D50*/
 	setvar VAR_0x8007, APPRENTICE_BUFF_MOVE1
 	return
 
-Apprentice_EventScript_ChoseMove2: @ 82B6D56
+Apprentice_EventScript_ChoseMove2: /* 82B6D56*/
 	setvar VAR_0x8007, APPRENTICE_BUFF_MOVE2
 	return
 
-Apprentice_EventScript_PutWhichMonFirst: @ 82B6D5C
+Apprentice_EventScript_PutWhichMonFirst: /* 82B6D5C*/
 	apprentice_msg FALSE, APPRENTICE_MSG_WHICH_MON_FIRST
 	apprentice_menu APPRENTICE_ASK_3SPECIES
 	apprentice_setleadmon VAR_RESULT
@@ -198,8 +198,8 @@ Apprentice_EventScript_PutWhichMonFirst: @ 82B6D5C
 	goto Apprentice_EventScript_Leave
 	end
 
-@ Last question, after which the Apprentice leaves (and is saved) to be replaced by another
-Apprentice_EventScript_PickWinSpeech: @ 82B6DD4
+/* Last question, after which the Apprentice leaves (and is saved) to be replaced by another*/
+Apprentice_EventScript_PickWinSpeech: /* 82B6DD4*/
 	apprentice_msg TRUE, APPRENTICE_MSG_PICK_WIN_SPEECH
 	apprentice_shiftsaved
 	setvar VAR_0x8004, EASY_CHAT_TYPE_APPRENTICE
@@ -218,38 +218,38 @@ Apprentice_EventScript_PickWinSpeech: @ 82B6DD4
 	goto Apprentice_EventScript_Leave
 	end
 
-Apprentice_EventScript_SetHideFlags: @ 82B6E4D
+Apprentice_EventScript_SetHideFlags: /* 82B6E4D*/
 	setflag FLAG_HIDE_APPRENTICE
 	setflag FLAG_DAILY_APPRENTICE_LEAVES
 	return
 
-Apprentice_EventScript_LeaveNorth: @ 82B6E54
+Apprentice_EventScript_LeaveNorth: /* 82B6E54*/
 	apprentice_shouldleave
-	compare VAR_0x8004, FALSE  @ Always TRUE here
+	compare VAR_0x8004, FALSE  /* Always TRUE here*/
 	goto_if_eq Apprentice_EventScript_DontMove
 	applymovement LOCALID_APPRENTICE, Apprentice_Movement_LeaveNorth
 	waitmovement 0
 	end
 
-Apprentice_EventScript_Leave: @ 82B6E72
+Apprentice_EventScript_Leave: /* 82B6E72*/
 	apprentice_shouldleave
-	compare VAR_0x8004, FALSE  @ Always TRUE here
+	compare VAR_0x8004, FALSE  /* Always TRUE here*/
 	goto_if_eq Apprentice_EventScript_DontMove
 	applymovement LOCALID_APPRENTICE, Apprentice_Movement_Leave
 	waitmovement 0
 	end
 
-Apprentice_EventScript_Gone: @ 82B6E90
+Apprentice_EventScript_Gone: /* 82B6E90*/
 	release
 	releaseall
 	end
 
-Apprentice_EventScript_DontMove: @ 82B6E93
+Apprentice_EventScript_DontMove: /* 82B6E93*/
 	end
 
-Apprentice_Movement_LeaveNorth: @ 82B6E94
+Apprentice_Movement_LeaveNorth: /* 82B6E94*/
 	walk_fast_right
-Apprentice_Movement_Leave: @ 82B6E95
+Apprentice_Movement_Leave: /* 82B6E95*/
 	walk_fast_down
 	walk_fast_down
 	walk_fast_right

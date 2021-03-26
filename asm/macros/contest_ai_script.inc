@@ -1,6 +1,6 @@
-@ A large number of the Contest AI commands go unused, so their corresponding macros in this file are similarly unused
+/* A large number of the Contest AI commands go unused, so their corresponding macros in this file are similarly unused*/
 
-@ Add a positive/negative value to the score of the move being evaluated.
+/* Add a positive/negative value to the score of the move being evaluated.*/
 
 	.macro score score:req
 	.byte 0x00
@@ -43,7 +43,7 @@
 	if_appeal_num_not_eq CONTEST_LAST_APPEAL, \destination
 	.endm
 
-@ audience excitement
+/* audience excitement*/
 
 	.macro get_excitement
 	.byte 0x06
@@ -73,7 +73,7 @@
 	.4byte \destination
 	.endm
 
-@ the order that the user goes in the current appeal
+/* the order that the user goes in the current appeal*/
 
 	.macro get_user_order
 	.byte 0x0B
@@ -103,7 +103,7 @@
 	.4byte \destination
 	.endm
 
-@ user condition
+/* user condition*/
 
 	.macro get_user_condition
 	.byte 0x10
@@ -133,7 +133,7 @@
 	.4byte \destination
 	.endm
 
-@ appeal points
+/* appeal points*/
 
 	.macro get_point_total
 	.byte 0x15
@@ -163,7 +163,7 @@
 	.4byte \destination
 	.endm
 
-@ preliminary (pre-appeal) judging points
+/* preliminary (pre-appeal) judging points*/
 
 	.macro get_preliminary_points
 	.byte 0x1A
@@ -193,7 +193,7 @@
 	.4byte \destination
 	.endm
 
-@ contest type
+/* contest type*/
 
 	.macro get_contest_type
 	.byte 0x1F
@@ -211,7 +211,7 @@
 	.4byte \destination
 	.endm
 
-@ move excitement (change in excitement due to move)
+/* move excitement (change in excitement due to move)*/
 
 	.macro get_move_excitement
 	.byte 0x22
@@ -241,7 +241,7 @@
 	.4byte \destination
 	.endm
 
-@ move effect
+/* move effect*/
 
 	.macro get_effect
 	.byte 0x27
@@ -259,7 +259,7 @@
 	.4byte \destination
 	.endm
 
-@ move effect type
+/* move effect type*/
 
 	.macro get_effect_type
 	.byte 0x2A
@@ -277,7 +277,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the current move is the most appealing in the user's moveset
+/* whether the current move is the most appealing in the user's moveset*/
 
 	.macro check_most_appealing_move
 	.byte 0x2D
@@ -288,7 +288,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the current move is the most jamming in the user's moveset
+/* whether the current move is the most jamming in the user's moveset*/
 
 	.macro check_most_jamming_move
 	.byte 0x2F
@@ -299,7 +299,7 @@
 	.4bye \destination
 	.endm
 
-@ number of hearts the current move's appeal would provide
+/* number of hearts the current move's appeal would provide*/
 
 	.macro get_num_move_hearts
 	.byte 0x31
@@ -329,7 +329,7 @@
 	.4byte \destination
 	.endm
 
-@ number of hearts the current move's jam would remove
+/* number of hearts the current move's jam would remove*/
 
 	.macro get_num_move_jam_hearts
 	.byte 0x36
@@ -359,7 +359,7 @@
 	.4byte \destination
 	.endm
 
-@ number of times current move has been used
+/* number of times current move has been used*/
 
 	.macro get_move_used_count
 	.byte 0x3B
@@ -389,7 +389,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the current move is a combo starter (with another move in the moveset)
+/* whether the current move is a combo starter (with another move in the moveset)*/
 
 	.macro check_combo_starter
 	.byte 0x40
@@ -405,7 +405,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the current move is a combo finisher (with another move in the moveset)
+/* whether the current move is a combo finisher (with another move in the moveset)*/
 
 	.macro check_combo_finisher
 	.byte 0x43
@@ -421,7 +421,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the current move would finish a combo
+/* whether the current move would finish a combo*/
 
 	.macro check_would_finish_combo
 	.byte 0x46
@@ -437,7 +437,7 @@
 	.4byte \destination
 	.endm
 
-@ condition of mon (indexed by order)
+/* condition of mon (indexed by order)*/
 
 	.macro get_condition mon:req
 	.byte 0x49
@@ -472,9 +472,9 @@
 	.4byte \destination
 	.endm
 
-@ whether the mon used a combo starter move
-@ Even though this value is always 1 or 0 (i.e. TRUE/FALSE),
-@ there are less-than and greater-than comparison operations for some reason.
+/* whether the mon used a combo starter move*/
+/* Even though this value is always 1 or 0 (i.e. TRUE/FALSE),*/
+/* there are less-than and greater-than comparison operations for some reason.*/
 
 	.macro get_used_combo_starter mon:req
 	.byte 0x4E
@@ -518,7 +518,7 @@
 	if_used_combo_starter_eq \mon, FALSE, \destination
 	.endm
 
-@ whether the mon can make an appeal
+/* whether the mon can make an appeal*/
 
 	.macro check_can_participate mon:req
 	.byte 0x53
@@ -537,7 +537,7 @@
 	.4byte \destination
 	.endm
 
-@ whether the mon just completed a combo
+/* whether the mon just completed a combo*/
 
 	.macro get_completed_combo mon:req
 	.byte 0x56
@@ -557,7 +557,7 @@
 	.4byte \destination
 	.endm
 
-@ comparing appeal points to another mon
+/* comparing appeal points to another mon*/
 
 	.macro get_points_diff mon:req
 	.byte 0x59
@@ -588,7 +588,7 @@
 	.4byte \destination
 	.endm
 
-@ comparing preliminary judging points to another mon
+/* comparing preliminary judging points to another mon*/
 
 	.macro get_preliminary_points_diff mon:req
 	.byte 0x5E
@@ -619,7 +619,7 @@
 	.4byte \destination
 	.endm
 
-@ checking move history for move effect
+/* checking move history for move effect*/
 
 	.macro get_used_moves_effect mon:req, round:req
 	.byte 0x63
@@ -659,7 +659,7 @@
 	.4byte \destination
 	.endm
 
-@ checking move history for excitement
+/* checking move history for excitement*/
 
 	.macro get_used_moves_excitement mon:req, round:req
 	.byte 0x68
@@ -699,7 +699,7 @@
 	.4byte \destination
 	.endm
 
-@ checking move history for effect type
+/* checking move history for effect type*/
 
 	.macro get_used_moves_effect_type mon:req, round:req
 	.byte 0x6D
@@ -723,7 +723,7 @@
 	.4byte \destination
 	.endm
 
-@ generic commands
+/* generic commands*/
 
 	.macro save_result varId:req
 	.byte 0x70
@@ -748,7 +748,7 @@
 	.byte \varId2
 	.endm
 
-	@ Duplicate of above
+	/* Duplicate of above*/
 	.macro addvar_duplicate varId1:req, varId2:req
 	.byte 0x74
 	.byte \varId1
@@ -811,7 +811,7 @@
 	.4byte \destination
 	.endm
 
-	@ NOTE: The random commands are broken (see ContestAICmd_if_random_less_than)
+	/* NOTE: The random commands are broken (see ContestAICmd_if_random_less_than)*/
 	.macro if_random_less_than num:req, destination:req
 	.byte 0x7D
 	.byte \num
@@ -852,7 +852,7 @@
 	.4byte \destination
 	.endm
 
-	@ This is used incorrectly to check for an effect; see ContestAICmd_check_user_has_move
+	/* This is used incorrectly to check for an effect; see ContestAICmd_check_user_has_move*/
 	.macro check_user_has_move move:req
 	.byte 0x85
 	.2byte \move

@@ -1,4 +1,4 @@
-@ commands
+/* commands*/
 
 	.macro loadspritegfx tag:req
 	.byte 0x0
@@ -18,20 +18,20 @@
 	.else
 	.byte (\subpriority_offset & 0x7F)
 	.endif
-	.byte (.Lsprite_\@_2 - .Lsprite_\@_1) / 2
-.Lsprite_\@_1:
+	.byte (.Lsprite_\/*_2 - .Lsprite_\/*_1) / 2*/*/
+.Lsprite_\/*_1:*/
 	.2byte \argv
-.Lsprite_\@_2:
+.Lsprite_\/*_2:*/
 	.endm
 
 	.macro createvisualtask addr:req, priority:req, argv:vararg
 	.byte 0x03
 	.4byte \addr
 	.byte \priority
-	.byte (.Lcreatetask_\@_2 - .Lcreatetask_\@_1) / 2
-.Lcreatetask_\@_1:
+	.byte (.Lcreatetask_\/*_2 - .Lcreatetask_\/*_1) / 2*/*/
+.Lcreatetask_\/*_1:*/
 	.2byte \argv
-.Lcreatetask_\@_2:
+.Lcreatetask_\/*_2:*/
 	.endm
 
 	.macro delay param0:req
@@ -176,10 +176,10 @@
 	.macro createsoundtask addr:req, argv:vararg
 	.byte 0x1F
 	.4byte \addr
-	.byte (.Lcreatetask_1F_\@_2 - .Lcreatetask_1F_\@_1) / 2
-.Lcreatetask_1F_\@_1:
+	.byte (.Lcreatetask_1F_\/*_2 - .Lcreatetask_1F_\/*_1) / 2*/*/
+.Lcreatetask_1F_\/*_1:*/
 	.2byte \argv
-.Lcreatetask_1F_\@_2:
+.Lcreatetask_1F_\/*_2:*/
 	.endm
 
 	.macro waitsound
@@ -271,7 +271,7 @@
 	.byte 0x2f
 	.endm
 	
-@ useful macros
+/* useful macros*/
 	.macro jumpreteq value:req, ptr:req
 	jumpargeq ARG_RET_ID, \value, \ptr
 	.endm

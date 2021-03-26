@@ -1,4 +1,4 @@
-@ commands
+/* commands*/
 	.macro attackcanceler
 	.byte 0x0
 	.endm
@@ -404,33 +404,33 @@
 	.byte \param1
 	.endm
 	
-	@ Help macros for 5 uses of moveend command
+	/* Help macros for 5 uses of moveend command*/
 	
-	@ All cases
+	/* All cases*/
 	.macro moveendall
 	setbyte sMOVEEND_STATE, 0
 	moveend 0, 0
 	.endm
 	
-	@ Chosen case
+	/* Chosen case*/
 	.macro moveendcase case:req
 	setbyte sMOVEEND_STATE, \case
 	moveend 1, 0
 	.endm
 	
-	@ All cases from (inclusive)
+	/* All cases from (inclusive)*/
 	.macro moveendfrom from:req
 	setbyte sMOVEEND_STATE, \from
 	moveend 0, 0
 	.endm
 	
-	@ All cases from 0 to (not inclusive)
+	/* All cases from 0 to (not inclusive)*/
 	.macro moveendto to:req
 	setbyte sMOVEEND_STATE, 0
 	moveend 2, \to
 	.endm
 	
-	@ Cases from (inclusive) to (not inclusive)
+	/* Cases from (inclusive) to (not inclusive)*/
 	.macro moveendfromto from:req, to:req
 	setbyte sMOVEEND_STATE, \from
 	moveend 2, \to
@@ -1246,7 +1246,7 @@
 	.byte \param0
 	.endm
 	
-@ various command changed to more readable macros
+/* various command changed to more readable macros*/
 	.macro cancelmultiturnmoves battler:req
 	various \battler, VARIOUS_CANCEL_MULTI_TURN_MOVES
 	.endm
@@ -1355,7 +1355,7 @@
 	various \battler, VARIOUS_PLAY_TRAINER_DEFEATED_MUSIC
 	.endm
 	
-@ helpful macros
+/* helpful macros*/
 	.macro setstatchanger stat:req, stages:req, down:req
 	setbyte sSTATCHANGER \stat | \stages << 4 | \down << 7
 	.endm
