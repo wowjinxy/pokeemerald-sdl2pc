@@ -76,7 +76,11 @@ bool32 alarmOn;
 
 #endif
 
+#ifdef PORTABLE
 vu16 GPIOPortDirection;
+#else
+extern vu16 GPIOPortDirection;
+#endif
 
 static u16 sDummy; // unused variable
 static bool8 sLocked;

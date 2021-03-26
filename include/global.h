@@ -64,7 +64,11 @@
 #define asm_comment(x) asm volatile("@ -- " x " -- ")
 #define asm_unified(x) asm(".syntax unified\n" x "\n.syntax divided")
 #define NAKED __attribute__((naked))
+#ifdef PORTABLE
 #define ALIGN32 __attribute__((aligned(4)))
+#else
+#define ALIGN32
+#endif
 
 // IDE support
 #if defined (__APPLE__) || defined (__CYGWIN__) || defined (_MSC_VER)
