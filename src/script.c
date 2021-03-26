@@ -290,7 +290,7 @@ u8 *MapHeaderCheckScriptTable(u8 tag)
         u16 varIndex1;
         u16 varIndex2;
 
-        // Read first var (or .2byte terminal value)
+        // Read first var (or .short terminal value)
         varIndex1 = T1_READ_16(ptr);
         if (!varIndex1)
             return NULL; // Reached end of table
