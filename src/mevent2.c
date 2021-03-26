@@ -336,6 +336,7 @@ bool32 sub_801B508(const u16 *data)
 
 void sub_801B580(struct MEventStruct_Unk1442CC *data, bool32 a1)
 {
+#ifndef PORTABLE
     int i;
     CpuFill32(0, data, sizeof(struct MEventStruct_Unk1442CC));
     data->unk_00 = 0x101;
@@ -374,6 +375,9 @@ void sub_801B580(struct MEventStruct_Unk1442CC *data, bool32 a1)
 
     memcpy(data->unk_5C, RomHeaderGameCode, 4);
     data->unk_60 = RomHeaderSoftwareVersion;
+#else
+    return;
+#endif
 }
 
 bool32 sub_801B6A0(const struct MEventStruct_Unk1442CC *data, bool32 a1)

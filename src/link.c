@@ -1782,6 +1782,7 @@ void LinkPlayerFromBlock(u32 who)
         SetMainCallback2(CB2_LinkError);
 }
 
+#ifndef PORTABLE
 bool8 HandleLinkConnection(void)
 {
     bool32 r4;
@@ -1807,6 +1808,7 @@ bool8 HandleLinkConnection(void)
     }
     return FALSE;
 }
+#endif
 
 void SetWirelessCommType1(void)
 {

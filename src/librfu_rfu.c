@@ -327,6 +327,7 @@ u16 rfu_getRFUStatus(u8 *rfuState)
  * }
  * Returns 1 if the packet to inherit is malformed.
  */
+#ifndef PORTABLE
 u16 rfu_MBOOT_CHILD_inheritanceLinkStatus(void)
 {
     const char *s1 = str_checkMbootLL;
@@ -351,6 +352,7 @@ u16 rfu_MBOOT_CHILD_inheritanceLinkStatus(void)
     gRfuStatic->flags |= 0x80; // mboot
     return 0;
 }
+#endif
 
 void rfu_REQ_stopMode(void)
 {

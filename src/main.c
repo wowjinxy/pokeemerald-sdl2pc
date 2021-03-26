@@ -24,6 +24,7 @@
 #include "main.h"
 #include "trainer_hill.h"
 #include "constants/rgb.h"
+#include "platform.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);
@@ -59,6 +60,7 @@ const IntrFunc gIntrTableTemplate[] =
 
 static u16 gUnknown_03000000;
 
+u8 gHeap[HEAP_SIZE];
 u16 gKeyRepeatStartDelay;
 bool8 gLinkTransferringData;
 struct Main gMain;
@@ -113,8 +115,10 @@ void AgbMain()
 
     gSoftResetDisabled = FALSE;
 
+#ifndef PORTABLE
     if (gFlashMemoryPresent != TRUE)
         SetMainCallback2(NULL);
+#endif
 
     gLinkTransferringData = FALSE;
     gUnknown_03000000 = 0xFC0;
@@ -240,7 +244,11 @@ void InitKeys(void)
 
 static void ReadKeys(void)
 {
+#ifndef PORTABLE
     u16 keyInput = REG_KEYINPUT ^ KEYS_MASK;
+#else
+    u16 keyInput = Platform_GetKeyInput();
+#endif
     gMain.newKeysRaw = keyInput & ~gMain.heldKeysRaw;
     gMain.newKeys = gMain.newKeysRaw;
     gMain.newAndRepeatedKeys = gMain.newKeysRaw;
@@ -400,10 +408,14 @@ static void IntrDummy(void)
 
 static void WaitForVBlank(void)
 {
+#ifdef PORTABLE
+    VBlankIntrWait();
+#else
     gMain.intrCheck &= ~INTR_FLAG_VBLANK;
 
     while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
         ;
+#endif
 }
 
 void SetTrainerHillVBlankCounter(u32 *counter)

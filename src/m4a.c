@@ -19,6 +19,7 @@ struct MusicPlayerInfo gMPlayInfo_SE1;
 struct MusicPlayerInfo gMPlayInfo_SE2;
 struct MusicPlayerInfo gMPlayInfo_SE3;
 u8 gMPlayMemAccArea[0x10];
+#ifndef PORTABLE
 
 u32 MidiKeyToFreq(struct WaveData *wav, u8 key, u8 fineAdjust)
 {
@@ -1755,3 +1756,5 @@ void SetPokemonCryPriority(u8 val)
 {
     gPokemonCrySong.priority = val;
 }
+
+#endif
