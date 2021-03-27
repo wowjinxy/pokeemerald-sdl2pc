@@ -109,8 +109,8 @@ se_m_rain_dance:
 	.byte	se_m_rain_dance_pri	/* Priority*/
 	.byte	se_m_rain_dance_rev	/* Reverb.*/
 
-	.word	se_m_rain_dance_grp
+	.int	se_m_rain_dance_grp
 
-	.word	se_m_rain_dance_1
+	.int	se_m_rain_dance_1
 
 	.end

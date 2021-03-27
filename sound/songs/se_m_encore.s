@@ -51,8 +51,8 @@ se_m_encore:
 	.byte	se_m_encore_pri	/* Priority*/
 	.byte	se_m_encore_rev	/* Reverb.*/
 
-	.word	se_m_encore_grp
+	.int	se_m_encore_grp
 
-	.word	se_m_encore_1
+	.int	se_m_encore_1
 
 	.end

@@ -192,9 +192,9 @@ int main(int argc, char **argv)
 }
 
 // Key mappings
-#define KEY_A_BUTTON      SDLK_x
-#define KEY_B_BUTTON      SDLK_z
-#define KEY_START_BUTTON  SDLK_RSHIFT
+#define KEY_A_BUTTON      SDLK_z
+#define KEY_B_BUTTON      SDLK_x
+#define KEY_START_BUTTON  SDLK_RETURN
 #define KEY_SELECT_BUTTON SDLK_BACKSLASH
 #define KEY_L_BUTTON      SDLK_a
 #define KEY_R_BUTTON      SDLK_s

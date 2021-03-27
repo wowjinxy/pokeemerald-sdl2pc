@@ -214,6 +214,7 @@ u32 VerifyFlashSector_Core(u8 *src, u8 *tgt, u32 size)
 #endif
 }
 
+#ifndef PORTABLE
 u32 VerifyFlashSector(u16 sectorNum, u8 *src)
 {
     u16 i;
@@ -251,13 +252,11 @@ u32 VerifyFlashSector(u16 sectorNum, u8 *src)
 
     return verifyFlashSector_Core(src, tgt, size);
 }
+#endif
 
+#ifndef PORTABLE
 u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n)
 {
-#ifdef PORTABLE
-    puts("function VerifyFlashSectorNBytes is a stub");
-    return 0;
-#else
     u16 i;
     vu16 verifyFlashSector_Core_Buffer[0x80];
     vu16 *funcSrc;
@@ -290,8 +289,8 @@ u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n)
     tgt = FLASH_BASE + (sectorNum << gFlash->sector.shift);
 
     return verifyFlashSector_Core(src, tgt, n);
-#endif
 }
+#endif
 
 u32 ProgramFlashSectorAndVerify(u16 sectorNum, u8 *src)
 {

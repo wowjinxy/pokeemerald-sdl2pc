@@ -260,6 +260,7 @@ void InitRFU(void)
     REG_IME = INTR_FLAG_VBLANK;
 }
 
+#ifndef PORTABLE
 void InitRFUAPI(void)
 {
     if (!rfu_initializeAPI((void *)gf_rfu_REQ_api, sizeof gf_rfu_REQ_api, gIntrTable + 1, TRUE))
@@ -271,6 +272,7 @@ void InitRFUAPI(void)
         rfu_setTimerInterrupt(3, gIntrTable + 2);
     }
 }
+#endif
 
 static void Task_LinkLeaderSearchForChildren(u8 taskId)
 {

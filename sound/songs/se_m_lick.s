@@ -122,8 +122,8 @@ se_m_lick:
 	.byte	se_m_lick_pri	/* Priority*/
 	.byte	se_m_lick_rev	/* Reverb.*/
 
-	.word	se_m_lick_grp
+	.int	se_m_lick_grp
 
-	.word	se_m_lick_1
+	.int	se_m_lick_1
 
 	.end

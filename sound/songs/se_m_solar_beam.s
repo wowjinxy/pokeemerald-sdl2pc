@@ -157,8 +157,8 @@ se_m_solar_beam:
 	.byte	se_m_solar_beam_pri	/* Priority*/
 	.byte	se_m_solar_beam_rev	/* Reverb.*/
 
-	.word	se_m_solar_beam_grp
+	.int	se_m_solar_beam_grp
 
-	.word	se_m_solar_beam_1
+	.int	se_m_solar_beam_1
 
 	.end

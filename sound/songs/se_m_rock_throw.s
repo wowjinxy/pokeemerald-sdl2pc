@@ -58,8 +58,8 @@ se_m_rock_throw:
 	.byte	se_m_rock_throw_pri	/* Priority*/
 	.byte	se_m_rock_throw_rev	/* Reverb.*/
 
-	.word	se_m_rock_throw_grp
+	.int	se_m_rock_throw_grp
 
-	.word	se_m_rock_throw_1
+	.int	se_m_rock_throw_1
 
 	.end

@@ -104,9 +104,9 @@ se_m_screech:
 	.byte	se_m_screech_pri	/* Priority*/
 	.byte	se_m_screech_rev	/* Reverb.*/
 
-	.word	se_m_screech_grp
+	.int	se_m_screech_grp
 
-	.word	se_m_screech_1
-	.word	se_m_screech_2
+	.int	se_m_screech_1
+	.int	se_m_screech_2
 
 	.end

@@ -67,8 +67,8 @@ se_m_self_destruct:
 	.byte	se_m_self_destruct_pri	/* Priority*/
 	.byte	se_m_self_destruct_rev	/* Reverb.*/
 
-	.word	se_m_self_destruct_grp
+	.int	se_m_self_destruct_grp
 
-	.word	se_m_self_destruct_1
+	.int	se_m_self_destruct_1
 
 	.end

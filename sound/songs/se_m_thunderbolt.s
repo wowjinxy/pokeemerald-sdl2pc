@@ -109,9 +109,9 @@ se_m_thunderbolt:
 	.byte	se_m_thunderbolt_pri	/* Priority*/
 	.byte	se_m_thunderbolt_rev	/* Reverb.*/
 
-	.word	se_m_thunderbolt_grp
+	.int	se_m_thunderbolt_grp
 
-	.word	se_m_thunderbolt_1
-	.word	se_m_thunderbolt_2
+	.int	se_m_thunderbolt_1
+	.int	se_m_thunderbolt_2
 
 	.end

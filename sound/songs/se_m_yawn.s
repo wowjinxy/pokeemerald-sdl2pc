@@ -119,9 +119,9 @@ se_m_yawn:
 	.byte	se_m_yawn_pri	/* Priority*/
 	.byte	se_m_yawn_rev	/* Reverb.*/
 
-	.word	se_m_yawn_grp
+	.int	se_m_yawn_grp
 
-	.word	se_m_yawn_1
-	.word	se_m_yawn_2
+	.int	se_m_yawn_1
+	.int	se_m_yawn_2
 
 	.end

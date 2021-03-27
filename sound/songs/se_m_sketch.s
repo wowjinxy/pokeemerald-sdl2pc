@@ -61,8 +61,8 @@ se_m_sketch:
 	.byte	se_m_sketch_pri	/* Priority*/
 	.byte	se_m_sketch_rev	/* Reverb.*/
 
-	.word	se_m_sketch_grp
+	.int	se_m_sketch_grp
 
-	.word	se_m_sketch_1
+	.int	se_m_sketch_1
 
 	.end

@@ -59,8 +59,8 @@ se_m_dig:
 	.byte	se_m_dig_pri	/* Priority*/
 	.byte	se_m_dig_rev	/* Reverb.*/
 
-	.word	se_m_dig_grp
+	.int	se_m_dig_grp
 
-	.word	se_m_dig_1
+	.int	se_m_dig_1
 
 	.end

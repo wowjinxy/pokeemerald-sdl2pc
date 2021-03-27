@@ -92,9 +92,9 @@ se_m_bite:
 	.byte	se_m_bite_pri	/* Priority*/
 	.byte	se_m_bite_rev	/* Reverb.*/
 
-	.word	se_m_bite_grp
+	.int	se_m_bite_grp
 
-	.word	se_m_bite_1
-	.word	se_m_bite_2
+	.int	se_m_bite_1
+	.int	se_m_bite_2
 
 	.end

@@ -98,9 +98,9 @@ se_m_thunder_wave:
 	.byte	se_m_thunder_wave_pri	/* Priority*/
 	.byte	se_m_thunder_wave_rev	/* Reverb.*/
 
-	.word	se_m_thunder_wave_grp
+	.int	se_m_thunder_wave_grp
 
-	.word	se_m_thunder_wave_1
-	.word	se_m_thunder_wave_2
+	.int	se_m_thunder_wave_1
+	.int	se_m_thunder_wave_2
 
 	.end

@@ -77,9 +77,9 @@ se_m_thunderbolt2:
 	.byte	se_m_thunderbolt2_pri	/* Priority*/
 	.byte	se_m_thunderbolt2_rev	/* Reverb.*/
 
-	.word	se_m_thunderbolt2_grp
+	.int	se_m_thunderbolt2_grp
 
-	.word	se_m_thunderbolt2_1
-	.word	se_m_thunderbolt2_2
+	.int	se_m_thunderbolt2_1
+	.int	se_m_thunderbolt2_2
 
 	.end

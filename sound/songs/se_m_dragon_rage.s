@@ -143,8 +143,8 @@ se_m_dragon_rage:
 	.byte	se_m_dragon_rage_pri	/* Priority*/
 	.byte	se_m_dragon_rage_rev	/* Reverb.*/
 
-	.word	se_m_dragon_rage_grp
+	.int	se_m_dragon_rage_grp
 
-	.word	se_m_dragon_rage_1
+	.int	se_m_dragon_rage_1
 
 	.end

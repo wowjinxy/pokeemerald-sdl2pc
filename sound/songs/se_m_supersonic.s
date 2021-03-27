@@ -154,8 +154,8 @@ se_m_supersonic:
 	.byte	se_m_supersonic_pri	/* Priority*/
 	.byte	se_m_supersonic_rev	/* Reverb.*/
 
-	.word	se_m_supersonic_grp
+	.int	se_m_supersonic_grp
 
-	.word	se_m_supersonic_1
+	.int	se_m_supersonic_1
 
 	.end

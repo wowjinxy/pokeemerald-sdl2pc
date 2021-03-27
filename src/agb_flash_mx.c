@@ -2,6 +2,10 @@
 #include "gba/flash_internal.h"
 #include "global.h"
 
+#ifdef PORTABLE
+extern unsigned char REG_BASE[0x400] __attribute__((aligned(4)));
+#endif
+
 const u16 mxMaxTime[] =
 {
       10, 65469, TIMER_ENABLE | TIMER_INTR_ENABLE | TIMER_256CLK,

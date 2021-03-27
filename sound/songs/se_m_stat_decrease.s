@@ -263,9 +263,9 @@ se_m_stat_decrease:
 	.byte	se_m_stat_decrease_pri	/* Priority*/
 	.byte	se_m_stat_decrease_rev	/* Reverb.*/
 
-	.word	se_m_stat_decrease_grp
+	.int	se_m_stat_decrease_grp
 
-	.word	se_m_stat_decrease_1
-	.word	se_m_stat_decrease_2
+	.int	se_m_stat_decrease_1
+	.int	se_m_stat_decrease_2
 
 	.end

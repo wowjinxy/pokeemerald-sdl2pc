@@ -76,8 +76,8 @@ se_m_heal_bell:
 	.byte	se_m_heal_bell_pri	/* Priority*/
 	.byte	se_m_heal_bell_rev	/* Reverb.*/
 
-	.word	se_m_heal_bell_grp
+	.int	se_m_heal_bell_grp
 
-	.word	se_m_heal_bell_1
+	.int	se_m_heal_bell_1
 
 	.end
