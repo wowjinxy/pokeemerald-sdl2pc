@@ -23,8 +23,8 @@
 #include "intro.h"
 #include "main.h"
 #include "trainer_hill.h"
-#include "constants/rgb.h"
 #include "platform.h"
+#include "constants/rgb.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);

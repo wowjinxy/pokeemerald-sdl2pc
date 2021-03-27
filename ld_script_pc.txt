@@ -36,7 +36,7 @@ SECTIONS {
         gflib/*.o(COMMON);
         *libc.a:sbrkr.o(COMMON);
         end = .;
-        . = 0x8000;
+        . = 0xF0000;
     }
 
     . = 0x8000000;

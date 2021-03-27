@@ -1,5 +1,6 @@
 #include "gba/gba.h"
 #include "gba/flash_internal.h"
+#include "global.h"
 
 const u16 mxMaxTime[] =
 {

@@ -9,7 +9,6 @@
 #define REG_BASE       _REG_BASE
 #define VRAM_          _VRAM_
 #define OAM            _OAM
-#define REG_BASE       _REG_BASE
 #define PLTT           _PLTT
 #define SOUND_INFO_PTR _SOUND_INFO_PTR
 #define INTR_CHECK     _INTR_CHECK
