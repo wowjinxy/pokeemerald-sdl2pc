@@ -102,8 +102,8 @@ se_m_surf:
 	.byte	se_m_surf_pri	/* Priority*/
 	.byte	se_m_surf_rev	/* Reverb.*/
 
-	.word	se_m_surf_grp
+	.int	se_m_surf_grp
 
-	.word	se_m_surf_1
+	.int	se_m_surf_1
 
 	.end

@@ -195,8 +195,8 @@ se_m_acid_armor:
 	.byte	se_m_acid_armor_pri	/* Priority*/
 	.byte	se_m_acid_armor_rev	/* Reverb.*/
 
-	.word	se_m_acid_armor_grp
+	.int	se_m_acid_armor_grp
 
-	.word	se_m_acid_armor_1
+	.int	se_m_acid_armor_1
 
 	.end

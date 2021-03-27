@@ -158,8 +158,8 @@ se_m_teleport:
 	.byte	se_m_teleport_pri	/* Priority*/
 	.byte	se_m_teleport_rev	/* Reverb.*/
 
-	.word	se_m_teleport_grp
+	.int	se_m_teleport_grp
 
-	.word	se_m_teleport_1
+	.int	se_m_teleport_1
 
 	.end

@@ -116,9 +116,9 @@ se_m_flame_wheel:
 	.byte	se_m_flame_wheel_pri	/* Priority*/
 	.byte	se_m_flame_wheel_rev	/* Reverb.*/
 
-	.word	se_m_flame_wheel_grp
+	.int	se_m_flame_wheel_grp
 
-	.word	se_m_flame_wheel_1
-	.word	se_m_flame_wheel_2
+	.int	se_m_flame_wheel_1
+	.int	se_m_flame_wheel_2
 
 	.end

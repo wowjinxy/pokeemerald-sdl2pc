@@ -76,9 +76,9 @@ se_m_strength:
 	.byte	se_m_strength_pri	/* Priority*/
 	.byte	se_m_strength_rev	/* Reverb.*/
 
-	.word	se_m_strength_grp
+	.int	se_m_strength_grp
 
-	.word	se_m_strength_1
-	.word	se_m_strength_2
+	.int	se_m_strength_1
+	.int	se_m_strength_2
 
 	.end

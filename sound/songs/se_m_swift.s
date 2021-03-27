@@ -103,9 +103,9 @@ se_m_swift:
 	.byte	se_m_swift_pri	/* Priority*/
 	.byte	se_m_swift_rev	/* Reverb.*/
 
-	.word	se_m_swift_grp
+	.int	se_m_swift_grp
 
-	.word	se_m_swift_1
-	.word	se_m_swift_2
+	.int	se_m_swift_1
+	.int	se_m_swift_2
 
 	.end

@@ -74,8 +74,8 @@ se_m_giga_drain:
 	.byte	se_m_giga_drain_pri	/* Priority*/
 	.byte	se_m_giga_drain_rev	/* Reverb.*/
 
-	.word	se_m_giga_drain_grp
+	.int	se_m_giga_drain_grp
 
-	.word	se_m_giga_drain_1
+	.int	se_m_giga_drain_1
 
 	.end

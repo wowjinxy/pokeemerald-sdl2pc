@@ -50,8 +50,8 @@ se_m_bonemerang:
 	.byte	se_m_bonemerang_pri	/* Priority*/
 	.byte	se_m_bonemerang_rev	/* Reverb.*/
 
-	.word	se_m_bonemerang_grp
+	.int	se_m_bonemerang_grp
 
-	.word	se_m_bonemerang_1
+	.int	se_m_bonemerang_1
 
 	.end

@@ -198,9 +198,9 @@ se_m_heat_wave:
 	.byte	se_m_heat_wave_pri	/* Priority*/
 	.byte	se_m_heat_wave_rev	/* Reverb.*/
 
-	.word	se_m_heat_wave_grp
+	.int	se_m_heat_wave_grp
 
-	.word	se_m_heat_wave_1
-	.word	se_m_heat_wave_2
+	.int	se_m_heat_wave_1
+	.int	se_m_heat_wave_2
 
 	.end

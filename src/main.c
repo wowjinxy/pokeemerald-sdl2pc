@@ -102,7 +102,9 @@ void AgbMain()
     InitIntrHandlers();
     m4aSoundInit();
     EnableVCountIntrAtLine150();
+#ifndef PORTABLE
     InitRFU();
+#endif
     RtcInit();
     CheckForFlashMemory();
     InitMainCallbacks();

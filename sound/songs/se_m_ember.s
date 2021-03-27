@@ -54,8 +54,8 @@ se_m_ember:
 	.byte	se_m_ember_pri	/* Priority*/
 	.byte	se_m_ember_rev	/* Reverb.*/
 
-	.word	se_m_ember_grp
+	.int	se_m_ember_grp
 
-	.word	se_m_ember_1
+	.int	se_m_ember_1
 
 	.end

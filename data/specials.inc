@@ -282,7 +282,7 @@ gSpecials:: /* 81DBA64*/
 	def_special CheckLeadMonSmart
 	def_special CheckLeadMonTough
 	def_special LookThroughPorthole
-	def_special DoSoftReset
+/*	def_special DoSoftReset*/
 	def_special GameClear
 	def_special MoveElevator
 	def_special ShowGlassWorkshopMenu

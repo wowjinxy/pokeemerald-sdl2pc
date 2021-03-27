@@ -179,8 +179,8 @@ se_m_charge:
 	.byte	se_m_charge_pri	/* Priority*/
 	.byte	se_m_charge_rev	/* Reverb.*/
 
-	.word	se_m_charge_grp
+	.int	se_m_charge_grp
 
-	.word	se_m_charge_1
+	.int	se_m_charge_1
 
 	.end

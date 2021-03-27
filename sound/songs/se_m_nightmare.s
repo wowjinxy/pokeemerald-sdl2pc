@@ -138,9 +138,9 @@ se_m_nightmare:
 	.byte	se_m_nightmare_pri	/* Priority*/
 	.byte	se_m_nightmare_rev	/* Reverb.*/
 
-	.word	se_m_nightmare_grp
+	.int	se_m_nightmare_grp
 
-	.word	se_m_nightmare_1
-	.word	se_m_nightmare_2
+	.int	se_m_nightmare_1
+	.int	se_m_nightmare_2
 
 	.end

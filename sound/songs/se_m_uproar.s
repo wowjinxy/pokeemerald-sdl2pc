@@ -79,8 +79,8 @@ se_m_uproar:
 	.byte	se_m_uproar_pri	/* Priority*/
 	.byte	se_m_uproar_rev	/* Reverb.*/
 
-	.word	se_m_uproar_grp
+	.int	se_m_uproar_grp
 
-	.word	se_m_uproar_1
+	.int	se_m_uproar_1
 
 	.end

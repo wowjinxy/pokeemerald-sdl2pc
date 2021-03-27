@@ -113,9 +113,9 @@ se_m_teeter_dance:
 	.byte	se_m_teeter_dance_pri	/* Priority*/
 	.byte	se_m_teeter_dance_rev	/* Reverb.*/
 
-	.word	se_m_teeter_dance_grp
+	.int	se_m_teeter_dance_grp
 
-	.word	se_m_teeter_dance_1
-	.word	se_m_teeter_dance_2
+	.int	se_m_teeter_dance_1
+	.int	se_m_teeter_dance_2
 
 	.end

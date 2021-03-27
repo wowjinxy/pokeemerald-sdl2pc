@@ -115,9 +115,9 @@ se_m_dive:
 	.byte	se_m_dive_pri	/* Priority*/
 	.byte	se_m_dive_rev	/* Reverb.*/
 
-	.word	se_m_dive_grp
+	.int	se_m_dive_grp
 
-	.word	se_m_dive_1
-	.word	se_m_dive_2
+	.int	se_m_dive_1
+	.int	se_m_dive_2
 
 	.end

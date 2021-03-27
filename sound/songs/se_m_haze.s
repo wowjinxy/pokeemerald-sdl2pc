@@ -242,9 +242,9 @@ se_m_haze:
 	.byte	se_m_haze_pri	/* Priority*/
 	.byte	se_m_haze_rev	/* Reverb.*/
 
-	.word	se_m_haze_grp
+	.int	se_m_haze_grp
 
-	.word	se_m_haze_1
-	.word	se_m_haze_2
+	.int	se_m_haze_1
+	.int	se_m_haze_2
 
 	.end

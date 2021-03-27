@@ -50,8 +50,8 @@ se_m_bubble:
 	.byte	se_m_bubble_pri	/* Priority*/
 	.byte	se_m_bubble_rev	/* Reverb.*/
 
-	.word	se_m_bubble_grp
+	.int	se_m_bubble_grp
 
-	.word	se_m_bubble_1
+	.int	se_m_bubble_1
 
 	.end

@@ -72,8 +72,8 @@ se_m_dizzy_punch:
 	.byte	se_m_dizzy_punch_pri	/* Priority*/
 	.byte	se_m_dizzy_punch_rev	/* Reverb.*/
 
-	.word	se_m_dizzy_punch_grp
+	.int	se_m_dizzy_punch_grp
 
-	.word	se_m_dizzy_punch_1
+	.int	se_m_dizzy_punch_1
 
 	.end

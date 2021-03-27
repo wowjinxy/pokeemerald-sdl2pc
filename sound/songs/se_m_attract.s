@@ -118,9 +118,9 @@ se_m_attract:
 	.byte	se_m_attract_pri	/* Priority*/
 	.byte	se_m_attract_rev	/* Reverb.*/
 
-	.word	se_m_attract_grp
+	.int	se_m_attract_grp
 
-	.word	se_m_attract_1
-	.word	se_m_attract_2
+	.int	se_m_attract_1
+	.int	se_m_attract_2
 
 	.end

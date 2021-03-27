@@ -73,8 +73,8 @@ se_m_string_shot:
 	.byte	se_m_string_shot_pri	/* Priority*/
 	.byte	se_m_string_shot_rev	/* Reverb.*/
 
-	.word	se_m_string_shot_grp
+	.int	se_m_string_shot_grp
 
-	.word	se_m_string_shot_1
+	.int	se_m_string_shot_1
 
 	.end

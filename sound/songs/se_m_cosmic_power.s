@@ -200,9 +200,9 @@ se_m_cosmic_power:
 	.byte	se_m_cosmic_power_pri	/* Priority*/
 	.byte	se_m_cosmic_power_rev	/* Reverb.*/
 
-	.word	se_m_cosmic_power_grp
+	.int	se_m_cosmic_power_grp
 
-	.word	se_m_cosmic_power_1
-	.word	se_m_cosmic_power_2
+	.int	se_m_cosmic_power_1
+	.int	se_m_cosmic_power_2
 
 	.end

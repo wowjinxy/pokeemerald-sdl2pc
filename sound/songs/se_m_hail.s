@@ -90,9 +90,9 @@ se_m_hail:
 	.byte	se_m_hail_pri	/* Priority*/
 	.byte	se_m_hail_rev	/* Reverb.*/
 
-	.word	se_m_hail_grp
+	.int	se_m_hail_grp
 
-	.word	se_m_hail_1
-	.word	se_m_hail_2
+	.int	se_m_hail_1
+	.int	se_m_hail_2
 
 	.end

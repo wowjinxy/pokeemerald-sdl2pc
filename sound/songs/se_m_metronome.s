@@ -72,8 +72,8 @@ se_m_metronome:
 	.byte	se_m_metronome_pri	/* Priority*/
 	.byte	se_m_metronome_rev	/* Reverb.*/
 
-	.word	se_m_metronome_grp
+	.int	se_m_metronome_grp
 
-	.word	se_m_metronome_1
+	.int	se_m_metronome_1
 
 	.end

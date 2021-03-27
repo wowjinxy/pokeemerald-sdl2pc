@@ -70,8 +70,8 @@ se_m_swagger:
 	.byte	se_m_swagger_pri	/* Priority*/
 	.byte	se_m_swagger_rev	/* Reverb.*/
 
-	.word	se_m_swagger_grp
+	.int	se_m_swagger_grp
 
-	.word	se_m_swagger_1
+	.int	se_m_swagger_1
 
 	.end

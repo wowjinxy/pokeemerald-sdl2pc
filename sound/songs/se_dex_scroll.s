@@ -39,8 +39,8 @@ se_dex_scroll:
 	.byte	se_dex_scroll_pri	/* Priority*/
 	.byte	se_dex_scroll_rev	/* Reverb.*/
 
-	.word	se_dex_scroll_grp
+	.int	se_dex_scroll_grp
 
-	.word	se_dex_scroll_1
+	.int	se_dex_scroll_1
 
 	.end

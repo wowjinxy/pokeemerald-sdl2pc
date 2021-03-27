@@ -80,9 +80,9 @@ se_m_spit_up:
 	.byte	se_m_spit_up_pri	/* Priority*/
 	.byte	se_m_spit_up_rev	/* Reverb.*/
 
-	.word	se_m_spit_up_grp
+	.int	se_m_spit_up_grp
 
-	.word	se_m_spit_up_1
-	.word	se_m_spit_up_2
+	.int	se_m_spit_up_1
+	.int	se_m_spit_up_2
 
 	.end
