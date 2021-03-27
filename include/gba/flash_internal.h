@@ -43,6 +43,8 @@ struct FlashSetupInfo
     struct FlashType type;
 };
 
+extern const struct FlashSetupInfo DUMMY_SAVE;
+
 extern u16 gFlashNumRemainingBytes;
 
 extern u16 (*ProgramFlashByte)(u16, u32, u8);

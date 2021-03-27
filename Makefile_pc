@@ -3,7 +3,7 @@ OBJCOPY := $(PREFIX)objcopy
 export CC := $(PREFIX)gcc
 export AS := $(PREFIX)as
 
-SDL_DIR := ~/pokeemerald/SDL2-2.0.12/i686-w64-mingw32
+SDL_DIR := ~/pokeemerald/SDL2-2.0.14/i686-w64-mingw32
 ASM_PSEUDO_OP_CONV := sed -e 's/\.4byte/\.int/g;s/\.2byte/\.short/g'
 
 export CPP := $(PREFIX)cpp
@@ -43,12 +43,14 @@ DATA_ASM_BUILDDIR = $(OBJ_DIR)/$(DATA_ASM_SUBDIR)
 SONG_BUILDDIR = $(OBJ_DIR)/$(SONG_SUBDIR)
 MID_BUILDDIR = $(OBJ_DIR)/$(MID_SUBDIR)
 
-ASFLAGS := --32 --defsym MODERN=$(MODERN) --defsym PORTABLE=1
+ASFLAGS := --32 --defsym MODERN=$(MODERN) --defsym PORTABLE=1 --defsym UBFIX=1
 
 GCC_VER := $(shell $(CC) -dumpversion)
 
 CC1 	:= $(shell $(PREFIX)gcc --print-prog-name=cc1) -quiet
 override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m32 -std=gnu99 -fno-leading-underscore -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DNONMATCHING -D UBFIX -DMODERN=$(MODERN)
+ROM		:= pokeemerald.exe
+OBJ_DIR	:= build/pc
 
 CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHING -D PORTABLE -D MODERN=$(MODERN) -D UBFIX -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
 
@@ -120,7 +122,7 @@ SONG_OBJS := $(patsubst $(SONG_SUBDIR)/%.s,$(SONG_BUILDDIR)/%.o,$(SONG_SRCS))
 MID_SRCS := $(wildcard $(MID_SUBDIR)/*.mid)
 MID_OBJS := $(patsubst $(MID_SUBDIR)/%.mid,$(MID_BUILDDIR)/%.o,$(MID_SRCS))
 
-OBJS     := $(C_OBJS) $(GFLIB_OBJS) $(C_ASM_OBJS) $(ASM_OBJS) $(DATA_ASM_OBJS) $(SONG_OBJS) $(MID_OBJS)
+OBJS     := $(C_OBJS) $(GFLIB_OBJS) $(ASM_OBJS) $(DATA_ASM_OBJS) $(SONG_OBJS) $(MID_OBJS)
 OBJS_REL := $(patsubst $(OBJ_DIR)/%,%,$(OBJS))
 
 SUBDIRS  := $(sort $(dir $(OBJS)))
@@ -219,15 +221,6 @@ $(GFLIB_BUILDDIR)/%.o : $(GFLIB_SUBDIR)/%.c $$(c_dep)
 	@echo -e ".text\n\t.align\t2, 0\n" >> $(GFLIB_BUILDDIR)/$*.s
 	$(AS) $(ASFLAGS) -o $@ $(GFLIB_BUILDDIR)/$*.s
 
-ifeq ($(NODEP),1)
-$(C_BUILDDIR)/%.o: c_asm_dep :=
-else
-$(C_BUILDDIR)/%.o: c_asm_dep = $(shell [[ -f $(C_SUBDIR)/$*.s ]] && $(SCANINC) -I "" $(C_SUBDIR)/$*.s)
-endif
-
-$(C_BUILDDIR)/%.o: $(C_SUBDIR)/%.s $$(c_asm_dep)
-	$(AS) $(ASFLAGS) -o $@ $<
-
 # The dep rules have to be explicit or else missing files won't be reported.
 # As a side effect, they're evaluated immediately instead of when the rule is invoked.
 # It doesn't look like $(shell) can be deferred so there might not be a better way.
@@ -257,7 +250,7 @@ $(foreach src, $(C_ASM_SRCS), $(eval $(call DATA_ASM_DEP,$(patsubst $(C_SUBDIR)/
 endif
 
 $(SONG_BUILDDIR)/%.o: $(SONG_SUBDIR)/%.s
-	$(ASM_PSEUDO_OP_CONV) <$ | $(AS) $(ASFLAGS) -I sound -o $@
+	$(ASM_PSEUDO_OP_CONV) $< | $(AS) $(ASFLAGS) -I sound -o $@
 
 $(OBJ_DIR)/sym_bss.ld: sym_bss.txt
 	$(RAMSCRGEN) .bss $< ENGLISH > $@
@@ -268,13 +261,8 @@ $(OBJ_DIR)/sym_common.ld: sym_common.txt $(C_OBJS) $(wildcard common_syms/*.txt)
 $(OBJ_DIR)/sym_ewram.ld: sym_ewram.txt
 	$(RAMSCRGEN) ewram_data $< ENGLISH > $@
 
-ifeq ($(MODERN),0)
-LD_SCRIPT := ld_script.txt
-LD_SCRIPT_DEPS := $(OBJ_DIR)/sym_bss.ld $(OBJ_DIR)/sym_common.ld $(OBJ_DIR)/sym_ewram.ld
-else
-LD_SCRIPT := ld_script_modern.txt
+LD_SCRIPT := ld_script_pc.txt
 LD_SCRIPT_DEPS := 
-endif
 
 $(OBJ_DIR)/ld_script.ld: $(LD_SCRIPT) $(LD_SCRIPT_DEPS)
 	cd $(OBJ_DIR) && sed "s#tools/#../../tools/#g" ../../$(LD_SCRIPT) > ld_script.ld

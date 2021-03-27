@@ -123,6 +123,7 @@ static const char str_checkMbootLL[] = "RFU-MBOOT";
         *_dst++ = *_src++;                          \
 } while (0)
 
+#ifndef PORTABLE
 u16 rfu_initializeAPI(u32 *APIBuffer, u16 buffByteSize, IntrFunc *sioIntrTable_p, bool8 copyInterruptToRam)
 {
     u16 i;
@@ -190,6 +191,7 @@ u16 rfu_initializeAPI(u32 *APIBuffer, u16 buffByteSize, IntrFunc *sioIntrTable_p
     gRfuFixed->fastCopyPtr = (void *)gRfuFixed->fastCopyBuffer + 1;
     return 0;
 }
+#endif
 
 static void rfu_STC_clearAPIVariables(void)
 {

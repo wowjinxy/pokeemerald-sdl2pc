@@ -1038,8 +1038,8 @@ static u8 SetUpCopyrightScreen(void)
         if (gMultibootProgramStruct.gcmb_field_2 != 0)
         {
             if (gMultibootProgramStruct.gcmb_field_2 == 2)
-#ifndef PORTABLE
             {
+#ifndef PORTABLE
                 // check the multiboot ROM header game code to see if we already did this
                 if (*(u32 *)(EWRAM_START + 0xAC) == 0x65366347) // "Gc6e" in ASCII
                 {

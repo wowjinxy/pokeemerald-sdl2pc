@@ -106,9 +106,9 @@ void MoveSaveBlocks_ResetHeap(void)
 
     // backup the saves.
 #ifdef PORTABLE
-    CpuCopy32(gSaveBlock2Ptr, saveBlock2Copy, sizeof(*gSaveBlock2Ptr);
-    CpuCopy32(gSaveBlock1Ptr, saveBlock1Copy, sizeof(*gSaveBlock1Ptr);
-    CpuCopy32(gPokemonStoragePtr, pokemonStorageCopy, sizeof(*gPokemonStoragePtr);
+    CpuCopy32(gSaveBlock2Ptr, saveBlock2Copy, sizeof(*gSaveBlock2Ptr));
+    CpuCopy32(gSaveBlock1Ptr, saveBlock1Copy, sizeof(*gSaveBlock1Ptr));
+    CpuCopy32(gPokemonStoragePtr, pokemonStorageCopy, sizeof(*gPokemonStoragePtr));
 #else
     *saveBlock2Copy = *gSaveBlock2Ptr;
     *saveBlock1Copy = *gSaveBlock1Ptr;
@@ -125,9 +125,9 @@ void MoveSaveBlocks_ResetHeap(void)
 
     // restore saveblock data since the pointers changed
 #ifdef PORTABLE
-    CpuCopy32(saveBlock2Copy, gSaveBlock2Ptr, sizeof(*saveBlock2Copy);
-    CpuCopy32(saveBlock1Copy, gSaveBlock1Ptr, sizeof(*saveBlock1Copy);
-    CpuCopy32(pokemonStorageCopy, gPokemonStoragePtr, sizeof(*pokemonStorageCopy);
+    CpuCopy32(saveBlock2Copy, gSaveBlock2Ptr, sizeof(*saveBlock2Copy));
+    CpuCopy32(saveBlock1Copy, gSaveBlock1Ptr, sizeof(*saveBlock1Copy));
+    CpuCopy32(pokemonStorageCopy, gPokemonStoragePtr, sizeof(*pokemonStorageCopy));
 #else
     *gSaveBlock2Ptr = *saveBlock2Copy;
     *gSaveBlock1Ptr = *saveBlock1Copy;

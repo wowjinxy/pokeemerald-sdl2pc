@@ -24,6 +24,8 @@
 
 #define ALIGNED(n) __attribute__((aligned(n)))
 
+#define PLTT_SIZE 0x400
+
 #ifndef PORTABLE
 #define SOUND_INFO_PTR (*(struct SoundInfo **)0x3007FF0)
 #define INTR_CHECK     (*(u16 *)0x3007FF8)
@@ -42,7 +44,6 @@ extern void * INTR_VECTOR;
 
 extern unsigned char PLTT[PLTT_SIZE];
 #endif
-#define PLTT_SIZE 0x400
 
 #define BG_PLTT      PLTT
 #define BG_PLTT_SIZE 0x200
