@@ -733,10 +733,13 @@ void SetContinueGameWarpToDynamicWarp(int unused)
 
 const struct MapConnection *GetMapConnection(u8 dir)
 {
+#ifdef UBFIX
+    if (gMapHeader.connections == NULL)
+        return NULL;
+#endif
     s32 i;
     s32 count = gMapHeader.connections->count;
     const struct MapConnection *connection = gMapHeader.connections->connections;
-
     if (connection == NULL)
         return NULL;
 

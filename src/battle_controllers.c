@@ -1319,8 +1319,15 @@ void BtlController_EmitChosenMonReturnValue(u8 bufferId, u8 partyId, u8 *battleP
 
     sBattleBuffersTransferData[0] = CONTROLLER_CHOSENMONRETURNVALUE;
     sBattleBuffersTransferData[1] = partyId;
+#ifdef UBFIX
+    if (battlePartyOrder != NULL)
+    {
+#endif
     for (i = 0; i < (int)ARRAY_COUNT(gBattlePartyCurrentOrder); i++)
         sBattleBuffersTransferData[2 + i] = battlePartyOrder[i];
+#ifdef UBFIX
+    }
+#endif
     PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, 5);
 }
 
