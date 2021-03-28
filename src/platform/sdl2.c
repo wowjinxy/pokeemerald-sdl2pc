@@ -82,9 +82,9 @@ int main(int argc, char **argv)
 {
     // Open an output console on Windows
 #ifdef _WIN32
-    AllocConsole() ;
-    AttachConsole( GetCurrentProcessId() ) ;
-    freopen( "CON", "w", stdout ) ;
+//    AllocConsole() ;
+//    AttachConsole( GetCurrentProcessId() ) ;
+//    freopen( "CON", "w", stdout ) ;
 #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -540,51 +540,51 @@ void LZ77UnCompVram(const u32 *src_, void *dest_)
 {
     const u8 *src = src_;
     u8 *dest = dest_;
-	int destSize = (src[3] << 16) | (src[2] << 8) | src[1];
-	int srcPos = 4;
-	int destPos = 0;
+    int destSize = (src[3] << 16) | (src[2] << 8) | src[1];
+    int srcPos = 4;
+    int destPos = 0;
 
-	for (;;) {
-		unsigned char flags = src[srcPos++];
+    for (;;) {
+        unsigned char flags = src[srcPos++];
 
-		for (int i = 0; i < 8; i++) {
-			if (flags & 0x80) {
-				int blockSize = (src[srcPos] >> 4) + 3;
-				int blockDistance = (((src[srcPos] & 0xF) << 8) | src[srcPos + 1]) + 1;
+        for (int i = 0; i < 8; i++) {
+            if (flags & 0x80) {
+                int blockSize = (src[srcPos] >> 4) + 3;
+                int blockDistance = (((src[srcPos] & 0xF) << 8) | src[srcPos + 1]) + 1;
 
-				srcPos += 2;
+                srcPos += 2;
 
-				int blockPos = destPos - blockDistance;
+                int blockPos = destPos - blockDistance;
 
-				// Some Ruby/Sapphire tilesets overflow.
-				if (destPos + blockSize > destSize) {
-					blockSize = destSize - destPos;
-					//fprintf(stderr, "Destination buffer overflow.\n");
-					puts("Destination buffer overflow.\n");
-				}
+                // Some Ruby/Sapphire tilesets overflow.
+                if (destPos + blockSize > destSize) {
+                    blockSize = destSize - destPos;
+                    //fprintf(stderr, "Destination buffer overflow.\n");
+                    puts("Destination buffer overflow.\n");
+                }
 
-				if (blockPos < 0)
-					goto fail;
+                if (blockPos < 0)
+                    goto fail;
 
-				for (int j = 0; j < blockSize; j++)
-					dest[destPos++] = dest[blockPos + j];
-			} else {
-				if (destPos >= destSize)
-					goto fail;
+                for (int j = 0; j < blockSize; j++)
+                    dest[destPos++] = dest[blockPos + j];
+            } else {
+                if (destPos >= destSize)
+                    goto fail;
 
-				dest[destPos++] = src[srcPos++];
-			}
+                dest[destPos++] = src[srcPos++];
+            }
 
-			if (destPos == destSize) {
-				return;
-			}
+            if (destPos == destSize) {
+                return;
+            }
 
-			flags <<= 1;
-		}
-	}
+            flags <<= 1;
+        }
+    }
 
 fail:
-	puts("Fatal error while decompressing LZ file.\n");
+    puts("Fatal error while decompressing LZ file.\n");
 }
 
 /*
@@ -1663,4 +1663,54 @@ void Platform_SetTime(struct SiiRtcInfo *rtc)
 void Platform_SetAlarm(u8 *alarmData)
 {
     // TODO
+}
+
+// Code taken from mGBA
+u16 Sqrt(u32 num)
+{
+    if (!num)
+        return 0;
+    u32 lower;
+    u32 upper = num;
+    u32 bound = 1;
+    while (bound < upper)
+    {
+        upper >>= 1;
+        bound <<= 1;
+    }
+    while (1)
+    {
+        upper = num;
+        u32 accum = 0;
+        lower = bound;
+        while (1)
+        {
+            u32 oldLower = lower;
+            if (lower <= upper >> 1)
+                lower <<= 1;
+            if (oldLower >= upper >> 1)
+                break;
+        }
+        while (1)
+        {
+            accum <<= 1;
+            if (upper >= lower)
+            {
+                ++accum;
+                upper -= lower;
+            }
+            if (lower == bound)
+                break;
+            lower >>= 1;
+        }
+        u32 oldBound = bound;
+        bound += accum;
+        bound >>= 1;
+        if (bound >= oldBound)
+        {
+            bound = oldBound;
+            break;
+        }
+    }
+    return bound;
 }
