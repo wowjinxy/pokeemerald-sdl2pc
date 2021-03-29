@@ -906,58 +906,6 @@ static const u8 sBattlePalaceNatureToFlavorTextId[NUM_NATURES] =
     [NATURE_QUIRKY]  = 3,
 };
 
-#ifdef PORTABLE
-// Code taken from mGBA
-u16 Sqrt(u32 num)
-{
-    if (!num)
-        return 0;
-    u32 lower;
-    u32 upper = num;
-    u32 bound = 1;
-    while (bound < upper)
-    {
-        upper >>= 1;
-        bound <<= 1;
-    }
-    while (1)
-    {
-        upper = num;
-        u32 accum = 0;
-        lower = bound;
-        while (1)
-        {
-            u32 oldLower = lower;
-            if (lower <= upper >> 1)
-                lower <<= 1;
-            if (oldLower >= upper >> 1)
-                break;
-        }
-        while (1)
-        {
-            accum <<= 1;
-            if (upper >= lower)
-            {
-                ++accum;
-                upper -= lower;
-            }
-            if (lower == bound)
-                break;
-            lower >>= 1;
-        }
-        u32 oldBound = bound;
-        bound += accum;
-        bound >>= 1;
-        if (bound >= oldBound)
-        {
-            bound = oldBound;
-            break;
-        }
-    }
-    return bound;
-}
-#endif
-
 static void Cmd_attackcanceler(void)
 {
     s32 i;

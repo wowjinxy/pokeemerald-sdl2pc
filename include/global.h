@@ -36,6 +36,9 @@
 #define AgbMain _AgbMain
 #define gIntrTable _gIntrTable
 #define VBlankIntrWait _VBlankIntrWait
+#define Sqrt           _Sqrt
+#define ArcTan         _ArcTan
+#define ArcTan2        _ArcTan2
 #define ConvertBcdToBinary _ConvertBcdToBinary
 #define DoSoftReset _DoSoftReset
 #define Platform_GetKeyInput _Platform_GetKeyInput

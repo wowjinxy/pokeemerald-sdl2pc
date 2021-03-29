@@ -8,7 +8,6 @@
 
 STUB_FUNC_QUIET(bool8 HandleLinkConnection())
 STUB_FUNC_QUIET(void Task_InitUnionRoom())
-STUB_FUNC(u16 ArcTan2(s16 x, s16 y))
 STUB_FUNC(int MultiBoot(struct MultiBootParam *mp))
 STUB_FUNC(void RLUnCompVram(const void *src, void *dest))
 STUB_FUNC(void RLUnCompWram(const void *src, void *dest))

@@ -1664,3 +1664,105 @@ void Platform_SetAlarm(u8 *alarmData)
 {
     // TODO
 }
+
+// Following functions taken from mGBA's source
+u16 ArcTan(s16 i)
+{
+	s32 a = -((i * i) >> 14);
+	s32 b = ((0xA9 * a) >> 14) + 0x390;
+	b = ((b * a) >> 14) + 0x91C;
+	b = ((b * a) >> 14) + 0xFB6;
+	b = ((b * a) >> 14) + 0x16AA;
+	b = ((b * a) >> 14) + 0x2081;
+	b = ((b * a) >> 14) + 0x3651;
+	b = ((b * a) >> 14) + 0xA2F9;
+
+	return (i * b) >> 16;
+}
+
+u16 ArcTan2(s16 x, s16 y)
+{
+	if (!y)
+    {
+		if (x >= 0)
+			return 0;
+		return 0x8000;
+	}
+	if (!x)
+    {
+		if (y >= 0)
+			return 0x4000;
+		return 0xC000;
+	}
+	if (y >= 0)
+    {
+		if (x >= 0)
+        {
+			if (x >= y)
+				return ArcTan((y << 14) / x);
+		}
+        else if (-x >= y)
+			return ArcTan((y << 14) / x) + 0x8000;
+		return 0x4000 - ArcTan((x << 14) / y);
+	}
+    else
+    {
+		if (x <= 0)
+        {
+			if (-x > -y)
+				return ArcTan((y << 14) / x) + 0x8000;
+		}
+        else if (x >= -y)
+			return ArcTan((y << 14) / x) + 0x10000;
+		return 0xC000 - ArcTan((x << 14) / y);
+	}
+}
+
+u16 Sqrt(u32 num)
+{
+    if (!num)
+        return 0;
+    u32 lower;
+    u32 upper = num;
+    u32 bound = 1;
+    while (bound < upper)
+    {
+        upper >>= 1;
+        bound <<= 1;
+    }
+    while (1)
+    {
+        upper = num;
+        u32 accum = 0;
+        lower = bound;
+        while (1)
+        {
+            u32 oldLower = lower;
+            if (lower <= upper >> 1)
+                lower <<= 1;
+            if (oldLower >= upper >> 1)
+                break;
+        }
+        while (1)
+        {
+            accum <<= 1;
+            if (upper >= lower)
+            {
+                ++accum;
+                upper -= lower;
+            }
+            if (lower == bound)
+                break;
+            lower >>= 1;
+        }
+        u32 oldBound = bound;
+        bound += accum;
+        bound >>= 1;
+        if (bound >= oldBound)
+        {
+            bound = oldBound;
+            break;
+        }
+    }
+    return bound;
+}
