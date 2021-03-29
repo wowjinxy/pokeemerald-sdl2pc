@@ -742,14 +742,18 @@ static void Task_EvolutionScene(u8 taskId)
         }
         break;
     case EVOSTATE_RESTORE_SCREEN: // stop music, return screen to pre-fade state
+#ifndef PORTABLE
         if (IsSEPlaying())
         {
+#endif
             m4aMPlayAllStop();
             memcpy(&gPlttBufferUnfaded[0x20], sEvoStructPtr->savedPalette, sizeof(sEvoStructPtr->savedPalette));
             RestoreBgAfterAnim();
             BeginNormalPaletteFade(0x1C, 0, 0x10, 0, RGB_BLACK);
             gTasks[taskId].tState++;
+#ifndef PORTABLE
         }
+#endif
         break;
     case EVOSTATE_EVO_MON_ANIM:
         if (!gPaletteFade.active)
@@ -759,8 +763,10 @@ static void Task_EvolutionScene(u8 taskId)
         }
         break;
     case EVOSTATE_SET_MON_EVOLVED:
+#ifndef PORTABLE
         if (IsCryFinished())
         {
+#endif
             StringExpandPlaceholders(gStringVar4, gText_CongratsPkmnEvolved);
             BattlePutTextOnWindow(gStringVar4, 0);
             PlayBGM(MUS_EVOLVED);
@@ -771,7 +777,9 @@ static void Task_EvolutionScene(u8 taskId)
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
             IncrementGameStat(GAME_STAT_EVOLVED_POKEMON);
+#ifndef PORTABLE
         }
+#endif
         break;
     case EVOSTATE_TRY_LEARN_MOVE:
         if (!IsTextPrinterActive(0))
