@@ -356,6 +356,7 @@ const u16 gBattleInterface_BallStatusBarPal[] = INCBIN_U16("graphics/battle_inte
 const u16 gBattleInterface_BallDisplayPal[] = INCBIN_U16("graphics/battle_interface/ball_display.gbapal");
 
 //Originally an array?
+#ifndef PORTABLE
 const u8 gHealthboxElementsGfxTable[] = INCBIN_U8("graphics/battle_interface/hpbar.4bpp",
                                                   "graphics/battle_interface/expbar.4bpp",
                                                   "graphics/battle_interface/status_psn.4bpp",
@@ -366,7 +367,25 @@ const u8 gHealthboxElementsGfxTable[] = INCBIN_U8("graphics/battle_interface/hpb
                                                   "graphics/battle_interface/misc.4bpp",
                                                   "graphics/battle_interface/hpbar_anim.4bpp",
                                                   "graphics/battle_interface/misc_frameend.4bpp");
-
+#else
+const u8 gHealthboxElementsGfxTable[] = INCBIN_U8("graphics/battle_interface/hpbar.4bpp",
+                                                  "graphics/battle_interface/expbar.4bpp",
+                                                  "graphics/battle_interface/status_psn.4bpp",
+                                                  "graphics/battle_interface/status_par.4bpp",
+                                                  "graphics/battle_interface/status_slp.4bpp",
+                                                  "graphics/battle_interface/status_frz.4bpp",
+                                                  "graphics/battle_interface/status_brn.4bpp",
+                                                  "graphics/battle_interface/misc.4bpp",
+                                                  "graphics/battle_interface/hpbar_anim.4bpp",
+                                                  "graphics/battle_interface/misc_frameend.4bpp",
+                                                  "graphics/battle_interface/ball_display.4bpp",
+                                                  "graphics/battle_interface/ball_display_unused_extra.4bpp",
+                                                  "graphics/battle_interface/status2.4bpp",
+                                                  "graphics/battle_interface/status3.4bpp",
+                                                  "graphics/battle_interface/status4.4bpp",
+                                                  "graphics/unknown/unknown_D12FEC.4bpp",
+                                                  "graphics/unknown/unknown_D1300C.4bpp");
+#endif
 const u8 gBattleInterface_BallDisplayGfx[] = INCBIN_U8("graphics/battle_interface/ball_display.4bpp");
 
 //Originally an array?
