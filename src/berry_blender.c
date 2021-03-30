@@ -2934,7 +2934,9 @@ static void CB2_CheckPlayAgainLink(void)
     }
 
     ProcessLinkPlayerCmds();
+#ifndef PORTABLE
     Blender_DummiedOutFunc(sBerryBlender->bg_X, sBerryBlender->bg_Y);
+#endif
     RunTasks();
     AnimateSprites();
     BuildOamBuffer();
@@ -2989,7 +2991,9 @@ static void CB2_CheckPlayAgainLocal(void)
     }
 
     ProcessLinkPlayerCmds();
+#ifndef PORTABLE
     Blender_DummiedOutFunc(sBerryBlender->bg_X, sBerryBlender->bg_Y);
+#endif
     RunTasks();
     AnimateSprites();
     BuildOamBuffer();

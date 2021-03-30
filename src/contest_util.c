@@ -1076,6 +1076,10 @@ static void Task_FlashStarsAndHearts(u8 taskId)
         BlendPalette(0x6E, 1, gTasks[taskId].tCoeff, RGB(30, 29, 29));
     }
 
+#ifdef PORTABLE
+    if (!sContestResults)
+        return;
+#endif
     if (gTasks[taskId].tCoeff == 0)
         sContestResults->data->pointsFlashing = FALSE;
     else
