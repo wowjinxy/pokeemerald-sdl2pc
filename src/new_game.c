@@ -94,7 +94,11 @@ void CopyTrainerId(u8 *dst, u8 *src)
 
 static void InitPlayerTrainerId(void)
 {
+#ifndef PORTABLE
     u32 trainerId = (Random() << 0x10) | GetGeneratedTrainerIdLower();
+#else // Since Emerald generates the TID FRLG-style, based on a hardware timer, it won't work on other platforms
+    u32 trainerId = (Random() << 0x10  | Random());
+#endif
     SetTrainerId(trainerId, gSaveBlock2Ptr->playerTrainerId);
 }
 
