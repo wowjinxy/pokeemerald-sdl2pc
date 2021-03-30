@@ -938,6 +938,9 @@ static void UpdateHitPitch(void)
 static void VBlankCB_BerryBlender(void)
 {
     SetBgPos();
+#ifdef PORTABLE
+    if (sBerryBlender != NULL)
+#endif
     SetBgAffine(2, sBerryBlender->bgAffineSrc.texX, sBerryBlender->bgAffineSrc.texY,
                 sBerryBlender->bgAffineSrc.scrX, sBerryBlender->bgAffineSrc.scrY,
                 sBerryBlender->bgAffineSrc.sx, sBerryBlender->bgAffineSrc.sy,
@@ -3156,6 +3159,10 @@ static void UpdateBlenderCenter(void)
 
 static void SetBgPos(void)
 {
+#ifdef PORTABLE
+    if (!sBerryBlender)
+        return;
+#endif
     SetGpuReg(REG_OFFSET_BG1HOFS, sBerryBlender->bg_X);
     SetGpuReg(REG_OFFSET_BG1VOFS, sBerryBlender->bg_Y);
 
@@ -3449,8 +3456,12 @@ static bool8 UpdateBlenderLandScreenShake(void)
 
 static void SpriteCB_PlayerArrow(struct Sprite* sprite)
 {
-   sprite->pos2.x = -(sBerryBlender->bg_X);
-   sprite->pos2.y = -(sBerryBlender->bg_Y);
+#ifdef PORTABLE
+    if (!sBerryBlender)
+        return;
+#endif
+    sprite->pos2.x = -(sBerryBlender->bg_X);
+    sprite->pos2.y = -(sBerryBlender->bg_Y);
 }
 
 static void TryUpdateBerryBlenderRecord(void)
