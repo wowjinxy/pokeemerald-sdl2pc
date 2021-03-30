@@ -9,8 +9,6 @@
 STUB_FUNC_QUIET(bool8 HandleLinkConnection())
 STUB_FUNC_QUIET(void Task_InitUnionRoom())
 STUB_FUNC(int MultiBoot(struct MultiBootParam *mp))
-STUB_FUNC(void RLUnCompVram(const void *src, void *dest))
-STUB_FUNC(void RLUnCompWram(const void *src, void *dest))
 STUB_FUNC(void RegisterRamReset(u32 resetFlags))
 STUB_FUNC(void IntrMain())
 STUB_FUNC(void GameCubeMultiBoot_Hash())

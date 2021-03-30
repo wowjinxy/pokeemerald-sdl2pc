@@ -33,6 +33,8 @@
 #define SoftReset _SoftReset
 #define LZ77UnCompVram _LZ77UnCompVram
 #define LZ77UnCompWram _LZ77UnCompWram
+#define RLUnCompVram   _RLUnCompVram
+#define RLUnCompWram   _RLUnCompWram
 #define AgbMain _AgbMain
 #define gIntrTable _gIntrTable
 #define VBlankIntrWait _VBlankIntrWait

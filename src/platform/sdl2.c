@@ -82,9 +82,9 @@ int main(int argc, char **argv)
 {
     // Open an output console on Windows
 #ifdef _WIN32
-//    AllocConsole() ;
-//    AttachConsole( GetCurrentProcessId() ) ;
-//    freopen( "CON", "w", stdout ) ;
+    AllocConsole() ;
+    AttachConsole( GetCurrentProcessId() ) ;
+    freopen( "CON", "w", stdout ) ;
 #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -713,6 +713,108 @@ void LZ77UnCompWram(const u32 *src, void *dst)
     }
 }
 
+void RLUnCompWram(const void *src, void *dest)
+{
+    int remaining = CPUReadMemory(((u32)src & 0xFFFFFFFC) & 0xFFFFFF00) >> 8;
+    int padding = (4 - remaining) & 0x3;
+    int blockHeader;
+    int block;
+    src += 4;
+    while (remaining > 0)
+    {
+        blockHeader = CPUReadByte(src);
+        src++;
+        if (blockHeader & 0x80) // Compressed?
+        {
+            blockHeader &= 0x7F;
+            blockHeader += 3;
+            block = CPUReadByte(src);
+            src++;
+            while (blockHeader-- && remaining)
+            {
+                remaining--;
+                CPUWriteByte(dest, block);
+                dest++;
+            }
+        }
+        else // Uncompressed
+        {
+            blockHeader++;
+            while (blockHeader-- && remaining)
+            {
+                remaining--;
+                u8 byte = CPUReadByte(src);
+                src++;
+                CPUWriteByte(dest, byte);
+                dest++;
+            }
+        }
+    }
+    while (padding--)
+    {
+        CPUWriteByte(dest, 0);
+        dest++;
+    }
+}
+
+void RLUnCompVram(const void *src, void *dest)
+{
+    int remaining = CPUReadMemory(((u32)src & 0xFFFFFFFC) & 0xFFFFFF00) >> 8;
+    int padding = (4 - remaining) & 0x3;
+    int blockHeader;
+    int block;
+    int halfWord = 0;
+    src += 4;
+    while (remaining > 0)
+    {
+        blockHeader = CPUReadByte(src);
+        src++;
+        if (blockHeader & 0x80) // Compressed?
+        {
+            blockHeader &= 0x7F;
+            blockHeader += 3;
+            block = CPUReadByte(src);
+            src++;
+            while (blockHeader-- && remaining)
+            {
+                remaining--;
+                if ((u32)dest & 1)
+                {
+                    halfWord |= block << 8;
+                    CPUWriteHalfWord((u32)dest ^ 1, halfWord);
+                }
+                else
+                    halfWord = block;
+                dest++;
+            }
+        }
+        else // Uncompressed
+        {
+            blockHeader++;
+            while (blockHeader-- && remaining)
+            {
+                remaining--;
+                u8 byte = CPUReadByte(src);
+                src++;
+                if ((u32)dest & 1)
+                {
+                    halfWord |= byte << 8;
+                    CPUWriteHalfWord((u32)dest ^ 1, halfWord);
+                }
+                else
+                    halfWord = byte;
+                dest++;
+            }
+        }
+    }
+    if ((u32)dest & 1)
+    {
+        padding--;
+        dest++;
+    }
+    for (; padding > 0; padding -= 2, dest += 2)
+        CPUWriteHalfWord(dest, 0);
+}
 
 const s16 sineTable[256] = {
   (s16)0x0000, (s16)0x0192, (s16)0x0323, (s16)0x04B5, (s16)0x0645, (s16)0x07D5, (s16)0x0964, (s16)0x0AF1,
