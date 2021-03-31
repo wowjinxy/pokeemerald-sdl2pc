@@ -579,7 +579,6 @@ static void Task_SendPacket_SwitchToReceive(u8 taskId)
 
 static void *LoadPtrFromTaskData(const u16 *asShort)
 {
-
     return (void *)(asShort[0] | (asShort[1] << 16));
 }
 
