@@ -715,7 +715,7 @@ void LZ77UnCompWram(const u32 *src, void *dst)
 
 void RLUnCompWram(const void *src, void *dest)
 {
-    int remaining = CPUReadMemory(((u32)src & 0xFFFFFFFC) & 0xFFFFFF00) >> 8;
+    int remaining = CPUReadMemory(src) >> 8;
     int padding = (4 - remaining) & 0x3;
     int blockHeader;
     int block;
@@ -759,7 +759,7 @@ void RLUnCompWram(const void *src, void *dest)
 
 void RLUnCompVram(const void *src, void *dest)
 {
-    int remaining = CPUReadMemory(((u32)src & 0xFFFFFFFC) & 0xFFFFFF00) >> 8;
+    int remaining = CPUReadMemory(src) >> 8;
     int padding = (4 - remaining) & 0x3;
     int blockHeader;
     int block;
