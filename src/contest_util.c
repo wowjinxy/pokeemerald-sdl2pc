@@ -2337,8 +2337,8 @@ void SaveMuseumContestPainting(void)
 void ShouldReadyContestArtist(void)
 {
     if (gContestFinalStandings[gContestPlayerMonIndex] == 0
-     && gSpecialVar_ContestRank == CONTEST_RANK_MASTER
-     && gContestMonTotalPoints[gContestPlayerMonIndex] >= 800)
+     && gSpecialVar_ContestRank == CONTEST_RANK_NORMAL
+     && gContestMonTotalPoints[gContestPlayerMonIndex] >= 1)
     {
         gSpecialVar_0x8004 = TRUE;
     }

@@ -4018,7 +4018,9 @@ static void Task_FlashJudgeAttentionEye(u8 taskId)
             if (gTasks[taskId].data[offset + 0] == 16
              || gTasks[taskId].data[offset + 0] == 0)
                 gTasks[taskId].data[offset + 1] ^= 1;
-
+#ifdef PORTABLE
+            if (gContestResources != NULL)
+#endif
             BlendPalette((eContest.prevTurnOrder[i] + 5) * 16 + 6, 2, gTasks[taskId].data[offset + 0], RGB(31, 31, 18));
         }
     }

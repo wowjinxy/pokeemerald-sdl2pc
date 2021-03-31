@@ -2474,7 +2474,11 @@ static void Swap_Task_HandleYesNo(u8 taskId)
                 gTasks[taskId].tSaidYes = TRUE;
                 hiPtr = gTasks[taskId].tFollowUpTaskPtrHi;
                 loPtr = gTasks[taskId].tFollowUpTaskPtrLo;
+#ifndef PORTABLE
                 gTasks[taskId].func = (void*)((hiPtr << 16) | loPtr);
+#else
+                gTasks[taskId].func = (void*)(((u16)hiPtr << 16 | (u16)loPtr));
+#endif
             }
             else
             {
@@ -2483,7 +2487,11 @@ static void Swap_Task_HandleYesNo(u8 taskId)
                 Swap_ErasePopupMenu(SWAP_WIN_YES_NO);
                 hiPtr = gTasks[taskId].tFollowUpTaskPtrHi;
                 loPtr = gTasks[taskId].tFollowUpTaskPtrLo;
+#ifndef PORTABLE
                 gTasks[taskId].func = (void*)((hiPtr << 16) | loPtr);
+#else
+                gTasks[taskId].func = (void*)(((u16)hiPtr << 16 | (u16)loPtr));
+#endif
             }
         }
         else if (JOY_NEW(B_BUTTON))
@@ -2493,7 +2501,11 @@ static void Swap_Task_HandleYesNo(u8 taskId)
             Swap_ErasePopupMenu(SWAP_WIN_YES_NO);
             hiPtr = gTasks[taskId].tFollowUpTaskPtrHi;
             loPtr = gTasks[taskId].tFollowUpTaskPtrLo;
+#ifndef PORTABLE
             gTasks[taskId].func = (void*)((hiPtr << 16) | loPtr);
+#else
+            gTasks[taskId].func = (void*)(((u16)hiPtr << 16 | (u16)loPtr));
+#endif
         }
         else if (JOY_REPEAT(DPAD_UP))
         {
@@ -3063,7 +3075,11 @@ static void Swap_Task_ScreenInfoTransitionOut(u8 taskId)
             gTasks[taskId].tState = gTasks[taskId].tFollowUpTaskState;
             hiPtr = gTasks[taskId].tFollowUpTaskPtrHi;
             loPtr = gTasks[taskId].tFollowUpTaskPtrLo;
-            gTasks[taskId].func = (void *)((hiPtr << 16) | (loPtr));
+#ifndef PORTABLE
+            gTasks[taskId].func = (void*)((hiPtr << 16) | loPtr);
+#else
+            gTasks[taskId].func = (void*)(((u16)hiPtr << 16 | (u16)loPtr));
+#endif
         }
         break;
     }
@@ -3170,7 +3186,11 @@ static void Swap_Task_ScreenInfoTransitionIn(u8 taskId)
         gTasks[taskId].tState = gTasks[taskId].tFollowUpTaskState;
         hiPtr = gTasks[taskId].tFollowUpTaskPtrHi;
         loPtr = gTasks[taskId].tFollowUpTaskPtrLo;
-        gTasks[taskId].func = (void *)((hiPtr << 16) | (loPtr));
+#ifndef PORTABLE
+        gTasks[taskId].func = (void*)((hiPtr << 16) | loPtr);
+#else
+        gTasks[taskId].func = (void*)(((u16)hiPtr << 16 | (u16)loPtr));
+#endif
         break;
     }
 }

@@ -424,7 +424,11 @@ void StoreSpriteCallbackInData6(struct Sprite *sprite, void (*callback)(struct S
 
 void SetCallbackToStoredInData6(struct Sprite *sprite)
 {
+#ifndef PORTABLE
     u32 callback = (u16)sprite->data[6] | (sprite->data[7] << 16);
+#else
+    u32 callback = (u16)sprite->data[6] | ((u16)sprite->data[7] << 16);
+#endif
     sprite->callback = (void (*)(struct Sprite *))callback;
 }
 
