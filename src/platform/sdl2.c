@@ -948,14 +948,14 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
 {
     unsigned int charBaseBlock = (control >> 2) & 3;
     unsigned int screenBaseBlock = (control >> 8) & 0x1F;
-    //bool is8bit = (control >> 7) & 1;
+    unsigned int bitsPerPixel = ((control >> 7) & 1) ? 8 : 4;
     unsigned int mapWidth = bgMapSizes[control >> 14][0];
     unsigned int mapHeight = bgMapSizes[control >> 14][1];
     unsigned int mapWidthInPixels = mapWidth * 8;
     unsigned int mapHeightInPixels = mapHeight * 8;
 
-    uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * 0x4000);
-    uint16_t *bgmap = (uint16_t *)(VRAM_ + screenBaseBlock * 0x800);
+    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(charBaseBlock);
+    uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
     uint16_t *pal = (uint16_t *)PLTT;
 
     hoffs &= 0x1FF;
@@ -992,14 +992,26 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
         if (entry & (1 << 11))
             tileY = 7 - tileY;
 
-        uint8_t pixel = bgtiles[(tileNum * 32) + (tileY * 4) + (tileX / 2)];
-        if (tileX & 1)
-            pixel >>= 4;
-        else
-            pixel &= 0xF;
+        uint16_t tileLoc = tileNum * (bitsPerPixel * 8);
+        uint16_t tileLocY = tileY * bitsPerPixel;
+        uint16_t tileLocX = tileX;
+        if (bitsPerPixel == 4)
+            tileLocX /= 2;
 
-        if (pixel != 0 /*&& !(line[x] & (0xFF << 24))*/)
-            line[x] = ConvertPixel(pal[16 * paletteNum + pixel]);
+        uint8_t pixel = bgtiles[tileLoc + tileLocY + tileLocX];
+
+        if (bitsPerPixel == 4) {
+            if (tileX & 1)
+                pixel >>= 4;
+            else
+                pixel &= 0xF;
+
+            if (pixel != 0 /*&& !(line[x] & (0xFF << 24))*/)
+                line[x] = ConvertPixel(pal[16 * paletteNum + pixel]);
+        }
+        else {
+            line[x] = ConvertPixel(pal[pixel]);
+        }
     }
 }
 
