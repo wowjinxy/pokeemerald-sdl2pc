@@ -321,6 +321,17 @@ u16 GetXInputKeys()
 		/* Left */   _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
 		/* Right */  _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
 
+
+		/* Control Stick */
+		float xAxis = (float)state.Gamepad.sThumbLX / (float)SHRT_MAX;
+		float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
+
+		if (xAxis < -STICK_THRESHOLD) _keys |= DPAD_LEFT;
+		if (xAxis > STICK_THRESHOLD) _keys |= DPAD_RIGHT;
+		if (yAxis < -STICK_THRESHOLD) _keys |= DPAD_DOWN;
+		if (yAxis > STICK_THRESHOLD) _keys |= DPAD_UP;
+
+
 		/* Speedup */
 		timeScale = (state.Gamepad.bRightTrigger > 0x80) ? 5.0 : 1.0;
 	}
