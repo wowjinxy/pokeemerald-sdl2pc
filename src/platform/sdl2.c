@@ -301,6 +301,7 @@ void ProcessEvents(void)
 }
 
 #ifdef _WIN32
+#define STICK_THRESHOLD 0.5f
 u16 GetXInputKeys()
 {
 	XINPUT_STATE state;
