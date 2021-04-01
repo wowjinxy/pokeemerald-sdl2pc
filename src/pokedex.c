@@ -2652,7 +2652,7 @@ static void UpdateSelectedMonSpriteId(void)
     {
         u16 spriteId = sPokedexView->monSpriteIds[i];
 
-#ifndef UBFIX
+#ifndef PORTABLE
         if (gSprites[spriteId].pos2.x == 0 && gSprites[spriteId].pos2.y == 0 && spriteId != 0xFFFF)
 #else
         if (spriteId != 0xFFFF && gSprites[spriteId].pos2.x == 0 && gSprites[spriteId].pos2.y == 0)
