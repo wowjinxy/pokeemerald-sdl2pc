@@ -328,9 +328,9 @@ u16 GetXInputKeys()
 		float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
 
 		if (xAxis < -STICK_THRESHOLD) _keys |= DPAD_LEFT;
-		if (xAxis > STICK_THRESHOLD) _keys |= DPAD_RIGHT;
+		if (xAxis > STICK_THRESHOLD)  _keys |= DPAD_RIGHT;
 		if (yAxis < -STICK_THRESHOLD) _keys |= DPAD_DOWN;
-		if (yAxis > STICK_THRESHOLD) _keys |= DPAD_UP;
+		if (yAxis > STICK_THRESHOLD)  _keys |= DPAD_UP;
 
 
 		/* Speedup */
