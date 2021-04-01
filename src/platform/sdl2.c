@@ -5,6 +5,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <xinput.h>
 #endif
 
 #include <SDL2/SDL.h>
@@ -299,8 +300,41 @@ void ProcessEvents(void)
     }
 }
 
+#ifdef _WIN32
+u16 GetXInputKeys()
+{
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+	DWORD dwResult = XInputGetState(0, &state);
+	u16 _keys = 0;
+
+	if (dwResult == ERROR_SUCCESS) {
+		/* A */      _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) >> 12;
+		/* B */      _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) >> 13;
+		/* Start */  _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) >> 1;
+		/* Select */ _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) >> 3;
+		/* L */      _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) << 1;
+		/* R */      _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) >> 1;
+		/* Up */     _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) << 6;
+		/* Down */   _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) << 6;
+		/* Left */   _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
+		/* Right */  _keys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
+
+		/* Speedup */
+		timeScale = (state.Gamepad.bRightTrigger > 0x80) ? 5.0 : 1.0;
+	}
+
+	return _keys;
+}
+#endif // _WIN32"
+
 u16 Platform_GetKeyInput(void)
 {
+#ifdef _WIN32
+	keys = GetXInputKeys();
+#endif
+
     return keys;
 }
 
