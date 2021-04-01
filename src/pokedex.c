@@ -2651,7 +2651,6 @@ static void UpdateSelectedMonSpriteId(void)
     for (i = 0; i < MAX_MONS_ON_SCREEN; i++)
     {
         u16 spriteId = sPokedexView->monSpriteIds[i];
-
 #ifndef PORTABLE
         if (gSprites[spriteId].pos2.x == 0 && gSprites[spriteId].pos2.y == 0 && spriteId != 0xFFFF)
 #else
