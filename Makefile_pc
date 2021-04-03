@@ -56,7 +56,7 @@ CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHIN
 
 LDFLAGS = -Map ../../$(MAP)
 
-LIB := $(LIBPATH) -lgcc -lc -L/usr/i686-w64-mingw32/lib
+LIB := $(LIBPATH) -lgcc -lc
 
 SHA1 := $(shell { command -v sha1sum || command -v shasum; } 2>/dev/null) -c
 GFX := tools/gbagfx/gbagfx$(EXE)
@@ -162,7 +162,7 @@ mostlyclean: tidy
 	rm -f $(AUTO_GEN_TARGETS)
 
 tidy:
-	rm -f $(ROM) $(ELF) $(MAP)
+	rm -f $(ROM)$(EXE) $(ELF) $(MAP)
 	rm -r $(OBJ_DIR)
 ifeq ($(MODERN),0)
 	@$(MAKE) tidy MODERN=1
