@@ -9879,7 +9879,10 @@ static void Cmd_handleballthrow(void)
         {
             u8 shakes;
 
-            // We have to use SAFE_DIV here, otherwise using the Master Ball crashes the game for low-odds Pokémon
+			AddBagItem(ITEM_MASTER_BALL, 1);
+
+            // We have to use SAFE_DIV here, otherwise using the Master Ball crashes the game
+			// The reason this happens is that in the odds calculation the 'ballMultiplier' is zero for the Master Ball
             odds = Sqrt(Sqrt(SAFE_DIV(16711680, odds)));
             odds = SAFE_DIV(1048560, odds);
 
