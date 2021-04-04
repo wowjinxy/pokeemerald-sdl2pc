@@ -9879,8 +9879,9 @@ static void Cmd_handleballthrow(void)
         {
             u8 shakes;
 
-            odds = Sqrt(Sqrt(16711680 / odds));
-            odds = 1048560 / odds;
+            // We have to use SAFE_DIV here, otherwise using the Master Ball crashes the game for low-odds Pokémon
+            odds = Sqrt(Sqrt(SAFE_DIV(16711680, odds)));
+            odds = SAFE_DIV(1048560, odds);
 
             for (shakes = 0; shakes < BALL_3_SHAKES_SUCCESS && Random() < odds; shakes++);
 
