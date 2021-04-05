@@ -1636,6 +1636,11 @@ static bool8 SlotAction_FreeDataStructures(struct Task *task)
         FREE_AND_SET_NULL(sReelBackgroundSpriteSheet);
         FREE_AND_SET_NULL(sSlotMachineSpritesheetsPtr);
         FREE_AND_SET_NULL(sSlotMachine);
+#ifdef PORTABLE
+        SetVBlankCallback(NULL);
+        ResetTasks();
+        ResetSpriteData();
+#endif
     }
     return FALSE;
 }
