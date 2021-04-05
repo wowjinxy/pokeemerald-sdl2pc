@@ -4577,7 +4577,14 @@ static void sub_80CB028(u8 boxId)
         for (boxPosition = 0; boxPosition < IN_BOX_COUNT; boxPosition++)
         {
             if (GetBoxMonDataAt(boxId, boxPosition, MON_DATA_HELD_ITEM) == 0)
-                sPSSData->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
+            {
+#ifdef UBFIX
+                if (sPSSData->boxMonsSprites[boxPosition] != NULL)
+#endif
+                {
+                    sPSSData->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
+                }
+            }
         }
     }
 }

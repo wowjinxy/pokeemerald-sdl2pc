@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     sdlTexture = SDL_CreateTexture(sdlRenderer,
                                    SDL_PIXELFORMAT_ARGB8888,
                                    SDL_TEXTUREACCESS_STREAMING,
-                                   240, 160);
+                                   DISPLAY_WIDTH, DISPLAY_HEIGHT);
     if (sdlTexture == NULL)
     {
         fprintf(stderr, "Texture could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -1200,7 +1200,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
     if (bgcnt->areaOverflowMode)
     {
-        for (int x = 0; x < 240; x++)
+        for (int x = 0; x < DISPLAY_WIDTH; x++)
         {
             int xxx = (realX >> 8) & maskX;
             int yyy = (realY >> 8) & maskY;
@@ -1221,7 +1221,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     }
     else
     {
-        for (int x = 0; x < 240; x++)
+        for (int x = 0; x < DISPLAY_WIDTH; x++)
         {
             int xxx = (realX >> 8);
             int yyy = (realY >> 8);
@@ -1320,9 +1320,9 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
         int32_t x = oam->x;
         int32_t y = oam->y;
 
-        if (x >= 240)
+        if (x >= DISPLAY_WIDTH)
             x -= 512;
-        if (y >= 160)
+        if (y >= DISPLAY_HEIGHT)
             y -= 256;
 
         if (isAffine)
@@ -1377,7 +1377,7 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
 
                 unsigned int global_x = local_x + x;
 
-                if (global_x < 0 || global_x >= 240)
+                if (global_x < 0 || global_x >= DISPLAY_WIDTH)
                     continue;
 
                 int tex_x = ((matrix[0][0] * local_x + matrix[0][1] * local_y) >> 8) + (width / 2);

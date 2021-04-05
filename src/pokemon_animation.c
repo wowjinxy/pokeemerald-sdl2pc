@@ -1607,7 +1607,7 @@ static void sub_818031C(struct Sprite *sprite)
     u8 amplitude = 0;
 
     if (var5 != 0xFE)
-        amplitude = (var6 - var7) * var5 / var6;
+        amplitude = (var6 - var7) * SAFE_DIV(var5, var6);
     else
         amplitude = 0;
 
@@ -4110,7 +4110,7 @@ static void sub_8183574(struct Sprite *sprite)
     var6 = sUnknown_0860AA80[sprite->data[5]][1];
     var7 = 0;
     if (var2 != 0xFE)
-        var7 = (var6 - var9) * var5 / var6;
+        var7 = (var6 - var9) * SAFE_DIV(var5, var6);
 
     if (var5 == 0xFF)
     {

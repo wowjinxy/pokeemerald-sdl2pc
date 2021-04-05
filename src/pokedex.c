@@ -3065,7 +3065,7 @@ static void SpriteCB_Scrollbar(struct Sprite *sprite)
     if (sPokedexView->currentPage != PAGE_MAIN && sPokedexView->currentPage != PAGE_SEARCH_RESULTS)
         DestroySprite(sprite);
     else
-        sprite->pos2.y = sPokedexView->selectedPokemon * 120 / (sPokedexView->pokemonListCount - 1);
+        sprite->pos2.y = SAFE_DIV(sPokedexView->selectedPokemon * 120, (sPokedexView->pokemonListCount - 1));
 }
 
 static void SpriteCB_ScrollArrow(struct Sprite *sprite)

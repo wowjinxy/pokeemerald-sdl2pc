@@ -481,8 +481,14 @@ void LoadSaveblockObjEventScripts(void)
     struct ObjectEventTemplate *savObjTemplates = gSaveBlock1Ptr->objectEventTemplates;
     s32 i;
 
-    for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
-        savObjTemplates[i].script = mapHeaderObjTemplates[i].script;
+#ifdef UBFIX
+    if (mapHeaderObjTemplates != NULL &&
+        savObjTemplates != NULL)
+#endif
+    {
+        for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
+            savObjTemplates[i].script = mapHeaderObjTemplates[i].script;
+    }
 }
 
 void Overworld_SetObjEventTemplateCoords(u8 localId, s16 x, s16 y)
