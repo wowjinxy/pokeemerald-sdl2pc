@@ -1,5 +1,5 @@
-#ifndef GUARD_GBA_DEFINES
-#define GUARD_GBA_DEFINES
+#ifndef GUARD_GBA_DEFINES_H
+#define GUARD_GBA_DEFINES_H
 
 #include <stddef.h>
 
@@ -99,4 +99,4 @@ extern unsigned char OAM[OAM_SIZE];
 
 #define TOTAL_OBJ_TILE_COUNT 1024
 
-#endif // GUARD_GBA_DEFINES
+#endif // GUARD_GBA_DEFINES_H
