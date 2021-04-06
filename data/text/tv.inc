@@ -1229,11 +1229,7 @@ gTVTodaysRivalTrainerText06:: /* 082849AE*/
 	.string "Let's all keep moving forward\n"
 	.string "and ahead of our rivals!$"
 
-<<<<<<< HEAD
-gTVDewfordTrendWatcherNetworkText00:: /* 08284A3E*/
-=======
-TrendWatcher_Text_Intro:: @ 08284A3E
->>>>>>> 677b4fc394516deab5b5c86c94a2a1443cb52151
+TrendWatcher_Text_Intro:: /* 08284A3E*/
 	.string "DEWFORD TREND-WATCHER NETWORK!\p"
 	.string "MC: Wassup?\n"
 	.string "We'll keep it real with the latest on\l"
