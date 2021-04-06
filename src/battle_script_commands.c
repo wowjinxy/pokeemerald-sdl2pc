@@ -4875,7 +4875,7 @@ static void Cmd_openpartyscreen(void)
         {
             u8 flag40_0, flag40_1, flag40_2, flag40_3;
 
-            hitmarkerFaintBits = gHitMarker >> 0x1C;
+            hitmarkerFaintBits = gHitMarker >> 28;
 
             if (gBitTable[0] & hitmarkerFaintBits)
             {
@@ -5004,7 +5004,7 @@ static void Cmd_openpartyscreen(void)
         {
             if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
             {
-                hitmarkerFaintBits = gHitMarker >> 0x1C;
+                hitmarkerFaintBits = gHitMarker >> 28;
                 if (gBitTable[2] & hitmarkerFaintBits && gBitTable[0] & hitmarkerFaintBits)
                 {
                     gActiveBattler = 2;
@@ -5049,7 +5049,7 @@ static void Cmd_openpartyscreen(void)
             gBattlescriptCurrInstr += 6;
         }
 
-        hitmarkerFaintBits = gHitMarker >> 0x1C;
+        hitmarkerFaintBits = gHitMarker >> 28;
 
         gBattlerFainted = 0;
         while (!(gBitTable[gBattlerFainted] & hitmarkerFaintBits)
@@ -5249,7 +5249,7 @@ static void Cmd_switchineffects(void)
 
             if (gBattlescriptCurrInstr[1] == 5)
             {
-                u32 hitmarkerFaintBits = gHitMarker >> 0x1C;
+                u32 hitmarkerFaintBits = gHitMarker >> 28;
 
                 gBattlerFainted++;
                 while (1)
