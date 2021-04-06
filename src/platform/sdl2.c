@@ -1281,6 +1281,7 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
 
         bool isAffine  = oam->affineMode & 1;
         bool doubleSizeOrDisabled = (oam->affineMode >> 1) & 1;
+        bool isSemiTransparent = (oam->objMode == 1);
 
         if (!(isAffine) && doubleSizeOrDisabled) // disable for non-affine
         {
@@ -1423,7 +1424,33 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
                     // u8 disHeightTop = REG_WIN0V ? REG_WIN0V >> 8 : 0;
                     // u8 disWidthTop = REG_WIN0H ? REG_WIN0H >> 8 : 0;
 
-                    color = ConvertPixel(palette[pixel]);
+                    if (!isSemiTransparent)
+                    {
+                        color = ConvertPixel(palette[pixel]);
+                    }
+                    else {
+                        u8 spriteR, spriteG, spriteB;
+                        u8 bgR, bgG, bgB;
+                        u8 topLayer;
+
+                        spriteR = (palette[pixel] & 0x001F);
+                        spriteG = (palette[pixel] & 0x03E0) >> 5;
+                        spriteB = (palette[pixel] & 0x7C00) >> 10;
+
+                        // If the alpha of BG layer 2 is set, get its color value, layer 3's otherwise
+                        topLayer = (layers[2][global_x] & 0xFF000000) ? 2 : 3;
+
+                        bgR = ((layers[topLayer][global_x] & 0xFF0000) >> 16) / 8;
+                        bgG = ((layers[topLayer][global_x] & 0xFF00) >> 8) / 8;
+                        bgB = ((layers[topLayer][global_x] & 0xFF) >> 0) / 8;
+
+                        u16 blendedColor =
+                              ((bgR + spriteR) / 2) << 0
+                            | ((bgG + spriteG) / 2) << 5
+                            | ((bgB + spriteB) / 2) << 10;
+
+                        color = ConvertPixel(blendedColor);
+                    }
 
                     if (global_x < DISPLAY_WIDTH && global_x >= 0)
                         pixels[global_x] = color;
