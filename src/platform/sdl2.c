@@ -114,7 +114,7 @@ int main(int argc, char **argv)
     SDL_RenderSetLogicalSize(sdlRenderer, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     sdlTexture = SDL_CreateTexture(sdlRenderer,
-                                   SDL_PIXELFORMAT_ARGB8888,
+                                   SDL_PIXELFORMAT_ABGR1555,
                                    SDL_TEXTUREACCESS_STREAMING,
                                    DISPLAY_WIDTH, DISPLAY_HEIGHT);
     if (sdlTexture == NULL)
@@ -304,50 +304,50 @@ void ProcessEvents(void)
 #define STICK_THRESHOLD 0.5f
 u16 GetXInputKeys()
 {
-	XINPUT_STATE state;
-	ZeroMemory(&state, sizeof(XINPUT_STATE));
+    XINPUT_STATE state;
+    ZeroMemory(&state, sizeof(XINPUT_STATE));
 
-	DWORD dwResult = XInputGetState(0, &state);
-	u16 xinputKeys = 0;
+    DWORD dwResult = XInputGetState(0, &state);
+    u16 xinputKeys = 0;
 
-	if (dwResult == ERROR_SUCCESS)
-	{
-		/* A */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) >> 12;
-		/* B */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) >> 13;
-		/* Start */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) >> 1;
-		/* Select */ xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) >> 3;
-		/* L */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) << 1;
-		/* R */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) >> 1;
-		/* Up */     xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) << 6;
-		/* Down */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) << 6;
-		/* Left */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
-		/* Right */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
-
-
-		/* Control Stick */
-		float xAxis = (float)state.Gamepad.sThumbLX / (float)SHRT_MAX;
-		float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
-
-		if (xAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_LEFT;
-		if (xAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_RIGHT;
-		if (yAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_DOWN;
-		if (yAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_UP;
+    if (dwResult == ERROR_SUCCESS)
+    {
+        /* A */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) >> 12;
+        /* B */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) >> 13;
+        /* Start */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) >> 1;
+        /* Select */ xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) >> 3;
+        /* L */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) << 1;
+        /* R */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) >> 1;
+        /* Up */     xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) << 6;
+        /* Down */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) << 6;
+        /* Left */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
+        /* Right */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
 
 
-		/* Speedup */
-		// Note: 'speedup' variable is only (un)set on keyboard input
-		timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
-	}
+        /* Control Stick */
+        float xAxis = (float)state.Gamepad.sThumbLX / (float)SHRT_MAX;
+        float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
 
-	return xinputKeys;
+        if (xAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_LEFT;
+        if (xAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_RIGHT;
+        if (yAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_DOWN;
+        if (yAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_UP;
+
+
+        /* Speedup */
+        // Note: 'speedup' variable is only (un)set on keyboard input
+        timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
+    }
+
+    return xinputKeys;
 }
 #endif // _WIN32
 
 u16 Platform_GetKeyInput(void)
 {
 #ifdef _WIN32
-	u16 gamepadKeys = GetXInputKeys();
-	return (gamepadKeys != 0) ? gamepadKeys : keys;
+    u16 gamepadKeys = GetXInputKeys();
+    return (gamepadKeys != 0) ? gamepadKeys : keys;
 #endif
 
     return keys;
@@ -636,86 +636,6 @@ fail:
     puts("Fatal error while decompressing LZ file.\n");
 }
 
-/*
-void LZ77UnCompVram(const void *src, void *dst)
-{
-    const uint8_t *source = src;
-    uint8_t *dest = dst;
-
-    uint32_t header = CPUReadMemory(source);
-    source += 4;
-
-    int byteCount = 0;
-    int byteShift = 0;
-    uint32_t writeValue = 0;
-
-    int len = header >> 8;
-
-    while (len > 0) {
-        uint8_t d = CPUReadByte(source++);
-
-        if (d) {
-            for (int i = 0; i < 8; i++) {
-                if (d & 0x80) {
-                    uint16_t data = CPUReadByte(source++) << 8;
-                    data |= CPUReadByte(source++);
-                    int length = (data >> 12) + 3;
-                    int offset = (data & 0x0FFF);
-                    uint8_t *windowOffset = dest + byteCount - offset - 1;
-                    for (int i2 = 0; i2 < length; i2++) {
-                        writeValue |= (CPUReadByte(windowOffset++) << byteShift);
-                        byteShift += 8;
-                        byteCount++;
-
-                        if (byteCount == 2) {
-                            CPUWriteHalfWord(dest, writeValue);
-                            dest += 2;
-                            byteCount = 0;
-                            byteShift = 0;
-                            writeValue = 0;
-                        }
-                        len--;
-                        if (len == 0)
-                            return;
-                    }
-                } else {
-                    writeValue |= (CPUReadByte(source++) << byteShift);
-                    byteShift += 8;
-                    byteCount++;
-                    if (byteCount == 2) {
-                        CPUWriteHalfWord(dest, writeValue);
-                        dest += 2;
-                        byteCount = 0;
-                        byteShift = 0;
-                        writeValue = 0;
-                    }
-                    len--;
-                    if (len == 0)
-                        return;
-                }
-                d <<= 1;
-            }
-        } else {
-            for (int i = 0; i < 8; i++) {
-                writeValue |= (CPUReadByte(source++) << byteShift);
-                byteShift += 8;
-                byteCount++;
-                if (byteCount == 2) {
-                    CPUWriteHalfWord(dest, writeValue);
-                    dest += 2;
-                    byteShift = 0;
-                    byteCount = 0;
-                    writeValue = 0;
-                }
-                len--;
-                if (len == 0)
-                    return;
-            }
-        }
-    }
-}
-*/
-
 void LZ77UnCompWram(const u32 *src, void *dst)
 {
     const uint8_t *source = src;
@@ -965,26 +885,6 @@ void SoftReset(u32 resetFlags)
     exit(0);
 }
 
-/*
-static inline uint16_t SwapPixel(uint16_t pixel)
-{
-    uint16_t result = 0;
-
-    result |= (pixel >> 10) & 0x1F;
-    result |= pixel & (0x1F << 5);
-    result |= (pixel & 0x1F) << 10;
-}
-*/
-
-static inline uint32_t ConvertPixel(uint16_t pixel)
-{
-    unsigned int r = (((pixel >> 0) & 0x1F) << 3) ;
-    unsigned int g = (((pixel >> 5) & 0x1F) << 3) ;
-    unsigned int b = (((pixel >> 10) & 0x1F) << 3);
-
-    return b | (g << 8) | (r << 16) | (0xFF << 24);
-}
-
 static const uint16_t bgMapSizes[][2] =
 {
     {32, 32},
@@ -993,7 +893,7 @@ static const uint16_t bgMapSizes[][2] =
     {64, 64},
 };
 
-static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint32_t *line)
+static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
     unsigned int charBaseBlock = (control >> 2) & 3;
     unsigned int screenBaseBlock = (control >> 8) & 0x1F;
@@ -1055,11 +955,11 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
             else
                 pixel &= 0xF;
 
-            if (pixel != 0 /*&& !(line[x] & (0xFF << 24))*/)
-                line[x] = ConvertPixel(pal[16 * paletteNum + pixel]);
+            if (pixel != 0)
+                line[x] = pal[16 * paletteNum + pixel] | 0x8000;
         }
         else {
-            line[x] = ConvertPixel(pal[pixel]);
+            line[x] = pal[pixel] | 0x8000;
         }
     }
 }
@@ -1136,7 +1036,7 @@ static inline uint16_t getBgPD(int bgNumber)
     }
 }
 
-static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, uint16_t y, int lineNum, uint32_t *line)
+static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
 {
     vBgCnt *bgcnt = (vBgCnt *)&control;
     unsigned int charBaseBlock = bgcnt->charBaseBlock;
@@ -1146,7 +1046,6 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * 0x4000);
     uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * 0x800);
     uint16_t *pal = (uint16_t *)PLTT;
-    int prio = ((bgcnt->priority) << 25) + 0x1000000;
 
     s16 pa = getBgPA(bgNum);
     s16 pb = getBgPB(bgNum);
@@ -1212,8 +1111,9 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
             uint8_t pixel = bgtiles[(tile << 6) + (tileY << 3) + tileX];
 
-            if (pixel != 0)
-                line[x] = ConvertPixel(pal[pixel]) | prio;
+            if (pixel != 0) {
+                line[x] = pal[pixel] | 0x8000;
+            }
 
             realX += pa;
             realY += pc;
@@ -1239,8 +1139,9 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
                 uint8_t pixel = bgtiles[(tile << 6) + (tileY << 3) + tileX];
 
-                if (pixel != 0)
-                    line[x] = ConvertPixel(pal[pixel]) | prio;
+                if (pixel != 0) {
+                    line[x] = pal[pixel] | 0x8000;
+                }
             }
             realX += pa;
             realY += pc;
@@ -1257,7 +1158,7 @@ const u8 spriteSizes[][2] =
 };
 
 // Parts of this code heavily borrowed from NanoboyAdvance.
-static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
+static void DrawSprites(uint16_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
 {
     int i;
     unsigned int x;
@@ -1277,7 +1178,7 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
         struct OamData *oam = &((struct OamData *)OAM)[i];
         unsigned int width;
         unsigned int height;
-        uint32_t *pixels;
+        uint16_t *pixels;
 
         bool isAffine  = oam->affineMode & 1;
         bool doubleSizeOrDisabled = (oam->affineMode >> 1) & 1;
@@ -1287,8 +1188,6 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
         {
             continue;
         }
-        //if (oam->objMode != 0)
-        //    continue;  // Don't know how to handle other modes yet
 
         if (oam->shape == 0)
         {
@@ -1418,7 +1317,7 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
 
                 if (pixel != 0)
                 {
-                    uint32_t color;
+                    uint16_t color;
                     // u8 disHeightBot = REG_WIN0V ? REG_WIN0V : DISPLAY_HEIGHT;
                     // u8 disWidthBot = REG_WIN0H ? REG_WIN0H : DISPLAY_WIDTH;
                     // u8 disHeightTop = REG_WIN0V ? REG_WIN0V >> 8 : 0;
@@ -1426,7 +1325,7 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
 
                     if (!isSemiTransparent)
                     {
-                        color = ConvertPixel(palette[pixel]);
+                        color = palette[pixel];
                     }
                     else {
                         u8 spriteR, spriteG, spriteB;
@@ -1438,32 +1337,32 @@ static void DrawSprites(uint32_t layers[4][DISPLAY_WIDTH], uint16_t vcount)
                         spriteB = (palette[pixel] & 0x7C00) >> 10;
 
                         // If the alpha of BG layer 2 is set, get its color value, layer 3's otherwise
-                        topLayer = (layers[2][global_x] & 0xFF000000) ? 2 : 3;
+                        topLayer = (layers[2][global_x] & 0x8000) ? 2 : 3;
 
-                        bgR = ((layers[topLayer][global_x] & 0xFF0000) >> 16) / 8;
-                        bgG = ((layers[topLayer][global_x] & 0xFF00) >> 8) / 8;
-                        bgB = ((layers[topLayer][global_x] & 0xFF) >> 0) / 8;
+                        bgR = ((layers[topLayer][global_x] >>  0) & 0x1F);
+                        bgG = ((layers[topLayer][global_x] >>  5) & 0x1F);
+                        bgB = ((layers[topLayer][global_x] >> 10) & 0x1F);
 
                         u16 blendedColor =
                               ((bgR + spriteR) / 2) << 0
                             | ((bgG + spriteG) / 2) << 5
                             | ((bgB + spriteB) / 2) << 10;
 
-                        color = ConvertPixel(blendedColor);
+                        color = blendedColor;
                     }
 
                     if (global_x < DISPLAY_WIDTH && global_x >= 0)
-                        pixels[global_x] = color;
+                        pixels[global_x] = color | (1 << 15);
                 }
             }
         }
     }
 }
 
-static uint32_t *target1layer;
+static uint16_t *target1layer;
 
 #if 0
-static void ProcessBGBlending(uint32_t *layer, int bg)
+static void ProcessBGBlending(uint16_t *layer, int bg)
 {
     unsigned int effect = (REG_BLDCNT >> 6) & 3;
     unsigned int evy;
@@ -1571,15 +1470,17 @@ static void ProcessBGBlending(uint32_t *layer, int bg)
 }
 #endif
 
-static void DrawScanline(uint32_t *pixels, uint16_t vcount)
+static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
     unsigned int mode = REG_DISPCNT & 3;
     unsigned int bgEnabled = (REG_DISPCNT >> 8) & 0xF;
     int i;
     int j;
-    static uint32_t layers[4][DISPLAY_WIDTH];
+    static uint16_t layers[4][DISPLAY_WIDTH];
 
     int bgnum;
+    uint16_t bgcnts[4];
+
     // I have no clue how blending is supposed to work.
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
     int blendPriority1 = -5;
@@ -1587,14 +1488,18 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
 
     memset(layers, 0, sizeof(layers));
 
+    for (bgnum = 0; bgnum <= 3; bgnum++)
+    {
+        bgcnts[bgnum] = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
+    }
+
     if (blendMode == 1)
     {
         for (bgnum = 0; bgnum <= 3; bgnum++)
         {
             if (bgEnabled & (1 << bgnum))
             {
-                uint16_t bgcnt = *(uint16_t *)(REG_ADDR_BG0CNT + bgnum * 2);
-                unsigned int priority = bgcnt & 3;
+                unsigned int priority = bgcnts[bgnum] & 3;
 
                 if (REG_BLDCNT & (1 << bgnum))
                     blendPriority1 = priority;
@@ -1612,12 +1517,11 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
         {
             if (bgEnabled & (1 << bgnum))
             {
-                uint16_t bgcnt = *(uint16_t *)(REG_ADDR_BG0CNT + bgnum * 2);
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-                unsigned int priority = bgcnt & 3;
+                unsigned int priority = bgcnts[bgnum] & 3;
 
-                RenderBGScanline(bgnum, bgcnt, bghoffs, bgvoffs, vcount, layers[priority]);
+                RenderBGScanline(bgnum, bgcnts[bgnum], bghoffs, bgvoffs, vcount, layers[priority]);
                 //ProcessBGBlending(layers[priority], bgnum);
             }
         }
@@ -1627,10 +1531,9 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
         bgnum = 2;
         if (bgEnabled & (1 << bgnum))
         {
-            uint16_t bgcnt = *(uint16_t *)(REG_ADDR_BG0CNT + bgnum * 2);
-            unsigned int priority = bgcnt & 3;
+            unsigned int priority = bgcnts[bgnum] & 3;
 
-            RenderRotScaleBGScanline(bgnum, bgcnt, REG_BG2X, REG_BG2Y, vcount, layers[priority]);
+            RenderRotScaleBGScanline(bgnum, bgcnts[bgnum], REG_BG2X, REG_BG2Y, vcount, layers[priority]);
             //ProcessBGBlending(layers[priority], bgnum);
         }
         // BG0 and BG1 are text mode
@@ -1638,13 +1541,11 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
         {
             if (bgEnabled & (1 << bgnum))
             {
-                uint16_t bgcnt = *(uint16_t *)(REG_ADDR_BG0CNT + bgnum * 2);
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-                unsigned int priority = bgcnt & 3;
+                unsigned int priority = bgcnts[bgnum] & 3;
 
-                RenderBGScanline(bgnum, bgcnt, bghoffs, bgvoffs, vcount, layers[priority]);
-                //RenderTextBGLayer(bgcnt, bghoffs, bgvoffs, layers[priority]);
+                RenderBGScanline(bgnum, bgcnts[bgnum], bghoffs, bgvoffs, vcount, layers[priority]);
                 //ProcessBGBlending(layers[priority], bgnum);
             }
         }
@@ -1658,36 +1559,35 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
         DrawSprites(layers, vcount);
 
     // Copy to screen
-    
     for (i = 3; i >= 0; i--)
     {
-        uint32_t *src = layers[i];
-        uint32_t *dest = pixels;
+        uint16_t *src = layers[i];
+        uint16_t *dest = pixels;
 
         if (i == blendPriority2 && i - 1 == blendPriority1)
         {
-            uint32_t *target1 = layers[i - 1];
-            uint32_t *target2 = layers[i];
+            uint16_t *target1 = layers[i - 1];
+            uint16_t *target2 = layers[i];
             unsigned int eva = REG_BLDALPHA & 0x1F;
             unsigned int evb = (REG_BLDALPHA >> 8) & 0x1F;
 
             for (j = 0; j < DISPLAY_WIDTH; j++)
             {
-                if ((target1[j] & (0xFF << 24)) && (target2[j] & (0xFF << 24)))
+                if ((target1[j] & (1 << 15)) && (target2[j] & (1 << 15)))
                 {
-                    unsigned int r = ((target1[j] >>  0) & 0xFF) * eva / 16 + ((target2[j] >>  0) & 0xFF) * evb / 16;
-                    unsigned int g = ((target1[j] >>  8) & 0xFF) * eva / 16 + ((target2[j] >>  8) & 0xFF) * evb / 16;
-                    unsigned int b = ((target1[j] >> 16) & 0xFF) * eva / 16 + ((target2[j] >> 16) & 0xFF) * evb / 16;
-                    unsigned int a = (target1[j] >> 24) & 0xFF;
+                    unsigned int r = ((target1[j] >>  0) & 0x1F) * eva / 16 + ((target2[j] >>  0) & 0x1F) * evb / 16;
+                    unsigned int g = ((target1[j] >>  5) & 0x1F) * eva / 16 + ((target2[j] >>  5) & 0x1F) * evb / 16;
+                    unsigned int b = ((target1[j] >> 10) & 0x1F) * eva / 16 + ((target2[j] >> 10) & 0x1F) * evb / 16;
+                    unsigned int a = (target1[j] >> 15) & 1;
                     
-                    if (r > 255)
-                        r = 255;
-                    if (g > 255)
-                        g = 255;
-                    if (b > 255)
-                        b = 255;
-                    target2[j] = r | (g << 8) | (b << 16) | (a << 24);
-                    //target2[j] = target1[j];
+                    if (r > 31)
+                        r = 31;
+                    if (g > 31)
+                        g = 31;
+                    if (b > 31)
+                        b = 31;
+
+                    target2[j] = r | (g << 5) | (b << 10) | (a << 15);
                 }
             }
             i--;
@@ -1695,13 +1595,13 @@ static void DrawScanline(uint32_t *pixels, uint16_t vcount)
 
         for (j = 0; j < DISPLAY_WIDTH; j++)
         {
-            if ((src[j] & (0xFF << 24)))
+            if ((src[j] & (1 << 15)))
                 dest[j] = src[j];
         }
     }
 }
 
-uint32_t *memsetu32(uint32_t *dst, uint32_t fill, size_t count)
+uint16_t *memsetu16(uint16_t *dst, uint16_t fill, size_t count)
 {
     for (int i = 0; i < count; i++)
     {
@@ -1709,13 +1609,13 @@ uint32_t *memsetu32(uint32_t *dst, uint32_t fill, size_t count)
     }
 }
 
-static void DrawFrame(uint32_t *pixels)
+static void DrawFrame(uint16_t *pixels)
 {
     int i;
     int j;
-    static uint32_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
+    static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 
-    memsetu32(scanlines, ConvertPixel(*(uint16_t *)PLTT), DISPLAY_WIDTH * DISPLAY_HEIGHT);
+    memsetu16(scanlines, *(uint16_t *)PLTT, DISPLAY_WIDTH * DISPLAY_HEIGHT);
 
     for (i = 0; i < DISPLAY_HEIGHT; i++)
     {
@@ -1735,7 +1635,7 @@ static void DrawFrame(uint32_t *pixels)
     // Copy to screen
     for (i = 0; i < DISPLAY_HEIGHT; i++)
     {
-        uint32_t *src = scanlines[i];
+        uint16_t *src = scanlines[i];
         for (j = 0; j < DISPLAY_WIDTH; j++)
         {
             pixels[i * DISPLAY_WIDTH + j] = src[j];
@@ -1745,11 +1645,11 @@ static void DrawFrame(uint32_t *pixels)
 
 void VDraw(SDL_Texture *texture)
 {
-    static uint32_t image[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+    static uint16_t image[DISPLAY_WIDTH * DISPLAY_HEIGHT];
 
     memset(image, 0, sizeof(image));
     DrawFrame(image);
-    SDL_UpdateTexture(texture, NULL, image, DISPLAY_WIDTH * sizeof (Uint32));
+    SDL_UpdateTexture(texture, NULL, image, DISPLAY_WIDTH * sizeof (Uint16));
     REG_VCOUNT = 161; // prep for being in VBlank period
 }
 
@@ -1858,54 +1758,54 @@ void Platform_SetAlarm(u8 *alarmData)
 // Following functions taken from mGBA's source
 u16 ArcTan(s16 i)
 {
-	s32 a = -((i * i) >> 14);
-	s32 b = ((0xA9 * a) >> 14) + 0x390;
-	b = ((b * a) >> 14) + 0x91C;
-	b = ((b * a) >> 14) + 0xFB6;
-	b = ((b * a) >> 14) + 0x16AA;
-	b = ((b * a) >> 14) + 0x2081;
-	b = ((b * a) >> 14) + 0x3651;
-	b = ((b * a) >> 14) + 0xA2F9;
+    s32 a = -((i * i) >> 14);
+    s32 b = ((0xA9 * a) >> 14) + 0x390;
+    b = ((b * a) >> 14) + 0x91C;
+    b = ((b * a) >> 14) + 0xFB6;
+    b = ((b * a) >> 14) + 0x16AA;
+    b = ((b * a) >> 14) + 0x2081;
+    b = ((b * a) >> 14) + 0x3651;
+    b = ((b * a) >> 14) + 0xA2F9;
 
-	return (i * b) >> 16;
+    return (i * b) >> 16;
 }
 
 u16 ArcTan2(s16 x, s16 y)
 {
-	if (!y)
+    if (!y)
     {
-		if (x >= 0)
-			return 0;
-		return 0x8000;
-	}
-	if (!x)
+        if (x >= 0)
+            return 0;
+        return 0x8000;
+    }
+    if (!x)
     {
-		if (y >= 0)
-			return 0x4000;
-		return 0xC000;
-	}
-	if (y >= 0)
+        if (y >= 0)
+            return 0x4000;
+        return 0xC000;
+    }
+    if (y >= 0)
     {
-		if (x >= 0)
+        if (x >= 0)
         {
-			if (x >= y)
-				return ArcTan((y << 14) / x);
-		}
+            if (x >= y)
+                return ArcTan((y << 14) / x);
+        }
         else if (-x >= y)
-			return ArcTan((y << 14) / x) + 0x8000;
-		return 0x4000 - ArcTan((x << 14) / y);
-	}
+            return ArcTan((y << 14) / x) + 0x8000;
+        return 0x4000 - ArcTan((x << 14) / y);
+    }
     else
     {
-		if (x <= 0)
+        if (x <= 0)
         {
-			if (-x > -y)
-				return ArcTan((y << 14) / x) + 0x8000;
-		}
+            if (-x > -y)
+                return ArcTan((y << 14) / x) + 0x8000;
+        }
         else if (x >= -y)
-			return ArcTan((y << 14) / x) + 0x10000;
-		return 0xC000 - ArcTan((x << 14) / y);
-	}
+            return ArcTan((y << 14) / x) + 0x10000;
+        return 0xC000 - ArcTan((x << 14) / y);
+    }
 }
 
 u16 Sqrt(u32 num)
