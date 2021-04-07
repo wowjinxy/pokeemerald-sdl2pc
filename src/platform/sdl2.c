@@ -304,50 +304,50 @@ void ProcessEvents(void)
 #define STICK_THRESHOLD 0.5f
 u16 GetXInputKeys()
 {
-	XINPUT_STATE state;
-	ZeroMemory(&state, sizeof(XINPUT_STATE));
+    XINPUT_STATE state;
+    ZeroMemory(&state, sizeof(XINPUT_STATE));
 
-	DWORD dwResult = XInputGetState(0, &state);
-	u16 xinputKeys = 0;
+    DWORD dwResult = XInputGetState(0, &state);
+    u16 xinputKeys = 0;
 
-	if (dwResult == ERROR_SUCCESS)
-	{
-		/* A */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) >> 12;
-		/* B */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) >> 13;
-		/* Start */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) >> 1;
-		/* Select */ xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) >> 3;
-		/* L */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) << 1;
-		/* R */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) >> 1;
-		/* Up */     xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) << 6;
-		/* Down */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) << 6;
-		/* Left */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
-		/* Right */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
-
-
-		/* Control Stick */
-		float xAxis = (float)state.Gamepad.sThumbLX / (float)SHRT_MAX;
-		float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
-
-		if (xAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_LEFT;
-		if (xAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_RIGHT;
-		if (yAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_DOWN;
-		if (yAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_UP;
+    if (dwResult == ERROR_SUCCESS)
+    {
+        /* A */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) >> 12;
+        /* B */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) >> 13;
+        /* Start */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) >> 1;
+        /* Select */ xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) >> 3;
+        /* L */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) << 1;
+        /* R */      xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) >> 1;
+        /* Up */     xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) << 6;
+        /* Down */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) << 6;
+        /* Left */   xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) << 3;
+        /* Right */  xinputKeys |= (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) << 1;
 
 
-		/* Speedup */
-		// Note: 'speedup' variable is only (un)set on keyboard input
-		timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
-	}
+        /* Control Stick */
+        float xAxis = (float)state.Gamepad.sThumbLX / (float)SHRT_MAX;
+        float yAxis = (float)state.Gamepad.sThumbLY / (float)SHRT_MAX;
 
-	return xinputKeys;
+        if (xAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_LEFT;
+        if (xAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_RIGHT;
+        if (yAxis < -STICK_THRESHOLD) xinputKeys |= DPAD_DOWN;
+        if (yAxis >  STICK_THRESHOLD) xinputKeys |= DPAD_UP;
+
+
+        /* Speedup */
+        // Note: 'speedup' variable is only (un)set on keyboard input
+        timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
+    }
+
+    return xinputKeys;
 }
 #endif // _WIN32
 
 u16 Platform_GetKeyInput(void)
 {
 #ifdef _WIN32
-	u16 gamepadKeys = GetXInputKeys();
-	return (gamepadKeys != 0) ? gamepadKeys : keys;
+    u16 gamepadKeys = GetXInputKeys();
+    return (gamepadKeys != 0) ? gamepadKeys : keys;
 #endif
 
     return keys;
@@ -1046,7 +1046,6 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * 0x4000);
     uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * 0x800);
     uint16_t *pal = (uint16_t *)PLTT;
-	int prio = bgcnt->priority;
 
     s16 pa = getBgPA(bgNum);
     s16 pb = getBgPB(bgNum);
@@ -1112,10 +1111,9 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
             uint8_t pixel = bgtiles[(tile << 6) + (tileY << 3) + tileX];
 
-			if (pixel != 0) {
-				//printf("prioA: %d\n", prio);
-				line[x] = pal[pixel] | 0x8000;
-			}
+            if (pixel != 0) {
+                line[x] = pal[pixel] | 0x8000;
+            }
 
             realX += pa;
             realY += pc;
@@ -1141,10 +1139,9 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
                 uint8_t pixel = bgtiles[(tile << 6) + (tileY << 3) + tileX];
 
-				if (pixel != 0) {
-					//printf("prioB: %08X\n", prio);
-					line[x] = pal[pixel] | 0x8000;
-				}
+                if (pixel != 0) {
+                    line[x] = pal[pixel] | 0x8000;
+                }
             }
             realX += pa;
             realY += pc;
@@ -1482,7 +1479,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     static uint16_t layers[4][DISPLAY_WIDTH];
 
     int bgnum;
-	uint16_t bgcnts[4];
+    uint16_t bgcnts[4];
 
     // I have no clue how blending is supposed to work.
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
@@ -1491,10 +1488,10 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 
     memset(layers, 0, sizeof(layers));
 
-	for (bgnum = 0; bgnum <= 3; bgnum++)
-	{
-		bgcnts[bgnum] = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
-	}
+    for (bgnum = 0; bgnum <= 3; bgnum++)
+    {
+        bgcnts[bgnum] = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
+    }
 
     if (blendMode == 1)
     {
@@ -1581,7 +1578,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                     unsigned int r = ((target1[j] >>  0) & 0x1F) * eva / 16 + ((target2[j] >>  0) & 0x1F) * evb / 16;
                     unsigned int g = ((target1[j] >>  5) & 0x1F) * eva / 16 + ((target2[j] >>  5) & 0x1F) * evb / 16;
                     unsigned int b = ((target1[j] >> 10) & 0x1F) * eva / 16 + ((target2[j] >> 10) & 0x1F) * evb / 16;
-					unsigned int a = (target1[j] >> 15) & 1;
+                    unsigned int a = (target1[j] >> 15) & 1;
                     
                     if (r > 31)
                         r = 31;
@@ -1598,7 +1595,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 
         for (j = 0; j < DISPLAY_WIDTH; j++)
         {
-			if ((src[j] & (1 << 15)))
+            if ((src[j] & (1 << 15)))
                 dest[j] = src[j];
         }
     }
@@ -1761,54 +1758,54 @@ void Platform_SetAlarm(u8 *alarmData)
 // Following functions taken from mGBA's source
 u16 ArcTan(s16 i)
 {
-	s32 a = -((i * i) >> 14);
-	s32 b = ((0xA9 * a) >> 14) + 0x390;
-	b = ((b * a) >> 14) + 0x91C;
-	b = ((b * a) >> 14) + 0xFB6;
-	b = ((b * a) >> 14) + 0x16AA;
-	b = ((b * a) >> 14) + 0x2081;
-	b = ((b * a) >> 14) + 0x3651;
-	b = ((b * a) >> 14) + 0xA2F9;
+    s32 a = -((i * i) >> 14);
+    s32 b = ((0xA9 * a) >> 14) + 0x390;
+    b = ((b * a) >> 14) + 0x91C;
+    b = ((b * a) >> 14) + 0xFB6;
+    b = ((b * a) >> 14) + 0x16AA;
+    b = ((b * a) >> 14) + 0x2081;
+    b = ((b * a) >> 14) + 0x3651;
+    b = ((b * a) >> 14) + 0xA2F9;
 
-	return (i * b) >> 16;
+    return (i * b) >> 16;
 }
 
 u16 ArcTan2(s16 x, s16 y)
 {
-	if (!y)
+    if (!y)
     {
-		if (x >= 0)
-			return 0;
-		return 0x8000;
-	}
-	if (!x)
+        if (x >= 0)
+            return 0;
+        return 0x8000;
+    }
+    if (!x)
     {
-		if (y >= 0)
-			return 0x4000;
-		return 0xC000;
-	}
-	if (y >= 0)
+        if (y >= 0)
+            return 0x4000;
+        return 0xC000;
+    }
+    if (y >= 0)
     {
-		if (x >= 0)
+        if (x >= 0)
         {
-			if (x >= y)
-				return ArcTan((y << 14) / x);
-		}
+            if (x >= y)
+                return ArcTan((y << 14) / x);
+        }
         else if (-x >= y)
-			return ArcTan((y << 14) / x) + 0x8000;
-		return 0x4000 - ArcTan((x << 14) / y);
-	}
+            return ArcTan((y << 14) / x) + 0x8000;
+        return 0x4000 - ArcTan((x << 14) / y);
+    }
     else
     {
-		if (x <= 0)
+        if (x <= 0)
         {
-			if (-x > -y)
-				return ArcTan((y << 14) / x) + 0x8000;
-		}
+            if (-x > -y)
+                return ArcTan((y << 14) / x) + 0x8000;
+        }
         else if (x >= -y)
-			return ArcTan((y << 14) / x) + 0x10000;
-		return 0xC000 - ArcTan((x << 14) / y);
-	}
+            return ArcTan((y << 14) / x) + 0x10000;
+        return 0xC000 - ArcTan((x << 14) / y);
+    }
 }
 
 u16 Sqrt(u32 num)
