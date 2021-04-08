@@ -10,14 +10,15 @@
 #define VRAM_          _VRAM_
 #define OAM            _OAM
 #define PLTT           _PLTT
+#define FLASH_BASE     _FLASH_BASE
 #define SOUND_INFO_PTR _SOUND_INFO_PTR
 #define INTR_CHECK     _INTR_CHECK
 #define INTR_VECTOR    _INTR_VECTOR
-#define fopen         _fopen
-#define fseek         _fseek
-#define fclose        _fclose
-#define fread         _fread
-#define fwrite        _fwrite
+#define fopen          _fopen
+#define fseek          _fseek
+#define fclose         _fclose
+#define fread          _fread
+#define fwrite         _fwrite
 #define puts           _puts
 #define memcpy         _memcpy
 #define memset         _memset
@@ -30,7 +31,7 @@
 #define DmaSet         _DmaSet
 #define BgAffineSet    _BgAffineSet
 #define ObjAffineSet   _ObjAffineSet
-#define SoftReset _SoftReset
+#define SoftReset      _SoftReset
 #define LZ77UnCompVram _LZ77UnCompVram
 #define LZ77UnCompWram _LZ77UnCompWram
 #define RLUnCompVram   _RLUnCompVram
@@ -44,6 +45,7 @@
 #define ConvertBcdToBinary _ConvertBcdToBinary
 #define DoSoftReset _DoSoftReset
 #define Platform_GetKeyInput _Platform_GetKeyInput
+#define Platform_StoreSaveFile _Platform_StoreSaveFile
 #define Platform_GetStatus _Platform_GetStatus
 #define Platform_SetStatus _Platform_SetStatus
 #define Platform_GetDateTime _Platform_GetDateTime

@@ -1,6 +1,6 @@
+#include "global.h"
 #include "gba/gba.h"
 #include "gba/flash_internal.h"
-#include "global.h"
 
 #ifdef PORTABLE
 extern unsigned char REG_BASE[0x400] __attribute__((aligned(4)));

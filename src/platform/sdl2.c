@@ -70,12 +70,19 @@ double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
 
+static FILE *sSaveFile = NULL;
+
 extern void AgbMain(void);
 extern void DoSoftReset(void);
 
 int DoMain(void *param);
 void ProcessEvents(void);
 void VDraw(SDL_Texture *texture);
+
+static void ReadSaveFile(char *path);
+static void StoreSaveFile(void);
+static void CloseSaveFile(void);
+
 static void UpdateInternalClock(void);
 static void RunDMAs(u32 type);
 
@@ -87,6 +94,8 @@ int main(int argc, char **argv)
     AttachConsole( GetCurrentProcessId() ) ;
     freopen( "CON", "w", stdout ) ;
 #endif
+
+    ReadSaveFile("pokeemerald.sav");
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -187,9 +196,60 @@ int main(int argc, char **argv)
         SDL_RenderPresent(sdlRenderer);
     }
 
+	//StoreSaveFile();
+	CloseSaveFile();
+
     SDL_DestroyWindow(sdlWindow);
     SDL_Quit();
     return 0;
+}
+
+static void ReadSaveFile(char *path)
+{
+    // Check whether the saveFile exists, and create it if not
+    sSaveFile = fopen(path, "r+b");
+    if (sSaveFile == NULL)
+    {
+        sSaveFile = fopen(path, "w+b");
+    }
+
+    fseek(sSaveFile, 0, SEEK_END);
+	int fileSize = ftell(sSaveFile);
+    fseek(sSaveFile, 0, SEEK_SET);
+
+    // Only read as many bytes as fit inside the buffer
+    // or as many bytes as are in the file
+    int bytesToRead = (fileSize < sizeof(FLASH_BASE)) ? fileSize : sizeof(FLASH_BASE);
+
+    int bytesRead = fread(FLASH_BASE, 1, bytesToRead, sSaveFile);
+
+    // Fill the buffer if the savefile was just created or smaller than the buffer itself
+    for (int i = bytesRead; i < sizeof(FLASH_BASE); i++)
+    {
+        FLASH_BASE[i] = 0xFF;
+    }
+}
+
+static void StoreSaveFile()
+{
+	if (sSaveFile != NULL)
+	{
+		fseek(sSaveFile, 0, SEEK_SET);
+		fwrite(FLASH_BASE, 1, sizeof(FLASH_BASE), sSaveFile);
+	}
+}
+
+void Platform_StoreSaveFile(void)
+{
+	StoreSaveFile();
+}
+
+static void CloseSaveFile()
+{
+    if (sSaveFile != NULL)
+    {
+        fclose(sSaveFile);
+    }
 }
 
 // Key mappings
