@@ -34,31 +34,31 @@ const struct FlashSetupInfo DUMMY_SAVE =
 
 u16 WaitForFlashWrite_DUMMY(u8 phase, u8 *addr, u8 lastData)
 {
-	// stub
+    // stub
     return 0;
 }
 
 u16 EraseFlashChip_DUMMY(void)
 {
-	memset(FLASH_BASE, 0xFF, sizeof(FLASH_BASE));
+    memset(FLASH_BASE, 0xFF, sizeof(FLASH_BASE));
     return 0;
 }
 
 u16 EraseFlashSector_DUMMY(u16 sectorNum)
 {
-	u8 clearBuffer[0x1000] = { 0xFF };
+    u8 clearBuffer[0x1000] = { 0xFF };
     return ProgramFlashSector_DUMMY(sectorNum, &clearBuffer[0]);
 }
 
 u16 ProgramFlashByte_DUMMY(u16 sectorNum, u32 offset, u8 data)
 {
-	FLASH_BASE[(sectorNum << gFlash->sector.shift) + offset] = data;
+    FLASH_BASE[(sectorNum << gFlash->sector.shift) + offset] = data;
     return 0;
 }
 
 
 u16 ProgramFlashSector_DUMMY(u16 sectorNum, void *src)
 {
-	memcpy(&FLASH_BASE[sectorNum << gFlash->sector.shift], src, 0x1000);
-	return 0;
+    memcpy(&FLASH_BASE[sectorNum << gFlash->sector.shift], src, 0x1000);
+    return 0;
 }
