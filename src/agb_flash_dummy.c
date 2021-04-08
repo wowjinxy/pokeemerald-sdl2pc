@@ -34,83 +34,31 @@ const struct FlashSetupInfo DUMMY_SAVE =
 
 u16 WaitForFlashWrite_DUMMY(u8 phase, u8 *addr, u8 lastData)
 {
-    puts("function WaitForFlashWrite_DUMMY is a stub");
+	// stub
     return 0;
 }
 
 u16 EraseFlashChip_DUMMY(void)
 {
-    puts("EraseFlashChip_DUMMY");
-    FILE * savefile = fopen("pokeemerald.sav", "w+b");
-    fclose(savefile);
+	memset(FLASH_BASE, 0xFF, sizeof(FLASH_BASE));
     return 0;
 }
 
 u16 EraseFlashSector_DUMMY(u16 sectorNum)
 {
-    printf("EraseFlashSector_DUMMY(0x%04X)\n",sectorNum);
-    FILE * savefile = fopen("pokeemerald.sav", "r+b");
-    if (savefile == NULL)
-    {
-        savefile = fopen("pokeemerald.sav", "w+b");
-    }
-    if (fseek(savefile, (sectorNum << gFlash->sector.shift), SEEK_SET))
-    {
-        fclose(savefile);
-        return 1;
-    }
-    u8 buf[0x1000] = {0xFF};
-    if (fwrite(buf, 1, sizeof(buf), savefile) != sizeof(buf))
-    {
-        fclose(savefile);
-        return 1;
-    }
-    fclose(savefile);
-    return 0;
+	u8 clearBuffer[0x1000] = { 0xFF };
+    return ProgramFlashSector_DUMMY(sectorNum, &clearBuffer[0]);
 }
 
 u16 ProgramFlashByte_DUMMY(u16 sectorNum, u32 offset, u8 data)
 {
-    printf("ProgramFlashByte_DUMMY(0x%04X,0x%08X,0x%02X)\n",sectorNum,offset,data);
-    u8 val = data;
-    FILE * savefile = fopen("pokeemerald.sav", "r+b");
-    if (savefile == NULL)
-    {
-        savefile = fopen("pokeemerald.sav", "w+b");
-    }
-    if (fseek(savefile, (sectorNum << gFlash->sector.shift) + offset, SEEK_SET))
-    {
-        fclose(savefile);
-        return 1;
-    }
-    if (fwrite(&val, 1, 1, savefile) != 1)
-    {
-        fclose(savefile);
-        return 1;
-    }
-    fclose(savefile);
+	FLASH_BASE[(sectorNum << gFlash->sector.shift) + offset] = data;
     return 0;
 }
 
 
 u16 ProgramFlashSector_DUMMY(u16 sectorNum, void *src)
 {
-    printf("ProgramFlashSector_DUMMY(0x%04X)\n",sectorNum);
-    FILE * savefile = fopen("pokeemerald.sav", "r+b");
-    if (savefile == NULL)
-    {
-        savefile = fopen("pokeemerald.sav", "w+b");
-    }
-    if (fseek(savefile, (sectorNum << gFlash->sector.shift), SEEK_SET))
-    {
-        fclose(savefile);
-        return 1;
-    }
-    if (fwrite(src, 1, 0x1000, savefile) != 0x1000)
-    {
-        fclose(savefile);
-        return 1;
-    }
-    fclose(savefile);
-    return 0;
+	memcpy(&FLASH_BASE[sectorNum << gFlash->sector.shift], src, 0x1000);
+	return 0;
 }
