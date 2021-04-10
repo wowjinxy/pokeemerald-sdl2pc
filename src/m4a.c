@@ -3,9 +3,11 @@
 
 extern const u8 gCgb3Vol[];
 
+#ifndef PORTABLE
 #define BSS_CODE __attribute__((section(".bss.code")))
 
 BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
+#endif
 
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
@@ -19,7 +21,9 @@ struct MusicPlayerInfo gMPlayInfo_SE1;
 struct MusicPlayerInfo gMPlayInfo_SE2;
 struct MusicPlayerInfo gMPlayInfo_SE3;
 u8 gMPlayMemAccArea[0x10];
-#ifndef PORTABLE
+
+void MP2K_event_nxx();
+void MP2KPlayerMain();
 
 u32 MidiKeyToFreq(struct WaveData *wav, u8 key, u8 fineAdjust)
 {
@@ -71,8 +75,9 @@ void MPlayFadeOut(struct MusicPlayerInfo *mplayInfo, u16 speed)
 void m4aSoundInit(void)
 {
     s32 i;
-
+#ifndef PORTABLE
     CpuCopy32((void *)((s32)SoundMainRAM & ~1), SoundMainRAM_Buffer, sizeof(SoundMainRAM_Buffer));
+#endif
 
     SoundInit(&gSoundInfo);
     MPlayExtender(gCgbChans);
@@ -102,7 +107,11 @@ void m4aSoundInit(void)
 
 void m4aSoundMain(void)
 {
+#ifndef PORTABLE
     SoundMain();
+#else
+    RunMixerFrame();
+#endif
 }
 
 void m4aSongNumStart(u16 n)
@@ -285,10 +294,10 @@ void MPlayExtender(struct CgbChannel *cgbChans)
     soundInfo->ident++;
 
     gMPlayJumpTable[8] = ply_memacc;
-    gMPlayJumpTable[17] = ply_lfos;
-    gMPlayJumpTable[19] = ply_mod;
+    gMPlayJumpTable[17] = MP2K_event_lfos;
+    gMPlayJumpTable[19] = MP2K_event_mod;
     gMPlayJumpTable[28] = ply_xcmd;
-    gMPlayJumpTable[29] = ply_endtie;
+    gMPlayJumpTable[29] = MP2K_event_endtie;
     gMPlayJumpTable[30] = SampleFreqSet;
     gMPlayJumpTable[31] = TrackStop;
     gMPlayJumpTable[32] = FadeOutBody;
@@ -314,10 +323,12 @@ void MPlayExtender(struct CgbChannel *cgbChans)
     soundInfo->ident = ident;
 }
 
+#ifndef PORTABLE
 void MusicPlayerJumpTableCopy(void)
 {
     asm("swi 0x2A");
 }
+#endif
 
 void ClearChain(void *x)
 {
@@ -583,8 +594,8 @@ void MPlayOpen(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track
         soundInfo->MPlayMainHead = NULL;
     }
 
-    soundInfo->musicPlayerHead = mplayInfo;
-    soundInfo->MPlayMainHead = MPlayMain;
+    soundInfo->musicPlayerHead = (u32)mplayInfo;
+    soundInfo->MPlayMainHead = (u32)MP2KPlayerMain;
     soundInfo->ident = ID_NUMBER;
     mplayInfo->ident = ID_NUMBER;
 }
@@ -1634,127 +1645,125 @@ void DummyFunc(void)
 {
 }
 
-struct MusicPlayerInfo *SetPokemonCryTone(struct ToneData *tone)
-{
-    u32 maxClock = 0;
-    s32 maxClockIndex = 0;
-    s32 i;
-    struct MusicPlayerInfo *mplayInfo;
-
-    for (i = 0; i < MAX_POKEMON_CRIES; i++)
-    {
-        struct MusicPlayerTrack *track = &gPokemonCryTracks[i * 2];
-
-        if (!track->flags && (!track->chan || track->chan->track != track))
-            goto start_song;
-
-        if (maxClock < gPokemonCryMusicPlayers[i].clock)
-        {
-            maxClock = gPokemonCryMusicPlayers[i].clock;
-            maxClockIndex = i;
-        }
-    }
-
-    i = maxClockIndex;
-
-start_song:
-    mplayInfo = &gPokemonCryMusicPlayers[i];
-    mplayInfo->ident++;
-
-    gPokemonCrySongs[i] = gPokemonCrySong;
-
-    gPokemonCrySongs[i].tone = tone;
-    gPokemonCrySongs[i].part[0] = &gPokemonCrySongs[i].part0;
-    gPokemonCrySongs[i].part[1] = &gPokemonCrySongs[i].part1;
-    gPokemonCrySongs[i].gotoTarget = (u32)&gPokemonCrySongs[i].cont;
-
-    mplayInfo->ident = ID_NUMBER;
-
-    MPlayStart(mplayInfo, (struct SongHeader *)(&gPokemonCrySongs[i]));
-
-    return mplayInfo;
-}
-
-void SetPokemonCryVolume(u8 val)
-{
-    gPokemonCrySong.volumeValue = val & 0x7F;
-}
-
-void SetPokemonCryPanpot(s8 val)
-{
-    gPokemonCrySong.panValue = (val + C_V) & 0x7F;
-}
-
-void SetPokemonCryPitch(s16 val)
-{
-    s16 b = val + 0x80;
-    u8 a = gPokemonCrySong.tuneValue2 - gPokemonCrySong.tuneValue;
-    gPokemonCrySong.tieKeyValue = (b >> 8) & 0x7F;
-    gPokemonCrySong.tuneValue = (b >> 1) & 0x7F;
-    gPokemonCrySong.tuneValue2 = (a + ((b >> 1) & 0x7F)) & 0x7F;
-}
-
-void SetPokemonCryLength(u16 val)
-{
-    gPokemonCrySong.unkCmd0CParam = val;
-}
-
-void SetPokemonCryRelease(u8 val)
-{
-    gPokemonCrySong.releaseValue = val;
-}
-
-void SetPokemonCryProgress(u32 val)
-{
-    gPokemonCrySong.unkCmd0DParam = val;
-}
-
-int IsPokemonCryPlaying(struct MusicPlayerInfo *mplayInfo)
-{
-    struct MusicPlayerTrack *track = mplayInfo->tracks;
-
-    if (track->chan && track->chan->track == track)
-        return 1;
-    else
-        return 0;
-}
-
-void SetPokemonCryChorus(s8 val)
-{
-    if (val)
-    {
-        gPokemonCrySong.trackCount = 2;
-        gPokemonCrySong.tuneValue2 = (val + gPokemonCrySong.tuneValue) & 0x7F;
-    }
-    else
-    {
-        gPokemonCrySong.trackCount = 1;
-    }
-}
-
-void SetPokemonCryStereo(u32 val)
-{
-    struct SoundInfo *soundInfo = SOUND_INFO_PTR;
-
-    if (val)
-    {
-        REG_SOUNDCNT_H = SOUND_B_TIMER_0 | SOUND_B_LEFT_OUTPUT
-                       | SOUND_A_TIMER_0 | SOUND_A_RIGHT_OUTPUT
-                       | SOUND_ALL_MIX_FULL;
-        soundInfo->mode &= ~1;
-    }
-    else
-    {
-        REG_SOUNDCNT_H = SOUND_B_TIMER_0 | SOUND_B_LEFT_OUTPUT | SOUND_B_RIGHT_OUTPUT
-                       | SOUND_A_TIMER_0 | SOUND_A_LEFT_OUTPUT | SOUND_A_RIGHT_OUTPUT
-                       | SOUND_B_MIX_HALF | SOUND_A_MIX_HALF | SOUND_CGB_MIX_FULL;
-        soundInfo->mode |= 1;
-    }
-}
-
-void SetPokemonCryPriority(u8 val)
-{
-    gPokemonCrySong.priority = val;
-}
-
-#endif
+//struct MusicPlayerInfo *SetPokemonCryTone(struct ToneData *tone)
+//{
+//    u32 maxClock = 0;
+//    s32 maxClockIndex = 0;
+//    s32 i;
+//    struct MusicPlayerInfo *mplayInfo;
+//
+//    for (i = 0; i < MAX_POKEMON_CRIES; i++)
+//    {
+//        struct MusicPlayerTrack *track = &gPokemonCryTracks[i * 2];
+//
+//        if (!track->flags && (!track->chan || track->chan->track != track))
+//            goto start_song;
+//
+//        if (maxClock < gPokemonCryMusicPlayers[i].clock)
+//        {
+//            maxClock = gPokemonCryMusicPlayers[i].clock;
+//            maxClockIndex = i;
+//        }
+//    }
+//
+//    i = maxClockIndex;
+//
+//start_song:
+//    mplayInfo = &gPokemonCryMusicPlayers[i];
+//    mplayInfo->ident++;
+//
+//    gPokemonCrySongs[i] = gPokemonCrySong;
+//
+//    gPokemonCrySongs[i].tone = tone;
+//    gPokemonCrySongs[i].part[0] = &gPokemonCrySongs[i].part0;
+//    gPokemonCrySongs[i].part[1] = &gPokemonCrySongs[i].part1;
+//    gPokemonCrySongs[i].gotoTarget = (u32)&gPokemonCrySongs[i].cont;
+//
+//    mplayInfo->ident = ID_NUMBER;
+//
+//    MPlayStart(mplayInfo, (struct SongHeader *)(&gPokemonCrySongs[i]));
+//
+//    return mplayInfo;
+//}
+//
+//void SetPokemonCryVolume(u8 val)
+//{
+//    gPokemonCrySong.volumeValue = val & 0x7F;
+//}
+//
+//void SetPokemonCryPanpot(s8 val)
+//{
+//    gPokemonCrySong.panValue = (val + C_V) & 0x7F;
+//}
+//
+//void SetPokemonCryPitch(s16 val)
+//{
+//    s16 b = val + 0x80;
+//    u8 a = gPokemonCrySong.tuneValue2 - gPokemonCrySong.tuneValue;
+//    gPokemonCrySong.tieKeyValue = (b >> 8) & 0x7F;
+//    gPokemonCrySong.tuneValue = (b >> 1) & 0x7F;
+//    gPokemonCrySong.tuneValue2 = (a + ((b >> 1) & 0x7F)) & 0x7F;
+//}
+//
+//void SetPokemonCryLength(u16 val)
+//{
+//    gPokemonCrySong.unkCmd0CParam = val;
+//}
+//
+//void SetPokemonCryRelease(u8 val)
+//{
+//    gPokemonCrySong.releaseValue = val;
+//}
+//
+//void SetPokemonCryProgress(u32 val)
+//{
+//    gPokemonCrySong.unkCmd0DParam = val;
+//}
+//
+//int IsPokemonCryPlaying(struct MusicPlayerInfo *mplayInfo)
+//{
+//    struct MusicPlayerTrack *track = mplayInfo->tracks;
+//
+//    if (track->chan && track->chan->track == track)
+//        return 1;
+//    else
+//        return 0;
+//}
+//
+//void SetPokemonCryChorus(s8 val)
+//{
+//    if (val)
+//    {
+//        gPokemonCrySong.trackCount = 2;
+//        gPokemonCrySong.tuneValue2 = (val + gPokemonCrySong.tuneValue) & 0x7F;
+//    }
+//    else
+//    {
+//        gPokemonCrySong.trackCount = 1;
+//    }
+//}
+//
+//void SetPokemonCryStereo(u32 val)
+//{
+//    struct SoundInfo *soundInfo = SOUND_INFO_PTR;
+//
+//    if (val)
+//    {
+//        REG_SOUNDCNT_H = SOUND_B_TIMER_0 | SOUND_B_LEFT_OUTPUT
+//                       | SOUND_A_TIMER_0 | SOUND_A_RIGHT_OUTPUT
+//                       | SOUND_ALL_MIX_FULL;
+//        soundInfo->mode &= ~1;
+//    }
+//    else
+//    {
+//        REG_SOUNDCNT_H = SOUND_B_TIMER_0 | SOUND_B_LEFT_OUTPUT | SOUND_B_RIGHT_OUTPUT
+//                       | SOUND_A_TIMER_0 | SOUND_A_LEFT_OUTPUT | SOUND_A_RIGHT_OUTPUT
+//                       | SOUND_B_MIX_HALF | SOUND_A_MIX_HALF | SOUND_CGB_MIX_FULL;
+//        soundInfo->mode |= 1;
+//    }
+//}
+//
+//void SetPokemonCryPriority(u8 val)
+//{
+//    gPokemonCrySong.priority = val;
+//}
