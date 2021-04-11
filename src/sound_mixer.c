@@ -6,10 +6,12 @@
 #include "sound_mixer.h"
 #include "mp2k_common.h"
 
+/*
 #ifdef SOUND_INFO_PTR
 #undef SOUND_INFO_PTR
 #endif
 #define SOUND_INFO_PTR (*(struct SoundMixerState **)0x3007FF0)
+*/
 
 #define VCOUNT_VBLANK 160
 #define TOTAL_SCANLINES 228

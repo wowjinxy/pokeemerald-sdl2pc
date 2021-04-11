@@ -3,11 +3,13 @@
 #include "music_player.h"
 #include "gba/types.h"
 #include "gba/m4a_internal.h"
-
+//extern struct SoundMixerState * SOUND_INFO_PTR;
+/*
 #ifdef SOUND_INFO_PTR
 #undef SOUND_INFO_PTR
 #endif
 #define SOUND_INFO_PTR (*(struct SoundMixerState **)0x3007FF0)
+*/
 // Don't uncomment this. vvvvv
 // #define POKEMON_EXTENSIONS
 
@@ -514,7 +516,8 @@ void TrackStop(struct MP2KPlayerState *player, struct MP2KTrack *track) {
 			if (chan->status != 0) {
 				u8 cgbType = chan->type & 0x7;
 				if (cgbType != 0) {
-					SOUND_INFO_PTR->cgbNoteOffFunc(cgbType);
+					struct SoundMixerState *mixer = SOUND_INFO_PTR;
+					mixer->cgbNoteOffFunc(cgbType);
 				}
 				chan->status = 0;
 			}
@@ -745,7 +748,8 @@ void MP2K_event_mod(struct MP2KPlayerState *unused, struct MP2KTrack *track) {
 	}
 }
 
-void SoundVSync(void)
+//extern FILE * audioFile;
+void m4aSoundVSync(void)
 {
 	struct SoundMixerState *mixer = SOUND_INFO_PTR;
 	if(mixer->lockStatus-PLAYER_UNLOCKED <= 1 && (s8)(--mixer->dmaCounter) <= 0)
@@ -759,6 +763,7 @@ void SoundVSync(void)
 		REG_DMA2CNT_H = DMA_32BIT;
 		REG_DMA1CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
 		REG_DMA2CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
+		//fwrite(SOUND_INFO_PTR->pcmBuffer, PCM_DMA_BUF_SIZE*2,1, audioFile);	
 	}
 }
 

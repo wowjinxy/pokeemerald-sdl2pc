@@ -9,6 +9,11 @@ extern const u8 gCgb3Vol[];
 BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
 #endif
 
+struct MusicPlayerTrack gMPlayTrack_BGM[10];
+struct MusicPlayerTrack gMPlayTrack_SE1[3];
+struct MusicPlayerTrack gMPlayTrack_SE2[9];
+struct MusicPlayerTrack gMPlayTrack_SE3[1];
+
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
 struct MusicPlayerInfo gPokemonCryMusicPlayers[MAX_POKEMON_CRIES];
@@ -82,7 +87,7 @@ void m4aSoundInit(void)
     SoundInit(&gSoundInfo);
     MPlayExtender(gCgbChans);
     m4aSoundMode(SOUND_MODE_DA_BIT_8
-               | SOUND_MODE_FREQ_13379
+               | SOUND_MODE_FREQ_42048
                | (12 << SOUND_MODE_MASVOL_SHIFT)
                | (5 << SOUND_MODE_MAXCHN_SHIFT));
 
@@ -374,7 +379,7 @@ void SoundInit(struct SoundInfo *soundInfo)
 
     soundInfo->maxChans = 8;
     soundInfo->masterVolume = 15;
-    soundInfo->plynote = ply_note;
+    soundInfo->plynote = MP2K_event_nxx;
     soundInfo->CgbSound = DummyFunc;
     soundInfo->CgbOscOff = (CgbOscOffFunc)DummyFunc;
     soundInfo->MidiKeyToCgbFreq = (MidiKeyToCgbFreqFunc)DummyFunc;
@@ -411,13 +416,13 @@ void SampleFreqSet(u32 freq)
     REG_TM0CNT_L = -(280896 / soundInfo->pcmSamplesPerVBlank);
 
     m4aSoundVSyncOn();
-
+#ifndef PORTABLE
     while (*(vu8 *)REG_ADDR_VCOUNT == 159)
         ;
 
     while (*(vu8 *)REG_ADDR_VCOUNT != 159)
         ;
-
+#endif
     REG_TM0CNT_H = TIMER_ENABLE | TIMER_1CLK;
 }
 

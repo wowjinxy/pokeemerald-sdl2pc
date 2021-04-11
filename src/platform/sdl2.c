@@ -20,6 +20,7 @@
 
 extern void (*const gIntrTable[])(void);
 
+struct SoundInfo *SOUND_INFO_PTR;
 u16 INTR_CHECK;
 void *INTR_VECTOR;
 unsigned char REG_BASE[0x400] __attribute__ ((aligned (4)));
@@ -1686,6 +1687,9 @@ static void DrawFrame(uint16_t *pixels)
 
         RunDMAs(DMA_HBLANK);
 
+        //if(((REG_DISPSTAT >> 8) & 0xFF) == i) // TODO: fix this garbage
+        //gIntrTable[0]();
+        
         if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
             gIntrTable[3]();
 

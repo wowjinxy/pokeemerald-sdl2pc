@@ -167,7 +167,7 @@ struct SoundChannel
 
 #define MAX_DIRECTSOUND_CHANNELS 12
 
-#define PCM_DMA_BUF_SIZE 1584 // size of Direct Sound buffer
+#define PCM_DMA_BUF_SIZE 0x1584 // size of Direct Sound buffer
 
 struct MusicPlayerInfo;
 
@@ -398,11 +398,11 @@ extern const struct PokemonCrySong gPokemonCrySongTemplate;
 
 extern const struct ToneData voicegroup000;
 
-extern char gNumMusicPlayers[];
-extern char gMaxLines[];
+//extern char gNumMusicPlayers[];
+//extern char gMaxLines[];
 
-#define NUM_MUSIC_PLAYERS ((u16)gNumMusicPlayers)
-#define MAX_LINES ((u32)gMaxLines)
+#define NUM_MUSIC_PLAYERS ((u16)4)
+#define MAX_LINES ((u32)0)
 
 u32 umul3232H32(u32 multiplier, u32 multiplicand);
 void SoundMain(void);
