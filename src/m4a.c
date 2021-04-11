@@ -9,6 +9,7 @@ extern const u8 gCgb3Vol[];
 BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
 #endif
 
+extern struct SoundInfo * SOUND_INFO_PTR = 0x3007FF0;
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
 struct MusicPlayerInfo gPokemonCryMusicPlayers[MAX_POKEMON_CRIES];
@@ -377,7 +378,7 @@ void SoundInit(struct SoundInfo *soundInfo)
 
     soundInfo->maxChans = 8;
     soundInfo->masterVolume = 15;
-    soundInfo->plynote = ply_note;
+    soundInfo->plynote = (u32)MP2K_event_nxx;
     soundInfo->CgbSound = DummyFunc;
     soundInfo->CgbOscOff = (CgbOscOffFunc)DummyFunc;
     soundInfo->MidiKeyToCgbFreq = (MidiKeyToCgbFreqFunc)DummyFunc;
