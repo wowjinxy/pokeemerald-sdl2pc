@@ -22,6 +22,9 @@ struct MusicPlayerInfo gMPlayInfo_SE2;
 struct MusicPlayerInfo gMPlayInfo_SE3;
 u8 gMPlayMemAccArea[0x10];
 
+u16 gNumMusicPlayers = 4;
+u32 gMaxLines = 0;
+
 void MP2K_event_nxx();
 void MP2KPlayerMain();
 
