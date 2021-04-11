@@ -105,9 +105,10 @@ STUB_FUNC(void rfu_STC_NI_initSlot_asRecvDataEntity())
 STUB_FUNC(void rfu_NI_checkCommFailCounter())
 STUB_FUNC(void rfu_REQ_noise())
 STUB_FUNC(void AgbRFU_checkID())
-
+*/
 STUB_FUNC(u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n))
 STUB_FUNC(u32 VerifyFlashSector(u16 sectorNum, u8 *src))
+/*
 STUB_FUNC(void Sio32IDInit())
 STUB_FUNC(void Sio32IDMain())
 STUB_FUNC(void Sio32IDIntr())
