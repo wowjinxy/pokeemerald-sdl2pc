@@ -112,7 +112,7 @@ const u16 gPcmSamplesPerVBlankTable[] =
     528,
     608,
     672,
-    704,
+    701,
 };
 
 const u8 gCgbScaleTable[] =

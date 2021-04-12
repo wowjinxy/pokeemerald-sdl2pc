@@ -67,7 +67,7 @@ bool paused = false;
 double simTime = 0;
 double lastGameTime = 0;
 double curGameTime = 0;
-double fixedTimestep = 1.0 / 59.7275; // 16.666667ms
+double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
 

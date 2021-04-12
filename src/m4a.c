@@ -399,14 +399,14 @@ void SampleFreqSet(u32 freq)
 
     freq = (freq & 0xF0000) >> 16;
     soundInfo->freq = freq;
-    soundInfo->pcmSamplesPerVBlank = gPcmSamplesPerVBlankTable[freq - 1];
+    soundInfo->pcmSamplesPerVBlank = 701;
     soundInfo->pcmDmaPeriod = PCM_DMA_BUF_SIZE / soundInfo->pcmSamplesPerVBlank;
 
     // LCD refresh rate 59.7275Hz
-    soundInfo->pcmFreq = (597275 * soundInfo->pcmSamplesPerVBlank + 5000) / 10000;
+    soundInfo->pcmFreq = (600000 * soundInfo->pcmSamplesPerVBlank + 5000) / 10000;
 
     // CPU frequency 16.78Mhz
-    soundInfo->divFreq = (16777216 / soundInfo->pcmFreq + 1) >> 1;
+    soundInfo->divFreq = (16853760 / soundInfo->pcmFreq + 1) >> 1;
 
     // Turn off timer 0.
     REG_TM0CNT_H = 0;
