@@ -417,7 +417,21 @@ u16 GetXInputKeys()
 
         /* Speedup */
         // Note: 'speedup' variable is only (un)set on keyboard input
+        double oldTimeScale = timeScale;
         timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
+
+        if (oldTimeScale != timeScale)
+        {
+            if (timeScale > 1.0)
+            {
+                SDL_PauseAudio(1);
+            }
+            else
+            {
+                SDL_ClearQueuedAudio(1);
+                SDL_PauseAudio(0);
+            }
+        }
     }
 
     return xinputKeys;
