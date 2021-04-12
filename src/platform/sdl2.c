@@ -20,7 +20,6 @@
 
 extern void (*const gIntrTable[])(void);
 
-struct SoundInfo *SOUND_INFO_PTR;
 u16 INTR_CHECK;
 void *INTR_VECTOR;
 unsigned char REG_BASE[0x400] __attribute__ ((aligned (4)));
@@ -28,6 +27,7 @@ unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char FLASH_BASE[131072] __attribute__ ((aligned (4)));
+struct SoundInfo *SOUND_INFO_PTR;
 
 #define DMA_COUNT 4
 
@@ -1681,14 +1681,19 @@ static void DrawFrame(uint16_t *pixels)
     for (i = 0; i < DISPLAY_HEIGHT; i++)
     {
         REG_VCOUNT = i;
+        if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+        {
+            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT) // TODO: fix this garbage
+            {
+                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
+                gIntrTable[0]();
+            }
+        }
         DrawScanline(scanlines[i], i);
 
         REG_DISPSTAT |= INTR_FLAG_HBLANK;
 
         RunDMAs(DMA_HBLANK);
-
-        //if(((REG_DISPSTAT >> 8) & 0xFF) == i) // TODO: fix this garbage
-        //gIntrTable[0]();
         
         if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
             gIntrTable[3]();
