@@ -108,6 +108,7 @@ STUB_FUNC(void AgbRFU_checkID())
 */
 STUB_FUNC(u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n))
 STUB_FUNC(u32 VerifyFlashSector(u16 sectorNum, u8 *src))
+/*
 STUB_FUNC(void Sio32IDInit())
 STUB_FUNC(void Sio32IDMain())
 STUB_FUNC(void Sio32IDIntr())
@@ -204,6 +205,7 @@ STUB_FUNC(void ply_xswee(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTr
 STUB_FUNC(void ply_xcmd_0C(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track))
 STUB_FUNC(void ply_xcmd_0D(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track))
 STUB_FUNC(void DummyFunc(void))
+*/
 STUB_FUNC(struct MusicPlayerInfo *SetPokemonCryTone(struct ToneData *tone))
 STUB_FUNC(void SetPokemonCryVolume(u8 val))
 STUB_FUNC(void SetPokemonCryPanpot(s8 val))

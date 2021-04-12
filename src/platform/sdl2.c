@@ -27,6 +27,7 @@ unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char FLASH_BASE[131072] __attribute__ ((aligned (4)));
+struct SoundInfo *SOUND_INFO_PTR;
 
 #define DMA_COUNT 4
 
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
 
     ReadSaveFile("pokeemerald.sav");
 
-    if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -137,6 +138,24 @@ int main(int argc, char **argv)
     isFrameAvailable.value = 0;
     vBlankSemaphore = SDL_CreateSemaphore(0);
 
+    SDL_AudioSpec want, have;
+    SDL_AudioDeviceID dev;
+
+    SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
+    want.freq = 42048;
+    want.format = AUDIO_S8;
+    want.channels = 2;
+    want.samples = 1024;
+
+    if (SDL_OpenAudio(&want, 0) < 0)
+        SDL_Log("Failed to open audio: %s", SDL_GetError());
+    else
+    {
+        if (want.format != AUDIO_S8) /* we let this one thing change. */
+            SDL_Log("We didn't get Signed8 audio format.");
+        SDL_PauseAudio(0);
+    }
+    
     VDraw(sdlTexture);
     mainLoopThread = SDL_CreateThread(DoMain, "AgbMain", NULL);
 
@@ -177,7 +196,6 @@ int main(int argc, char **argv)
 
                     if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
                         gIntrTable[4]();
-
                     REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
 
                     SDL_SemPost(vBlankSemaphore);
@@ -301,6 +319,8 @@ void ProcessEvents(void)
                 {
                     speedUp = false;
                     timeScale = 1.0;
+                    SDL_ClearQueuedAudio(1);
+                    SDL_PauseAudio(0);
                 }
                 break;
             }
@@ -335,6 +355,7 @@ void ProcessEvents(void)
                 {
                     speedUp = true;
                     timeScale = 5.0;
+                    SDL_PauseAudio(1);
                 }
                 break;
             }
@@ -1680,12 +1701,21 @@ static void DrawFrame(uint16_t *pixels)
     for (i = 0; i < DISPLAY_HEIGHT; i++)
     {
         REG_VCOUNT = i;
-        DrawScanline(scanlines[i], i);
+        if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+        {
+            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
+            {
+                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
+                gIntrTable[0]();
+            }
+        }
 
+        DrawScanline(scanlines[i], i);
+        
         REG_DISPSTAT |= INTR_FLAG_HBLANK;
 
         RunDMAs(DMA_HBLANK);
-
+        
         if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
             gIntrTable[3]();
 
