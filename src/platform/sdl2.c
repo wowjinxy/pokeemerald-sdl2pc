@@ -67,7 +67,7 @@ bool paused = false;
 double simTime = 0;
 double lastGameTime = 0;
 double curGameTime = 0;
-double fixedTimestep = 1.0 / 59.7275; // 16.666667ms
+double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
 
@@ -146,15 +146,13 @@ int main(int argc, char **argv)
     want.format = AUDIO_S8;
     want.channels = 2;
     want.samples = 1024;
-    
-    ///want.callback = AudioCallback; /* you wrote this function elsewhere -- see SDL_AudioSpec for details */
 
-    if (SDL_OpenAudio(&want, 0) < 0) {
+    if (SDL_OpenAudio(&want, 0) < 0)
         SDL_Log("Failed to open audio: %s", SDL_GetError());
-    } else {
-        if (want.format != AUDIO_S8) { /* we let this one thing change. */
+    else
+    {
+        if (want.format != AUDIO_S8) /* we let this one thing change. */
             SDL_Log("We didn't get Signed8 audio format.");
-        }
         SDL_PauseAudio(0);
     }
     

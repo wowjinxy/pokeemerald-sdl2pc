@@ -399,15 +399,25 @@ void SampleFreqSet(u32 freq)
 
     freq = (freq & 0xF0000) >> 16;
     soundInfo->freq = freq;
+#ifndef PORTABLE
     soundInfo->pcmSamplesPerVBlank = gPcmSamplesPerVBlankTable[freq - 1];
+#else
+    soundInfo->pcmSamplesPerVBlank = 701;
+#endif
     soundInfo->pcmDmaPeriod = PCM_DMA_BUF_SIZE / soundInfo->pcmSamplesPerVBlank;
-
+#ifndef PORTABLE
     // LCD refresh rate 59.7275Hz
     soundInfo->pcmFreq = (597275 * soundInfo->pcmSamplesPerVBlank + 5000) / 10000;
+#else
+    soundInfo->pcmFreq = (600000 * soundInfo->pcmSamplesPerVBlank + 5000) / 10000;
+#endif
 
+#ifndef PORTABLE
     // CPU frequency 16.78Mhz
     soundInfo->divFreq = (16777216 / soundInfo->pcmFreq + 1) >> 1;
-
+#else
+    soundInfo->divFreq = (16853760 / soundInfo->pcmFreq + 1) >> 1;
+#endif
     // Turn off timer 0.
     REG_TM0CNT_H = 0;
 
