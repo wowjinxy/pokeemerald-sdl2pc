@@ -20,7 +20,6 @@
 
 extern void (*const gIntrTable[])(void);
 
-struct SoundInfo *SOUND_INFO_PTR;
 u16 INTR_CHECK;
 void *INTR_VECTOR;
 unsigned char REG_BASE[0x400] __attribute__ ((aligned (4)));
@@ -28,6 +27,7 @@ unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char FLASH_BASE[131072] __attribute__ ((aligned (4)));
+struct SoundInfo *SOUND_INFO_PTR;
 
 #define DMA_COUNT 4
 

@@ -1,15 +1,8 @@
-#include "global.h"
 #include "mp2k_common.h"
 #include "music_player.h"
 #include "gba/types.h"
 #include "gba/m4a_internal.h"
-//extern struct SoundMixerState * SOUND_INFO_PTR;
-/*
-#ifdef SOUND_INFO_PTR
-#undef SOUND_INFO_PTR
-#endif
-#define SOUND_INFO_PTR (*(struct SoundMixerState **)0x3007FF0)
-*/
+
 // Don't uncomment this. vvvvv
 // #define POKEMON_EXTENSIONS
 

@@ -9,11 +9,6 @@ extern const u8 gCgb3Vol[];
 BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
 #endif
 
-struct MusicPlayerTrack gMPlayTrack_BGM[10];
-struct MusicPlayerTrack gMPlayTrack_SE1[3];
-struct MusicPlayerTrack gMPlayTrack_SE2[9];
-struct MusicPlayerTrack gMPlayTrack_SE3[1];
-
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
 struct MusicPlayerInfo gPokemonCryMusicPlayers[MAX_POKEMON_CRIES];
@@ -25,6 +20,10 @@ struct MusicPlayerInfo gMPlayInfo_BGM;
 struct MusicPlayerInfo gMPlayInfo_SE1;
 struct MusicPlayerInfo gMPlayInfo_SE2;
 struct MusicPlayerInfo gMPlayInfo_SE3;
+struct MusicPlayerTrack gMPlayTrack_BGM[10];
+struct MusicPlayerTrack gMPlayTrack_SE1[3];
+struct MusicPlayerTrack gMPlayTrack_SE2[9];
+struct MusicPlayerTrack gMPlayTrack_SE3[1];
 u8 gMPlayMemAccArea[0x10];
 
 void MP2K_event_nxx();
@@ -87,7 +86,7 @@ void m4aSoundInit(void)
     SoundInit(&gSoundInfo);
     MPlayExtender(gCgbChans);
     m4aSoundMode(SOUND_MODE_DA_BIT_8
-               | SOUND_MODE_FREQ_13379
+               | SOUND_MODE_FREQ_42048
                | (12 << SOUND_MODE_MASVOL_SHIFT)
                | (5 << SOUND_MODE_MAXCHN_SHIFT));
 
@@ -389,7 +388,7 @@ void SoundInit(struct SoundInfo *soundInfo)
 
     soundInfo->MPlayJumpTable = gMPlayJumpTable;
 
-    SampleFreqSet(SOUND_MODE_FREQ_13379);
+    SampleFreqSet(SOUND_MODE_FREQ_42048);
 
     soundInfo->ident = ID_NUMBER;
 }
