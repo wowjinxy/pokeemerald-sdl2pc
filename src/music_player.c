@@ -748,10 +748,33 @@ void MP2K_event_mod(struct MP2KPlayerState *unused, struct MP2KTrack *track) {
 	}
 }
 
-//extern FILE * audioFile;
 void m4aSoundVSync(void)
 {
 	struct SoundMixerState *mixer = SOUND_INFO_PTR;
+#ifdef PORTABLE
+	if(mixer->lockStatus-PLAYER_UNLOCKED <= 1)
+	{
+		s32 samplesPerFrame = mixer->samplesPerFrame;
+		s8 *outBuffer = mixer->outBuffer;
+		s32 dmaCounter = mixer->dmaCounter;
+		s8 * stereoBuffer = _calloc(2, samplesPerFrame);
+		s8 * temp = stereoBuffer;
+
+		if (dmaCounter > 1) {
+			outBuffer += samplesPerFrame * (mixer->framesPerDmaCycle - (dmaCounter - 1));
+		}
+		for(u32 i = 0; i < samplesPerFrame; i++)
+		{
+			*temp++ = outBuffer[MIXED_AUDIO_BUFFER_SIZE];
+			*temp++ = outBuffer[0];
+			outBuffer++;
+		}
+		_SDL_QueueAudio(1, stereoBuffer, samplesPerFrame*2);
+		if((s8)(--mixer->dmaCounter) <= 0)
+			mixer->dmaCounter = mixer->framesPerDmaCycle;
+		_free(stereoBuffer);
+	}
+#else
 	if(mixer->lockStatus-PLAYER_UNLOCKED <= 1 && (s8)(--mixer->dmaCounter) <= 0)
 	{
 		mixer->dmaCounter = mixer->framesPerDmaCycle;
@@ -763,8 +786,8 @@ void m4aSoundVSync(void)
 		REG_DMA2CNT_H = DMA_32BIT;
 		REG_DMA1CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
 		REG_DMA2CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
-		//fwrite(SOUND_INFO_PTR->pcmBuffer, PCM_DMA_BUF_SIZE*2,1, audioFile);	
 	}
+#endif
 }
 
 #if 0

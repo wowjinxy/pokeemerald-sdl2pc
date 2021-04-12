@@ -88,15 +88,8 @@ void EnableVCountIntrAtLine150(void);
 
 #define B_START_SELECT (B_BUTTON | START_BUTTON | SELECT_BUTTON)
 
-//static FILE * audioFile;
-
 void AgbMain()
 {
-/*
-    audioFile = fopen("pokeemeraldwav.bin", "r+b");
-    if (audioFile == NULL)
-        audioFile = fopen("pokeemeraldwav.bin", "w+b");
-*/
     // Modern compilers are liberal with the stack on entry to this function,
     // so RegisterRamReset may crash if it resets IWRAM.
 #if !MODERN
