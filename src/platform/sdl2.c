@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     SDL_AudioDeviceID dev;
 
     SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
-    want.freq = 13378;
+    want.freq = 42048;
     want.format = AUDIO_S8;
     want.channels = 2;
     want.samples = 1024;

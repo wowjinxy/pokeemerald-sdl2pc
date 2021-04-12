@@ -76,7 +76,7 @@ struct MixerSource {
 };
 
 enum { MAX_SAMPLE_CHANNELS = 12 };
-enum { MIXED_AUDIO_BUFFER_SIZE = 1584 };
+enum { MIXED_AUDIO_BUFFER_SIZE = 4928 };
 
 struct SoundMixerState {
 	vu32 lockStatus;
