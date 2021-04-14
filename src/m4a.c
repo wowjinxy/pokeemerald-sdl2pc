@@ -399,7 +399,7 @@ void SampleFreqSet(u32 freq)
 
     freq = (freq & 0xF0000) >> 16;
     soundInfo->freq = freq;
-    soundInfo->pcmSamplesPerVBlank = 701;
+    soundInfo->pcmSamplesPerVBlank = 701;//gPcmSamplesPerVBlankTable[freq - 1];
     soundInfo->pcmDmaPeriod = PCM_DMA_BUF_SIZE / soundInfo->pcmSamplesPerVBlank;
 
     // LCD refresh rate 59.7275Hz
