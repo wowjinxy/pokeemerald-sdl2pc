@@ -63,10 +63,13 @@ void SampleMixer(struct SoundMixerState *mixer, u32 scanlineLimit, u16 samplesPe
 		}
 		uf16 i = 0;
 		do {
-			int s = tmp1[0] + tmp1[maxBufSize] + tmp2[0] + tmp2[maxBufSize];
+			s64 s = tmp1[0]; 
+            s += tmp1[maxBufSize];
+            s += tmp2[0];
+            s += tmp2[maxBufSize];
 			s *= reverb;
 			s = FLOOR_DIV_POW2(s, 512);
-			s += (s < 0);
+			s += (s < 0) * 4;
 			tmp1[0] = tmp1[maxBufSize] = s;
 			tmp1++;
 			tmp2++;
