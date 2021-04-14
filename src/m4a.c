@@ -418,6 +418,7 @@ void SampleFreqSet(u32 freq)
 #else
     soundInfo->divFreq = (16853760 / soundInfo->pcmFreq + 1) >> 1;
 #endif
+
     // Turn off timer 0.
     REG_TM0CNT_H = 0;
 

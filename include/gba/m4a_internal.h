@@ -166,7 +166,6 @@ struct SoundChannel
 };
 
 #define MAX_DIRECTSOUND_CHANNELS 12
-
 #define PCM_DMA_BUF_SIZE 4907 // size of Direct Sound buffer
 
 struct MusicPlayerInfo;
@@ -214,7 +213,7 @@ struct SoundInfo
     ExtVolPitFunc ExtVolPit;
     u8 gap2[16];
     struct SoundChannel chans[MAX_DIRECTSOUND_CHANNELS];
-    s8 pcmBuffer[PCM_DMA_BUF_SIZE * 2];
+    s32 pcmBuffer[PCM_DMA_BUF_SIZE * 2];
 };
 
 struct SongHeader
