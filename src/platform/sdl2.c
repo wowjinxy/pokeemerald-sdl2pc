@@ -213,8 +213,8 @@ int main(int argc, char **argv)
         SDL_RenderPresent(sdlRenderer);
     }
 
-	//StoreSaveFile();
-	CloseSaveFile();
+    //StoreSaveFile();
+    CloseSaveFile();
 
     SDL_DestroyWindow(sdlWindow);
     SDL_Quit();
@@ -231,7 +231,7 @@ static void ReadSaveFile(char *path)
     }
 
     fseek(sSaveFile, 0, SEEK_END);
-	int fileSize = ftell(sSaveFile);
+    int fileSize = ftell(sSaveFile);
     fseek(sSaveFile, 0, SEEK_SET);
 
     // Only read as many bytes as fit inside the buffer
@@ -249,16 +249,16 @@ static void ReadSaveFile(char *path)
 
 static void StoreSaveFile()
 {
-	if (sSaveFile != NULL)
-	{
-		fseek(sSaveFile, 0, SEEK_SET);
-		fwrite(FLASH_BASE, 1, sizeof(FLASH_BASE), sSaveFile);
-	}
+    if (sSaveFile != NULL)
+    {
+        fseek(sSaveFile, 0, SEEK_SET);
+        fwrite(FLASH_BASE, 1, sizeof(FLASH_BASE), sSaveFile);
+    }
 }
 
 void Platform_StoreSaveFile(void)
 {
-	StoreSaveFile();
+    StoreSaveFile();
 }
 
 static void CloseSaveFile()
