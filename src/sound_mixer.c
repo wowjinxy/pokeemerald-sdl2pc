@@ -242,7 +242,6 @@ static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSour
             
             outBuffer[1] += (c * envR) / 32768.0f;
             outBuffer[0] += (c * envL) / 32768.0f;
-
             if (--samplesLeftInWav == 0) {
                 samplesLeftInWav = loopLen;
                 if (loopLen != 0) {
@@ -267,13 +266,13 @@ static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSour
         for (u16 i = 0; i < samplesPerFrame; i++, outBuffer+=2) {
             // Use linear interpolation to calculate a value between the current sample in the wav
             // and the next sample. Also cancel out the 9.23 stuff
-            float sample = finePos * m + b;
+            float sample = (finePos * m) + b;
             
             outBuffer[1] += (sample * envR) / 32768.0f;
             outBuffer[0] += (sample * envL) / 32768.0f;
             
             finePos += romSamplesPerOutputSample;
-            unsigned newCoarsePos = (u32)finePos;
+            int newCoarsePos = finePos;
             if (newCoarsePos != 0) {
                 finePos -= (int)finePos;
                 samplesLeftInWav -= newCoarsePos;
@@ -334,7 +333,6 @@ void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSourc
     }
     float romSamplesPerOutputSample = chan->type & 8 ? 1.0f : chan->freq * sampleRateReciprocal;
     if(wav->type != 0) { // is compressed
-        /*
         chan->extra1 = 0;
         chan->extra2 = 0xFF00;
         if(chan->type & 0x20) {
@@ -342,9 +340,8 @@ void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSourc
         }
         else {
 
-        }
-        */
-        //TODO: implement decompression
+        } 
+        //TODO: implement compression
     }
     else {
         if(chan->type & 0x10) {
@@ -353,13 +350,13 @@ void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSourc
             sf16 m = current[-1] - b;
             
             for (u16 i = 0; i < samplesPerFrame; i++, outBuffer+=2) {
-                float sample = finePos * m + b;
+                float sample = (finePos * m) + b;
                 
-                outBuffer[1] += (sample * envR) / 32768.0f;
+                outBuffer[1] += (sample * envR) / 32768.0;
                 outBuffer[0] += (sample * envL) / 32768.0f;
                 
                 finePos += romSamplesPerOutputSample;
-                unsigned newCoarsePos = (u32)finePos;
+                int newCoarsePos = finePos;
                 if (newCoarsePos != 0) {
                     finePos -= (int)finePos;
                     samplesLeftInWav -= newCoarsePos;
