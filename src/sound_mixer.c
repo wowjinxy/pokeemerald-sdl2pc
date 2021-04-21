@@ -75,7 +75,7 @@ void SampleMixer(struct SoundMixerState *mixer, u32 scanlineLimit, u16 samplesPe
         // memset(outBuffer, 0, samplesPerFrame);
         // memset(outBuffer + maxBufSize, 0, samplesPerFrame);
         for (int i = 0; i < samplesPerFrame; i++) {
-			float *dst = &outBuffer[i*2];
+            float *dst = &outBuffer[i*2];
             dst[1] = dst[0] = 0.0f;
         }
     }
@@ -125,8 +125,9 @@ static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wa
         return FALSE;
     }
     
+    u8 env = 0;
     if ((status & 0x80) == 0) {
-        u8 env = chan->envelopeVol;
+        env = chan->envelopeVol;
         
         if (status & 4) {
             // Note-wise echo
@@ -153,6 +154,7 @@ static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wa
         }
         
         switch (status & 3) {
+        uf16 newEnv;
         case 2:
             // Decay
             chan->envelopeVol = env * chan->decay / 256U;
@@ -173,10 +175,8 @@ static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wa
             }
             break;
         case 3:
-        {
-
-            unsigned newEnv = env + chan->attack;
         attack:
+            newEnv = env + chan->attack;
             if (newEnv > 0xFF) {
                 chan->envelopeVol = 0xFF;
                 --chan->status;
@@ -184,7 +184,6 @@ static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wa
                 chan->envelopeVol = newEnv;
             }
             break;
-        }
         case 1: // Sustain
         default:
             break;
@@ -231,10 +230,10 @@ static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSour
     signed envR = chan->envelopeVolR;
     signed envL = chan->envelopeVolL;
 #ifdef POKEMON_EXTENSIONS
-	if (chan->type & 0x30) {
-		GeneratePokemonSampleAudio(mixer, chan, current, outBuffer, samplesPerFrame, sampleRateReciprocal, samplesLeftInWav, envR, envL);
-	}
-    else 
+    if (chan->type & 0x30) {
+        GeneratePokemonSampleAudio(mixer, chan, current, outBuffer, samplesPerFrame, sampleRateReciprocal, samplesLeftInWav, envR, envL);
+    }
+    else
 #endif
     if (chan->type & 8) {
         for (u16 i = 0; i < samplesPerFrame; i++, outBuffer+=2) {
@@ -258,7 +257,7 @@ static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSour
     } else {
         float finePos = chan->fw;
         float romSamplesPerOutputSample = chan->freq * sampleRateReciprocal;
-        
+
         sf16 b = current[0];
         sf16 m = current[1] - b;
         current += 1;
@@ -272,7 +271,7 @@ static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSour
             outBuffer[0] += (sample * envL) / 32768.0f;
             
             finePos += romSamplesPerOutputSample;
-            int newCoarsePos = finePos;
+            u32 newCoarsePos = finePos;
             if (newCoarsePos != 0) {
                 finePos -= (int)finePos;
                 samplesLeftInWav -= newCoarsePos;
@@ -352,7 +351,7 @@ void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSourc
             for (u16 i = 0; i < samplesPerFrame; i++, outBuffer+=2) {
                 float sample = (finePos * m) + b;
                 
-                outBuffer[1] += (sample * envR) / 32768.0;
+                outBuffer[1] += (sample * envR) / 32768.0f;
                 outBuffer[0] += (sample * envL) / 32768.0f;
                 
                 finePos += romSamplesPerOutputSample;

@@ -4,9 +4,11 @@
 #include <stdio.h>
 
 #define STUB_FUNC(func) func { puts("function \"" #func "\" is a stub"); }
+#define STUB_FUNC_BLOCK(func, block) func { puts("function \"" #func "\" is a stub"); block }
 #define STUB_FUNC_QUIET(func) func {}
+#define STUB_FUNC_QUIET_BLOCK(func, block) func { block }
 
-STUB_FUNC_QUIET(bool8 HandleLinkConnection())
+STUB_FUNC_QUIET_BLOCK(bool8 HandleLinkConnection(), return 0;)
 STUB_FUNC_QUIET(void Task_InitUnionRoom())
 STUB_FUNC(int MultiBoot(struct MultiBootParam *mp))
 STUB_FUNC(void RegisterRamReset(u32 resetFlags))
@@ -106,8 +108,8 @@ STUB_FUNC(void rfu_NI_checkCommFailCounter())
 STUB_FUNC(void rfu_REQ_noise())
 STUB_FUNC(void AgbRFU_checkID())
 */
-STUB_FUNC(u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n))
-STUB_FUNC(u32 VerifyFlashSector(u16 sectorNum, u8 *src))
+STUB_FUNC_BLOCK(u32 VerifyFlashSectorNBytes(u16 sectorNum, u8 *src, u32 n), return 0;)
+STUB_FUNC_BLOCK(u32 VerifyFlashSector(u16 sectorNum, u8 *src), return 0;)
 /*
 STUB_FUNC(void Sio32IDInit())
 STUB_FUNC(void Sio32IDMain())
