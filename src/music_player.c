@@ -755,7 +755,7 @@ void m4aSoundVSync(void)
             outBuffer += samplesPerFrame * (mixer->framesPerDmaCycle - (dmaCounter - 1)) * 2;
         }
 
-        SDL_QueueAudio(1, outBuffer, samplesPerFrame * 8);
+        _SDL_QueueAudio(1, outBuffer, samplesPerFrame * 8);
         if((s8)(--mixer->dmaCounter) <= 0)
             mixer->dmaCounter = mixer->framesPerDmaCycle;
     }
