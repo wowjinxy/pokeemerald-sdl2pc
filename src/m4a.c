@@ -292,6 +292,12 @@ void MPlayExtender(struct CgbChannel *cgbChans)
     REG_NR30 = 0;
     REG_NR50 = 0x77;
 
+    #ifdef PORTABLE
+    for(u8 i = 0; i < 4; i++){
+        cgb_set_envelope(i, 8);
+        cgb_trigger_note(i);
+    }
+    #endif
     soundInfo = SOUND_INFO_PTR;
 
     ident = soundInfo->ident;
