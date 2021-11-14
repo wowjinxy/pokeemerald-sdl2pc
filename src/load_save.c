@@ -57,12 +57,12 @@ void CheckForFlashMemory(void)
 
 void ClearSav2(void)
 {
-    CpuFill16(0, &gSaveblock2, sizeof(struct Saveblock2DMA));
+    CpuFill16(0, &gSaveblock2, sizeof(struct SaveBlock2DMA));
 }
 
 void ClearSav1(void)
 {
-    CpuFill16(0, &gSaveblock1, sizeof(struct Saveblock1DMA));
+    CpuFill16(0, &gSaveblock1, sizeof(struct SaveBlock1DMA));
 }
 
 void SetSaveBlocksPointers(u16 offset)
