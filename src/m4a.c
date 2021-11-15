@@ -1252,12 +1252,10 @@ void CgbSound(void)
             }
             #ifdef PORTABLE
                 cgb_set_envelope(ch - 1, *nrx2ptr);
+                cgb_toggle_length(ch - 1, (*nrx4ptr & 0x40));
+                cgb_trigger_note(ch - 1);
             #endif
         }
-        #ifdef PORTABLE
-            cgb_toggle_length(ch - 1, (*nrx4ptr & 0x40));
-            cgb_trigger_note(ch - 1);
-        #endif
 
     channel_complete:
         channels->modify = 0;
