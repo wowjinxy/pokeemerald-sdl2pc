@@ -241,8 +241,8 @@ void cgb_audio_generate(u16 samplesPerFrame){
                 if(REG_NR51 & 0x80) outputR += gb.Vol[3] * ch4Out;
             }
         }
-        outBuffer[0] = outputL / 128.0f;
-        outBuffer[1] = outputR / 128.0f;
+        outBuffer[0] = outputL / 64.0f;
+        outBuffer[1] = outputR / 64.0f;
     }
 }
 
