@@ -1280,9 +1280,9 @@ static uint16_t alphaBlendColor(uint16_t targetA, uint16_t targetB)
 	unsigned int eva = REG_BLDALPHA & 0x1F;
 	unsigned int evb = (REG_BLDALPHA >> 8) & 0x1F;
 	// shift right by 4 = division by 16
-	unsigned int r = (getRedChannel(targetA) * eva) + (getRedChannel(targetB) * evb) >> 4;
-	unsigned int g = (getGreenChannel(targetA) * eva) + (getGreenChannel(targetB) * evb) >> 4;
-	unsigned int b = (getBlueChannel(targetA) * eva) + (getBlueChannel(targetB) * evb) >> 4;
+	unsigned int r = ((getRedChannel(targetA) * eva) + (getRedChannel(targetB) * evb)) >> 4;
+	unsigned int g = ((getGreenChannel(targetA) * eva) + (getGreenChannel(targetB) * evb)) >> 4;
+	unsigned int b = ((getBlueChannel(targetA) * eva) + (getBlueChannel(targetB) * evb)) >> 4;
 	
 	if (r > 31)
 		r = 31;
@@ -1536,7 +1536,7 @@ static void DrawSprites(uint16_t layers[4][DISPLAY_WIDTH], uint16_t vcount, stru
                     // u8 disWidthTop = REG_WIN0H ? REG_WIN0H >> 8 : 0;
 					
 					//has to be separated from the blend mode switch statement because of OBJ semi transparancy feature
-					if (blendMode == 1 && REG_BLDCNT & BLDCNT_TGT1_OBJ || isSemiTransparent)
+					if ((blendMode == 1 && REG_BLDCNT & BLDCNT_TGT1_OBJ) || isSemiTransparent)
 					{
 						uint16_t targetA = color;
 						uint16_t targetB = 0;
@@ -1570,7 +1570,6 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
     unsigned int mode = REG_DISPCNT & 3;
 	unsigned char numOfBgs = (mode == 0 ? 4 : 3);
-    unsigned int bgEnabled = (REG_DISPCNT >> 8) & 0xF;
     int bgnum, prnum;
 	struct scanlineData scanline;
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
