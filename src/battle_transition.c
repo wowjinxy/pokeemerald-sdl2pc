@@ -951,6 +951,9 @@ bool8 IsBattleTransitionDone(void)
     if (gTasks[taskId].tTransitionDone)
     {
         DestroyTask(taskId);
+        #ifdef PORTABLE
+        SetHBlankCallback(NULL); //prevents use after free crash in HBlankCB_Phase2_Mugshots
+        #endif
         FREE_AND_SET_NULL(sTransitionStructPtr);
         return TRUE;
     }
