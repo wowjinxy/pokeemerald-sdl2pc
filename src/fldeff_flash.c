@@ -329,7 +329,7 @@ static void Task_EnterCaveTransition3(u8 taskId)
     //The original code intentionally accesses sCaveTransitionPalette_Enter array out of bounds to access the sCaveTransitionPalette_Exit
     //Of course compiler doesn't always put data together so in O3 pc build the data that follows are zeros, making the transition look incorrect
     //The solution is to copy both arrays into one so the code wouldn't have to rely on undefined behavior
-    #ifdef PORTABLE
+    #ifdef UBFIX
     u16 CaveTransitionPalette_Combined[16];
     
     memcpy(CaveTransitionPalette_Combined, sCaveTransitionPalette_Enter, sizeof(sCaveTransitionPalette_Enter));
@@ -340,7 +340,7 @@ static void Task_EnterCaveTransition3(u8 taskId)
     {
         gTasks[taskId].data[2]++;
         gTasks[taskId].data[2]++;
-        #ifdef PORTABLE
+        #ifdef UBFIX
         LoadPalette(&CaveTransitionPalette_Combined[15 - count], 0xE0, 2 * (count + 1));
         #else
         LoadPalette(&sCaveTransitionPalette_Enter[15 - count], 0xE0, 2 * (count + 1));
