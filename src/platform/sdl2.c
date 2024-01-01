@@ -1654,7 +1654,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                         continue; //do nothing if alpha bit is not set
                     
                     //blending code
-                    if (blendMode != 0 && REG_BLDCNT & (1 << bgnum) && getAlphaBit(color))
+                    if (blendMode != 0 && REG_BLDCNT & (1 << bgnum))
                     {
                         uint16_t targetA = color;
                         uint16_t targetB = 0;
