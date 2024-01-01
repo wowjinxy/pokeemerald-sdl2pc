@@ -56,17 +56,17 @@ enum {
 
 struct scanlineData {
     uint16_t layers[4][DISPLAY_WIDTH];
-	uint16_t spritelayers[4][DISPLAY_WIDTH];
+    uint16_t spritelayers[4][DISPLAY_WIDTH];
     uint16_t bgcnts[4];
-	//priority bookkeeping
-	char bgtoprio[4]; //background to priority
-	char prioritySortedBgs[4][4];
-	char prioritySortedBgsCount[4];
+    //priority bookkeeping
+    char bgtoprio[4]; //background to priority
+    char prioritySortedBgs[4][4];
+    char prioritySortedBgsCount[4];
 };
 
 struct bgPriority {
-	char priority;
-	char subPriority;
+    char priority;
+    char subPriority;
 };
 
 SDL_Thread *mainLoopThread;
@@ -1277,96 +1277,96 @@ const u8 spriteSizes[][2] =
 
 static uint16_t alphaBlendColor(uint16_t targetA, uint16_t targetB)
 {
-	unsigned int eva = REG_BLDALPHA & 0x1F;
-	unsigned int evb = (REG_BLDALPHA >> 8) & 0x1F;
-	// shift right by 4 = division by 16
-	unsigned int r = ((getRedChannel(targetA) * eva) + (getRedChannel(targetB) * evb)) >> 4;
-	unsigned int g = ((getGreenChannel(targetA) * eva) + (getGreenChannel(targetB) * evb)) >> 4;
-	unsigned int b = ((getBlueChannel(targetA) * eva) + (getBlueChannel(targetB) * evb)) >> 4;
-	
-	if (r > 31)
-		r = 31;
-	if (g > 31)
-		g = 31;
-	if (b > 31)
-		b = 31;
+    unsigned int eva = REG_BLDALPHA & 0x1F;
+    unsigned int evb = (REG_BLDALPHA >> 8) & 0x1F;
+    // shift right by 4 = division by 16
+    unsigned int r = ((getRedChannel(targetA) * eva) + (getRedChannel(targetB) * evb)) >> 4;
+    unsigned int g = ((getGreenChannel(targetA) * eva) + (getGreenChannel(targetB) * evb)) >> 4;
+    unsigned int b = ((getBlueChannel(targetA) * eva) + (getBlueChannel(targetB) * evb)) >> 4;
+    
+    if (r > 31)
+        r = 31;
+    if (g > 31)
+        g = 31;
+    if (b > 31)
+        b = 31;
 
-	 return r | (g << 5) | (b << 10) | (1 << 15);
+     return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 static uint16_t alphaBrightnessIncrease(uint16_t targetA)
 {
-	unsigned int evy = (REG_BLDY & 0x1F);
-	unsigned int r = getRedChannel(targetA) + (31 - getRedChannel(targetA)) * evy / 16;
-	unsigned int g = getGreenChannel(targetA) + (31 - getGreenChannel(targetA)) * evy / 16;
-	unsigned int b = getBlueChannel(targetA) + (31 - getBlueChannel(targetA)) * evy / 16;
-	
-	if (r > 31)
-		r = 31;
-	if (g > 31)
-		g = 31;
-	if (b > 31)
-		b = 31;
-	
-	 return r | (g << 5) | (b << 10) | (1 << 15);
+    unsigned int evy = (REG_BLDY & 0x1F);
+    unsigned int r = getRedChannel(targetA) + (31 - getRedChannel(targetA)) * evy / 16;
+    unsigned int g = getGreenChannel(targetA) + (31 - getGreenChannel(targetA)) * evy / 16;
+    unsigned int b = getBlueChannel(targetA) + (31 - getBlueChannel(targetA)) * evy / 16;
+    
+    if (r > 31)
+        r = 31;
+    if (g > 31)
+        g = 31;
+    if (b > 31)
+        b = 31;
+    
+     return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 static uint16_t alphaBrightnessDecrease(uint16_t targetA)
 {
-	unsigned int evy = (REG_BLDY & 0x1F);
-	unsigned int r = getRedChannel(targetA) - getRedChannel(targetA) * evy / 16;
-	unsigned int g = getGreenChannel(targetA) - getGreenChannel(targetA) * evy / 16;
-	unsigned int b = getBlueChannel(targetA) - getBlueChannel(targetA) * evy / 16;
-	
-	if (r > 31)
-		r = 31;
-	if (g > 31)
-		g = 31;
-	if (b > 31)
-		b = 31;
-	
-	 return r | (g << 5) | (b << 10) | (1 << 15);
+    unsigned int evy = (REG_BLDY & 0x1F);
+    unsigned int r = getRedChannel(targetA) - getRedChannel(targetA) * evy / 16;
+    unsigned int g = getGreenChannel(targetA) - getGreenChannel(targetA) * evy / 16;
+    unsigned int b = getBlueChannel(targetA) - getBlueChannel(targetA) * evy / 16;
+    
+    if (r > 31)
+        r = 31;
+    if (g > 31)
+        g = 31;
+    if (b > 31)
+        b = 31;
+    
+     return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 //outputs the blended pixel in colorOutput, the prxxx are the bg priority and subpriority, pixelpos is pixel offset in scanline
 static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* colorOutput, char prnum, char prsub, int pixelpos, bool spriteBlendEnabled)
-{	
-	//iterate trough every possible bg to blend with, starting from specified priorities from arguments
-	for (unsigned int blndprnum = prnum; blndprnum <= 3; blndprnum++)
-	{
-		//check if sprite is available to blend with, if sprite blending is enabled
-		if (spriteBlendEnabled == true && getAlphaBit(scanline->spritelayers[blndprnum][pixelpos]) == 1)
-		{
-			*colorOutput = scanline->spritelayers[blndprnum][pixelpos];
-			return true;
-		}
-			
-		for (unsigned int blndprsub = prsub; blndprsub < scanline->prioritySortedBgsCount[blndprnum]; blndprsub++)
-		{
-			char currLayer = scanline->prioritySortedBgs[blndprnum][blndprsub];
-			if (getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && REG_BLDCNT & ( 1 << (8 + currLayer)) && isbgEnabled(currLayer))
-			{
-				*colorOutput = scanline->layers[currLayer][pixelpos];
-				return true;
-			}
-			//if we hit a non target layer we should bail
-			if ( getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && isbgEnabled(currLayer) && prnum != blndprnum )
-			{
-				return false;
-			}
-		}
-		prsub = 0; //start from zero in the next iteration
-	}
-	//no background got hit, check if backdrop is enabled and return it if enabled otherwise fail
-	if (REG_BLDCNT & BLDCNT_TGT2_BD)
-	{
-		*colorOutput = *(uint16_t*)PLTT;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+{   
+    //iterate trough every possible bg to blend with, starting from specified priorities from arguments
+    for (unsigned int blndprnum = prnum; blndprnum <= 3; blndprnum++)
+    {
+        //check if sprite is available to blend with, if sprite blending is enabled
+        if (spriteBlendEnabled == true && getAlphaBit(scanline->spritelayers[blndprnum][pixelpos]) == 1)
+        {
+            *colorOutput = scanline->spritelayers[blndprnum][pixelpos];
+            return true;
+        }
+            
+        for (unsigned int blndprsub = prsub; blndprsub < scanline->prioritySortedBgsCount[blndprnum]; blndprsub++)
+        {
+            char currLayer = scanline->prioritySortedBgs[blndprnum][blndprsub];
+            if (getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && REG_BLDCNT & ( 1 << (8 + currLayer)) && isbgEnabled(currLayer))
+            {
+                *colorOutput = scanline->layers[currLayer][pixelpos];
+                return true;
+            }
+            //if we hit a non target layer we should bail
+            if ( getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && isbgEnabled(currLayer) && prnum != blndprnum )
+            {
+                return false;
+            }
+        }
+        prsub = 0; //start from zero in the next iteration
+    }
+    //no background got hit, check if backdrop is enabled and return it if enabled otherwise fail
+    if (REG_BLDCNT & BLDCNT_TGT2_BD)
+    {
+        *colorOutput = *(uint16_t*)PLTT;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -1534,29 +1534,29 @@ static void DrawSprites(uint16_t layers[4][DISPLAY_WIDTH], uint16_t vcount, stru
                     // u8 disWidthBot = REG_WIN0H ? REG_WIN0H : DISPLAY_WIDTH;
                     // u8 disHeightTop = REG_WIN0V ? REG_WIN0V >> 8 : 0;
                     // u8 disWidthTop = REG_WIN0H ? REG_WIN0H >> 8 : 0;
-					
-					//has to be separated from the blend mode switch statement because of OBJ semi transparancy feature
-					if ((blendMode == 1 && REG_BLDCNT & BLDCNT_TGT1_OBJ) || isSemiTransparent)
-					{
-						uint16_t targetA = color;
-						uint16_t targetB = 0;
-						if (alphaBlendSelectTargetB(scanline, &targetB, oam->priority, 0, global_x, false))
-						{
-							color = alphaBlendColor(targetA, targetB);
-						}
-					}
-					else if (REG_BLDCNT & BLDCNT_TGT1_OBJ)
-					{
-						switch (blendMode) //untested
-						{
-						case 2:
-							color = alphaBrightnessIncrease(color);
-							break;
-						case 3:
-							color = alphaBrightnessDecrease(color);
-							break;
-						}
-					}
+                    
+                    //has to be separated from the blend mode switch statement because of OBJ semi transparancy feature
+                    if ((blendMode == 1 && REG_BLDCNT & BLDCNT_TGT1_OBJ) || isSemiTransparent)
+                    {
+                        uint16_t targetA = color;
+                        uint16_t targetB = 0;
+                        if (alphaBlendSelectTargetB(scanline, &targetB, oam->priority, 0, global_x, false))
+                        {
+                            color = alphaBlendColor(targetA, targetB);
+                        }
+                    }
+                    else if (REG_BLDCNT & BLDCNT_TGT1_OBJ)
+                    {
+                        switch (blendMode)
+                        {
+                        case 2:
+                            color = alphaBrightnessIncrease(color);
+                            break;
+                        case 3:
+                            color = alphaBrightnessDecrease(color);
+                            break;
+                        }
+                    }
 
                     if (global_x < DISPLAY_WIDTH && global_x >= 0)
                         pixels[global_x] = color | (1 << 15);
@@ -1569,30 +1569,30 @@ static void DrawSprites(uint16_t layers[4][DISPLAY_WIDTH], uint16_t vcount, stru
 static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
     unsigned int mode = REG_DISPCNT & 3;
-	unsigned char numOfBgs = (mode == 0 ? 4 : 3);
+    unsigned char numOfBgs = (mode == 0 ? 4 : 3);
     int bgnum, prnum;
-	struct scanlineData scanline;
+    struct scanlineData scanline;
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
-	unsigned int xpos;
+    unsigned int xpos;
 
 
-	//initialize all priority bookkeeping data
+    //initialize all priority bookkeeping data
     memset(scanline.layers, 0, sizeof(scanline.layers));
-	memset(scanline.spritelayers, 0, sizeof(scanline.spritelayers));
-	memset(scanline.prioritySortedBgsCount, 0, sizeof(scanline.prioritySortedBgsCount));
+    memset(scanline.spritelayers, 0, sizeof(scanline.spritelayers));
+    memset(scanline.prioritySortedBgsCount, 0, sizeof(scanline.prioritySortedBgsCount));
 
     for (bgnum = 0; bgnum < numOfBgs; bgnum++)
     {
-		uint16_t bgcnt = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
-		uint16_t priority;
+        uint16_t bgcnt = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
+        uint16_t priority;
         scanline.bgcnts[bgnum] = bgcnt;
-		scanline.bgtoprio[bgnum] = priority = (bgcnt & 3);
-		
-		char priorityCount = scanline.prioritySortedBgsCount[priority];
-		scanline.prioritySortedBgs[priority][priorityCount] = bgnum;
-		scanline.prioritySortedBgsCount[priority]++;
+        scanline.bgtoprio[bgnum] = priority = (bgcnt & 3);
+        
+        char priorityCount = scanline.prioritySortedBgsCount[priority];
+        scanline.prioritySortedBgs[priority][priorityCount] = bgnum;
+        scanline.prioritySortedBgsCount[priority]++;
     }
-	
+    
     switch (mode)
     {
     case 0:
@@ -1603,10 +1603,10 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             {
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-				
+                
                 RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
-		}
+        }
         
         break;
     case 1:
@@ -1623,7 +1623,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             {
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-				
+                
                 RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
         }
@@ -1632,65 +1632,65 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         printf("Video mode %u is unsupported.\n", mode);
         break;
     }
-	
-	if (REG_DISPCNT & DISPCNT_OBJ_ON)
-		DrawSprites(scanline.spritelayers, vcount, &scanline);
+    
+    if (REG_DISPCNT & DISPCNT_OBJ_ON)
+        DrawSprites(scanline.spritelayers, vcount, &scanline);
 
-	//iterate trough every priority in order
-	for (prnum = 3; prnum >= 0; prnum--)
-	{
-		for (char prsub = scanline.prioritySortedBgsCount[prnum] - 1; prsub >= 0; prsub--)
-		{
-			char bgnum = scanline.prioritySortedBgs[prnum][prsub];
-			//if background is enabled then draw it
-			if (isbgEnabled(bgnum))
-			{
-				uint16_t *src = scanline.layers[bgnum];
-				//copy all pixels to framebuffer 
-				for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
-				{
-					uint16_t color = src[xpos];
-					if (!getAlphaBit(color))
-						continue; //do nothing if alpha bit is not set
-					
-					//blending code
-					if (blendMode != 0 && REG_BLDCNT & (1 << bgnum) && getAlphaBit(color))
-					{
-						uint16_t targetA = color;
-						uint16_t targetB = 0;
-						char isSpriteBlendingEnabled;
-						
-						switch (blendMode)
-						{
-						case 1:
-							isSpriteBlendingEnabled = REG_BLDCNT & BLDCNT_TGT2_OBJ ? 1 : 0;
-							//find targetB and blend it
-							if (alphaBlendSelectTargetB(&scanline, &targetB, prnum, prsub+1, xpos, isSpriteBlendingEnabled))
-							{
-								color = alphaBlendColor(targetA, targetB);
-							}
-							break;
-						case 2:
-							color = alphaBrightnessIncrease(targetA);
-							break;
-						case 3:
-							color = alphaBrightnessDecrease(targetA);
-							break;
-						}
-					}
-					//write the pixel to scanline buffer output
-					pixels[xpos] = color;
-				}
-			}
-		}
-		//draw sprites on current priority
-		uint16_t *src = scanline.spritelayers[prnum];
-		for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
-		{
-			if (getAlphaBit(src[xpos]))
-				pixels[xpos] = src[xpos];
-		}
-	}
+    //iterate trough every priority in order
+    for (prnum = 3; prnum >= 0; prnum--)
+    {
+        for (char prsub = scanline.prioritySortedBgsCount[prnum] - 1; prsub >= 0; prsub--)
+        {
+            char bgnum = scanline.prioritySortedBgs[prnum][prsub];
+            //if background is enabled then draw it
+            if (isbgEnabled(bgnum))
+            {
+                uint16_t *src = scanline.layers[bgnum];
+                //copy all pixels to framebuffer 
+                for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
+                {
+                    uint16_t color = src[xpos];
+                    if (!getAlphaBit(color))
+                        continue; //do nothing if alpha bit is not set
+                    
+                    //blending code
+                    if (blendMode != 0 && REG_BLDCNT & (1 << bgnum) && getAlphaBit(color))
+                    {
+                        uint16_t targetA = color;
+                        uint16_t targetB = 0;
+                        char isSpriteBlendingEnabled;
+                        
+                        switch (blendMode)
+                        {
+                        case 1:
+                            isSpriteBlendingEnabled = REG_BLDCNT & BLDCNT_TGT2_OBJ ? 1 : 0;
+                            //find targetB and blend it
+                            if (alphaBlendSelectTargetB(&scanline, &targetB, prnum, prsub+1, xpos, isSpriteBlendingEnabled))
+                            {
+                                color = alphaBlendColor(targetA, targetB);
+                            }
+                            break;
+                        case 2:
+                            color = alphaBrightnessIncrease(targetA);
+                            break;
+                        case 3:
+                            color = alphaBrightnessDecrease(targetA);
+                            break;
+                        }
+                    }
+                    //write the pixel to scanline buffer output
+                    pixels[xpos] = color;
+                }
+            }
+        }
+        //draw sprites on current priority
+        uint16_t *src = scanline.spritelayers[prnum];
+        for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
+        {
+            if (getAlphaBit(src[xpos]))
+                pixels[xpos] = src[xpos];
+        }
+    }
 }
 
 uint16_t *memsetu16(uint16_t *dst, uint16_t fill, size_t count)
