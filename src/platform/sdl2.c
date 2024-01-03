@@ -1005,7 +1005,7 @@ static const uint16_t bgMapSizes[][2] =
     {64, 64},
 };
 
-static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
+static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line, uint16_t vcount)
 {
     unsigned int charBaseBlock = (control >> 2) & 3;
     unsigned int screenBaseBlock = (control >> 8) & 0x1F;
@@ -1016,7 +1016,6 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     unsigned int mapHeightInPixels = mapHeight * 8;
 
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(charBaseBlock);
-    uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
     uint16_t *pal = (uint16_t *)PLTT;
 
     hoffs &= 0x1FF;
@@ -1025,8 +1024,25 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     for (unsigned int x = 0; x < DISPLAY_WIDTH; x++)
     {
         // adjust for scroll
+        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
         unsigned int xx = (x + hoffs) & 0x1FF;
         unsigned int yy = (lineNum + voffs) & 0x1FF;
+        
+        //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
+        if (xx > 255 && mapWidthInPixels > 256) {
+            bgmap += 0x400;
+        }
+        
+        if (yy > 255 && mapHeightInPixels > 256) {
+            //the width check is for 512x512 mode support, it jumps by two screen bases instead
+            bgmap += (mapWidthInPixels > 256) ? 0x800 : 0x400;
+        }
+        
+        //maximum width for bgtile block is 256
+        xx &= 0xFF;
+        yy &= 0xFF;
+        
+        //uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
 
         if (xx > mapWidthInPixels || yy > mapHeightInPixels)
         {
@@ -1034,12 +1050,18 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
             //    continue;
         }
             
-        xx %= mapWidthInPixels;
-        yy %= mapHeightInPixels;
+        xx &= mapWidthInPixels-1;
+        yy &= mapHeightInPixels-1;
 
         unsigned int mapX = xx / 8;
         unsigned int mapY = yy / 8;
+        //if (bgNum == 2)
+        //    mapX += 12;
         uint16_t entry = bgmap[mapY * 32 + mapX];
+        /*if (bgNum == 2 && vcount == 100)
+        {
+            printf("Accessed tileX %u\n", mapX);
+        }*/
 
         unsigned int tileNum = entry & 0x3FF;
         unsigned int paletteNum = (entry >> 12) & 0xF;
@@ -1604,7 +1626,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
                 
-                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
+                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum], vcount);
             }
         }
         
@@ -1624,7 +1646,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
                 
-                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
+                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum], vcount);
             }
         }
         break;

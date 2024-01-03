@@ -1070,7 +1070,7 @@ void InitBattlerHealthboxCoords(u8 battler)
         if (GetBattlerSide(battler) != B_SIDE_PLAYER)
             x = 44, y = 30;
         else
-            x = 158, y = 88;
+            x = DISPLAY_WIDTH-80, y = 88;
     }
     else
     {

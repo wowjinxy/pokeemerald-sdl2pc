@@ -88,8 +88,8 @@ extern unsigned char OAM[OAM_SIZE];
 
 #define ROM_HEADER_SIZE   0xC0
 
-#define DISPLAY_WIDTH  240
-#define DISPLAY_HEIGHT 160
+#define DISPLAY_WIDTH  288
+#define DISPLAY_HEIGHT 162
 
 #define TILE_SIZE_4BPP 32
 #define TILE_SIZE_8BPP 64

@@ -124,8 +124,8 @@ const struct BgTemplate gBattleBgTemplates[] =
     {
         .bg = 0,
         .charBaseIndex = 0,
-        .mapBaseIndex = 24,
-        .screenSize = 2,
+        .mapBaseIndex = 22,
+        .screenSize = 3,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -165,7 +165,7 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
         .bg = 0,
         .tilemapLeft = 2,
         .tilemapTop = 15,
-        .width = 26,
+        .width = 32,
         .height = 4,
         .paletteNum = 0,
         .baseBlock = 0x0090,
@@ -174,14 +174,14 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
         .bg = 0,
         .tilemapLeft = 1,
         .tilemapTop = 35,
-        .width = 14,
+        .width = 20,
         .height = 4,
         .paletteNum = 0,
         .baseBlock = 0x01c0,
     },
     { // 2 "Fight/Pokemon/Bag/Run"
         .bg = 0,
-        .tilemapLeft = 17,
+        .tilemapLeft = 23,
         .tilemapTop = 35,
         .width = 12,
         .height = 4,
@@ -190,7 +190,7 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
     },
     { // 3 Top left move
         .bg = 0,
-        .tilemapLeft = 2,
+        .tilemapLeft = 8,
         .tilemapTop = 55,
         .width = 8,
         .height = 2,
@@ -199,7 +199,7 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
     },
     { // 4 Top right move
         .bg = 0,
-        .tilemapLeft = 11,
+        .tilemapLeft = 17,
         .tilemapTop = 55,
         .width = 8,
         .height = 2,
@@ -208,7 +208,7 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
     },
     { // 5 Bottom left move
         .bg = 0,
-        .tilemapLeft = 2,
+        .tilemapLeft = 8,
         .tilemapTop = 57,
         .width = 8,
         .height = 2,
@@ -217,7 +217,7 @@ static const struct WindowTemplate gStandardBattleWindowTemplates[] =
     },
     { // 6 Bottom right move
         .bg = 0,
-        .tilemapLeft = 11,
+        .tilemapLeft = 17,
         .tilemapTop = 57,
         .width = 8,
         .height = 2,
@@ -743,8 +743,8 @@ void InitBattleBgsVideo(void)
 
 void LoadBattleMenuWindowGfx(void)
 {
-    LoadUserWindowBorderGfx(2, 0x12, 0x10);
-    LoadUserWindowBorderGfx(2, 0x22, 0x10);
+    LoadUserWindowBorderGfx(2, 18, 16);
+    LoadUserWindowBorderGfx(2, 34, 16);
     LoadCompressedPalette(gBattleWindowTextPalette, 0x50, 0x20);
 
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
@@ -859,8 +859,8 @@ void DrawMainBattleBackground(void)
 void LoadBattleTextboxAndBackground(void)
 {
     LZDecompressVram(gBattleTextboxTiles, (void*)(BG_CHAR_ADDR(0)));
-    CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
-    CopyBgTilemapBufferToVram(0);
+    //CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
+    //CopyBgTilemapBufferToVram(0);
     LoadCompressedPalette(gBattleTextboxPalette, 0, 0x40);
     LoadBattleMenuWindowGfx();
     DrawMainBattleBackground();
