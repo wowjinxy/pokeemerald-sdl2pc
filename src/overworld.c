@@ -275,9 +275,9 @@ static const struct BgTemplate sOverworldBgTemplates[] =
 {
     {
         .bg = 0,
-        .charBaseIndex = 2,
-        .mapBaseIndex = 31,
-        .screenSize = 0,
+        .charBaseIndex = 1,
+        .mapBaseIndex = 30,
+        .screenSize = 1,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -285,8 +285,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
     {
         .bg = 1,
         .charBaseIndex = 0,
-        .mapBaseIndex = 29,
-        .screenSize = 0,
+        .mapBaseIndex = 26,
+        .screenSize = 1,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -294,8 +294,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
     {
         .bg = 2,
         .charBaseIndex = 0,
-        .mapBaseIndex = 28,
-        .screenSize = 0,
+        .mapBaseIndex = 24,
+        .screenSize = 1,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -303,8 +303,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
     {
         .bg = 3,
         .charBaseIndex = 0,
-        .mapBaseIndex = 30,
-        .screenSize = 0,
+        .mapBaseIndex = 28,
+        .screenSize = 1,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1400,9 +1400,9 @@ static void InitOverworldBgs(void)
     SetBgAttribute(1, BG_ATTR_MOSAIC, 1);
     SetBgAttribute(2, BG_ATTR_MOSAIC, 1);
     SetBgAttribute(3, BG_ATTR_MOSAIC, 1);
-    gBGTilemapBuffers2 = AllocZeroed(BG_SCREEN_SIZE);
-    gBGTilemapBuffers1 = AllocZeroed(BG_SCREEN_SIZE);
-    gBGTilemapBuffers3 = AllocZeroed(BG_SCREEN_SIZE);
+    gBGTilemapBuffers2 = AllocZeroed(BG_SCREEN_SIZE*2);
+    gBGTilemapBuffers1 = AllocZeroed(BG_SCREEN_SIZE*2);
+    gBGTilemapBuffers3 = AllocZeroed(BG_SCREEN_SIZE*2);
     SetBgTilemapBuffer(1, gBGTilemapBuffers2);
     SetBgTilemapBuffer(2, gBGTilemapBuffers1);
     SetBgTilemapBuffer(3, gBGTilemapBuffers3);

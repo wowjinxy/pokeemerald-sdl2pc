@@ -745,6 +745,8 @@ void LoadBattleMenuWindowGfx(void)
 {
     LoadUserWindowBorderGfx(2, 18, 16);
     LoadUserWindowBorderGfx(2, 34, 16);
+    //LoadUserWindowBorderGfx(2, 50, 16);
+    //LoadUserWindowBorderGfx(2, 64, 16);
     LoadCompressedPalette(gBattleWindowTextPalette, 0x50, 0x20);
 
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
@@ -859,8 +861,8 @@ void DrawMainBattleBackground(void)
 void LoadBattleTextboxAndBackground(void)
 {
     LZDecompressVram(gBattleTextboxTiles, (void*)(BG_CHAR_ADDR(0)));
-    //CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
-    //CopyBgTilemapBufferToVram(0);
+    CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
+    CopyBgTilemapBufferToVram(0);
     LoadCompressedPalette(gBattleTextboxPalette, 0, 0x40);
     LoadBattleMenuWindowGfx();
     DrawMainBattleBackground();
