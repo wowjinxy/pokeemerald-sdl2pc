@@ -1016,7 +1016,6 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     unsigned int mapHeightInPixels = mapHeight * 8;
 
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(charBaseBlock);
-    uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
     uint16_t *pal = (uint16_t *)PLTT;
 
     hoffs &= 0x1FF;
@@ -1024,18 +1023,24 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
 
     for (unsigned int x = 0; x < DISPLAY_WIDTH; x++)
     {
+        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
         // adjust for scroll
         unsigned int xx = (x + hoffs) & 0x1FF;
         unsigned int yy = (lineNum + voffs) & 0x1FF;
-
-        if (xx > mapWidthInPixels || yy > mapHeightInPixels)
-        {
-            //if (!(control & (1 << 13)))
-            //    continue;
+        
+        //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
+        if (xx > 255 && mapWidthInPixels > 256) {
+            bgmap += 0x400;
         }
-            
-        xx %= mapWidthInPixels;
-        yy %= mapHeightInPixels;
+        
+        if (yy > 255 && mapHeightInPixels > 256) {
+            //the width check is for 512x512 mode support, it jumps by two screen bases instead
+            bgmap += (mapWidthInPixels > 256) ? 0x800 : 0x400;
+        }
+        
+        //maximum width for bgtile block is 256
+        xx &= 0xFF;
+        yy &= 0xFF;
 
         unsigned int mapX = xx / 8;
         unsigned int mapY = yy / 8;
