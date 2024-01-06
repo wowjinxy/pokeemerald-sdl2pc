@@ -74,11 +74,6 @@
 // to help in decompiling
 #define asm_unified(x) asm(".syntax unified\n" x "\n.syntax divided")
 #define NAKED __attribute__((naked))
-#ifdef PORTABLE
-#define ALIGN32 __attribute__((aligned(4)))
-#else
-#define ALIGN32
-#endif
 
 // IDE support
 #if defined (__APPLE__) || defined (__CYGWIN__) || defined(__INTELLISENSE__) || defined (_MSC_VER)
@@ -261,7 +256,7 @@ struct Time
     /*0x02*/ s8 hours;
     /*0x03*/ s8 minutes;
     /*0x04*/ s8 seconds;
-} ALIGN32;
+} ALIGNED(4);
 
 struct Pokedex
 {
@@ -430,7 +425,7 @@ struct BattleDomeTrainer
     u16 isEliminated:1;
     u16 eliminatedAt:2;
     u16 forfeited:3;
-} ALIGN32;
+} ALIGNED(4);
 
 #define DOME_TOURNAMENT_TRAINERS_COUNT 16
 #define BATTLE_TOWER_RECORD_COUNT 5
@@ -662,7 +657,7 @@ struct Pokeblock
     u8 bitter;
     u8 sour;
     u8 feel;
-} ALIGN32;
+} ALIGNED(4);
 
 struct Roamer
 {
@@ -828,7 +823,7 @@ struct Mail
     /*0x1A*/ u8 trainerId[TRAINER_ID_LENGTH];
     /*0x1E*/ u16 species;
     /*0x20*/ u16 itemId;
-} ALIGN32;
+} ALIGNED(4);
 
 struct DaycareMail
 {
