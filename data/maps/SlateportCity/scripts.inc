@@ -19,7 +19,7 @@
 .set LOCALID_GRUNT_11, 33
 .set LOCALID_SCOTT, 35
 
-@ Note: LOCALID_SLATEPORT_ENERGY_GURU is a local id for this map used elsewhere. It's defined in event_objects.h
+/* Note: LOCALID_SLATEPORT_ENERGY_GURU is a local id for this map used elsewhere. It's defined in event_objects.h*/
 
 SlateportCity_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, SlateportCity_OnTransition
@@ -566,8 +566,8 @@ SlateportCity_EventScript_PowerTMClerk::
 
 	.align 2
 SlateportCity_Pokemart_PowerTMs:
-	.short ITEM_TM10  /* Hidden Power*/
-	.short ITEM_TM43  /* Secret Power*/
+	.short ITEM_TM_HIDDEN_POWER
+	.short ITEM_TM_SECRET_POWER
 	.short ITEM_NONE
 	release
 	end

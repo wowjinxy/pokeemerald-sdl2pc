@@ -25,10 +25,10 @@ LilycoveCity_DepartmentStore_4F_EventScript_ClerkLeft::
 
 	.align 2
 LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs:
-	.short ITEM_TM38  /* Fire Blast*/
-	.short ITEM_TM25  /* Thunder*/
-	.short ITEM_TM14  /* Blizzard*/
-	.short ITEM_TM15  /* Hyper Beam*/
+	.short ITEM_TM_FIRE_BLAST
+	.short ITEM_TM_THUNDER
+	.short ITEM_TM_BLIZZARD
+	.short ITEM_TM_HYPER_BEAM
 	.short ITEM_NONE
 	release
 	end
@@ -45,10 +45,10 @@ LilycoveCity_DepartmentStore_4F_EventScript_ClerkRight::
 
 	.align 2
 LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs:
-	.short ITEM_TM17  /* Protect*/
-	.short ITEM_TM20  /* Safeguard*/
-	.short ITEM_TM33  /* Reflect*/
-	.short ITEM_TM16  /* Light Screen*/
+	.short ITEM_TM_PROTECT
+	.short ITEM_TM_SAFEGUARD
+	.short ITEM_TM_REFLECT
+	.short ITEM_TM_LIGHT_SCREEN
 	.short ITEM_NONE
 	release
 	end
