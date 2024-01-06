@@ -775,7 +775,7 @@ typedef union OldMan
     struct MauvilleOldManTrader trader;
     struct MauvilleManStoryteller storyteller;
     u8 filler[0x40];
-} OldMan;
+} ALIGNED(4) OldMan;
 
 #define LINK_B_RECORDS_COUNT 5
 
