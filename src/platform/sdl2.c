@@ -1724,7 +1724,6 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                     uint16_t color = src[xpos];
                     bool winEffectDisable = false;
                     
-                    
                     if (!getAlphaBit(color))
                         continue; //do nothing if alpha bit is not set
                     
