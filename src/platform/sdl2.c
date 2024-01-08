@@ -1555,7 +1555,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                 {
                     uint16_t color = palette[pixel];;
                     
-                    //if blending mode is 2 then write to the window mask instead
+                    //if sprite mode is 2 then write to the window mask instead
                     if (isObjWin)
                     {
                         if (scanline->winMask[global_x] & WINMASK_WINOUT)
