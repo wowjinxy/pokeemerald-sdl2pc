@@ -1535,7 +1535,7 @@ static void DrawSprites(uint16_t layers[4][DISPLAY_WIDTH], uint16_t vcount, stru
 
                 if (oam->mosaic == 1)
                 {
-                    //mosaic effect has to be applied global coordinates otherwise the mosaic will scroll
+                    //mosaic effect has to be applied to global coordinates otherwise the mosaic will scroll
                     local_mosaicX = applySpriteHorizontalMosaicEffect(global_x) - x;
                     tex_x = ((matrix[0][0] * local_mosaicX + matrix[0][1] * local_y) >> 8) + (width / 2);
                     tex_y = ((matrix[1][0] * local_mosaicX + matrix[1][1] * local_y) >> 8) + (height / 2);
