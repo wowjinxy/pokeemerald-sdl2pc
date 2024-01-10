@@ -40,6 +40,7 @@ struct Berry2
     u8 bitter;
     u8 sour;
     u8 smoothness;
+    //u8 padding;
 };
 
 struct EnigmaBerry
@@ -71,6 +72,6 @@ struct BerryTree
     u8 watered2:1;
     u8 watered3:1;
     u8 watered4:1;
-} ALIGN32;
+} ALIGNED(4);
 
 #endif // GUARD_GLOBAL_BERRY_H
