@@ -1006,6 +1006,15 @@ static const uint16_t bgMapSizes[][2] =
     {64, 64},
 };
 
+#define mosaicBGEffectX (REG_MOSAIC & 0xF)
+#define mosaicBGEffectY ((REG_MOSAIC >> 4) & 0xF)
+#define mosaicSpriteEffectX ((REG_MOSAIC >> 8) & 0xF)
+#define mosaicSpriteEffectY ((REG_MOSAIC >> 12) & 0xF)
+#define applyBGHorizontalMosaicEffect(x) (x - (x % (mosaicBGEffectX+1)))
+#define applyBGVerticalMosaicEffect(y) (y - (y % (mosaicBGEffectY+1)))
+#define applySpriteHorizontalMosaicEffect(x) (x - (x % (mosaicSpriteEffectX+1)))
+#define applySpriteVerticalMosaicEffect(y) (y - (y % (mosaicSpriteEffectY+1)))
+
 static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
     unsigned int charBaseBlock = (control >> 2) & 3;
@@ -1018,6 +1027,9 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
 
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(charBaseBlock);
     uint16_t *pal = (uint16_t *)PLTT;
+     
+    if (control & BGCNT_MOSAIC)
+        lineNum = applyBGVerticalMosaicEffect(lineNum);
 
     hoffs &= 0x1FF;
     voffs &= 0x1FF;
@@ -1026,7 +1038,12 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     {
         uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
         // adjust for scroll
-        unsigned int xx = (x + hoffs) & 0x1FF;
+        unsigned int xx;
+        if (control & BGCNT_MOSAIC)
+            xx = (applyBGHorizontalMosaicEffect(x) + hoffs) & 0x1FF;
+        else
+            xx = (x + hoffs) & 0x1FF;
+        
         unsigned int yy = (lineNum + voffs) & 0x1FF;
         
         //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
@@ -1165,6 +1182,10 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * 0x800);
     uint16_t *pal = (uint16_t *)PLTT;
 
+    if (control & BGCNT_MOSAIC)
+        lineNum = applyBGVerticalMosaicEffect(lineNum);
+    
+
     s16 pa = getBgPA(bgNum);
     s16 pb = getBgPB(bgNum);
     s16 pc = getBgPC(bgNum);
@@ -1263,6 +1284,17 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
             }
             realX += pa;
             realY += pc;
+        }
+    }
+    //the only way i could figure out how to get accurate mosaic on affine bgs 
+    //luckily i dont think pokemon emerald uses mosaic on affine bgs
+    if (control & BGCNT_MOSAIC && mosaicBGEffectX > 0)
+    {
+        for (int x = 0; x < DISPLAY_WIDTH; x++)
+        {
+            uint16_t color = line[applyBGHorizontalMosaicEffect(x)];
+            line[x] = color;
+            
         }
     }
 }
@@ -1500,7 +1532,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
         // Does this sprite actually draw on this scanline?
         if (vcount >= (y - half_height) && vcount < (y + half_height))
         {
-            int local_y = vcount - y;
+            int local_y = (oam->mosaic == 1) ? applySpriteVerticalMosaicEffect(vcount) - y : vcount - y;
             int number  = oam->tileNum;
             int palette = oam->paletteNum;
             bool flipX  = !isAffine && ((oam->matrixNum >> 3) & 1);
@@ -1511,14 +1543,25 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
             {
                 uint8_t *tiledata = (uint8_t *)objtiles;
                 uint16_t *palette = (uint16_t *)(PLTT + 0x200);
+                int local_mosaicX;
+                int tex_x;
+                int tex_y;
 
                 unsigned int global_x = local_x + x;
 
                 if (global_x < 0 || global_x >= DISPLAY_WIDTH)
                     continue;
 
-                int tex_x = ((matrix[0][0] * local_x + matrix[0][1] * local_y) >> 8) + (width / 2);
-                int tex_y = ((matrix[1][0] * local_x + matrix[1][1] * local_y) >> 8) + (height / 2);
+                if (oam->mosaic == 1)
+                {
+                    //mosaic effect has to be applied to global coordinates otherwise the mosaic will scroll
+                    local_mosaicX = applySpriteHorizontalMosaicEffect(global_x) - x;
+                    tex_x = ((matrix[0][0] * local_mosaicX + matrix[0][1] * local_y) >> 8) + (width / 2);
+                    tex_y = ((matrix[1][0] * local_mosaicX + matrix[1][1] * local_y) >> 8) + (height / 2);
+                }else{
+                    tex_x = ((matrix[0][0] * local_x + matrix[0][1] * local_y) >> 8) + (width / 2);
+                    tex_y = ((matrix[1][0] * local_x + matrix[1][1] * local_y) >> 8) + (height / 2);
+                }
 
                 /* Check if transformed coordinates are inside bounds. */
 
