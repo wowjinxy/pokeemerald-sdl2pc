@@ -1870,8 +1870,24 @@ static void DrawFrame(uint16_t *pixels)
     int i;
     int j;
     static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
+    unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
+    uint16_t backdropColor = *(uint16_t *)PLTT;
+    
+    // backdrop color brightness effects
+    if (REG_BLDCNT & BLDCNT_TGT1_BD)
+    {
+        switch (blendMode)
+        {
+        case 2:
+            backdropColor = alphaBrightnessIncrease(backdropColor);
+            break;
+        case 3:
+            backdropColor = alphaBrightnessDecrease(backdropColor);
+            break;
+        }
+    }
 
-    memsetu16(scanlines, *(uint16_t *)PLTT, DISPLAY_WIDTH * DISPLAY_HEIGHT);
+    memsetu16(scanlines, backdropColor, DISPLAY_WIDTH * DISPLAY_HEIGHT);
 
     for (i = 0; i < DISPLAY_HEIGHT; i++)
     {
