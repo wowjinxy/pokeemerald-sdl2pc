@@ -1227,8 +1227,11 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     if (pd & 0x8000)
         dmy |= 0xFFFF8000;*/
 
-    int currentX = getBgX(bgNum);
-    int currentY = getBgY(bgNum);
+    s32 currentX = getBgX(bgNum);
+    s32 currentY = getBgY(bgNum);
+    //sign extend 28 bit number
+    currentX = ((currentX & (1 << 27)) ? currentX | 0xF0000000 : currentX);
+    currentY = ((currentY & (1 << 27)) ? currentY | 0xF0000000 : currentY);
 
     currentX += lineNum * pb;
     currentY += lineNum * pd;
