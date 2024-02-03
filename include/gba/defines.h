@@ -54,7 +54,7 @@ extern unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 #define VRAM      0x6000000
 #else
 extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
-#define VRAM (u32)VRAM_
+#define VRAM (u64)VRAM_
 #endif
 
 #define BG_VRAM           VRAM

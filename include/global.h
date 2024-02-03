@@ -5,7 +5,7 @@
 #include <string.h>
 #include <limits.h>
 
-#ifndef NO_UNDERSCORE_HACK
+/*#ifndef NO_UNDERSCORE_HACK
 #define REG_BASE       _REG_BASE
 #define VRAM_          _VRAM_
 #define OAM            _OAM
@@ -53,7 +53,7 @@
 #define Platform_GetTime _Platform_GetTime
 #define Platform_SetTime _Platform_SetTime
 #define Platform_SetAlarm _Platform_SetAlarm
-#endif
+#endif*/
 
 #include "config.h" // we need to define config before gba headers as print stuff needs the functions nulled before defines.
 #include "gba/gba.h"
