@@ -47,8 +47,8 @@ se_dex_page:
 	.byte	se_dex_page_pri	/* Priority*/
 	.byte	se_dex_page_rev	/* Reverb.*/
 
-	.int	se_dex_page_grp
+	.quad	se_dex_page_grp
 
-	.int	se_dex_page_1
+	.quad	se_dex_page_1
 
 	.end

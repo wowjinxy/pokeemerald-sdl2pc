@@ -110,8 +110,8 @@ se_m_confuse_ray:
 	.byte	se_m_confuse_ray_pri	/* Priority*/
 	.byte	se_m_confuse_ray_rev	/* Reverb.*/
 
-	.int	se_m_confuse_ray_grp
+	.quad	se_m_confuse_ray_grp
 
-	.int	se_m_confuse_ray_1
+	.quad	se_m_confuse_ray_1
 
 	.end

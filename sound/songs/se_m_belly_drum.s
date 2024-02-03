@@ -65,8 +65,8 @@ se_m_belly_drum:
 	.byte	se_m_belly_drum_pri	/* Priority*/
 	.byte	se_m_belly_drum_rev	/* Reverb.*/
 
-	.int	se_m_belly_drum_grp
+	.quad	se_m_belly_drum_grp
 
-	.int	se_m_belly_drum_1
+	.quad	se_m_belly_drum_1
 
 	.end

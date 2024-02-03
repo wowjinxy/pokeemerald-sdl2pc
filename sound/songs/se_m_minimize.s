@@ -158,8 +158,8 @@ se_m_minimize:
 	.byte	se_m_minimize_pri	/* Priority*/
 	.byte	se_m_minimize_rev	/* Reverb.*/
 
-	.int	se_m_minimize_grp
+	.quad	se_m_minimize_grp
 
-	.int	se_m_minimize_1
+	.quad	se_m_minimize_1
 
 	.end

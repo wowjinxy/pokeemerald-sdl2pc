@@ -64,8 +64,8 @@ se_m_double_team:
 	.byte	se_m_double_team_pri	/* Priority*/
 	.byte	se_m_double_team_rev	/* Reverb.*/
 
-	.int	se_m_double_team_grp
+	.quad	se_m_double_team_grp
 
-	.int	se_m_double_team_1
+	.quad	se_m_double_team_1
 
 	.end

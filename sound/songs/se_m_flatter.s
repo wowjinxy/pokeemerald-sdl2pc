@@ -60,8 +60,8 @@ se_m_flatter:
 	.byte	se_m_flatter_pri	/* Priority*/
 	.byte	se_m_flatter_rev	/* Reverb.*/
 
-	.int	se_m_flatter_grp
+	.quad	se_m_flatter_grp
 
-	.int	se_m_flatter_1
+	.quad	se_m_flatter_1
 
 	.end

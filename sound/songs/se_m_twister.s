@@ -202,9 +202,9 @@ se_m_twister:
 	.byte	se_m_twister_pri	/* Priority*/
 	.byte	se_m_twister_rev	/* Reverb.*/
 
-	.int	se_m_twister_grp
+	.quad	se_m_twister_grp
 
-	.int	se_m_twister_1
-	.int	se_m_twister_2
+	.quad	se_m_twister_1
+	.quad	se_m_twister_2
 
 	.end

@@ -95,9 +95,9 @@ se_m_sky_uppercut:
 	.byte	se_m_sky_uppercut_pri	/* Priority*/
 	.byte	se_m_sky_uppercut_rev	/* Reverb.*/
 
-	.int	se_m_sky_uppercut_grp
+	.quad	se_m_sky_uppercut_grp
 
-	.int	se_m_sky_uppercut_1
-	.int	se_m_sky_uppercut_2
+	.quad	se_m_sky_uppercut_1
+	.quad	se_m_sky_uppercut_2
 
 	.end

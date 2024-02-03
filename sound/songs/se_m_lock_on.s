@@ -62,8 +62,8 @@ se_m_lock_on:
 	.byte	se_m_lock_on_pri	/* Priority*/
 	.byte	se_m_lock_on_rev	/* Reverb.*/
 
-	.int	se_m_lock_on_grp
+	.quad	se_m_lock_on_grp
 
-	.int	se_m_lock_on_1
+	.quad	se_m_lock_on_1
 
 	.end

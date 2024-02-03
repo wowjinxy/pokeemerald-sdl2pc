@@ -197,9 +197,9 @@ se_m_petal_dance:
 	.byte	se_m_petal_dance_pri	/* Priority*/
 	.byte	se_m_petal_dance_rev	/* Reverb.*/
 
-	.int	se_m_petal_dance_grp
+	.quad	se_m_petal_dance_grp
 
-	.int	se_m_petal_dance_1
-	.int	se_m_petal_dance_2
+	.quad	se_m_petal_dance_1
+	.quad	se_m_petal_dance_2
 
 	.end

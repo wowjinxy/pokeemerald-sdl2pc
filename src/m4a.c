@@ -513,7 +513,7 @@ void SoundClear(void)
     {
         ((struct SoundChannel *)chan)->statusFlags = 0;
         i--;
-        chan = (void *)((s32)chan + sizeof(struct SoundChannel));
+        chan = (void *)((s64)chan + sizeof(struct SoundChannel));
     }
 
     chan = soundInfo->cgbChans;
@@ -527,7 +527,7 @@ void SoundClear(void)
             soundInfo->CgbOscOff(i);
             ((struct CgbChannel *)chan)->statusFlags = 0;
             i++;
-            chan = (void *)((s32)chan + sizeof(struct CgbChannel));
+            chan = (void *)((s64)chan + sizeof(struct CgbChannel));
         }
     }
 
@@ -610,8 +610,8 @@ void MPlayOpen(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track
         soundInfo->MPlayMainHead = NULL;
     }
 
-    soundInfo->musicPlayerHead = (u32)mplayInfo;
-    soundInfo->MPlayMainHead = (u32)MP2KPlayerMain;
+    soundInfo->musicPlayerHead = mplayInfo;
+    soundInfo->MPlayMainHead = MP2KPlayerMain;
     soundInfo->ident = ID_NUMBER;
     mplayInfo->ident = ID_NUMBER;
 }
@@ -1013,7 +1013,7 @@ void CgbSound(void)
                     #endif
                     // fallthrough
                 case 2:
-                    *nrx1ptr = ((u32)channels->wavePointer << 6) + channels->length;
+                    *nrx1ptr = ((u64)channels->wavePointer << 6) + channels->length;
                     goto init_env_step_time_dir;
                 case 3:
                     if (channels->wavePointer != channels->currentPointer)
@@ -1037,7 +1037,7 @@ void CgbSound(void)
                     break;
                 default:
                     *nrx1ptr = channels->length;
-                    *nrx3ptr = (u32)channels->wavePointer << 3;
+                    *nrx3ptr = (u64)channels->wavePointer << 3;
                 init_env_step_time_dir:
                     envelopeStepTimeAndDir = channels->attack + CGB_NRx2_ENV_DIR_INC;
                     if (channels->length)
@@ -1569,7 +1569,7 @@ void ply_xxx(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track)
 
 void ply_xwave(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track)
 {
-    u32 wav;
+    u64 wav;
 
 #ifdef UBFIX
     wav = 0;
@@ -1715,7 +1715,7 @@ start_song:
     gPokemonCrySongs[i].tone = tone;
     gPokemonCrySongs[i].part[0] = &gPokemonCrySongs[i].part0;
     gPokemonCrySongs[i].part[1] = &gPokemonCrySongs[i].part1;
-    gPokemonCrySongs[i].gotoTarget = (u32)&gPokemonCrySongs[i].cont;
+    gPokemonCrySongs[i].gotoTarget = (u64)&gPokemonCrySongs[i].cont;
 
     mplayInfo->ident = ID_NUMBER;
 
