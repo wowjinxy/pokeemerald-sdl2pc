@@ -49,7 +49,7 @@ GCC_VER := $(shell $(CC) -dumpversion)
 
 CC1 	:= $(shell $(PREFIX)gcc --print-prog-name=cc1) -quiet
 override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m64 -std=gnu99 -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DNONMATCHING -D UBFIX -DMODERN=$(MODERN)
-ROM		:= pokeemerald.exe
+ROM		:= pokeemerald64.exe
 OBJ_DIR	:= build/pc
 
 CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHING -D PORTABLE -D MODERN=$(MODERN) -D UBFIX -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
