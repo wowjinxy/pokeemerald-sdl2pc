@@ -118,6 +118,8 @@ se_m_attract:
 	.byte	se_m_attract_pri	/* Priority*/
 	.byte	se_m_attract_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_attract_grp
 
 	.quad	se_m_attract_1

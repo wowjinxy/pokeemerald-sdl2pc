@@ -70,6 +70,8 @@ se_m_swagger:
 	.byte	se_m_swagger_pri	/* Priority*/
 	.byte	se_m_swagger_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_swagger_grp
 
 	.quad	se_m_swagger_1

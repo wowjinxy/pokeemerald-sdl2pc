@@ -198,6 +198,8 @@ se_m_heat_wave:
 	.byte	se_m_heat_wave_pri	/* Priority*/
 	.byte	se_m_heat_wave_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_heat_wave_grp
 
 	.quad	se_m_heat_wave_1

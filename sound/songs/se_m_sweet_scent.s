@@ -184,6 +184,8 @@ se_m_sweet_scent:
 	.byte	se_m_sweet_scent_pri	/* Priority*/
 	.byte	se_m_sweet_scent_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sweet_scent_grp
 
 	.quad	se_m_sweet_scent_1

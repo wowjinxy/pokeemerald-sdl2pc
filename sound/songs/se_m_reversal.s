@@ -328,6 +328,8 @@ se_m_reversal:
 	.byte	se_m_reversal_pri	/* Priority*/
 	.byte	se_m_reversal_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_reversal_grp
 
 	.quad	se_m_reversal_1

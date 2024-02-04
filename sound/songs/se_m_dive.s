@@ -115,6 +115,8 @@ se_m_dive:
 	.byte	se_m_dive_pri	/* Priority*/
 	.byte	se_m_dive_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_dive_grp
 
 	.quad	se_m_dive_1

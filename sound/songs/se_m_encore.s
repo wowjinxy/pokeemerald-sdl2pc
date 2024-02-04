@@ -51,6 +51,8 @@ se_m_encore:
 	.byte	se_m_encore_pri	/* Priority*/
 	.byte	se_m_encore_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_encore_grp
 
 	.quad	se_m_encore_1

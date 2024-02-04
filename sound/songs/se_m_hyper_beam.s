@@ -76,6 +76,8 @@ se_m_hyper_beam:
 	.byte	se_m_hyper_beam_pri	/* Priority*/
 	.byte	se_m_hyper_beam_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_hyper_beam_grp
 
 	.quad	se_m_hyper_beam_1

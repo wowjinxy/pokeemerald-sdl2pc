@@ -109,6 +109,8 @@ se_m_rain_dance:
 	.byte	se_m_rain_dance_pri	/* Priority*/
 	.byte	se_m_rain_dance_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_rain_dance_grp
 
 	.quad	se_m_rain_dance_1

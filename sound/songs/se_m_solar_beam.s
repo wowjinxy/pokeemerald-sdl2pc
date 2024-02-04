@@ -157,6 +157,8 @@ se_m_solar_beam:
 	.byte	se_m_solar_beam_pri	/* Priority*/
 	.byte	se_m_solar_beam_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_solar_beam_grp
 
 	.quad	se_m_solar_beam_1

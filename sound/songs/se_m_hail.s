@@ -90,6 +90,8 @@ se_m_hail:
 	.byte	se_m_hail_pri	/* Priority*/
 	.byte	se_m_hail_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_hail_grp
 
 	.quad	se_m_hail_1

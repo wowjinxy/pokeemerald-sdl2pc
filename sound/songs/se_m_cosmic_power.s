@@ -200,6 +200,8 @@ se_m_cosmic_power:
 	.byte	se_m_cosmic_power_pri	/* Priority*/
 	.byte	se_m_cosmic_power_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_cosmic_power_grp
 
 	.quad	se_m_cosmic_power_1

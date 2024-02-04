@@ -202,6 +202,8 @@ se_m_twister:
 	.byte	se_m_twister_pri	/* Priority*/
 	.byte	se_m_twister_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_twister_grp
 
 	.quad	se_m_twister_1

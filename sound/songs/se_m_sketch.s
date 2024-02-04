@@ -61,6 +61,8 @@ se_m_sketch:
 	.byte	se_m_sketch_pri	/* Priority*/
 	.byte	se_m_sketch_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sketch_grp
 
 	.quad	se_m_sketch_1

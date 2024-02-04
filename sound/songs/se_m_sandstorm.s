@@ -282,6 +282,8 @@ se_m_sandstorm:
 	.byte	se_m_sandstorm_pri	/* Priority*/
 	.byte	se_m_sandstorm_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sandstorm_grp
 
 	.quad	se_m_sandstorm_1

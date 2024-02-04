@@ -50,6 +50,8 @@ se_m_bonemerang:
 	.byte	se_m_bonemerang_pri	/* Priority*/
 	.byte	se_m_bonemerang_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_bonemerang_grp
 
 	.quad	se_m_bonemerang_1

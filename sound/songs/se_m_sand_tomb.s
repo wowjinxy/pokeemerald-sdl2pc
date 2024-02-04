@@ -189,6 +189,8 @@ se_m_sand_tomb:
 	.byte	se_m_sand_tomb_pri	/* Priority*/
 	.byte	se_m_sand_tomb_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sand_tomb_grp
 
 	.quad	se_m_sand_tomb_1

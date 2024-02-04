@@ -97,6 +97,8 @@ se_m_sacred_fire:
 	.byte	se_m_sacred_fire_pri	/* Priority*/
 	.byte	se_m_sacred_fire_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sacred_fire_grp
 
 	.quad	se_m_sacred_fire_1

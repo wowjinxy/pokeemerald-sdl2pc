@@ -47,6 +47,8 @@ se_dex_page:
 	.byte	se_dex_page_pri	/* Priority*/
 	.byte	se_dex_page_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_dex_page_grp
 
 	.quad	se_dex_page_1

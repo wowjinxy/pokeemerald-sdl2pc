@@ -119,6 +119,8 @@ se_m_yawn:
 	.byte	se_m_yawn_pri	/* Priority*/
 	.byte	se_m_yawn_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_yawn_grp
 
 	.quad	se_m_yawn_1

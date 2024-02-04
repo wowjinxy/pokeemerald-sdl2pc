@@ -87,6 +87,8 @@ se_m_mist:
 	.byte	se_m_mist_pri	/* Priority*/
 	.byte	se_m_mist_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_mist_grp
 
 	.quad	se_m_mist_1

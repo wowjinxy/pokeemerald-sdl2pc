@@ -58,6 +58,8 @@ se_m_rock_throw:
 	.byte	se_m_rock_throw_pri	/* Priority*/
 	.byte	se_m_rock_throw_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_rock_throw_grp
 
 	.quad	se_m_rock_throw_1

@@ -88,6 +88,8 @@ se_m_detect:
 	.byte	se_m_detect_pri	/* Priority*/
 	.byte	se_m_detect_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_detect_grp
 
 	.quad	se_m_detect_1

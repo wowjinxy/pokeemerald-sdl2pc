@@ -80,6 +80,8 @@ se_m_toxic:
 	.byte	se_m_toxic_pri	/* Priority*/
 	.byte	se_m_toxic_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_toxic_grp
 
 	.quad	se_m_toxic_1

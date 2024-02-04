@@ -209,6 +209,8 @@ se_m_psybeam2:
 	.byte	se_m_psybeam2_pri	/* Priority*/
 	.byte	se_m_psybeam2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_psybeam2_grp
 
 	.quad	se_m_psybeam2_1

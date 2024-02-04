@@ -104,6 +104,8 @@ se_m_screech:
 	.byte	se_m_screech_pri	/* Priority*/
 	.byte	se_m_screech_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_screech_grp
 
 	.quad	se_m_screech_1

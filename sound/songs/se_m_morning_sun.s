@@ -127,6 +127,8 @@ se_m_morning_sun:
 	.byte	se_m_morning_sun_pri	/* Priority*/
 	.byte	se_m_morning_sun_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_morning_sun_grp
 
 	.quad	se_m_morning_sun_1

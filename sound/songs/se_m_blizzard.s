@@ -96,6 +96,8 @@ se_m_blizzard:
 	.byte	se_m_blizzard_pri	/* Priority*/
 	.byte	se_m_blizzard_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_blizzard_grp
 
 	.quad	se_m_blizzard_1

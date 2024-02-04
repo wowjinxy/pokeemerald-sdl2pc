@@ -100,6 +100,8 @@ se_m_vital_throw2:
 	.byte	se_m_vital_throw2_pri	/* Priority*/
 	.byte	se_m_vital_throw2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_vital_throw2_grp
 
 	.quad	se_m_vital_throw2_1

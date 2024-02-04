@@ -119,6 +119,8 @@ se_m_attract2:
 	.byte	se_m_attract2_pri	/* Priority*/
 	.byte	se_m_attract2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_attract2_grp
 
 	.quad	se_m_attract2_1

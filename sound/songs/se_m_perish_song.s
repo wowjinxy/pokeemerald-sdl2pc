@@ -213,6 +213,8 @@ se_m_perish_song:
 	.byte	se_m_perish_song_pri	/* Priority*/
 	.byte	se_m_perish_song_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_perish_song_grp
 
 	.quad	se_m_perish_song_1

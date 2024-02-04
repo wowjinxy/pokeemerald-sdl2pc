@@ -161,6 +161,8 @@ se_m_baton_pass:
 	.byte	se_m_baton_pass_pri	/* Priority*/
 	.byte	se_m_baton_pass_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_baton_pass_grp
 
 	.quad	se_m_baton_pass_1

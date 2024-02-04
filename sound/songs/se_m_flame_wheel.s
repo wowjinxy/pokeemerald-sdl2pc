@@ -116,6 +116,8 @@ se_m_flame_wheel:
 	.byte	se_m_flame_wheel_pri	/* Priority*/
 	.byte	se_m_flame_wheel_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_flame_wheel_grp
 
 	.quad	se_m_flame_wheel_1

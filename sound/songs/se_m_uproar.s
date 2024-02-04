@@ -79,6 +79,8 @@ se_m_uproar:
 	.byte	se_m_uproar_pri	/* Priority*/
 	.byte	se_m_uproar_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_uproar_grp
 
 	.quad	se_m_uproar_1

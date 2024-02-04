@@ -72,6 +72,8 @@ se_m_dizzy_punch:
 	.byte	se_m_dizzy_punch_pri	/* Priority*/
 	.byte	se_m_dizzy_punch_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_dizzy_punch_grp
 
 	.quad	se_m_dizzy_punch_1

@@ -129,6 +129,8 @@ se_m_waterfall:
 	.byte	se_m_waterfall_pri	/* Priority*/
 	.byte	se_m_waterfall_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_waterfall_grp
 
 	.quad	se_m_waterfall_1

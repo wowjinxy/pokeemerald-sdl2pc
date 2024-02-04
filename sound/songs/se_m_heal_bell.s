@@ -76,6 +76,8 @@ se_m_heal_bell:
 	.byte	se_m_heal_bell_pri	/* Priority*/
 	.byte	se_m_heal_bell_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_heal_bell_grp
 
 	.quad	se_m_heal_bell_1

@@ -116,6 +116,8 @@ se_m_tri_attack2:
 	.byte	se_m_tri_attack2_pri	/* Priority*/
 	.byte	se_m_tri_attack2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_tri_attack2_grp
 
 	.quad	se_m_tri_attack2_1

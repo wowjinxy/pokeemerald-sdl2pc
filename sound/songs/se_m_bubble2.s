@@ -52,6 +52,8 @@ se_m_bubble2:
 	.byte	se_m_bubble2_pri	/* Priority*/
 	.byte	se_m_bubble2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_bubble2_grp
 
 	.quad	se_m_bubble2_1

@@ -122,6 +122,8 @@ se_m_lick:
 	.byte	se_m_lick_pri	/* Priority*/
 	.byte	se_m_lick_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_lick_grp
 
 	.quad	se_m_lick_1

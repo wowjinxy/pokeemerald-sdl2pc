@@ -318,6 +318,8 @@ se_m_earthquake:
 	.byte	se_m_earthquake_pri	/* Priority*/
 	.byte	se_m_earthquake_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_earthquake_grp
 
 	.quad	se_m_earthquake_1

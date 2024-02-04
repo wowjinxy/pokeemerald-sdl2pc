@@ -190,6 +190,8 @@ se_m_sing:
 	.byte	se_m_sing_pri	/* Priority*/
 	.byte	se_m_sing_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_sing_grp
 
 	.quad	se_m_sing_1

@@ -126,6 +126,8 @@ se_m_string_shot2:
 	.byte	se_m_string_shot2_pri	/* Priority*/
 	.byte	se_m_string_shot2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_string_shot2_grp
 
 	.quad	se_m_string_shot2_1

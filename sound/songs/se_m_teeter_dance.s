@@ -113,6 +113,8 @@ se_m_teeter_dance:
 	.byte	se_m_teeter_dance_pri	/* Priority*/
 	.byte	se_m_teeter_dance_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_teeter_dance_grp
 
 	.quad	se_m_teeter_dance_1

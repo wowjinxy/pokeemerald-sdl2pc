@@ -39,6 +39,8 @@ se_dex_scroll:
 	.byte	se_dex_scroll_pri	/* Priority*/
 	.byte	se_dex_scroll_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_dex_scroll_grp
 
 	.quad	se_dex_scroll_1

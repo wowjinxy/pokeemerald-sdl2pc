@@ -74,6 +74,8 @@ se_m_giga_drain:
 	.byte	se_m_giga_drain_pri	/* Priority*/
 	.byte	se_m_giga_drain_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_giga_drain_grp
 
 	.quad	se_m_giga_drain_1

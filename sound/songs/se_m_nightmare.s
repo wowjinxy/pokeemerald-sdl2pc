@@ -138,6 +138,8 @@ se_m_nightmare:
 	.byte	se_m_nightmare_pri	/* Priority*/
 	.byte	se_m_nightmare_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_nightmare_grp
 
 	.quad	se_m_nightmare_1

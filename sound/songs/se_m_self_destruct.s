@@ -67,6 +67,8 @@ se_m_self_destruct:
 	.byte	se_m_self_destruct_pri	/* Priority*/
 	.byte	se_m_self_destruct_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_self_destruct_grp
 
 	.quad	se_m_self_destruct_1

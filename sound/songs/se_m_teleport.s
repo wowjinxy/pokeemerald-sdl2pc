@@ -158,6 +158,8 @@ se_m_teleport:
 	.byte	se_m_teleport_pri	/* Priority*/
 	.byte	se_m_teleport_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_teleport_grp
 
 	.quad	se_m_teleport_1

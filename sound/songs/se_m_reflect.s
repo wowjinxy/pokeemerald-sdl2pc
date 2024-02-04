@@ -259,6 +259,8 @@ se_m_reflect:
 	.byte	se_m_reflect_pri	/* Priority*/
 	.byte	se_m_reflect_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_reflect_grp
 
 	.quad	se_m_reflect_1

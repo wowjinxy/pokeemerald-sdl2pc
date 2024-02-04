@@ -110,6 +110,8 @@ se_m_explosion:
 	.byte	se_m_explosion_pri	/* Priority*/
 	.byte	se_m_explosion_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_explosion_grp
 
 	.quad	se_m_explosion_1

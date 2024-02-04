@@ -91,6 +91,8 @@ se_m_tri_attack:
 	.byte	se_m_tri_attack_pri	/* Priority*/
 	.byte	se_m_tri_attack_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_tri_attack_grp
 
 	.quad	se_m_tri_attack_1

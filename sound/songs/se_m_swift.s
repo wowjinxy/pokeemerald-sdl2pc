@@ -103,6 +103,8 @@ se_m_swift:
 	.byte	se_m_swift_pri	/* Priority*/
 	.byte	se_m_swift_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_swift_grp
 
 	.quad	se_m_swift_1

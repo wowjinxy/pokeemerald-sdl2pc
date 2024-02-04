@@ -92,6 +92,8 @@ se_m_brick_break:
 	.byte	se_m_brick_break_pri	/* Priority*/
 	.byte	se_m_brick_break_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_brick_break_grp
 
 	.quad	se_m_brick_break_1

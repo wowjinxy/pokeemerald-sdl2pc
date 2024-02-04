@@ -34,6 +34,8 @@ se_wall_hit:
 	.byte	se_wall_hit_pri	/* Priority*/
 	.byte	se_wall_hit_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_wall_hit_grp
 
 	.quad	se_wall_hit_1

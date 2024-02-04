@@ -89,6 +89,8 @@ se_m_charm:
 	.byte	se_m_charm_pri	/* Priority*/
 	.byte	se_m_charm_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_charm_grp
 
 	.quad	se_m_charm_1

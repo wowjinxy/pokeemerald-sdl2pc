@@ -242,6 +242,8 @@ se_m_haze:
 	.byte	se_m_haze_pri	/* Priority*/
 	.byte	se_m_haze_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_haze_grp
 
 	.quad	se_m_haze_1

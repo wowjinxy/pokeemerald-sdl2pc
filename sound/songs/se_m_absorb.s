@@ -66,6 +66,8 @@ se_m_absorb:
 	.byte	se_m_absorb_pri	/* Priority*/
 	.byte	se_m_absorb_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_absorb_grp
 
 	.quad	se_m_absorb_1

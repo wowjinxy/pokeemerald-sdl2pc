@@ -143,6 +143,8 @@ se_m_dragon_rage:
 	.byte	se_m_dragon_rage_pri	/* Priority*/
 	.byte	se_m_dragon_rage_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_dragon_rage_grp
 
 	.quad	se_m_dragon_rage_1

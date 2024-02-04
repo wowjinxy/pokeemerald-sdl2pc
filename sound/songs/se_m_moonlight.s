@@ -210,6 +210,8 @@ se_m_moonlight:
 	.byte	se_m_moonlight_pri	/* Priority*/
 	.byte	se_m_moonlight_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_moonlight_grp
 
 	.quad	se_m_moonlight_1

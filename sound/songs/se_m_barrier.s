@@ -268,6 +268,8 @@ se_m_barrier:
 	.byte	se_m_barrier_pri	/* Priority*/
 	.byte	se_m_barrier_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_barrier_grp
 
 	.quad	se_m_barrier_1

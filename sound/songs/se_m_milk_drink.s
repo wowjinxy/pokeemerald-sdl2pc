@@ -121,6 +121,8 @@ se_m_milk_drink:
 	.byte	se_m_milk_drink_pri	/* Priority*/
 	.byte	se_m_milk_drink_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_milk_drink_grp
 
 	.quad	se_m_milk_drink_1

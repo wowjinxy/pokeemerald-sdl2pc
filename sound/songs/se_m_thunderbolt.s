@@ -109,6 +109,8 @@ se_m_thunderbolt:
 	.byte	se_m_thunderbolt_pri	/* Priority*/
 	.byte	se_m_thunderbolt_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_thunderbolt_grp
 
 	.quad	se_m_thunderbolt_1

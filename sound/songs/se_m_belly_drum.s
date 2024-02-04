@@ -65,6 +65,8 @@ se_m_belly_drum:
 	.byte	se_m_belly_drum_pri	/* Priority*/
 	.byte	se_m_belly_drum_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_belly_drum_grp
 
 	.quad	se_m_belly_drum_1

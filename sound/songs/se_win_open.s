@@ -35,6 +35,8 @@ se_win_open:
 	.byte	se_win_open_pri	/* Priority*/
 	.byte	se_win_open_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_win_open_grp
 
 	.quad	se_win_open_1

@@ -54,6 +54,8 @@ se_m_ember:
 	.byte	se_m_ember_pri	/* Priority*/
 	.byte	se_m_ember_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_ember_grp
 
 	.quad	se_m_ember_1

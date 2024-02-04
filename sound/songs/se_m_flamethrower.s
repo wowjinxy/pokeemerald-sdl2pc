@@ -167,6 +167,8 @@ se_m_flamethrower:
 	.byte	se_m_flamethrower_pri	/* Priority*/
 	.byte	se_m_flamethrower_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_flamethrower_grp
 
 	.quad	se_m_flamethrower_1

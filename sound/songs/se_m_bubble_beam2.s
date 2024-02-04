@@ -124,6 +124,8 @@ se_m_bubble_beam2:
 	.byte	se_m_bubble_beam2_pri	/* Priority*/
 	.byte	se_m_bubble_beam2_rev	/* Reverb.*/
 
+	.space 4
+
 	.quad	se_m_bubble_beam2_grp
 
 	.quad	se_m_bubble_beam2_1
