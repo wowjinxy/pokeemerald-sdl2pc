@@ -32,10 +32,10 @@
 	.space 1  /* Padding*/
 	.short \trainer_type
 	.short \sight_radius_tree_etc
-    .space 4
+    /*.space 4*/
 	.quad \script
 	.short \event_flag
-	.space 2  /* Padding*/
+	.space 6  /* Padding*/
 	inc _num_npcs
 	.endm
 
@@ -91,10 +91,11 @@
 	.byte \kind
 	.space 2  /* Padding*/
 	.if \kind != BG_EVENT_HIDDEN_ITEM
-		.int \arg6
+		.quad \arg6
 	.else
 		.short \arg6
 		.short \arg7
+        .space 4
 	.endif
 	inc _num_signs
 	.endm
