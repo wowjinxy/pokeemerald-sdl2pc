@@ -73,7 +73,7 @@
 	.byte 0xb
 	.byte \battler
 	.int \status2
-	.int \param2
+	.quad \param2
 	.endm
 
 	.macro if_not_status2 battler:req, status2:req, param2:req
@@ -137,25 +137,25 @@
 
 	.macro if_less_than_ptr param0:req, param1:req
 	.byte 0x15
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_more_than_ptr param0:req, param1:req
 	.byte 0x16
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_equal_ptr param0:req, param1:req
 	.byte 0x17
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_not_equal_ptr param0:req, param1:req
 	.byte 0x18
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
@@ -173,25 +173,25 @@
 
 	.macro if_in_bytes param0:req, param1:req
 	.byte 0x1b
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_not_in_bytes param0:req, param1:req
 	.byte 0x1c
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_in_hwords param0:req, param1:req
 	.byte 0x1d
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
 	.macro if_not_in_hwords param0:req, param1:req
 	.byte 0x1e
-	.int \param0
+	.quad \param0
 	.quad \param1
 	.endm
 
