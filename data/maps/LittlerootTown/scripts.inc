@@ -4,9 +4,9 @@
 .set LOCALID_BIRCH, 8
 
 LittlerootTown_MapScripts::
-	/* map_script MAP_SCRIPT_ON_TRANSITION, LittlerootTown_OnTransition */
-	/* map_script MAP_SCRIPT_ON_FRAME_TABLE, LittlerootTown_OnFrame */
-	/* map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, LittlerootTown_OnWarp */
+	map_script MAP_SCRIPT_ON_TRANSITION, LittlerootTown_OnTransition
+	map_script MAP_SCRIPT_ON_FRAME_TABLE, LittlerootTown_OnFrame
+	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, LittlerootTown_OnWarp
 	.byte 0
 
 	/* State descriptions for VAR_LITTLEROOT_TOWN_STATE*/
