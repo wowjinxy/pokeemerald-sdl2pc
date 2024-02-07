@@ -1262,8 +1262,18 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
 #define tBrendanSpriteId data[10]
 #define tMaySpriteId data[11]
 
+//u8 debugPlayerName[] = {0xCB, 0xD1, 0xC9, 0xCC, 0xBE, 0xFF, 0xFF, 0xFF};
+
 static void Task_NewGameBirchSpeech_Init(u8 taskId)
 {
+    //gSaveBlock2Ptr->playerGender = MALE;
+    
+    //memcpy(gSaveBlock2Ptr->playerName, debugPlayerName, sizeof(debugPlayerName));
+    
+    //SetMainCallback2(CB2_NewGame);
+    //DestroyTask(taskId);
+    
+    //gTasks[taskId].func = Task_NewGameBirchSpeech_FadePlayerToWhite;
     SetGpuReg(REG_OFFSET_DISPCNT, 0);
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     InitBgFromTemplate(&sBirchBgTemplate);
