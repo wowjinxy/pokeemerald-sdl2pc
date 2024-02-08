@@ -25,8 +25,6 @@
 #include "title_screen.h"
 #include "constants/rgb.h"
 #include "constants/battle_anim.h"
-//debug
-#include "overworld.h"
 
 /*
     The intro is grouped into the following scenes
@@ -1115,7 +1113,7 @@ static u8 SetUpCopyrightScreen(void)
         if (UpdatePaletteFade())
             break;
         CreateTask(Task_Scene1_Load, 0);
-        SetMainCallback2(CB2_NewGame);
+        SetMainCallback2(MainCB2_Intro);
         if (gMultibootProgramStruct.gcmb_field_2 != 0)
         {
             if (gMultibootProgramStruct.gcmb_field_2 == 2)
@@ -1142,12 +1140,10 @@ static u8 SetUpCopyrightScreen(void)
     return 1;
 }
 
-u8 debugPlayerName[] = {0xCB, 0xD1, 0xC9, 0xCC, 0xBE, 0xFF, 0xFF, 0xFF};
-
 void CB2_InitCopyrightScreenAfterBootup(void)
 {
-    //if (!SetUpCopyrightScreen())
-    //{
+    if (!SetUpCopyrightScreen())
+    {
         SetSaveBlocksPointers(GetSaveBlocksPointersBaseOffset());
         ResetMenuAndMonGlobals();
         Save_ResetSaveCounters();
@@ -1155,14 +1151,8 @@ void CB2_InitCopyrightScreenAfterBootup(void)
         if (gSaveFileStatus == SAVE_STATUS_EMPTY || gSaveFileStatus == SAVE_STATUS_CORRUPT)
             Sav2_ClearSetDefault();
         SetPokemonCryStereo(gSaveBlock2Ptr->optionsSound);
-        //debug
-        gSaveBlock2Ptr->playerGender = MALE;
-        memcpy(gSaveBlock2Ptr->playerName, debugPlayerName, sizeof(debugPlayerName));
-        gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
-        //debug end
         InitHeap(gHeap, HEAP_SIZE);
-        SetMainCallback2(CB2_NewGame);
-    //}
+    }
 }
 
 void CB2_InitCopyrightScreenAfterTitleScreen(void)

@@ -190,7 +190,7 @@ static void Task_HandleTruckSequence(u8 taskId)
 {
    s16 *data = gTasks[taskId].data;
 
-    /*switch (tState)
+    switch (tState)
     {
     case 0:
         tTimer++;
@@ -244,8 +244,7 @@ static void Task_HandleTruckSequence(u8 taskId)
     case 5:
         tTimer++;
         if (tTimer == 120)
-        {*/
-            FadeInFromBlack();
+        {
             MapGridSetMetatileIdAt(4 + MAP_OFFSET, 1 + MAP_OFFSET, METATILE_InsideOfTruck_ExitLight_Top);
             MapGridSetMetatileIdAt(4 + MAP_OFFSET, 2 + MAP_OFFSET, METATILE_InsideOfTruck_ExitLight_Mid);
             MapGridSetMetatileIdAt(4 + MAP_OFFSET, 3 + MAP_OFFSET, METATILE_InsideOfTruck_ExitLight_Bottom);
@@ -253,9 +252,9 @@ static void Task_HandleTruckSequence(u8 taskId)
             PlaySE(SE_TRUCK_DOOR);
             DestroyTask(taskId);
             UnlockPlayerFieldControls();
-        //}
-        //break;
-    //}
+        }
+        break;
+    }
 }
 
 void ExecuteTruckSequence(void)
