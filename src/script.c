@@ -183,6 +183,13 @@ u32 ScriptReadWord(struct ScriptContext *ctx)
     return (((((value3 << 8) + value2) << 8) + value1) << 8) + value0;
 }
 
+u64 ScriptReadQuadWord(struct ScriptContext *ctx)
+{
+    u64 value0 = *((u64*)ctx->scriptPtr);
+    ctx->scriptPtr += 8;
+    return value0;
+}
+
 void LockPlayerFieldControls(void)
 {
     sLockFieldControls = TRUE;
