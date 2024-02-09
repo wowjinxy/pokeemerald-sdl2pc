@@ -483,8 +483,8 @@ string generate_map_constants_text(string groups_filepath, Json groups_data) {
         }
 
         int map_id_num = 0;
-        for (string map_id : map_ids) {
-            text << "#define " << map_id << string((max_length - map_id.length() + 1), ' ')
+        for (Json map_id : map_ids) {
+            text << "#define " << map_id.string_value() << string((max_length - map_id.string_value().length() + 1), ' ')
                  << "(" << map_id_num++ << " | (" << group_num << " << 8))\n";
         }
         text << "\n";
