@@ -17,7 +17,7 @@ struct BgControl
         u8 wraparound:1;
 
         u8 charBaseIndex:2;
-        u8 mapBaseIndex:5;
+        u8 mapBaseIndex;
         u8 paletteMode:1;
 
         u8 unknown_2; // Assigned to but never read
@@ -170,9 +170,9 @@ static u16 GetBgControlAttribute(u8 bg, u8 attributeId)
     return 0xFF;
 }
 
-u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode)
+u8 LoadBgVram(u8 bg, const void *src, u32 size, u32 destOffset, u8 mode)
 {
-    u16 offset;
+    u32 offset;
     s8 cursor;
 
     if (IsInvalidBg(bg) || !sGpuBgConfigs.configs[bg].visible)
@@ -372,9 +372,9 @@ void SetBgMode(u8 bgMode)
     SetBgModeInternal(bgMode);
 }
 
-u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
+u16 LoadBgTiles(u8 bg, const void *src, u16 size, u32 destOffset)
 {
-    u16 tileOffset;
+    u32 tileOffset;
     u8 cursor;
 
     if (GetBgControlAttribute(bg, BG_CTRL_ATTR_PALETTEMODE) == 0)
@@ -401,7 +401,7 @@ u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
     return cursor;
 }
 
-u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u16 destOffset)
+u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u32 destOffset)
 {
     u8 cursor = LoadBgVram(bg, src, size, destOffset * 2, DISPCNT_MODE_2);
 
@@ -875,7 +875,7 @@ void *GetBgTilemapBuffer(u8 bg)
         return sGpuBgConfigs2[bg].tilemap;
 }
 
-void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u16 destOffset)
+void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u32 destOffset)
 {
     if (!IsInvalidBg32(bg) && !IsTileMapOutsideWram(bg))
     {
@@ -888,7 +888,7 @@ void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u16 destOffset)
 
 void CopyBgTilemapBufferToVram(u8 bg)
 {
-    u16 sizeToLoad;
+    u32 sizeToLoad;
 
     if (!IsInvalidBg32(bg) && !IsTileMapOutsideWram(bg))
     {

@@ -49,7 +49,7 @@ extern unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 
 #define BG_PLTT       PLTT
 
-#define VRAM_SIZE 0x18000
+#define VRAM_SIZE 0x28000
 #ifndef PORTABLE
 #define VRAM      0x6000000
 #else
@@ -58,7 +58,7 @@ extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 #endif
 
 #define BG_VRAM           VRAM
-#define BG_VRAM_SIZE      0x10000
+#define BG_VRAM_SIZE      0x20000
 #define BG_CHAR_SIZE      0x4000
 #define BG_SCREEN_SIZE    0x800
 #define BG_CHAR_ADDR(n)   (BG_VRAM + (BG_CHAR_SIZE * (n)))
@@ -70,7 +70,7 @@ extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 #define NUM_BACKGROUNDS 4
 
 // text-mode BG
-#define OBJ_VRAM0      (VRAM + 0x10000)
+#define OBJ_VRAM0      (VRAM + BG_VRAM_SIZE)
 #define OBJ_VRAM0_SIZE 0x8000
 
 // bitmap-mode BG
@@ -91,7 +91,7 @@ extern unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 #define TILE_HEIGHT 8
 
 // Dimensions of the GBA screen in pixels
-#define DISPLAY_WIDTH  240
+#define DISPLAY_WIDTH  288
 #define DISPLAY_HEIGHT 160
 
 // Dimensions of the GBA screen in tiles

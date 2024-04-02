@@ -1433,7 +1433,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
     int i;
     unsigned int x;
     unsigned int y;
-    void *objtiles = VRAM_ + 0x10000;
+    void *objtiles = VRAM_ + BG_VRAM_SIZE;
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
     bool winShouldBlendPixel = true;
 
@@ -1721,8 +1721,8 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     WIN0enable = false;
     WIN1enable = false;
 
-    //figure out if WIN0 masks on this scanline
-    if (REG_DISPCNT & DISPCNT_WIN0_ON)
+    //figure out if WIN0 masks on this scanline 
+    /*if (REG_DISPCNT & DISPCNT_WIN0_ON)
     {
         //acquire the window coordinates
         WIN0bottom = (REG_WIN0V & 0xFF); //y2;
@@ -1779,7 +1779,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             else
                 scanline.winMask[xpos] = (REG_WINOUT & 0x3F) | WINMASK_WINOUT;
         }
-    }
+    }*/
 
     if (REG_DISPCNT & DISPCNT_OBJ_ON)
         DrawSprites(&scanline, vcount, windowsEnabled);

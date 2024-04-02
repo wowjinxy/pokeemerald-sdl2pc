@@ -12,10 +12,10 @@ extern unsigned char REG_BASE[];
 #define REG_OFFSET_DISPCNT     0x0
 #define REG_OFFSET_DISPSTAT    0x4
 #define REG_OFFSET_VCOUNT      0x6
-#define REG_OFFSET_BG0CNT      0x8
-#define REG_OFFSET_BG1CNT      0xa
-#define REG_OFFSET_BG2CNT      0xc
-#define REG_OFFSET_BG3CNT      0xe
+#define REG_OFFSET_BG0CNT      0x20A
+#define REG_OFFSET_BG1CNT      0x20C
+#define REG_OFFSET_BG2CNT      0x20E
+#define REG_OFFSET_BG3CNT      0x210
 #define REG_OFFSET_BG0HOFS     0x10
 #define REG_OFFSET_BG0VOFS     0x12
 #define REG_OFFSET_BG1HOFS     0x14

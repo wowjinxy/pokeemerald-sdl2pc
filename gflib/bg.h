@@ -43,7 +43,7 @@ struct BgTemplate
 {
     u16 bg:2;                   // 0x1, 0x2 -> 0x3
     u16 charBaseIndex:2;        // 0x4, 0x8 -> 0xC
-    u16 mapBaseIndex:5;         // 0x10, 0x20, 0x40, 0x80, 0x100 -> 0x1F0
+    u16 mapBaseIndex;         // 0x10, 0x20, 0x40, 0x80, 0x100 -> 0x1F0
     u16 screenSize:2;           // 0x200, 0x400 -> 0x600
     u16 paletteMode:1;          // 0x800
     u16 priority:2;             // 0x1000, 0x2000 > 0x3000
@@ -54,7 +54,7 @@ void ResetBgs(void);
 u8 GetBgMode(void);
 void ResetBgControlStructs(void);
 void Unused_ResetBgControlStruct(u8 bg);
-u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode);
+u8 LoadBgVram(u8 bg, const void *src, u32 size, u32 destOffset, u8 mode);
 void SetTextModeAndHideBgs(void);
 bool8 IsInvalidBg(u8 bg);
 int BgTileAllocOp(int bg, int offset, int count, int mode);
@@ -62,8 +62,8 @@ void ResetBgsAndClearDma3BusyFlags(u32 leftoverFireRedLeafGreenVariable);
 void InitBgsFromTemplates(u8 bgMode, const struct BgTemplate *templates, u8 numTemplates);
 void InitBgFromTemplate(const struct BgTemplate *template);
 void SetBgMode(u8 bgMode);
-u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset);
-u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u16 destOffset);
+u16 LoadBgTiles(u8 bg, const void *src, u16 size, u32 destOffset);
+u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u32 destOffset);
 u16 Unused_LoadBgPalette(u8 bg, const void *src, u16 size, u16 destOffset);
 bool8 IsDma3ManagerBusyWithBgCopy(void);
 void ShowBg(u8 bg);
@@ -80,7 +80,7 @@ u8 Unused_AdjustBgMosaic(u8 val, u8 mode);
 void SetBgTilemapBuffer(u8 bg, void *tilemap);
 void UnsetBgTilemapBuffer(u8 bg);
 void *GetBgTilemapBuffer(u8 bg);
-void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u16 destOffset);
+void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u32 destOffset);
 void CopyBgTilemapBufferToVram(u8 bg);
 void CopyToBgTilemapBufferRect(u8 bg, const void *src, u8 destX, u8 destY, u8 width, u8 height);
 void CopyToBgTilemapBufferRect_ChangePalette(u8 bg, const void *src, u8 destX, u8 destY, u8 rectWidth, u8 rectHeight, u8 palette);
