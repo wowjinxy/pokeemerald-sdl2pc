@@ -186,19 +186,18 @@ u8 GetTaskCount(void)
     return count;
 }
 
-void SetWordTaskArg(u8 taskId, u8 dataElem, u32 value)
+void SetWordTaskArg(u8 taskId, u8 dataElem, uintptr_t value)
 {
     if (dataElem < NUM_TASK_DATA - 1)
     {
-        gTasks[taskId].data[dataElem] = value;
-        gTasks[taskId].data[dataElem + 1] = value >> 16;
+        gTasks[taskId].intPtr[dataElem] = value;
     }
 }
 
-u32 GetWordTaskArg(u8 taskId, u8 dataElem)
+uintptr_t GetWordTaskArg(u8 taskId, u8 dataElem)
 {
     if (dataElem < NUM_TASK_DATA - 1)
-        return (u16)gTasks[taskId].data[dataElem] | (gTasks[taskId].data[dataElem + 1] << 16);
+        return gTasks[taskId].intPtr[dataElem];
     else
         return 0;
 }

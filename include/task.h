@@ -18,6 +18,14 @@ struct Task
     u8 next;
     u8 priority;
     s16 data[NUM_TASK_DATA];
+    union {
+        void *genericPtr[2];
+        uintptr_t intPtr[2];
+        void (*funcPtr)(void);
+        TaskFunc funcPtr_task;
+        struct Sprite *spritePtr;
+        struct Pokemon *monPtr;
+    };
 };
 
 extern struct Task gTasks[];
@@ -32,7 +40,7 @@ void SwitchTaskToFollowupFunc(u8 taskId);
 bool8 FuncIsActiveTask(TaskFunc func);
 u8 FindTaskIdByFunc(TaskFunc func);
 u8 GetTaskCount(void);
-void SetWordTaskArg(u8 taskId, u8 dataElem, u32 value);
-u32 GetWordTaskArg(u8 taskId, u8 dataElem);
+void SetWordTaskArg(u8 taskId, u8 dataElem, uintptr_t value);
+uintptr_t GetWordTaskArg(u8 taskId, u8 dataElem);
 
 #endif // GUARD_TASK_H

@@ -8,7 +8,7 @@ ifeq ($(shell uname),Linux)
 # Windows
 else
   PREFIX := x86_64-w64-mingw32-
-  PLATFORM_LIBS := -L$(SDL_DIR)/lib  -lmingw32 -lSDLmain -lSDL.dll -lwinmm
+  PLATFORM_LIBS := -L$(SDL_DIR)/lib -lmingw32 -lSDLmain -lSDL.dll -lwinmm
   SDL_DIR := /home/pokeemerald/SDL2-2.0.14/x86_64-w64-mingw32
 endif
 
@@ -60,7 +60,7 @@ ASFLAGS += --64 --defsym MODERN=$(MODERN) --defsym PORTABLE=1 --defsym UBFIX=1
 GCC_VER := $(shell $(CC) -dumpversion)
 
 CC1 	:= $(shell $(PREFIX)gcc --print-prog-name=cc1) -quiet
-override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m64 -std=gnu99 -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DUBFIX -DMODERN=$(MODERN)
+override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -Wno-unused-variable -m64 -std=gnu99 -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DUBFIX -DMODERN=$(MODERN)
 CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DPORTABLE -DMODERN=$(MODERN) -DUBFIX
 ifeq ($(shell uname),Linux)
 	ROM		:= pokeemerald-linux

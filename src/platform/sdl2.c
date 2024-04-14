@@ -10,7 +10,7 @@
 
 #include <SDL2/SDL.h>
 
-#define NO_UNDERSCORE_HACK
+// #define NO_UNDERSCORE_HACK
 
 #include "global.h"
 #include "platform.h"
@@ -801,6 +801,7 @@ void RLUnCompWram(const void *src, void *dest)
     int padding = (4 - remaining) & 0x3;
     int blockHeader;
     int block;
+    u32 *dest_u32 = (u32*)dest;
     src += 4;
     while (remaining > 0)
     {
@@ -815,8 +816,8 @@ void RLUnCompWram(const void *src, void *dest)
             while (blockHeader-- && remaining)
             {
                 remaining--;
-                CPUWriteByte(dest, block);
-                dest++;
+                CPUWriteByte(dest_u32, block);
+                dest_u32++;
             }
         }
         else // Uncompressed
@@ -827,15 +828,15 @@ void RLUnCompWram(const void *src, void *dest)
                 remaining--;
                 u8 byte = CPUReadByte(src);
                 src++;
-                CPUWriteByte(dest, byte);
-                dest++;
+                CPUWriteByte(dest_u32, byte);
+                dest_u32++;
             }
         }
     }
     while (padding--)
     {
-        CPUWriteByte(dest, 0);
-        dest++;
+        CPUWriteByte(dest_u32, 0);
+        dest_u32++;
     }
 }
 
@@ -846,6 +847,7 @@ void RLUnCompVram(const void *src, void *dest)
     int blockHeader;
     int block;
     int halfWord = 0;
+    u32 *dest_u32 = (u32*)dest;
     src += 4;
     while (remaining > 0)
     {
@@ -860,14 +862,14 @@ void RLUnCompVram(const void *src, void *dest)
             while (blockHeader-- && remaining)
             {
                 remaining--;
-                if ((u32)dest & 1)
+                if ((u32)dest_u32 & 1)
                 {
                     halfWord |= block << 8;
-                    CPUWriteHalfWord((u32)dest ^ 1, halfWord);
+                    CPUWriteHalfWord((u32)dest_u32 ^ 1, halfWord);
                 }
                 else
                     halfWord = block;
-                dest++;
+                dest_u32++;
             }
         }
         else // Uncompressed
@@ -878,24 +880,24 @@ void RLUnCompVram(const void *src, void *dest)
                 remaining--;
                 u8 byte = CPUReadByte(src);
                 src++;
-                if ((u32)dest & 1)
+                if ((u32)dest_u32 & 1)
                 {
                     halfWord |= byte << 8;
-                    CPUWriteHalfWord((u32)dest ^ 1, halfWord);
+                    CPUWriteHalfWord((u32)dest_u32 ^ 1, halfWord);
                 }
                 else
                     halfWord = byte;
-                dest++;
+                dest_u32++;
             }
         }
     }
-    if ((u32)dest & 1)
+    if ((u32)dest_u32 & 1)
     {
         padding--;
-        dest++;
+        dest_u32++;
     }
-    for (; padding > 0; padding -= 2, dest += 2)
-        CPUWriteHalfWord(dest, 0);
+    for (; padding > 0; padding -= 2, dest_u32 += 2)
+        CPUWriteHalfWord(dest_u32, 0);
 }
 
 const s16 sineTable[256] = {
