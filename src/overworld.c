@@ -1734,12 +1734,24 @@ void CB2_ContinueSavedGame(void)
     UnfreezeObjectEvents();
     DoTimeBasedEvents();
     UpdateMiscOverworldStates();
+    
+    #ifdef UBFIX
+    //UBFIX hack: Prevent null pointer dereference when save continuing in petalburg gym
+    //InitMapFromSavedGame runs map scripts which in petalburg's gym case modifies tilemap data before its loaded when loaded from save continue
+    //the hacky solution is to temporarily initialize tileset and then free it so it wouldn't cause memory leaks
+    InitOverworldBgs();
+    #endif
+    
     if (gMapHeader.mapLayoutId == LAYOUT_BATTLE_FRONTIER_BATTLE_PYRAMID_FLOOR)
         InitBattlePyramidMap(TRUE);
     else if (trainerHillMapId != 0)
         InitTrainerHillMap();
     else
         InitMapFromSavedGame();
+    
+    #ifdef UBFIX
+    CleanupOverworldWindowsAndTilemaps();
+    #endif
 
     PlayTimeCounter_Start();
     ScriptContext_Init();
