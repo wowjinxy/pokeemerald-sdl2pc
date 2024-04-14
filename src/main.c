@@ -362,7 +362,7 @@ void SetSerialCallback(IntrCallback callback)
     gMain.serialCallback = callback;
 }
 
-static void VBlankIntr(void)
+void FrameUpdate(void)
 {
     if (gWirelessCommType != 0)
         RfuVSync();
@@ -382,15 +382,23 @@ static void VBlankIntr(void)
     CopyBufferedValuesToGpuRegs();
     ProcessDma3Requests();
 
+#ifndef PORTABLE
     gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
 
     m4aSoundMain();
+#endif
+
     TryReceiveLinkBattleData();
 
     if (!gMain.inBattle || !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED)))
         Random();
 
     UpdateWirelessStatusIndicatorSprite();
+}
+
+static void VBlankIntr(void)
+{
+    FrameUpdate();
 
     INTR_CHECK |= INTR_FLAG_VBLANK;
     gMain.intrCheck |= INTR_FLAG_VBLANK;
@@ -401,21 +409,34 @@ void InitFlashTimer(void)
     SetFlashTimerIntr(2, gIntrTable + 0x7);
 }
 
-static void HBlankIntr(void)
+void DoHBlankUpdate(void)
 {
     if (gMain.hblankCallback)
         gMain.hblankCallback();
+}
+
+static void HBlankIntr(void)
+{
+    DoHBlankUpdate();
 
     INTR_CHECK |= INTR_FLAG_HBLANK;
     gMain.intrCheck |= INTR_FLAG_HBLANK;
 }
 
-static void VCountIntr(void)
+void DoVCountUpdate(void)
 {
     if (gMain.vcountCallback)
         gMain.vcountCallback();
+}
 
+static void VCountIntr(void)
+{
+    DoVCountUpdate();
+
+#ifndef PORTABLE
     m4aSoundVSync();
+#endif
+
     INTR_CHECK |= INTR_FLAG_VCOUNT;
     gMain.intrCheck |= INTR_FLAG_VCOUNT;
 }

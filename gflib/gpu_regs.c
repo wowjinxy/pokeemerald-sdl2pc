@@ -72,6 +72,9 @@ void SetGpuReg(u8 regOffset, u16 value)
         GPU_REG_BUF(regOffset) = value;
         vcount = REG_VCOUNT & 0xFF;
 
+#ifdef PORTABLE
+        CopyBufferedValueToGpuReg(regOffset);
+#else
         if ((vcount >= 161 && vcount <= 225) || (REG_DISPCNT & DISPCNT_FORCED_BLANK))
         {
             CopyBufferedValueToGpuReg(regOffset);
@@ -94,6 +97,7 @@ void SetGpuReg(u8 regOffset, u16 value)
             sGpuRegWaitingList[i] = regOffset;
             sGpuRegBufferLocked = FALSE;
         }
+#endif
     }
 }
 

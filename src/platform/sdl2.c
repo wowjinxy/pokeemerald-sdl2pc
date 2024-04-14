@@ -15,9 +15,9 @@
 #include "rtc.h"
 #include "gba/defines.h"
 #include "gba/m4a_internal.h"
+#include "m4a.h"
+#include "main.h"
 #include "cgb_audio.h"
-
-extern void (*const gIntrTable[])(void);
 
 u16 INTR_CHECK;
 void *INTR_VECTOR;
@@ -103,9 +103,9 @@ static FILE *sSaveFile = NULL;
 extern void AgbMain(void);
 extern void DoSoftReset(void);
 
-int DoMain(void *param);
-void ProcessEvents(void);
-void VDraw(SDL_Texture *texture);
+static int DoMain(void *param);
+static void ProcessEvents(void);
+static void VDraw(SDL_Texture *texture);
 
 static void ReadSaveFile(char *path);
 static void StoreSaveFile(void);
@@ -113,6 +113,10 @@ static void CloseSaveFile(void);
 
 static void UpdateInternalClock(void);
 static void RunDMAs(u32 type);
+
+static void RunFrame(void);
+
+static void AudioUpdate(void);
 
 s32 DisplayWidth(void)
 {
@@ -248,7 +252,7 @@ int main(int argc, char **argv)
     for (unsigned i = 0; i < NUM_BACKGROUNDS + 1; i++)
         layerEnabled[i] = TRUE;
     
-    VDraw(sdlTexture);
+    // VDraw(sdlTexture);
     mainLoopThread = SDL_CreateThread(DoMain, "AgbMain", NULL);
 
     double accumulator = 0.0;
@@ -292,22 +296,11 @@ int main(int argc, char **argv)
             {
                 if (SDL_AtomicGet(&isFrameAvailable))
                 {
-                    // FIXME: Yikes.
-                    VDraw(sdlTexture);
-
                     SDL_AtomicSet(&isFrameAvailable, 0);
 
-                    REG_DISPSTAT |= INTR_FLAG_VBLANK;
-
-                    if (runHBlank)
-                        RunDMAs(DMA_HBLANK);
-
-                    if (runVBlank)
-                    {
-                        if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
-                            gIntrTable[4]();
-                        REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
-                    }
+                    // Calls FrameUpdate
+                    // NOTE: This also runs HBlank DMAs once.
+                    RunFrame();
 
                     SDL_SemPost(vBlankSemaphore);
 
@@ -316,6 +309,13 @@ int main(int argc, char **argv)
             }
         }
 
+        // Draws each scanline and runs HBlank DMAs
+        VDraw(sdlTexture);
+
+        // Calls m4aSoundMain() and m4aSoundVSync()
+        AudioUpdate();
+
+        // Display the frame
         SDL_RenderClear(sdlRenderer);
         SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
         SDL_RenderPresent(sdlRenderer);
@@ -2043,29 +2043,30 @@ static void DrawFrame(uint16_t *pixels)
 
     for (i = 0; i < displayHeight; i++)
     {
+        // Clear this scanline
         for (u32 j = 0; j < displayWidth; j++)
             scanlines[i][j] = backdropColor;
 
         REG_VCOUNT = i;
-        if (runVCount)
+
+        if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
         {
-            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
-            {
-                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
-                if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
-                    gIntrTable[0]();
-            }
+            REG_DISPSTAT |= INTR_FLAG_VCOUNT;
+            if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+                DoVCountUpdate();
+                // gIntrTable[0]();
         }
 
         DrawScanline(scanlines[i], i);
-        
+
         REG_DISPSTAT |= INTR_FLAG_HBLANK;
 
         if (runHBlank)
             RunDMAs(DMA_HBLANK);
-        
-        if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
-            gIntrTable[3]();
+
+        DoHBlankUpdate();
+        // if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
+        //     gIntrTable[3]();
 
         REG_DISPSTAT &= ~INTR_FLAG_HBLANK;
         REG_DISPSTAT &= ~INTR_FLAG_VCOUNT;
@@ -2076,36 +2077,21 @@ static void DrawFrame(uint16_t *pixels)
         memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
 }
 
-#if 0
 static void RunFrame(void)
 {
-    // Calls interrupts, but doesn't actually render the frame.
-    for (i = 0; i < displayHeight; i++)
+    REG_DISPSTAT |= INTR_FLAG_VBLANK;
+
+    if (runHBlank)
+        RunDMAs(DMA_HBLANK);
+
+    if (runVBlank)
     {
-        REG_VCOUNT = i;
-        if (runVCount)
-        {
-            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
-            {
-                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
-                if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
-                    gIntrTable[0]();
-            }
-        }
-
-        REG_DISPSTAT |= INTR_FLAG_HBLANK;
-
-        if (runHBlank)
-            RunDMAs(DMA_HBLANK);
-
-        if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
-            gIntrTable[3]();
-
-        REG_DISPSTAT &= ~INTR_FLAG_HBLANK;
-        REG_DISPSTAT &= ~INTR_FLAG_VCOUNT;
+        FrameUpdate();
+        // if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
+        //     gIntrTable[4]();
+        // REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
     }
 }
-#endif
 
 void VDraw(SDL_Texture *texture)
 {
@@ -2124,7 +2110,6 @@ void VDraw(SDL_Texture *texture)
 
     DrawFrame(image);
 
-    // Slow as cheeks but it's 04:27 and I can't get the above to look right.
     SDL_UpdateTexture(texture, NULL, image, pitch);
 #endif
 
@@ -2134,6 +2119,18 @@ void VDraw(SDL_Texture *texture)
 int DoMain(void *data)
 {
     AgbMain();
+}
+
+void AudioUpdate(void)
+{
+    if (gSoundInit == FALSE)
+        return;
+
+    gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
+
+    m4aSoundMain();
+
+    m4aSoundVSync();
 }
 
 void VBlankIntrWait(void)

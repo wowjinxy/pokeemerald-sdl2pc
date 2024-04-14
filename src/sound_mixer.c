@@ -17,12 +17,13 @@ static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wa
 void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSource *chan, s8 *current, float *outBuffer, u16 samplesPerFrame, float sampleRateReciprocal, s32 samplesLeftInWav, signed envR, signed envL, s32 loopLen);
 static s8 sub_82DF758(struct MixerSource *chan, u32 current);
 
-void RunMixerFrame(void) {
+void RunMixerFrame(void)
+{
     struct SoundMixerState *mixer = SOUND_INFO_PTR;
-    
-    if (mixer->lockStatus != MIXER_UNLOCKED) {
+
+    if (mixer == NULL || mixer->lockStatus != MIXER_UNLOCKED)
         return;
-    }
+
     mixer->lockStatus = MIXER_LOCKED;
     
     u32 maxScanlines = mixer->maxScanlines;
