@@ -296,7 +296,7 @@ u8 *MapHeaderGetScriptTable(u8 tag)
             mapScripts++;
             return T2_READ_PTR(mapScripts);
         }
-        mapScripts += 9;
+        mapScripts += sizeof(void*) + 1;
     }
 }
 
@@ -332,7 +332,7 @@ u8 *MapHeaderCheckScriptTable(u8 tag)
         // Run map script if vars are equal
         if (VarGet(varIndex1) == VarGet(varIndex2))
             return T2_READ_PTR(ptr);
-        ptr += 8;
+        ptr += sizeof(void*);
     }
 }
 
