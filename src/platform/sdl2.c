@@ -105,7 +105,7 @@ extern void DoSoftReset(void);
 
 static int DoMain(void *param);
 static void ProcessEvents(void);
-static void VDraw(SDL_Texture *texture);
+static void RenderFrame(SDL_Texture *texture);
 
 static void ReadSaveFile(char *path);
 static void StoreSaveFile(void);
@@ -251,8 +251,7 @@ int main(int argc, char **argv)
 
     for (unsigned i = 0; i < NUM_BACKGROUNDS + 1; i++)
         layerEnabled[i] = TRUE;
-    
-    // VDraw(sdlTexture);
+
     mainLoopThread = SDL_CreateThread(DoMain, "AgbMain", NULL);
 
     double accumulator = 0.0;
@@ -307,13 +306,13 @@ int main(int argc, char **argv)
                     accumulator -= dt;
                 }
             }
+
+            // Draws each scanline and runs HBlank DMAs
+            RenderFrame(sdlTexture);
+
+            // Calls m4aSoundMain() and m4aSoundVSync()
+            AudioUpdate();
         }
-
-        // Draws each scanline and runs HBlank DMAs
-        VDraw(sdlTexture);
-
-        // Calls m4aSoundMain() and m4aSoundVSync()
-        AudioUpdate();
 
         // Display the frame
         SDL_RenderClear(sdlRenderer);
@@ -471,6 +470,16 @@ void ProcessEvents(void)
                 if (event.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL))
                 {
                     paused = !paused;
+
+                    if (paused)
+                    {
+                        SDL_PauseAudio(1);
+                    }
+                    else
+                    {
+                        SDL_ClearQueuedAudio(1);
+                        SDL_PauseAudio(0);
+                    }
                 }
                 break;
             case SDLK_SPACE:
@@ -482,21 +491,27 @@ void ProcessEvents(void)
                 }
                 break;
             case SDLK_v:
-                runVBlank = !runVBlank;
-                if (runVBlank) {
-                    printf("Enabled VBlank\n");
-                }
-                else {
-                    printf("Disabled VBlank\n");
+                if (event.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL))
+                {
+                    runVBlank = !runVBlank;
+                    if (runVBlank) {
+                        printf("Enabled VBlank\n");
+                    }
+                    else {
+                        printf("Disabled VBlank\n");
+                    }
                 }
                 break;
             case SDLK_h:
-                runHBlank = !runHBlank;
-                if (runVBlank) {
-                    printf("Enabled HBlank\n");
-                }
-                else {
-                    printf("Disabled HBlank\n");
+                if (event.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL))
+                {
+                    runHBlank = !runHBlank;
+                    if (runHBlank) {
+                        printf("Enabled HBlank\n");
+                    }
+                    else {
+                        printf("Disabled HBlank\n");
+                    }
                 }
                 break;
             case SDLK_KP_MINUS:
@@ -2049,13 +2064,15 @@ static void DrawFrame(uint16_t *pixels)
 
         REG_VCOUNT = i;
 
+        // The game doesn't use any VCount callbacks, so this is disabled.
+#if 0
         if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
         {
             REG_DISPSTAT |= INTR_FLAG_VCOUNT;
             if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
                 DoVCountUpdate();
-                // gIntrTable[0]();
         }
+#endif
 
         DrawScanline(scanlines[i], i);
 
@@ -2065,8 +2082,6 @@ static void DrawFrame(uint16_t *pixels)
             RunDMAs(DMA_HBLANK);
 
         DoHBlankUpdate();
-        // if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
-        //     gIntrTable[3]();
 
         REG_DISPSTAT &= ~INTR_FLAG_HBLANK;
         REG_DISPSTAT &= ~INTR_FLAG_VCOUNT;
@@ -2085,15 +2100,10 @@ static void RunFrame(void)
         RunDMAs(DMA_HBLANK);
 
     if (runVBlank)
-    {
         FrameUpdate();
-        // if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
-        //     gIntrTable[4]();
-        // REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
-    }
 }
 
-void VDraw(SDL_Texture *texture)
+void RenderFrame(SDL_Texture *texture)
 {
     int pitch = displayWidth * sizeof (Uint16);
 
