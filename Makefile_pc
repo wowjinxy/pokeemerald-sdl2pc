@@ -1,12 +1,24 @@
-PREFIX := x86_64-w64-mingw32-
+# Native Linux build
+ifeq ($(shell uname),Linux)
+  PREFIX :=
+  CFLAGS := -m32 -fsanitize=undefined
+  ASFLAGS := --defsym NO_UNDERSCORE_HACK=1
+  PLATFORM_LIBS := -I/usr/include/SDL2 -D_REENTRANT -lSDL2 -Wl,--no-undefined -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
+  SDL_DIR := /usr/lib/i386-linux-gnu
+# Windows
+else
+  PREFIX := x86_64-w64-mingw32-
+  PLATFORM_LIBS := -L$(SDL_DIR)/lib  -lmingw32 -lSDLmain -lSDL.dll -lwinmm
+  SDL_DIR := /home/pokeemerald/SDL2-2.0.14/x86_64-w64-mingw32
+endif
+
 OBJCOPY := $(PREFIX)objcopy
 CC := $(PREFIX)gcc
 AS := $(PREFIX)as
 
-SDL_DIR := /home/pokeemerald/SDL2-2.0.14/x86_64-w64-mingw32
 ASM_PSEUDO_OP_CONV := sed -e 's/\.4byte/\.int/g;s/\.2byte/\.short/g'
 
-export CPP := $(PREFIX)cpp
+export CPP := $(PREFIX)gcc -E
 export LD := $(PREFIX)ld
 
 ifeq ($(OS),Windows_NT)
@@ -23,8 +35,8 @@ MODERN      := 1
 
 SHELL := /bin/bash -o pipefail
 
-ELF = $(ROM:.exe=.elf)
-MAP = $(ROM:.exe=.map)
+#ELF = $(ROM:.exe=.elf)
+#MAP = $(ROM:.exe=.map)
 
 C_SUBDIR = src
 GFLIB_SUBDIR = gflib
@@ -43,18 +55,23 @@ DATA_ASM_BUILDDIR = $(OBJ_DIR)/$(DATA_ASM_SUBDIR)
 SONG_BUILDDIR = $(OBJ_DIR)/$(SONG_SUBDIR)
 MID_BUILDDIR = $(OBJ_DIR)/$(MID_SUBDIR)
 
-ASFLAGS := --64 --defsym MODERN=$(MODERN) --defsym PORTABLE=1 --defsym UBFIX=1
+ASFLAGS += --64 --defsym MODERN=$(MODERN) --defsym PORTABLE=1 --defsym UBFIX=1
 
 GCC_VER := $(shell $(CC) -dumpversion)
 
 CC1 	:= $(shell $(PREFIX)gcc --print-prog-name=cc1) -quiet
-override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m64 -std=gnu99 -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DNONMATCHING -D UBFIX -DMODERN=$(MODERN)
-ROM		:= pokeemerald64.exe
+override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m64 -std=gnu99 -fno-dce -fno-builtin -Wno-unused-function -DPORTABLE -DUBFIX -DMODERN=$(MODERN)
+CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DPORTABLE -DMODERN=$(MODERN) -DUBFIX
+ifeq ($(shell uname),Linux)
+	ROM		:= pokeemerald-linux
+	CPPFLAGS += -DNO_UNDERSCORE_HACK -I/usr/include/SDL2 -D_REENTRANT
+else
+	ROM		:= pokeemerald64.exe
+	CPPFLAGS += -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
+endif
 OBJ_DIR	:= build/pc
 
-CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHING -D PORTABLE -D MODERN=$(MODERN) -D UBFIX -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
-
-LDFLAGS = -Map ../../$(MAP)
+#LDFLAGS = -Map ../../$(MAP)
 
 LIB := $(LIBPATH) -lgcc -lc
 
@@ -86,13 +103,13 @@ MAKEFLAGS += --no-print-directory
 # Secondary expansion is required for dependency variables in object rules.
 .SECONDEXPANSION:
 
-.PHONY: all rom clean compare tidy tools mostlyclean clean-tools $(TOOLDIRS) libagbsyscall modern tidymodern tidynonmodern
+.PHONY: all rom clean compare tidy tools mostlyclean clean-tools pc $(TOOLDIRS) libagbsyscall modern tidymodern tidynonmodern
 
 infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst __SPACE__, ,$(line))))
 
 # Build tools when building the rom
 # Disable dependency scanning for clean/tidy/tools
-ifeq (,$(filter-out all rom compare modern,$(MAKECMDGOALS)))
+ifeq (,$(filter-out all rom compare modern pc,$(MAKECMDGOALS)))
 $(call infoshell, $(MAKE) tools)
 else
 NODEP := 1
@@ -133,6 +150,8 @@ AUTO_GEN_TARGETS :=
 $(shell mkdir -p $(SUBDIRS))
 
 all: rom
+
+pc: rom
 
 tools: $(TOOLDIRS)
 
@@ -228,30 +247,36 @@ $(GFLIB_BUILDDIR)/%.o : $(GFLIB_SUBDIR)/%.c $$(c_dep)
 
 
 ifeq ($(NODEP),1)
+$(C_BUILDDIR)/%.o: $(C_SUBDIR)/%.s
+	$(PREPROC) $< charmap.txt | $(CPP) -I include - | $(ASM_PSEUDO_OP_CONV) | $(AS) $(ASFLAGS) -o $@
+else
+define SRC_ASM_DATA_DEP
+$1: $2 $$(shell $(SCANINC) -I include -I "" $2)
+	$$(PREPROC) $$< charmap.txt | $$(CPP) -I include - | $$(ASM_PSEUDO_OP_CONV) | $$(AS) $$(ASFLAGS) -o $$@
+endef
+$(foreach src, $(C_ASM_SRCS), $(eval $(call SRC_ASM_DATA_DEP,$(patsubst $(C_SUBDIR)/%.s,$(C_BUILDDIR)/%.o, $(src)),$(src))))
+endif
+
+ifeq ($(NODEP),1)
 $(ASM_BUILDDIR)/%.o: $(ASM_SUBDIR)/%.s
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(ASM_PSEUDO_OP_CONV) | $(AS) $(ASFLAGS) -o $@ $<
 else
 define ASM_DEP
 $1: $2 $$(shell $(SCANINC) -I include -I "" $2)
-	$$(AS) $$(ASFLAGS) -o $$@ $$<
+	$$(ASM_PSEUDO_OP_CONV) | $$(AS) $$(ASFLAGS) -o $$@
 endef
 $(foreach src, $(ASM_SRCS), $(eval $(call ASM_DEP,$(patsubst $(ASM_SUBDIR)/%.s,$(ASM_BUILDDIR)/%.o, $(src)),$(src))))
 endif
 
 ifeq ($(NODEP),1)
 $(DATA_ASM_BUILDDIR)/%.o: $(DATA_ASM_SUBDIR)/%.s
-	$(PREPROC) $< charmap.txt | $(CPP) -I include | $(ASM_PSEUDO_OP_CONV) | $(AS) $(ASFLAGS) -o $@
+	$(PREPROC) $< charmap.txt | $(CPP) -I include - | $(AS) $(ASFLAGS) -o $@
 else
-define DATA_ASM_DEP
-$1: $2 $$(shell $(SCANINC) -I include -I "" $2)
-	$$(PREPROC) $$< charmap.txt | $$(CPP) -I include | $$(ASM_PSEUDO_OP_CONV) | $$(AS) $$(ASFLAGS) -o $$@
-endef
-$(foreach src, $(REGULAR_DATA_ASM_SRCS), $(eval $(call DATA_ASM_DEP,$(patsubst $(DATA_ASM_SUBDIR)/%.s,$(DATA_ASM_BUILDDIR)/%.o, $(src)),$(src))))
-$(foreach src, $(C_ASM_SRCS), $(eval $(call DATA_ASM_DEP,$(patsubst $(C_SUBDIR)/%.s,$(C_BUILDDIR)/%.o, $(src)),$(src))))
+$(foreach src, $(REGULAR_DATA_ASM_SRCS), $(eval $(call SRC_ASM_DATA_DEP,$(patsubst $(DATA_ASM_SUBDIR)/%.s,$(DATA_ASM_BUILDDIR)/%.o, $(src)),$(src))))
 endif
 
 $(SONG_BUILDDIR)/%.o: $(SONG_SUBDIR)/%.s
-	$(ASM_PSEUDO_OP_CONV) $< | $(AS) $(ASFLAGS) -I sound -o $@
+	$(ASM_PSEUDO_OP_CONV) <$ | $(AS) $(ASFLAGS) -I sound -o $@
 
 $(OBJ_DIR)/sym_bss.ld: sym_bss.txt
 	$(RAMSCRGEN) .bss $< ENGLISH > $@
@@ -262,15 +287,15 @@ $(OBJ_DIR)/sym_common.ld: sym_common.txt $(C_OBJS) $(wildcard common_syms/*.txt)
 $(OBJ_DIR)/sym_ewram.ld: sym_ewram.txt
 	$(RAMSCRGEN) ewram_data $< ENGLISH > $@
 
-LD_SCRIPT := ld_script_pc.ld
+LD_SCRIPT := ld_script_modern.ld
 LD_SCRIPT_DEPS := 
 
 $(OBJ_DIR)/ld_script.ld: $(LD_SCRIPT) $(LD_SCRIPT_DEPS)
 	cd $(OBJ_DIR) && sed "s#tools/#../../tools/#g" ../../$(LD_SCRIPT) > ld_script.ld
 
-$(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS)
-	cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ld_script.ld -o ../../$@ $(OBJS_REL) $(LIB)
-	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
+#$(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS)
+#	cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ld_script.ld -o ../../$@ $(OBJS_REL) $(LIB)
+#	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 
 $(ROM): $(OBJS)
-	$(CC) $(CFLAGS) -Wl,--demangle $^ -static-libgcc -L$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2.dll -lwinmm -lxinput -o $@
+	$(CC) $(CFLAGS) -no-pie -Wl,--demangle $^ $(PLATFORM_LIBS) -static-libgcc -o $@

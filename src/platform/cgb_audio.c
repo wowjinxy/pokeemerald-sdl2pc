@@ -51,8 +51,9 @@ void cgb_set_sweep(u8 sweep){
 
 void cgb_set_wavram(){
     for(u8 wavi = 0; wavi < 0x10; wavi++){
-        gb.WAVRAM[(wavi << 1)] = (((*(REG_ADDR_WAVE_RAM0 + wavi)) & 0xF0) >> 4) / 7.5f - 1.0f;
-        gb.WAVRAM[(wavi << 1) + 1] = (((*(REG_ADDR_WAVE_RAM0 + wavi)) & 0x0F)) / 7.5f - 1.0f;
+        char *mem = &REG_BASE[REG_OFFSET_WAVE_RAM0];
+        gb.WAVRAM[(wavi << 1)] = ((mem[wavi] & 0xF0) >> 4) / 7.5f - 1.0f;
+        gb.WAVRAM[(wavi << 1) + 1] = ((mem[wavi] & 0x0F)) / 7.5f - 1.0f;
     }
 }
 
