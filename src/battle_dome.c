@@ -3079,7 +3079,7 @@ static void Task_ShowTourneyInfoCard(u8 taskId)
         if (mode == INFOCARD_MATCH)
             gBattle_BG2_X = 0, gBattle_BG2_Y = 0;
         else
-            gBattle_BG2_X = 0, gBattle_BG2_Y = DISPLAY_HEIGHT;
+            gBattle_BG2_X = 0, gBattle_BG2_Y = DisplayHeight();
 
         gTasks[taskId].tState++;
         break;
@@ -3141,12 +3141,12 @@ static void Task_ShowTourneyInfoCard(u8 taskId)
         if (mode != INFOCARD_NEXT_OPPONENT)
         {
             // Scroll up arrow
-            id = CreateSprite(&sVerticalScrollArrowSpriteTemplate, 120, 4, 0);
+            id = CreateSprite(&sVerticalScrollArrowSpriteTemplate, DisplayWidth() / 2, 4, 0);
             StartSpriteAnim(&gSprites[id], 0);
             gSprites[id].data[0] = i;
 
             // Scroll down arrow
-            id = CreateSprite(&sVerticalScrollArrowSpriteTemplate, 120, 156, 0);
+            id = CreateSprite(&sVerticalScrollArrowSpriteTemplate, DisplayWidth() / 2, 156, 0);
             StartSpriteAnim(&gSprites[id], 1);
             gSprites[id].data[0] = i;
 
@@ -3224,7 +3224,7 @@ static void SpriteCB_TrainerIconCardScrollLeft(struct Sprite *sprite)
     }
     else
     {
-        if (sprite->x >= DISPLAY_WIDTH + 32)
+        if (sprite->x >= DisplayWidth() + 32)
         {
             sInfoCard->spriteIds[sprite->data[2]] = SPRITE_NONE;
             FreeAndDestroyTrainerPicSprite(sprite->data[3]);
@@ -3237,7 +3237,7 @@ static void SpriteCB_TrainerIconCardScrollRight(struct Sprite *sprite)
     sprite->x -= 4;
     if (sprite->data[0] != 0)
     {
-        if (sprite->x <= DISPLAY_WIDTH + 32)
+        if (sprite->x <= DisplayWidth() + 32)
             sprite->invisible = FALSE;
         if (++sprite->data[1] == 64)
             sprite->callback = SpriteCallbackDummy;
@@ -3318,7 +3318,7 @@ static void SpriteCB_MonIconCardScrollLeft(struct Sprite *sprite)
     }
     else
     {
-        if (sprite->x >= DISPLAY_WIDTH + 16)
+        if (sprite->x >= DisplayWidth() + 16)
         {
             sInfoCard->spriteIds[sprite->data[2]] = SPRITE_NONE;
             FreeAndDestroyMonIconSprite(sprite);
@@ -3333,7 +3333,7 @@ static void SpriteCB_MonIconCardScrollRight(struct Sprite *sprite)
     sprite->x -= 4;
     if (sprite->data[0] != 0)
     {
-        if (sprite->x <= DISPLAY_WIDTH + 16)
+        if (sprite->x <= DisplayWidth() + 16)
             sprite->invisible = FALSE;
         if (++sprite->data[1] == 64)
             sprite->callback = SpriteCB_MonIconDomeInfo;
@@ -3520,12 +3520,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
-                gBattle_BG1_Y = DISPLAY_HEIGHT;
+                gBattle_BG1_Y = DisplayHeight();
             }
             else
             {
                 gBattle_BG0_X = 0;
-                gBattle_BG0_Y = DISPLAY_HEIGHT;
+                gBattle_BG0_Y = DisplayHeight();
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
             }
@@ -3535,13 +3535,13 @@ static void Task_HandleInfoCardInput(u8 taskId)
                 if (sInfoCard->pos == 0)
                 {
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT * 2;
+                    gBattle_BG2_Y = DisplayHeight() * 2;
                     trainerTourneyId = sTourneyTreeTrainerIds[gTasks[taskId2].data[1]];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_UP, trainerTourneyId);
                 }
                 else
                 {
-                    gBattle_BG2_X = DISPLAY_WIDTH + 16;
+                    gBattle_BG2_X = DisplayWidth() + 16;
                     gBattle_BG2_Y = 0;
                     trainerTourneyId = sTourneyTreeTrainerIds[gTasks[taskId2].data[1]];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_UP, trainerTourneyId);
@@ -3555,7 +3555,7 @@ static void Task_HandleInfoCardInput(u8 taskId)
                     matchNo = gTasks[taskId2].data[1] - 16;
                     BufferDomeWinString(matchNo, sInfoCard->tournamentIds);
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT * 2;
+                    gBattle_BG2_Y = DisplayHeight() * 2;
                     trainerTourneyId = sInfoCard->tournamentIds[0];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_UP, trainerTourneyId);
                 }
@@ -3564,14 +3564,14 @@ static void Task_HandleInfoCardInput(u8 taskId)
                     matchNo = gTasks[taskId2].data[1] - 16;
                     BufferDomeWinString(matchNo, sInfoCard->tournamentIds);
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT * 2;
+                    gBattle_BG2_Y = DisplayHeight() * 2;
                     trainerTourneyId = sInfoCard->tournamentIds[1];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_UP, trainerTourneyId);
                 }
                 else
                 {
-                    gBattle_BG2_X = DISPLAY_WIDTH + 16;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT;
+                    gBattle_BG2_X = DisplayWidth() + 16;
+                    gBattle_BG2_Y = DisplayHeight();
                     matchNo = gTasks[taskId2].data[1] - 16;
                     DisplayMatchInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_UP, matchNo);
                 }
@@ -3636,12 +3636,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
-                gBattle_BG1_Y = -DISPLAY_HEIGHT;
+                gBattle_BG1_Y = -DisplayHeight();
             }
             else
             {
                 gBattle_BG0_X = 0;
-                gBattle_BG0_Y = -DISPLAY_HEIGHT;
+                gBattle_BG0_Y = -DisplayHeight();
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
             }
@@ -3651,7 +3651,7 @@ static void Task_HandleInfoCardInput(u8 taskId)
                 if (sInfoCard->pos == 0)
                 {
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT;
+                    gBattle_BG2_Y = DisplayHeight();
                     trainerTourneyId = sTourneyTreeTrainerIds[gTasks[taskId2].data[1]];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_DOWN, trainerTourneyId);
                 }
@@ -3671,7 +3671,7 @@ static void Task_HandleInfoCardInput(u8 taskId)
                     matchNo = gTasks[taskId2].data[1] - 16;
                     BufferDomeWinString(matchNo, sInfoCard->tournamentIds);
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT;
+                    gBattle_BG2_Y = DisplayHeight();
                     trainerTourneyId = sInfoCard->tournamentIds[0];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_DOWN, trainerTourneyId);
                 }
@@ -3680,13 +3680,13 @@ static void Task_HandleInfoCardInput(u8 taskId)
                     matchNo = gTasks[taskId2].data[1] - 16;
                     BufferDomeWinString(matchNo, sInfoCard->tournamentIds);
                     gBattle_BG2_X = 0;
-                    gBattle_BG2_Y = DISPLAY_HEIGHT;
+                    gBattle_BG2_Y = DisplayHeight();
                     trainerTourneyId = sInfoCard->tournamentIds[1];
                     DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_DOWN, trainerTourneyId);
                 }
                 else
                 {
-                    gBattle_BG2_X = DISPLAY_WIDTH + 16;
+                    gBattle_BG2_X = DisplayWidth() + 16;
                     gBattle_BG2_Y = 0;
                     matchNo = gTasks[taskId2].data[1] - 16;
                     DisplayMatchInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_DOWN, matchNo);
@@ -3750,12 +3750,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
             {
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
-                gBattle_BG1_X = DISPLAY_WIDTH + 16;
+                gBattle_BG1_X = DisplayWidth() + 16;
                 gBattle_BG1_Y = 0;
             }
             else
             {
-                gBattle_BG0_X = DISPLAY_WIDTH + 16;
+                gBattle_BG0_X = DisplayWidth() + 16;
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
@@ -3763,14 +3763,14 @@ static void Task_HandleInfoCardInput(u8 taskId)
 
             if (sInfoCard->pos == 0)
             {
-                gBattle_BG2_X = DISPLAY_WIDTH + 16;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_X = DisplayWidth() + 16;
+                gBattle_BG2_Y = DisplayHeight();
                 trainerTourneyId = sTourneyTreeTrainerIds[gTasks[taskId2].data[1]];
                 DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_LEFT, trainerTourneyId);
             }
             else
             {
-                gBattle_BG2_X = DISPLAY_WIDTH + 16;
+                gBattle_BG2_X = DisplayWidth() + 16;
                 gBattle_BG2_Y = 0;
                 matchNo = sIdToMatchNumber[gTasks[taskId2].data[1]][sInfoCard->pos - 1];
                 DisplayMatchInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_LEFT, matchNo);
@@ -3833,12 +3833,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
             {
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
-                gBattle_BG1_X = DISPLAY_WIDTH + 16;
+                gBattle_BG1_X = DisplayWidth() + 16;
                 gBattle_BG1_Y = 0;
             }
             else
             {
-                gBattle_BG0_X = DISPLAY_WIDTH + 16;
+                gBattle_BG0_X = DisplayWidth() + 16;
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
@@ -3846,15 +3846,15 @@ static void Task_HandleInfoCardInput(u8 taskId)
 
             if (sInfoCard->pos == 0)
             {
-                gBattle_BG2_X = DISPLAY_WIDTH + 16;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_X = DisplayWidth() + 16;
+                gBattle_BG2_Y = DisplayHeight();
                 trainerTourneyId = sInfoCard->tournamentIds[0];
                 DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_LEFT, trainerTourneyId);
             }
             else
             {
                 gBattle_BG2_X = 0;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_Y = DisplayHeight();
                 matchNo = gTasks[taskId2].data[1] - 16;
                 DisplayMatchInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_LEFT, matchNo);
             }
@@ -3916,12 +3916,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
             {
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
-                gBattle_BG1_X = -(DISPLAY_WIDTH + 16);
+                gBattle_BG1_X = -(DisplayWidth() + 16);
                 gBattle_BG1_Y = 0;
             }
             else
             {
-                gBattle_BG0_X = -(DISPLAY_WIDTH + 16);
+                gBattle_BG0_X = -(DisplayWidth() + 16);
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
@@ -3930,7 +3930,7 @@ static void Task_HandleInfoCardInput(u8 taskId)
             if (sInfoCard->pos == 1)
             {
                 gBattle_BG2_X = 0;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_Y = DisplayHeight();
             }
             else
             {
@@ -3997,12 +3997,12 @@ static void Task_HandleInfoCardInput(u8 taskId)
             {
                 gBattle_BG0_X = 0;
                 gBattle_BG0_Y = 0;
-                gBattle_BG1_X = -(DISPLAY_WIDTH + 16);
+                gBattle_BG1_X = -(DisplayWidth() + 16);
                 gBattle_BG1_Y = 0;
             }
             else
             {
-                gBattle_BG0_X = -(DISPLAY_WIDTH + 16);
+                gBattle_BG0_X = -(DisplayWidth() + 16);
                 gBattle_BG0_Y = 0;
                 gBattle_BG1_X = 0;
                 gBattle_BG1_Y = 0;
@@ -4010,15 +4010,15 @@ static void Task_HandleInfoCardInput(u8 taskId)
 
             if (sInfoCard->pos == 2)
             {
-                gBattle_BG2_X = DISPLAY_WIDTH + 16;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_X = DisplayWidth() + 16;
+                gBattle_BG2_Y = DisplayHeight();
                 trainerTourneyId = sInfoCard->tournamentIds[1];
                 DisplayTrainerInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_RIGHT, trainerTourneyId);
             }
             else
             {
                 gBattle_BG2_X = 0;
-                gBattle_BG2_Y = DISPLAY_HEIGHT;
+                gBattle_BG2_Y = DisplayHeight();
                 matchNo = gTasks[taskId2].data[1] - 16;
                 DisplayMatchInfoOnCard(gTasks[taskId].tUsingAlternateSlot | MOVE_CARD_RIGHT, matchNo);
             }
@@ -4329,13 +4329,13 @@ static void DisplayTrainerInfoOnCard(u8 flags, u8 trainerTourneyId)
     if (flags & CARD_ALTERNATE_SLOT)
         arrId = 2 * (FRONTIER_PARTY_SIZE + 1), windowId = WIN_TRAINER_NAME + NUM_INFO_CARD_WINDOWS, palSlot = 2;
     if (flags & MOVE_CARD_RIGHT)
-        x = DISPLAY_WIDTH + 16;
+        x = DisplayWidth() + 16;
     if (flags & MOVE_CARD_DOWN)
-        y = DISPLAY_HEIGHT;
+        y = DisplayHeight();
     if (flags & MOVE_CARD_LEFT)
-        x = -(DISPLAY_WIDTH + 16);
+        x = -(DisplayWidth() + 16);
     if (flags & MOVE_CARD_UP)
-        y = -DISPLAY_HEIGHT;
+        y = -DisplayHeight();
 
     // Create trainer pic sprite
     if (trainerId == TRAINER_PLAYER)
@@ -4790,13 +4790,13 @@ static void DisplayMatchInfoOnCard(u8 flags, u8 matchNo)
     if (flags & CARD_ALTERNATE_SLOT)
         arrId = 2 * (FRONTIER_PARTY_SIZE + 1), windowId = NUM_INFO_CARD_WINDOWS, palSlot = 2;
     if (flags & MOVE_CARD_RIGHT)
-        x = DISPLAY_WIDTH + 16;
+        x = DisplayWidth() + 16;
     if (flags & MOVE_CARD_DOWN)
-        y = DISPLAY_HEIGHT;
+        y = DisplayHeight();
     if (flags & MOVE_CARD_LEFT)
-        x = -(DISPLAY_WIDTH + 16);
+        x = -(DisplayWidth() + 16);
     if (flags & MOVE_CARD_UP)
-        y = -DISPLAY_HEIGHT;
+        y = -DisplayHeight();
 
     // Copy trainers information to handy arrays.
     winStringId = BufferDomeWinString(matchNo, sInfoCard->tournamentIds);
@@ -5365,9 +5365,9 @@ static void Task_ShowTourneyTree(u8 taskId)
         SetGpuReg(REG_OFFSET_BLDY, 0);
         SetGpuReg(REG_OFFSET_MOSAIC, 0);
         SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(88, 96));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DISPLAY_HEIGHT - 1));
+        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DisplayHeight() - 1));
         SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(144, 152));
-        SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(0, DISPLAY_HEIGHT - 1));
+        SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(0, DisplayHeight() - 1));
         SetGpuReg(REG_OFFSET_WININ, 0);
         SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         ResetPaletteFade();

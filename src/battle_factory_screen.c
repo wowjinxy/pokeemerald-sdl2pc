@@ -2135,7 +2135,7 @@ static void Select_Task_OpenChosenMonPics(u8 taskId)
     {
     case 0:
         task->tWinLeft = 16;
-        task->tWinRight = DISPLAY_WIDTH - 16;
+        task->tWinRight = DisplayWidth() - 16;
         task->tWinTop = 64;
         task->tWinBottom = 65;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
@@ -2177,7 +2177,7 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
     {
     case 0:
         task->tWinLeft = 16;
-        task->tWinRight = DISPLAY_WIDTH - 16;
+        task->tWinRight = DisplayWidth() - 16;
         task->tWinTop = 32;
         task->tWinBottom = 96;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
@@ -2828,7 +2828,7 @@ static void Swap_Task_SlideCycleBalls(u8 taskId)
                 finished = FALSE;
             }
 
-            if (gSprites[sFactorySwapScreen->ballSpriteIds[i]].x - 16 > DISPLAY_WIDTH)
+            if (gSprites[sFactorySwapScreen->ballSpriteIds[i]].x - 16 > DisplayWidth())
             {
                 // Ball is offscreen right, cycle its palette and move to left side of screen
                 lastX = gSprites[sFactorySwapScreen->ballSpriteIds[i]].x;
@@ -2880,14 +2880,14 @@ static void Swap_Task_SlideButtonOnOffScreen(u8 taskId)
         if (!gTasks[taskId].tSlidingOn)
         {
             // Sliding "Pkmn for Swap" offscreen
-            if (currPosX + deltaX < DISPLAY_WIDTH)
+            if (currPosX + deltaX < DisplayWidth())
             {
                 sliding = TRUE;
             }
             else
             {
                 sliding = FALSE;
-                posX = DISPLAY_WIDTH;
+                posX = DisplayWidth();
             }
         }
         else
@@ -2932,14 +2932,14 @@ static void Swap_Task_SlideButtonOnOffScreen(u8 taskId)
         if (!gTasks[taskId].tSlidingOn)
         {
             // Sliding "Cancel" offscreen
-            if (currPosX + deltaX < DISPLAY_WIDTH)
+            if (currPosX + deltaX < DisplayWidth())
             {
                 sliding = TRUE;
             }
             else
             {
                 sliding = FALSE;
-                posX = DISPLAY_WIDTH;
+                posX = DisplayWidth();
             }
         }
         else
@@ -3436,31 +3436,31 @@ static void Swap_InitAllSprites(void)
     gSprites[sFactorySwapScreen->menuCursor2SpriteId].centerToCornerVecY = 0;
 
     if (sFactorySwapScreen->fromSummaryScreen == TRUE)
-        x = DISPLAY_WIDTH;
+        x = DisplayWidth();
     else
-        x = DISPLAY_WIDTH - 48;
+        x = DisplayWidth() - 48;
 
     // Unusual way to create sprites
     // The sprite template for the selector arrow is re-used
     // with the tiles swapped out
     spriteTemplate = sSpriteTemplate_Swap_Arrow;
     spriteTemplate.tileTag = GFXTAG_ACTION_BOX_LEFT;
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][0] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH, 120, 10);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][0] = CreateSprite(&spriteTemplate, DisplayWidth(), 120, 10);
 
     spriteTemplate = sSpriteTemplate_Swap_MenuHighlightLeft;
     spriteTemplate.tileTag = GFXTAG_ACTION_BOX_RIGHT;
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][1] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH + 16, 120, 10);
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][2] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH + 48, 120, 10);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][1] = CreateSprite(&spriteTemplate, DisplayWidth() + 16, 120, 10);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[0][2] = CreateSprite(&spriteTemplate, DisplayWidth() + 48, 120, 10);
 
     spriteTemplate = sSpriteTemplate_Swap_Arrow;
     spriteTemplate.tileTag = GFXTAG_ACTION_HIGHLIGHT_LEFT;
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][0] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH, 120, 1);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][0] = CreateSprite(&spriteTemplate, DisplayWidth(), 120, 1);
 
     spriteTemplate = sSpriteTemplate_Swap_MenuHighlightLeft;
     spriteTemplate.tileTag = GFXTAG_ACTION_HIGHLIGHT_MIDDLE;
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][1] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH + 16, 120, 1);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][1] = CreateSprite(&spriteTemplate, DisplayWidth() + 16, 120, 1);
     spriteTemplate.tileTag = GFXTAG_ACTION_HIGHLIGHT_RIGHT;
-    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][2] = CreateSprite(&spriteTemplate, DISPLAY_WIDTH + 48, 120, 1);
+    sFactorySwapScreen->pkmnForSwapButtonSpriteIds[1][2] = CreateSprite(&spriteTemplate, DisplayWidth() + 48, 120, 1);
 
     spriteTemplate = sSpriteTemplate_Swap_Arrow;
     spriteTemplate.tileTag = GFXTAG_ACTION_BOX_LEFT;
@@ -4179,7 +4179,7 @@ static void Task_OpenMonPic(u8 taskId)
     case 0:
         // Init
         task->tWinLeft = 88;
-        task->tWinRight = DISPLAY_WIDTH - 88;
+        task->tWinRight = DisplayWidth() - 88;
         task->tWinTop = 64;
         task->tWinBottom = 65;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
@@ -4227,7 +4227,7 @@ static void Task_CloseMonPic(u8 taskId)
     case 0:
         // Init
         task->tWinLeft = 88;
-        task->tWinRight = DISPLAY_WIDTH - 88;
+        task->tWinRight = DisplayWidth() - 88;
         task->tWinTop = 32;
         task->tWinBottom = 96;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);

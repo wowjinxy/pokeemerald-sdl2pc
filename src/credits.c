@@ -400,7 +400,7 @@ static void PrintCreditsText(const u8 *string, u8 y, bool8 isTitle)
         color[2] = TEXT_COLOR_DARK_GRAY;
     }
 
-    x = GetStringCenterAlignXOffsetWithLetterSpacing(FONT_NORMAL, string, DISPLAY_WIDTH, 1);
+    x = GetStringCenterAlignXOffsetWithLetterSpacing(FONT_NORMAL, string, DisplayWidth(), 1);
     AddTextPrinterParameterized4(0, FONT_NORMAL, x, y, 1, 0, color, TEXT_SKIP_DRAW, string);
 }
 
@@ -1103,8 +1103,8 @@ static void SetBikeScene(u8 scene, u8 taskId)
     case SCENE_OCEAN_MORNING:
         gSprites[gTasks[taskId].tPlayerSpriteId].invisible = FALSE;
         gSprites[gTasks[taskId].tRivalSpriteId].invisible = FALSE;
-        gSprites[gTasks[taskId].tPlayerSpriteId].x = DISPLAY_WIDTH + 32;
-        gSprites[gTasks[taskId].tRivalSpriteId].x = DISPLAY_WIDTH + 32;
+        gSprites[gTasks[taskId].tPlayerSpriteId].x = DisplayWidth() + 32;
+        gSprites[gTasks[taskId].tRivalSpriteId].x = DisplayWidth() + 32;
         gSprites[gTasks[taskId].tPlayerSpriteId].y = 46;
         gSprites[gTasks[taskId].tRivalSpriteId].y = 46;
         gSprites[gTasks[taskId].tPlayerSpriteId].data[0] = 0;
@@ -1114,8 +1114,8 @@ static void SetBikeScene(u8 scene, u8 taskId)
     case SCENE_OCEAN_SUNSET:
         gSprites[gTasks[taskId].tPlayerSpriteId].invisible = FALSE;
         gSprites[gTasks[taskId].tRivalSpriteId].invisible = FALSE;
-        gSprites[gTasks[taskId].tPlayerSpriteId].x = 120;
-        gSprites[gTasks[taskId].tRivalSpriteId].x = DISPLAY_WIDTH + 32;
+        gSprites[gTasks[taskId].tPlayerSpriteId].x = DisplayWidth() / 2;
+        gSprites[gTasks[taskId].tRivalSpriteId].x = DisplayWidth() + 32;
         gSprites[gTasks[taskId].tPlayerSpriteId].y = 46;
         gSprites[gTasks[taskId].tRivalSpriteId].y = 46;
         gSprites[gTasks[taskId].tPlayerSpriteId].data[0] = 0;
@@ -1125,8 +1125,8 @@ static void SetBikeScene(u8 scene, u8 taskId)
     case SCENE_FOREST_RIVAL_ARRIVE:
         gSprites[gTasks[taskId].tPlayerSpriteId].invisible = FALSE;
         gSprites[gTasks[taskId].tRivalSpriteId].invisible = FALSE;
-        gSprites[gTasks[taskId].tPlayerSpriteId].x = 120;
-        gSprites[gTasks[taskId].tRivalSpriteId].x = DISPLAY_WIDTH + 32;
+        gSprites[gTasks[taskId].tPlayerSpriteId].x = DisplayWidth() / 2;
+        gSprites[gTasks[taskId].tRivalSpriteId].x = DisplayWidth() + 32;
         gSprites[gTasks[taskId].tPlayerSpriteId].y = 46;
         gSprites[gTasks[taskId].tRivalSpriteId].y = 46;
         gSprites[gTasks[taskId].tPlayerSpriteId].data[0] = 0;
@@ -1136,7 +1136,7 @@ static void SetBikeScene(u8 scene, u8 taskId)
     case SCENE_FOREST_CATCH_RIVAL:
         gSprites[gTasks[taskId].tPlayerSpriteId].invisible = FALSE;
         gSprites[gTasks[taskId].tRivalSpriteId].invisible = FALSE;
-        gSprites[gTasks[taskId].tPlayerSpriteId].x = 120;
+        gSprites[gTasks[taskId].tPlayerSpriteId].x = DisplayWidth() / 2;
         gSprites[gTasks[taskId].tRivalSpriteId].x = -32;
         gSprites[gTasks[taskId].tPlayerSpriteId].y = 46;
         gSprites[gTasks[taskId].tRivalSpriteId].y = 46;
@@ -1214,12 +1214,12 @@ static bool8 LoadBikeScene(u8 scene, u8 taskId)
             LoadCompressedSpriteSheet(gSpriteSheet_CreditsBicycle);
             LoadSpritePalettes(gSpritePalettes_Credits);
 
-            spriteId = CreateIntroBrendanSprite(120, 46);
+            spriteId = CreateIntroBrendanSprite(DisplayWidth() / 2, 46);
             gTasks[taskId].tPlayerSpriteId = spriteId;
             gSprites[spriteId].callback = SpriteCB_Player;
             gSprites[spriteId].anims = sAnims_Player;
 
-            spriteId = CreateIntroMaySprite(DISPLAY_WIDTH + 32, 46);
+            spriteId = CreateIntroMaySprite(DisplayWidth() + 32, 46);
             gTasks[taskId].tRivalSpriteId = spriteId;
             gSprites[spriteId].callback = SpriteCB_Rival;
             gSprites[spriteId].anims = sAnims_Rival;
@@ -1231,12 +1231,12 @@ static bool8 LoadBikeScene(u8 scene, u8 taskId)
             LoadCompressedSpriteSheet(gSpriteSheet_CreditsBicycle);
             LoadSpritePalettes(gSpritePalettes_Credits);
 
-            spriteId = CreateIntroMaySprite(120, 46);
+            spriteId = CreateIntroMaySprite(DisplayWidth() / 2, 46);
             gTasks[taskId].tPlayerSpriteId = spriteId;
             gSprites[spriteId].callback = SpriteCB_Player;
             gSprites[spriteId].anims = sAnims_Player;
 
-            spriteId = CreateIntroBrendanSprite(DISPLAY_WIDTH + 32, 46);
+            spriteId = CreateIntroBrendanSprite(DisplayWidth() + 32, 46);
             gTasks[taskId].tRivalSpriteId = spriteId;
             gSprites[spriteId].callback = SpriteCB_Rival;
             gSprites[spriteId].anims = sAnims_Rival;
@@ -1370,7 +1370,7 @@ static void SpriteCB_Player(struct Sprite *sprite)
         break;
     case 4:
         StartSpriteAnimIfDifferent(sprite, 0);
-        if (sprite->x > DISPLAY_WIDTH / 2)
+        if (sprite->x > DisplayWidth() / 2)
             sprite->x--;
         break;
     case 5:

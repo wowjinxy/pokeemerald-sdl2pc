@@ -411,6 +411,10 @@ extern char gMaxLines[];
 #define MAX_LINES 0
 #endif
 
+struct MP2KPlayerState;
+struct MP2KTrack;
+struct MixerSource;
+
 u32 umul3232H32(u32 multiplier, u32 multiplicand);
 void SoundMain(void);
 void SoundMainBTM(void *ptr);

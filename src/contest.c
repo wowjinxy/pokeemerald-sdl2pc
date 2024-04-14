@@ -1400,7 +1400,7 @@ static void Task_RaiseCurtainAtStart(u8 taskId)
         break;
     case 1:
         *(s16 *)&gBattle_BG1_Y += 7;
-        if ((s16)gBattle_BG1_Y <= DISPLAY_HEIGHT)
+        if ((s16)gBattle_BG1_Y <= DisplayHeight())
             break;
         gTasks[taskId].data[0]++;
         break;
@@ -1520,8 +1520,8 @@ static void Task_ShowMoveSelectScreen(u8 taskId)
     u8 i;
     u8 moveName[32];
 
-    gBattle_BG0_Y = DISPLAY_HEIGHT;
-    gBattle_BG2_Y = DISPLAY_HEIGHT;
+    gBattle_BG0_Y = DisplayHeight();
+    gBattle_BG2_Y = DisplayHeight();
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
@@ -1787,7 +1787,7 @@ static void Task_DoAppeals(u8 taskId)
             gContestMons[eContest.currentContestant].otId,
             gContestMons[eContest.currentContestant].personality,
             eContest.currentContestant);
-        gSprites[spriteId].x2 = 120;
+        gSprites[spriteId].x2 = DisplayWidth() / 2;
         gSprites[spriteId].callback = SpriteCB_MonSlideIn;
         gTasks[taskId].tMonSpriteId = spriteId;
         gBattlerSpriteIds[gBattlerAttacker] = spriteId;
@@ -2688,7 +2688,7 @@ static void Task_WaitForOutOfTimeMsg(u8 taskId)
     {
         SetBgForCurtainDrop();
         gBattle_BG1_X = 0;
-        gBattle_BG1_Y = DISPLAY_HEIGHT;
+        gBattle_BG1_Y = DisplayHeight();
         PlaySE12WithPanning(SE_CONTEST_CURTAIN_FALL, 0);
         gTasks[taskId].data[0] = 0;
         gTasks[taskId].func = Task_DropCurtainAtAppealsEnd;
@@ -5082,8 +5082,8 @@ static void SetBgForCurtainDrop(void)
     SetGpuReg(REG_OFFSET_BG0CNT, bg0Cnt);
     SetGpuReg(REG_OFFSET_BG2CNT, bg2Cnt);
 
-    gBattle_BG1_X = DISPLAY_WIDTH;
-    gBattle_BG1_Y = DISPLAY_HEIGHT;
+    gBattle_BG1_X = DisplayWidth();
+    gBattle_BG1_Y = DisplayHeight();
     SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
     SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
 
@@ -5128,7 +5128,7 @@ static void UpdateContestantBoxOrder(void)
 static void Task_StartDropCurtainAtRoundEnd(u8 taskId)
 {
     gBattle_BG1_X = 0;
-    gBattle_BG1_Y = DISPLAY_HEIGHT;
+    gBattle_BG1_Y = DisplayHeight();
     PlaySE12WithPanning(SE_CONTEST_CURTAIN_FALL, 0);
     gTasks[taskId].func = Task_UpdateCurtainDropAtRoundEnd;
 }
@@ -5197,7 +5197,7 @@ static void Task_ResetForNextRound(u8 taskId)
 
 static void Task_UpdateRaiseCurtainAtRoundEnd(u8 taskId)
 {
-    if ((s16)(gBattle_BG1_Y += 7) > DISPLAY_HEIGHT)
+    if ((s16)(gBattle_BG1_Y += 7) > DisplayHeight())
         gTasks[taskId].func = Task_UpdateContestantBoxOrder;
 }
 

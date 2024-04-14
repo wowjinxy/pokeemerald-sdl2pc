@@ -496,7 +496,7 @@ static void AnimFlyingSandCrescent(struct Sprite *sprite)
     {
         if (gBattleAnimArgs[3] != 0 && GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
         {
-            sprite->x = DISPLAY_WIDTH + 64;
+            sprite->x = DisplayWidth() + 64;
             gBattleAnimArgs[1] = -gBattleAnimArgs[1];
             sprite->data[5] = 1;
             sprite->oam.matrixNum = ST_OAM_HFLIP;
@@ -523,7 +523,7 @@ static void AnimFlyingSandCrescent(struct Sprite *sprite)
 
         if (sprite->data[5] == 0)
         {
-            if (sprite->x + sprite->x2 > DISPLAY_WIDTH + 32)
+            if (sprite->x + sprite->x2 > DisplayWidth() + 32)
             {
                 sprite->callback = DestroyAnimSprite;
             }
@@ -836,7 +836,7 @@ void AnimTask_MoveSeismicTossBg(u8 taskId)
     gBattle_BG3_Y += gTasks[taskId].data[1] / 10;
     gTasks[taskId].data[1] -= 3;
 
-    if (gTasks[taskId].data[0] == 120)
+    if (gTasks[taskId].data[0] == (DisplayWidth() / 2))
     {
         UpdateAnimBg3ScreenSize(TRUE);
         DestroyAnimVisualTask(taskId);

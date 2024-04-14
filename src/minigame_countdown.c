@@ -236,7 +236,7 @@ static void Task_StaticCountdown_Init(u8 taskId)
     tPriority = 0;
     tSubpriority = 0;
     tNumSprites = 3;
-    tX = 120;
+    tX = DisplayWidth() / 2;
     tY = 88;
     StaticCountdown_CreateSprites(taskId, data);
 

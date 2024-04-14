@@ -1538,7 +1538,7 @@ static void SpriteCB_Ball_Block_Step(struct Sprite *sprite)
     sprite->sDy = (sprite->sDy + 0x800) & 0xFF;
     sprite->sDx = (sprite->sDx + 0x680) & 0xFF;
 
-    if (sprite->y + sprite->y2 > DISPLAY_HEIGHT
+    if (sprite->y + sprite->y2 > DisplayHeight()
      || sprite->x + sprite->x2 < -8)
     {
         sprite->sFrame = 0;
@@ -2117,7 +2117,7 @@ void AnimTask_SwapMonSpriteToFromSubstitute(u8 taskId)
 
         gTasks[taskId].data[0] &= 0xFF;
         x = gSprites[spriteId].x + gSprites[spriteId].x2 + 32;
-        if (x > DISPLAY_WIDTH + 64)
+        if (x > DisplayWidth() + 64)
             gTasks[taskId].data[10]++;
         break;
     case 1:

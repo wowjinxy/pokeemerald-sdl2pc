@@ -285,8 +285,8 @@ u8 GetBattlerSpriteFinal_Y(u8 battlerId, u16 species, bool8 a3)
     {
         if (GetBattlerSide(battlerId) == B_SIDE_PLAYER)
             y += 8;
-        if (y > DISPLAY_HEIGHT - MON_PIC_HEIGHT + 8)
-            y = DISPLAY_HEIGHT - MON_PIC_HEIGHT + 8;
+        if (y > DisplayHeight() - MON_PIC_HEIGHT + 8)
+            y = DisplayHeight() - MON_PIC_HEIGHT + 8;
     }
     return y;
 }

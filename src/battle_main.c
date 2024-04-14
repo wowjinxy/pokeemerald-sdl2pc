@@ -626,31 +626,31 @@ static void CB2_InitBattleInternal(void)
     CpuFill32(0, (void *)(VRAM), VRAM_SIZE);
 
     SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, DISPLAY_WIDTH);
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2 + 1));
+    SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
     SetGpuReg(REG_OFFSET_WININ, 0);
     SetGpuReg(REG_OFFSET_WINOUT, 0);
 
-    gBattle_WIN0H = DISPLAY_WIDTH;
+    gBattle_WIN0H = DisplayWidth();
 
     if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && gPartnerTrainerId != TRAINER_STEVEN_PARTNER)
     {
-        gBattle_WIN0V = DISPLAY_HEIGHT - 1;
-        gBattle_WIN1H = DISPLAY_WIDTH;
+        gBattle_WIN0V = DisplayHeight() - 1;
+        gBattle_WIN1H = DisplayWidth();
         gBattle_WIN1V = 32;
     }
     else
     {
-        gBattle_WIN0V = WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2 + 1);
+        gBattle_WIN0V = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);
         ScanlineEffect_Clear();
 
-        for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
+        for (i = 0; i < DisplayHeight() / 2; i++)
         {
             gScanlineEffectRegBuffers[0][i] = 0xF0;
             gScanlineEffectRegBuffers[1][i] = 0xF0;
         }
 
-        for (; i < DISPLAY_HEIGHT; i++)
+        for (; i < DisplayHeight(); i++)
         {
             gScanlineEffectRegBuffers[0][i] = 0xFF10;
             gScanlineEffectRegBuffers[1][i] = 0xFF10;
@@ -2075,7 +2075,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
 static void UNUSED HBlankCB_Battle(void)
 {
-    if (REG_VCOUNT < DISPLAY_HEIGHT && REG_VCOUNT >= 111)
+    if (REG_VCOUNT < DisplayHeight() && REG_VCOUNT >= 111)
         SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_SCREENBASE(24) | BGCNT_TXT256x512);
 }
 
@@ -2192,12 +2192,12 @@ void CB2_InitEndLinkBattle(void)
     {
         CpuFill32(0, (void *)(VRAM), VRAM_SIZE);
         SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, DISPLAY_WIDTH);
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2 + 1));
+        SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
+        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
         SetGpuReg(REG_OFFSET_WININ, 0);
         SetGpuReg(REG_OFFSET_WINOUT, 0);
-        gBattle_WIN0H = DISPLAY_WIDTH;
-        gBattle_WIN0V = WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2 + 1);
+        gBattle_WIN0H = DisplayWidth();
+        gBattle_WIN0V = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);
         ScanlineEffect_Clear();
 
         i = 0;

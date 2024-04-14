@@ -42,8 +42,8 @@
 
 #define PALTAG_EGG       54321
 
-#define EGG_X (DISPLAY_WIDTH / 2)
-#define EGG_Y (DISPLAY_HEIGHT / 2 - 5)
+#define EGG_X (DisplayWidth() / 2)
+#define EGG_Y (DisplayHeight() / 2 - 5)
 
 struct EggHatchData
 {

@@ -420,7 +420,7 @@ static void Task_TrainerCard(u8 taskId)
         if (gWirelessCommType == 1 && gReceivedRemoteLinkPlayers == TRUE)
         {
             LoadWirelessStatusIndicatorSpriteGfx();
-            CreateWirelessStatusIndicatorSprite(DISPLAY_WIDTH - 10, DISPLAY_HEIGHT - 10);
+            CreateWirelessStatusIndicatorSprite(DisplayWidth() - 10, DisplayHeight() - 10);
         }
         BlendPalettes(PALETTES_ALL, 16, sData->blendColor);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, sData->blendColor);
@@ -860,8 +860,8 @@ static void InitGpuRegs(void)
     SetGpuReg(REG_OFFSET_BLDY, 0);
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
     SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
-    SetGpuReg(REG_OFFSET_WIN0V, DISPLAY_HEIGHT);
-    SetGpuReg(REG_OFFSET_WIN0H, DISPLAY_WIDTH);
+    SetGpuReg(REG_OFFSET_WIN0V, DisplayHeight());
+    SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
     if (gReceivedRemoteLinkPlayers)
         EnableInterrupts(INTR_FLAG_VBLANK | INTR_FLAG_HBLANK | INTR_FLAG_VCOUNT | INTR_FLAG_TIMER3 | INTR_FLAG_SERIAL);
     else
@@ -876,7 +876,7 @@ static void UpdateCardFlipRegs(u16 cardTop)
         blendY = 0;
     sData->flipBlendY = blendY;
     SetGpuReg(REG_OFFSET_BLDY, sData->flipBlendY);
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(sData->cardTop, DISPLAY_HEIGHT - sData->cardTop));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(sData->cardTop, DisplayHeight() - sData->cardTop));
 }
 
 static void ResetGpuRegs(void)
@@ -1616,14 +1616,14 @@ static bool8 Task_BeginCardFlip(struct Task *task)
     HideBg(3);
     ScanlineEffect_Stop();
     ScanlineEffect_Clear();
-    for (i = 0; i < DISPLAY_HEIGHT; i++)
+    for (i = 0; i < DisplayHeight(); i++)
         gScanlineEffectRegBuffers[1][i] = 0;
     task->tFlipState++;
     return FALSE;
 }
 
-// Note: Cannot be DISPLAY_HEIGHT / 2, or cardHeight will be 0
-#define CARD_FLIP_Y ((DISPLAY_HEIGHT / 2) - 3)
+// Note: Cannot be DisplayHeight() / 2, or cardHeight will be 0
+#define CARD_FLIP_Y ((DisplayHeight() / 2) - 3)
 
 static bool8 Task_AnimateCardFlipDown(struct Task *task)
 {
@@ -1640,10 +1640,10 @@ static bool8 Task_AnimateCardFlipDown(struct Task *task)
     UpdateCardFlipRegs(task->tCardTop);
 
     cardTop = task->tCardTop;
-    cardBottom = DISPLAY_HEIGHT - cardTop;
+    cardBottom = DisplayHeight() - cardTop;
     cardHeight = cardBottom - cardTop;
     r6 = -cardTop << 16;
-    r5 = (DISPLAY_HEIGHT << 16) / cardHeight;
+    r5 = (DisplayHeight() << 16) / cardHeight;
     r5 -= 1 << 16;
     var_24 = r6;
     var_24 += r5 * cardHeight;
@@ -1660,7 +1660,7 @@ static bool8 Task_AnimateCardFlipDown(struct Task *task)
         gScanlineEffectRegBuffers[0][i] = var;
     }
     var = var_24 >> 16;
-    for (; i < DISPLAY_HEIGHT; i++)
+    for (; i < DisplayHeight(); i++)
         gScanlineEffectRegBuffers[0][i] = var;
 
     sData->allowDMACopy = TRUE;
@@ -1759,10 +1759,10 @@ static bool8 Task_AnimateCardFlipUp(struct Task *task)
     UpdateCardFlipRegs(task->tCardTop);
 
     cardTop = task->tCardTop;
-    cardBottom = DISPLAY_HEIGHT - cardTop;
+    cardBottom = DisplayHeight() - cardTop;
     cardHeight = cardBottom - cardTop;
     r6 = -cardTop << 16;
-    r5 = (DISPLAY_HEIGHT << 16) / cardHeight;
+    r5 = (DisplayHeight() << 16) / cardHeight;
     r5 -= 1 << 16;
     var_24 = r6;
     var_24 += r5 * cardHeight;
@@ -1779,7 +1779,7 @@ static bool8 Task_AnimateCardFlipUp(struct Task *task)
         gScanlineEffectRegBuffers[0][i] = var;
     }
     var = var_24 >> 16;
-    for (; i < DISPLAY_HEIGHT; i++)
+    for (; i < DisplayHeight(); i++)
         gScanlineEffectRegBuffers[0][i] = var;
 
     sData->allowDMACopy = TRUE;

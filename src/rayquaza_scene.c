@@ -1359,8 +1359,8 @@ static void SetWindowsHideVertBorders(void)
 {
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL);
     SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DISPLAY_WIDTH));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(24, DISPLAY_HEIGHT - 24));
+    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DisplayWidth()));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(24, DisplayHeight() - 24));
     gPlttBufferUnfaded[0] = 0;
     gPlttBufferFaded[0] = 0;
 }
@@ -1862,7 +1862,7 @@ static void SpriteCB_DuoFight_Groudon(struct Sprite *sprite)
 static void DuoFight_SlideGroudonDown(struct Sprite *sprite)
 {
     s16 *data = sprite->data;
-    if (sprite->y <= DISPLAY_HEIGHT)
+    if (sprite->y <= DisplayHeight())
     {
         sprite->y += 8;
         gSprites[sprite->sGroudonBodySpriteId].y += 8;
@@ -1967,7 +1967,7 @@ static void SpriteCB_DuoFight_Kyogre(struct Sprite *sprite)
 static void DuoFight_SlideKyogreDown(struct Sprite *sprite)
 {
     s16 *data = sprite->data;
-    if (sprite->y <= DISPLAY_HEIGHT)
+    if (sprite->y <= DisplayHeight())
     {
         sprite->y += 8;
         gSprites[sprite->data[0] >> 8].y += 8;
@@ -2157,8 +2157,8 @@ static void Task_TakesFlight_CreateSmoke(u8 taskId)
     if ((tTimer & 3) == 0)
     {
         u8 spriteId = CreateSprite(&sSpriteTemplate_TakesFlight_Smoke,
-                                   (sTakesFlight_SmokeCoords[tSmokeId][0] * 4) + 120,
-                                   (sTakesFlight_SmokeCoords[tSmokeId][1] * 4) + 80,
+                                   (sTakesFlight_SmokeCoords[tSmokeId][0] * 4) + (DisplayWidth() / 2),
+                                   (sTakesFlight_SmokeCoords[tSmokeId][1] * 4) + (DisplayHeight() / 2),
                                    0);
         gSprites[spriteId].sSmokeId = (s8)(tSmokeId);
         gSprites[spriteId].oam.objMode = ST_OAM_OBJ_BLEND;
@@ -2866,9 +2866,9 @@ static void ChasesAway_CreateTrioSprites(u8 taskId)
     StartSpriteAnim(&gSprites[spriteData[0]], 1);
     StartSpriteAnim(&gSprites[spriteData[1]], 2);
 
-    tRayquazaSpriteId = CreateSprite(&sSpriteTemplate_ChasesAway_Rayquaza, 120, -65, 0);
+    tRayquazaSpriteId = CreateSprite(&sSpriteTemplate_ChasesAway_Rayquaza, DisplayWidth() / 2, -65, 0);
     spriteData = gSprites[tRayquazaSpriteId].data;
-    spriteData[0] = CreateSprite(&sSpriteTemplate_ChasesAway_RayquazaTail, 120, -113, 0);
+    spriteData[0] = CreateSprite(&sSpriteTemplate_ChasesAway_RayquazaTail, DisplayWidth() / 2, -113, 0);
     gSprites[tRayquazaSpriteId].oam.priority = 1;
     gSprites[spriteData[0]].oam.priority = 1;
 }

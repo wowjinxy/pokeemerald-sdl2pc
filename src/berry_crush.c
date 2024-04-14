@@ -1387,7 +1387,7 @@ static void CreateBerrySprites(struct BerryCrushGame *game, struct BerryCrushGam
         gfx->berrySprites[i] = &gSprites[spriteId];
         gfx->berrySprites[i]->oam.priority = 3;
         gfx->berrySprites[i]->affineAnimPaused = TRUE;
-        gfx->berrySprites[i]->x = gfx->playerCoords[i]->berryXOffset + 120;
+        gfx->berrySprites[i]->x = gfx->playerCoords[i]->berryXOffset + (DisplayWidth() / 2);
         gfx->berrySprites[i]->y = -16;
         data = gfx->berrySprites[i]->data;
         speed = 512;
@@ -1513,7 +1513,7 @@ static void UpdateInputEffects(struct BerryCrushGame *game, struct BerryCrushGam
             if (gfx->sparkleSprites[i]->invisible)
             {
                 gfx->sparkleSprites[i]->callback = SpriteCB_Sparkle_Init;
-                gfx->sparkleSprites[i]->x = sSparkleCoords[i][0] + 120;
+                gfx->sparkleSprites[i]->x = sSparkleCoords[i][0] + (DisplayWidth() / 2);
                 gfx->sparkleSprites[i]->y = sSparkleCoords[i][1] + 136 - (yModifier * 4);
                 gfx->sparkleSprites[i]->x2 = sSparkleCoords[i][0] + (sSparkleCoords[i][0] / (xModifier * 4));
                 gfx->sparkleSprites[i]->y2 = sSparkleCoords[i][1];
@@ -1979,7 +1979,7 @@ static void CreateGameSprites(struct BerryCrushGame *game)
     LoadSpritePalettes(sSpritePals);
 
     // Create sprite for crusher base
-    spriteId = CreateSprite(&sSpriteTemplate_CrusherBase, 120, 88, 5);
+    spriteId = CreateSprite(&sSpriteTemplate_CrusherBase, DisplayWidth() / 2, 88, 5);
     game->gfx.coreSprite = &gSprites[spriteId];
     game->gfx.coreSprite->oam.priority = 3;
     game->gfx.coreSprite->coordOffsetEnabled = TRUE;
@@ -1990,7 +1990,7 @@ static void CreateGameSprites(struct BerryCrushGame *game)
     {
         spriteId = CreateSprite(
             &sSpriteTemplate_Impact,
-            game->gfx.playerCoords[i]->impactXOffset + 120,
+            game->gfx.playerCoords[i]->impactXOffset + (DisplayWidth() / 2),
             game->gfx.playerCoords[i]->impactYOffset + 32,
             0
         );
@@ -2006,7 +2006,7 @@ static void CreateGameSprites(struct BerryCrushGame *game)
     {
         spriteId = CreateSprite(
             &sSpriteTemplate_Sparkle,
-            sSparkleCoords[i][0] + 120,
+            sSparkleCoords[i][0] + (DisplayWidth() / 2),
             sSparkleCoords[i][1] + 136,
             6
         );

@@ -353,7 +353,7 @@ static void AnimTask_DigBounceMovement(u8 taskId)
             else
                 gBattle_BG2_Y = task->data[13] - task->data[5];
 
-            gSprites[task->data[10]].x2 = DISPLAY_WIDTH + 32 - gSprites[task->data[10]].x;
+            gSprites[task->data[10]].x2 = DisplayWidth() + 32 - gSprites[task->data[10]].x;
             task->data[0]++;
         }
         break;
@@ -405,7 +405,7 @@ static void AnimTask_DigSetVisibleUnderground(u8 taskId)
         task->data[10] = GetAnimBattlerSpriteId(ANIM_ATTACKER);
         gSprites[task->data[10]].invisible = FALSE;
         gSprites[task->data[10]].x2 = 0;
-        gSprites[task->data[10]].y2 = DISPLAY_HEIGHT - gSprites[task->data[10]].y;
+        gSprites[task->data[10]].y2 = DisplayHeight() - gSprites[task->data[10]].y;
         task->data[0]++;
         break;
     case 1:
@@ -481,10 +481,10 @@ static void SetDigScanlineEffect(u8 useBG1, s16 y, s16 endY)
         y++;
     }
 
-    while (y < DISPLAY_HEIGHT)
+    while (y < DisplayHeight())
     {
-        gScanlineEffectRegBuffers[0][y] = bgX + DISPLAY_WIDTH;
-        gScanlineEffectRegBuffers[1][y] = bgX + DISPLAY_WIDTH;
+        gScanlineEffectRegBuffers[0][y] = bgX + DisplayWidth();
+        gScanlineEffectRegBuffers[1][y] = bgX + DisplayWidth();
         y++;
     }
 

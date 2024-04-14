@@ -3077,11 +3077,11 @@ static void AnimMagentaHeart(struct Sprite *sprite)
 
 void AnimTask_FakeOut(u8 taskId)
 {
-    u16 win0h = IsContest() ? 152 : DISPLAY_WIDTH;
+    u16 win0h = IsContest() ? 152 : DisplayWidth();
     u16 win0v = 0;
 
     gBattle_WIN0H = win0h;
-    gBattle_WIN0V = DISPLAY_HEIGHT;
+    gBattle_WIN0V = DisplayHeight();
     SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
     SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_ALL);
@@ -3210,7 +3210,7 @@ void AnimParticleBurst(struct Sprite *sprite)
         if (sprite->data[3] > 100)
             sprite->invisible = sprite->data[3] % 2;
 
-        if (sprite->data[3] > 120)
+        if (sprite->data[3] > (DisplayWidth() / 2))
             DestroyAnimSprite(sprite);
     }
 }
@@ -3218,7 +3218,7 @@ void AnimParticleBurst(struct Sprite *sprite)
 static void AnimRedHeartRising(struct Sprite *sprite)
 {
     sprite->x = gBattleAnimArgs[0];
-    sprite->y = DISPLAY_HEIGHT;
+    sprite->y = DisplayHeight();
     sprite->data[0] = gBattleAnimArgs[2];
     sprite->data[1] = gBattleAnimArgs[1];
     sprite->callback = WaitAnimForDuration;
@@ -3472,8 +3472,8 @@ static void AnimOrbitScatter_Step(struct Sprite *sprite)
 {
     sprite->x2 += sprite->data[0];
     sprite->y2 += sprite->data[1];
-    if (sprite->x + sprite->x2 + 16 > ((u32)DISPLAY_WIDTH + 32)
-     || sprite->y + sprite->y2 > DISPLAY_HEIGHT || sprite->y + sprite->y2 < -16)
+    if (sprite->x + sprite->x2 + 16 > ((u32)DisplayWidth() + 32)
+     || sprite->y + sprite->y2 > DisplayHeight() || sprite->y + sprite->y2 < -16)
         DestroyAnimSprite(sprite);
 }
 
@@ -3713,7 +3713,7 @@ static void AnimPerishSongMusicNote2(struct Sprite *sprite)
 {
     if (!sprite->data[0])
     {
-        sprite->data[1] = 120 - gBattleAnimArgs[0];
+        sprite->data[1] = (DisplayWidth() / 2) - gBattleAnimArgs[0];
         sprite->invisible = TRUE;
     }
 
@@ -3731,12 +3731,12 @@ static void AnimPerishSongMusicNote(struct Sprite *sprite)
 
     if (!sprite->data[0])
     {
-        sprite->x = 120;
+        sprite->x = DisplayWidth() / 2;
         sprite->y = (gBattleAnimArgs[0] + (((u16)gBattleAnimArgs[0]) >> 31)) / 2 - 15;
 
         StartSpriteAnim(sprite, gBattleAnimArgs[1]);
 
-        sprite->data[5] = 120;
+        sprite->data[5] = DisplayWidth() / 2;
         sprite->data[3] = gBattleAnimArgs[2];
     }
 

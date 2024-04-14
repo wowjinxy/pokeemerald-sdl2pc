@@ -962,7 +962,7 @@ void AnimTask_CurseStretchingBlackBg(u8 taskId)
     gBattle_WIN0V = WIN_RANGE(startY, startY);
 
     leftDistance = startX;
-    rightDistance = DISPLAY_WIDTH - startX;
+    rightDistance = DisplayWidth() - startX;
     topDistance = startY;
     bottomDistance = 72;
     gTasks[taskId].data[1] = leftDistance;
@@ -1001,7 +1001,7 @@ static void AnimTask_CurseStretchingBlackBg_Step1(u8 taskId)
     else
     {
         left = 0;
-        right = DISPLAY_WIDTH;
+        right = DisplayWidth();
         top = 0;
         bottom = 112;
         selectedPalettes = GetBattlePalettesMask(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);

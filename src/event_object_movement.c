@@ -7361,10 +7361,10 @@ static void UpdateObjectEventOffscreen(struct ObjectEvent *objectEvent, struct S
     y2 = y;
     y2 += graphicsInfo->height;
 
-    if ((s16)x >= DISPLAY_WIDTH + 16 || (s16)x2 < -16)
+    if ((s16)x >= DisplayWidth() + 16 || (s16)x2 < -16)
         objectEvent->offScreen = TRUE;
 
-    if ((s16)y >= DISPLAY_HEIGHT + 16 || (s16)y2 < -16)
+    if ((s16)y >= DisplayHeight() + 16 || (s16)y2 < -16)
         objectEvent->offScreen = TRUE;
 }
 
@@ -8557,9 +8557,9 @@ void UpdateObjectEventSpriteInvisibility(struct Sprite *sprite, bool8 invisible)
     x2 = x - (sprite->centerToCornerVecX >> 1);
     y2 = y - (sprite->centerToCornerVecY >> 1);
 
-    if ((s16)x >= DISPLAY_WIDTH + 16 || x2 < -16)
+    if ((s16)x >= DisplayWidth() + 16 || x2 < -16)
         sprite->invisible = TRUE;
-    if ((s16)y >= DISPLAY_HEIGHT + 16 || y2 < -16)
+    if ((s16)y >= DisplayHeight() + 16 || y2 < -16)
         sprite->invisible = TRUE;
 }
 
@@ -8680,7 +8680,7 @@ static void MoveUnionRoomObjectUp(struct Sprite *sprite)
         sprite->sAnimState++;
     case 1:
         sprite->y2 -= 8;
-        if (sprite->y2 == -DISPLAY_HEIGHT)
+        if (sprite->y2 == -DisplayHeight())
         {
             sprite->y2 = 0;
             sprite->sInvisible = TRUE;
@@ -8695,7 +8695,7 @@ static void MoveUnionRoomObjectDown(struct Sprite *sprite)
     switch(sprite->sAnimState)
     {
     case 0:
-        sprite->y2 = -DISPLAY_HEIGHT;
+        sprite->y2 = -DisplayHeight();
         sprite->sAnimState++;
     case 1:
         sprite->y2 += 8;
@@ -8932,14 +8932,14 @@ u8 MovementAction_FlyUp_Step1(struct ObjectEvent *objectEvent, struct Sprite *sp
 {
     sprite->y2 -= 8;
 
-    if(sprite->y2 == -DISPLAY_HEIGHT)
+    if(sprite->y2 == -DisplayHeight())
         sprite->sActionFuncId++;
     return FALSE;
 }
 
 u8 MovementAction_FlyDown_Step0(struct ObjectEvent *objectEvent, struct Sprite *sprite)
 {
-    sprite->y2 = -DISPLAY_HEIGHT;
+    sprite->y2 = -DisplayHeight();
     sprite->sActionFuncId++;
     return FALSE;
 }

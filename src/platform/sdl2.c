@@ -10,8 +10,6 @@
 
 #include <SDL2/SDL.h>
 
-// #define NO_UNDERSCORE_HACK
-
 #include "global.h"
 #include "platform.h"
 #include "rtc.h"
@@ -88,6 +86,11 @@ double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
 
+static s32 displayWidth = 0;
+static s32 displayHeight = 0;
+
+#define ANY_RESOLUTION
+
 static FILE *sSaveFile = NULL;
 
 extern void AgbMain(void);
@@ -104,8 +107,59 @@ static void CloseSaveFile(void);
 static void UpdateInternalClock(void);
 static void RunDMAs(u32 type);
 
+s32 DisplayWidth(void)
+{
+    return displayWidth;
+}
+
+s32 DisplayHeight(void)
+{
+    return displayHeight;
+}
+
+static bool8 SetResolution(s32 width, s32 height)
+{
+    if (width < BASE_DISPLAY_WIDTH)
+        width = BASE_DISPLAY_WIDTH;
+    else if (width > DISPLAY_WIDTH)
+        width = DISPLAY_WIDTH;
+
+    if (height < BASE_DISPLAY_HEIGHT)
+        height = BASE_DISPLAY_HEIGHT;
+    else if (height > DISPLAY_HEIGHT)
+        height = DISPLAY_HEIGHT;
+
+    if (displayWidth == width && displayHeight == height)
+        return TRUE;
+
+    displayWidth = width;
+    displayHeight = height;
+
+    SDL_RenderSetLogicalSize(sdlRenderer, displayWidth, displayHeight);
+
+    if (sdlTexture)
+    {
+        SDL_DestroyTexture(sdlTexture);
+        sdlTexture = NULL;
+    }
+
+    sdlTexture = SDL_CreateTexture(sdlRenderer,
+                                   SDL_PIXELFORMAT_ABGR1555,
+                                   SDL_TEXTUREACCESS_STREAMING,
+                                   displayWidth, displayHeight);
+    if (sdlTexture == NULL)
+    {
+        fprintf(stderr, "Texture could not be created! SDL_Error: %s\n", SDL_GetError());
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 int main(int argc, char **argv)
 {
+    s32 scrW, scrH;
+
     // Open an output console on Windows
 #ifdef _WIN32
     AllocConsole() ;
@@ -121,7 +175,10 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    scrW = BASE_DISPLAY_WIDTH;
+    scrH = BASE_DISPLAY_HEIGHT;
+
+    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, scrW * videoScale, scrH * videoScale, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (sdlWindow == NULL)
     {
         fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -138,15 +195,11 @@ int main(int argc, char **argv)
     SDL_SetRenderDrawColor(sdlRenderer, 255, 255, 255, 255);
     SDL_RenderClear(sdlRenderer);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
-    SDL_RenderSetLogicalSize(sdlRenderer, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    SDL_SetWindowMinimumSize(sdlWindow, BASE_DISPLAY_WIDTH, BASE_DISPLAY_HEIGHT);
+    SDL_SetWindowMaximumSize(sdlWindow, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-    sdlTexture = SDL_CreateTexture(sdlRenderer,
-                                   SDL_PIXELFORMAT_ABGR1555,
-                                   SDL_TEXTUREACCESS_STREAMING,
-                                   DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    if (sdlTexture == NULL)
+    if (SetResolution(scrW, scrH) == FALSE)
     {
-        fprintf(stderr, "Texture could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -225,7 +278,17 @@ int main(int argc, char **argv)
 
         if (videoScaleChanged)
         {
-            SDL_SetWindowSize(sdlWindow, DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale);
+            int curW, curH;
+            int newW, newH;
+
+            newW = displayWidth * videoScale;
+            newH = displayHeight * videoScale;
+
+            SDL_GetWindowSize(sdlWindow, &curW, &curH);
+
+            if (curW != newW || curH != newH)
+                SDL_SetWindowSize(sdlWindow, newW, newH);
+
             videoScaleChanged = false;
         }
 
@@ -383,7 +446,13 @@ void ProcessEvents(void)
             {
                 unsigned int w = event.window.data1;
                 unsigned int h = event.window.data2;
-                
+
+#ifdef ANY_RESOLUTION
+                w /= videoScale;
+                h /= videoScale;
+
+                SetResolution(w, h);
+#else
                 videoScale = 0;
                 if (w / DISPLAY_WIDTH > videoScale)
                     videoScale = w / DISPLAY_WIDTH;
@@ -391,6 +460,7 @@ void ProcessEvents(void)
                     videoScale = h / DISPLAY_HEIGHT;
                 if (videoScale < 1)
                     videoScale = 1;
+#endif
 
                 videoScaleChanged = true;
             }
@@ -1036,7 +1106,7 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     hoffs &= 0x1FF;
     voffs &= 0x1FF;
 
-    for (unsigned int x = 0; x < DISPLAY_WIDTH; x++)
+    for (unsigned int x = 0; x < displayWidth; x++)
     {
         uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
         // adjust for scroll
@@ -1243,7 +1313,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 
     if (bgcnt->areaOverflowMode)
     {
-        for (int x = 0; x < DISPLAY_WIDTH; x++)
+        for (int x = 0; x < displayWidth; x++)
         {
             int xxx = (realX >> 8) & maskX;
             int yyy = (realY >> 8) & maskY;
@@ -1265,7 +1335,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     }
     else
     {
-        for (int x = 0; x < DISPLAY_WIDTH; x++)
+        for (int x = 0; x < displayWidth; x++)
         {
             int xxx = (realX >> 8);
             int yyy = (realY >> 8);
@@ -1295,7 +1365,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     //luckily i dont think pokemon emerald uses mosaic on affine bgs
     if (control & BGCNT_MOSAIC && mosaicBGEffectX > 0)
     {
-        for (int x = 0; x < DISPLAY_WIDTH; x++)
+        for (int x = 0; x < displayWidth; x++)
         {
             uint16_t color = line[applyBGHorizontalMosaicEffect(x)];
             line[x] = color;
@@ -1494,9 +1564,9 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
         int32_t x = oam->x;
         int32_t y = oam->y;
 
-        if (x >= DISPLAY_WIDTH)
+        if (x >= displayWidth)
             x -= 512;
-        if (y >= DISPLAY_HEIGHT)
+        if (y >= displayHeight)
             y -= 256;
 
         if (isAffine)
@@ -1554,7 +1624,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
 
                 unsigned int global_x = local_x + x;
 
-                if (global_x < 0 || global_x >= DISPLAY_WIDTH)
+                if (global_x < 0 || global_x >= displayWidth)
                     continue;
 
                 if (oam->mosaic == 1)
@@ -1611,7 +1681,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                         continue;
                     }
                     //this code runs if pixel is to be drawn
-                    if (global_x < DISPLAY_WIDTH && global_x >= 0)
+                    if (global_x < displayWidth && global_x >= 0)
                     {
                         //check if its enabled in the window (if window is enabled)
                         winShouldBlendPixel = (windowsEnabled == false || scanline->winMask[global_x] & WINMASK_CLR);
@@ -1770,7 +1840,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     //draw to pixel mask
     if (windowsEnabled)
     {
-        for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
+        for (xpos = 0; xpos < displayWidth; xpos++)
         {
             //win0 checks
             if (WIN0enable && winCheckHorizontalBounds(WIN0left, WIN0right, xpos))
@@ -1797,7 +1867,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             {
                 uint16_t *src = scanline.layers[bgnum];
                 //copy all pixels to framebuffer 
-                for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
+                for (xpos = 0; xpos < displayWidth; xpos++)
                 {
                     uint16_t color = src[xpos];
                     bool winEffectEnable = true;
@@ -1845,7 +1915,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         }
         //draw sprites on current priority
         uint16_t *src = scanline.spriteLayers[prnum];
-        for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
+        for (xpos = 0; xpos < displayWidth; xpos++)
         {
             if (getAlphaBit(src[xpos]))
             {
@@ -1859,22 +1929,14 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     }
 }
 
-uint16_t *memsetu16(uint16_t *dst, uint16_t fill, size_t count)
-{
-    for (int i = 0; i < count; i++)
-    {
-        *dst++ = fill;
-    }
-}
-
 static void DrawFrame(uint16_t *pixels)
 {
-    int i;
-    int j;
+    u32 i;
+    u32 j;
     static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
     uint16_t backdropColor = *(uint16_t *)PLTT;
-    
+
     // backdrop color brightness effects
     if (REG_BLDCNT & BLDCNT_TGT1_BD)
     {
@@ -1889,16 +1951,17 @@ static void DrawFrame(uint16_t *pixels)
         }
     }
 
-    memsetu16(scanlines, backdropColor, DISPLAY_WIDTH * DISPLAY_HEIGHT);
-
-    for (i = 0; i < DISPLAY_HEIGHT; i++)
+    for (i = 0; i < displayHeight; i++)
     {
+        for (u32 j = 0; j < displayWidth; j++)
+            scanlines[i][j] = backdropColor;
+
         REG_VCOUNT = i;
         if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
         {
             REG_DISPSTAT |= INTR_FLAG_VCOUNT;
             if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
-                    gIntrTable[0]();
+                gIntrTable[0]();
         }
 
         DrawScanline(scanlines[i], i);
@@ -1915,24 +1978,17 @@ static void DrawFrame(uint16_t *pixels)
     }
 
     // Copy to screen
-    for (i = 0; i < DISPLAY_HEIGHT; i++)
-    {
-        uint16_t *src = scanlines[i];
-        for (j = 0; j < DISPLAY_WIDTH; j++)
-        {
-            pixels[i * DISPLAY_WIDTH + j] = src[j];
-        }
-    }
+    for (i = 0; i < displayHeight; i++)
+        memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
 }
 
 void VDraw(SDL_Texture *texture)
 {
     static uint16_t image[DISPLAY_WIDTH * DISPLAY_HEIGHT];
 
-    memset(image, 0, sizeof(image));
     DrawFrame(image);
-    SDL_UpdateTexture(texture, NULL, image, DISPLAY_WIDTH * sizeof (Uint16));
-    REG_VCOUNT = 161; // prep for being in VBlank period
+    SDL_UpdateTexture(texture, NULL, image, displayWidth * sizeof (Uint16));
+    REG_VCOUNT = displayHeight + 1; // prep for being in VBlank period
 }
 
 int DoMain(void *data)

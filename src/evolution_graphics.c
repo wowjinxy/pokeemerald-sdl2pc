@@ -155,7 +155,7 @@ static void SpriteCB_Sparkle_SpiralUpward(struct Sprite *sprite)
 
 static void CreateSparkle_SpiralUpward(u8 trigIdx)
 {
-    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DISPLAY_WIDTH / 2, 88, 0);
+    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DisplayWidth() / 2, 88, 0);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].sAmplitude = 48;
@@ -183,7 +183,7 @@ static void SpriteCB_Sparkle_ArcDown(struct Sprite *sprite)
 
 static void CreateSparkle_ArcDown(u8 trigIdx)
 {
-    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DISPLAY_WIDTH / 2, 8, 0);
+    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DisplayWidth() / 2, 8, 0);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].sAmplitude = 8;
@@ -211,7 +211,7 @@ static void SpriteCB_Sparkle_CircleInward(struct Sprite *sprite)
 
 static void CreateSparkle_CircleInward(u8 trigIdx, u8 speed)
 {
-    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DISPLAY_WIDTH / 2, 56, 0);
+    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DisplayWidth() / 2, 56, 0);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].sSpeed = speed;
@@ -234,7 +234,7 @@ static void SpriteCB_Sparkle_Spray(struct Sprite *sprite)
         u8 matrixNum;
 
         sprite->y2 = -Sin((u8)sprite->sTrigIdx, sprite->sAmplitude);
-        sprite->x = (DISPLAY_WIDTH / 2) + (sprite->sSpeed * sprite->sTimer) / 3;
+        sprite->x = (DisplayWidth() / 2) + (sprite->sSpeed * sprite->sTimer) / 3;
         sprite->sTrigIdx++;
         matrixNum = 31 - (sprite->sTrigIdx * 12 / 128);
         if (sprite->sTrigIdx > 64)
@@ -257,7 +257,7 @@ static void SpriteCB_Sparkle_Spray(struct Sprite *sprite)
 
 static void CreateSparkle_Spray(u8 id)
 {
-    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DISPLAY_WIDTH / 2, 56, 0);
+    u8 spriteId = CreateSprite(&sEvoSparkleSpriteTemplate, DisplayWidth() / 2, 56, 0);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].sSpeed = 3 - (Random() % 7);

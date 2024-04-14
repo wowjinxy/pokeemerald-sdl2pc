@@ -802,12 +802,12 @@ static void RotatingGate_HideGatesOutsideViewport(struct Sprite *sprite)
     x2 = x + 64; // Dimensions of the rotating gate
     y2 = y + 64;
 
-    if ((s16)x > DISPLAY_WIDTH + 16 - 1 || x2 < -16)
+    if ((s16)x > DisplayWidth() + 16 - 1 || x2 < -16)
     {
         sprite->invisible = TRUE;
     }
 
-    if ((s16)y > DISPLAY_HEIGHT + 16 - 1 || y2 < -16)
+    if ((s16)y > DisplayHeight() + 16 - 1 || y2 < -16)
     {
         sprite->invisible = TRUE;
     }

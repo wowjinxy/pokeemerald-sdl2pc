@@ -1201,8 +1201,8 @@ static void InitSlotMachine(void)
     sSlotMachine->bet = 0;
     sSlotMachine->currentReel = LEFT_REEL;
     sSlotMachine->reelSpeed = REEL_NORMAL_SPEED;
-    sSlotMachine->win0h = DISPLAY_WIDTH;
-    sSlotMachine->win0v = DISPLAY_HEIGHT;
+    sSlotMachine->win0h = DisplayWidth();
+    sSlotMachine->win0v = DisplayHeight();
     sSlotMachine->winIn = WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR;
     sSlotMachine->winOut = WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR;
     sSlotMachine->backupMapMusic = GetCurrentMapMusic();
@@ -3578,7 +3578,7 @@ static void ReelTime_WindowEnter(struct Task *task)
     s16 r3;
     gSpriteCoordOffsetX -= 8;
     task->data[1] += 8;
-    r3 = ((task->data[1] + 240) & 0xff) >> 3;
+    r3 = ((task->data[1] + DisplayWidth()) & 0xff) >> 3;
     SetGpuReg(REG_OFFSET_BG1HOFS, task->data[1] & 0x1ff);
     if (r3 != task->data[2] && task->data[3] <= 18)
     {
@@ -4677,9 +4677,9 @@ static void SpriteCB_DigitalDisplay_Reel(struct Sprite *sprite)
     {
     case 0:
         sprite->x += 4;
-        if (sprite->x >= DISPLAY_WIDTH - 32)
+        if (sprite->x >= DisplayWidth() - 32)
         {
-            sprite->x = DISPLAY_WIDTH - 32;
+            sprite->x = DisplayWidth() - 32;
             sprite->sState++;
         }
         break;
@@ -4689,7 +4689,7 @@ static void SpriteCB_DigitalDisplay_Reel(struct Sprite *sprite)
         break;
     case 2:
         sprite->x += 4;
-        if (sprite->x >= DISPLAY_WIDTH + 32)
+        if (sprite->x >= DisplayWidth() + 32)
             sprite->sState++;
         break;
     case 3:
@@ -4705,9 +4705,9 @@ static void SpriteCB_DigitalDisplay_Time(struct Sprite *sprite)
     {
     case 0:
         sprite->x -= 4;
-        if (sprite->x <= DISPLAY_WIDTH - 32)
+        if (sprite->x <= DisplayWidth() - 32)
         {
-            sprite->x = DISPLAY_WIDTH - 32;
+            sprite->x = DisplayWidth() - 32;
             sprite->sState++;
         }
         break;
@@ -4743,9 +4743,9 @@ static void SpriteCB_DigitalDisplay_ReelTimeNumber(struct Sprite *sprite)
         break;
     case 2:
         sprite->x += 4;
-        if (sprite->x >= DISPLAY_WIDTH - 32)
+        if (sprite->x >= DisplayWidth() - 32)
         {
-            sprite->x = DISPLAY_WIDTH - 32;
+            sprite->x = DisplayWidth() - 32;
             sprite->sState++;
         }
         break;
@@ -4755,7 +4755,7 @@ static void SpriteCB_DigitalDisplay_ReelTimeNumber(struct Sprite *sprite)
         break;
     case 4:
         sprite->x += 4;
-        if (sprite->x >= DISPLAY_WIDTH + 8)
+        if (sprite->x >= DisplayWidth() + 8)
             sprite->sState++;
         break;
     case 5:
@@ -4949,7 +4949,7 @@ static void SpriteCB_DigitalDisplay_AButtonStart(struct Sprite *sprite)
         case 1:
             sprite->sCounter += 2;
             sprite->data[2] = sprite->sCounter + 176;
-            sprite->data[3] = DISPLAY_WIDTH - sprite->sCounter;
+            sprite->data[3] = DisplayWidth() - sprite->sCounter;
             if (sprite->data[2] > 208)
                 sprite->data[2] = 208;
             if (sprite->data[3] < 208)
@@ -4974,7 +4974,7 @@ static void SpriteCB_DigitalDisplay_AButtonStart(struct Sprite *sprite)
         case 3:
             sprite->sCounter += 2;
             sprite->data[2] = sprite->sCounter + 192;
-            sprite->data[3] = DISPLAY_WIDTH - 16 - sprite->sCounter;
+            sprite->data[3] = DisplayWidth() - 16 - sprite->sCounter;
             if (sprite->data[2] > 208)
                 sprite->data[2] = 208;
             if (sprite->data[3] < 208)
@@ -5005,8 +5005,8 @@ static void EndDigitalDisplayScene_Win(void)
 
 static void EndDigitalDisplayScene_InsertBet(void)
 {
-    sSlotMachine->win0h = DISPLAY_WIDTH;
-    sSlotMachine->win0v = DISPLAY_HEIGHT;
+    sSlotMachine->win0h = DisplayWidth();
+    sSlotMachine->win0v = DisplayHeight();
     sSlotMachine->winIn = WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR;
     sSlotMachine->winOut = WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR;
 }

@@ -5,58 +5,12 @@
 #include <string.h>
 #include <limits.h>
 
-/*#ifndef NO_UNDERSCORE_HACK
-#define REG_BASE       _REG_BASE
-#define VRAM_          _VRAM_
-#define OAM            _OAM
-#define PLTT           _PLTT
-#define FLASH_BASE     _FLASH_BASE
-#define SOUND_INFO_PTR _SOUND_INFO_PTR
-#define INTR_CHECK     _INTR_CHECK
-#define INTR_VECTOR    _INTR_VECTOR
-#define fopen          _fopen
-#define fseek          _fseek
-#define fclose         _fclose
-#define fread          _fread
-#define fwrite         _fwrite
-#define puts           _puts
-#define memcpy         _memcpy
-#define memset         _memset
-#define strcmp         _strcmp
-#define strcpy         _strcpy
-#define getc           _getc
-#define printf         _printf
-#define CpuSet         _CpuSet
-#define CpuFastSet     _CpuFastSet
-#define DmaSet         _DmaSet
-#define BgAffineSet    _BgAffineSet
-#define ObjAffineSet   _ObjAffineSet
-#define SoftReset      _SoftReset
-#define LZ77UnCompVram _LZ77UnCompVram
-#define LZ77UnCompWram _LZ77UnCompWram
-#define RLUnCompVram   _RLUnCompVram
-#define RLUnCompWram   _RLUnCompWram
-#define AgbMain _AgbMain
-#define gIntrTable _gIntrTable
-#define VBlankIntrWait _VBlankIntrWait
-#define Sqrt           _Sqrt
-#define ArcTan         _ArcTan
-#define ArcTan2        _ArcTan2
-#define ConvertBcdToBinary _ConvertBcdToBinary
-#define DoSoftReset _DoSoftReset
-#define Platform_GetKeyInput _Platform_GetKeyInput
-#define Platform_StoreSaveFile _Platform_StoreSaveFile
-#define Platform_GetStatus _Platform_GetStatus
-#define Platform_SetStatus _Platform_SetStatus
-#define Platform_GetDateTime _Platform_GetDateTime
-#define Platform_SetDateTime _Platform_SetDateTime
-#define Platform_GetTime _Platform_GetTime
-#define Platform_SetTime _Platform_SetTime
-#define Platform_SetAlarm _Platform_SetAlarm
-#endif*/
-
 #include "config.h" // we need to define config before gba headers as print stuff needs the functions nulled before defines.
 #include "gba/gba.h"
+
+s32 DisplayWidth(void);
+s32 DisplayHeight(void);
+
 #include "constants/global.h"
 #include "constants/flags.h"
 #include "constants/vars.h"

@@ -2,7 +2,6 @@
 ifeq ($(shell uname),Linux)
   PREFIX :=
   CFLAGS := -m32 -fsanitize=undefined
-  ASFLAGS := --defsym NO_UNDERSCORE_HACK=1
   PLATFORM_LIBS := -I/usr/include/SDL2 -D_REENTRANT -lSDL2 -Wl,--no-undefined -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
   SDL_DIR := /usr/lib/i386-linux-gnu
 # Windows
@@ -64,7 +63,7 @@ override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -Wno-unused-
 CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DPORTABLE -DMODERN=$(MODERN) -DUBFIX
 ifeq ($(shell uname),Linux)
 	ROM		:= pokeemerald-linux
-	CPPFLAGS += -DNO_UNDERSCORE_HACK -I/usr/include/SDL2 -D_REENTRANT
+	CPPFLAGS += -I/usr/include/SDL2 -D_REENTRANT
 else
 	ROM		:= pokeemerald64.exe
 	CPPFLAGS += -I$(SDL_DIR)/include -L$(SDL_DIR)/lib

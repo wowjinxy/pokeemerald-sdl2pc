@@ -1508,7 +1508,7 @@ static void AnimLetterZ(struct Sprite *sprite)
     sprite->x2 = sprite->data[3] / 2;
     sprite->y2 = Sin(var0 & 0xFF, 5) + (sprite->data[4] / 2);
 
-    if ((u16)(sprite->x + sprite->x2) > DISPLAY_WIDTH)
+    if ((u16)(sprite->x + sprite->x2) > DisplayWidth())
         DestroyAnimSprite(sprite);
 }
 
@@ -1676,16 +1676,16 @@ void AnimTask_CreateSpotlight(u8 taskId)
     if (IsContest())
     {
         SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
-        gBattle_WIN1H = WIN_RANGE(152, DISPLAY_WIDTH);
-        gBattle_WIN1V = WIN_RANGE(0, DISPLAY_HEIGHT);
+        gBattle_WIN1H = WIN_RANGE(152, DisplayWidth());
+        gBattle_WIN1V = WIN_RANGE(0, DisplayHeight());
         SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN0H);
         SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN0V);
     }
     else
     {
         SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
-        gBattle_WIN1H = WIN_RANGE(0, DISPLAY_WIDTH);
-        gBattle_WIN1V = WIN_RANGE(120, DISPLAY_HEIGHT);
+        gBattle_WIN1H = WIN_RANGE(0, DisplayWidth());
+        gBattle_WIN1V = WIN_RANGE(120, DisplayHeight());
         SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN1H);
         SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN1V);
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
@@ -1784,13 +1784,13 @@ void AnimTask_RapinSpinMonElevation(u8 taskId)
     {
         var3 = gBattle_BG1_X;
         task->data[8] = var3;
-        var4 = var3 + DISPLAY_WIDTH;
+        var4 = var3 + DisplayWidth();
     }
     else
     {
         var3 = gBattle_BG2_X;
         task->data[8] = var3;
-        var4 = var3 + DISPLAY_WIDTH;
+        var4 = var3 + DisplayWidth();
     }
 
     task->data[9] = var4;
@@ -2106,7 +2106,7 @@ static void AnimWishStar(struct Sprite *sprite)
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
         sprite->x = -16;
     else
-        sprite->x = DISPLAY_WIDTH + 16;
+        sprite->x = DisplayWidth() + 16;
 
     sprite->y = 0;
     sprite->callback = AnimWishStar_Step;
@@ -2135,7 +2135,7 @@ static void AnimWishStar_Step(struct Sprite *sprite)
     }
 
     newX = sprite->x + sprite->x2 + 32;
-    if (newX > DISPLAY_WIDTH + 64)
+    if (newX > DisplayWidth() + 64)
         DestroyAnimSprite(sprite);
 }
 
@@ -2806,7 +2806,7 @@ static void AnimSweetScentPetal(struct Sprite *sprite)
     }
     else
     {
-        sprite->x = DISPLAY_WIDTH;
+        sprite->x = DisplayWidth();
         sprite->y = gBattleAnimArgs[0] - 30;
     }
 
@@ -2823,7 +2823,7 @@ static void AnimSweetScentPetal_Step(struct Sprite *sprite)
         sprite->x += 5;
         sprite->y -= 1;
 
-        if (sprite->x > DISPLAY_WIDTH)
+        if (sprite->x > DisplayWidth())
             DestroyAnimSprite(sprite);
 
         sprite->y2 = Sin(sprite->data[0] & 0xFF, 16);
@@ -3055,7 +3055,7 @@ static void AnimFlatterConfetti(struct Sprite *sprite)
     if (sprite->data[2] == ANIM_ATTACKER)
         sprite->x = -8;
     else
-        sprite->x = DISPLAY_WIDTH + 8;
+        sprite->x = DisplayWidth() + 8;
 
     sprite->y = 104;
     sprite->callback = AnimFlatterConfetti_Step;
@@ -3413,8 +3413,8 @@ static void AnimTask_AcidArmor_Step(u8 taskId)
         var0 *= 2;
         while (var0 >= 0)
         {
-            gScanlineEffectRegBuffers[0][var0] = bgX + DISPLAY_WIDTH;
-            gScanlineEffectRegBuffers[1][var0] = bgX + DISPLAY_WIDTH;
+            gScanlineEffectRegBuffers[0][var0] = bgX + DisplayWidth();
+            gScanlineEffectRegBuffers[1][var0] = bgX + DisplayWidth();
             var0 -= 2;
         }
 
@@ -5096,7 +5096,7 @@ void AnimTask_SnatchOpposingMonMove(u8 taskId)
 
         gTasks[taskId].data[1] &= 0xFF;
         x = gSprites[spriteId].x + gSprites[spriteId].x2;
-        if (x < -32 || x > DISPLAY_WIDTH + 32)
+        if (x < -32 || x > DisplayWidth() + 32)
         {
             gTasks[taskId].data[1] = 0;
             gTasks[taskId].data[0]++;
@@ -5125,7 +5125,7 @@ void AnimTask_SnatchOpposingMonMove(u8 taskId)
 
                 subpriority = gSprites[GetAnimBattlerSpriteId(ANIM_TARGET)].subpriority + 1;
                 isBackPic = FALSE;
-                x = DISPLAY_WIDTH + 32;
+                x = DisplayWidth() + 32;
             }
             else
             {
@@ -5179,7 +5179,7 @@ void AnimTask_SnatchOpposingMonMove(u8 taskId)
             }
         }
 
-        if (x < -32 || x > DISPLAY_WIDTH + 32)
+        if (x < -32 || x > DisplayWidth() + 32)
         {
             gTasks[taskId].data[1] = 0;
             gTasks[taskId].data[0]++;
@@ -5192,7 +5192,7 @@ void AnimTask_SnatchOpposingMonMove(u8 taskId)
         if (GetBattlerSide(gBattleAnimAttacker) == B_SIDE_PLAYER)
             gSprites[spriteId].x2 = -gSprites[spriteId].x - 32;
         else
-            gSprites[spriteId].x2 = DISPLAY_WIDTH + 32 - gSprites[spriteId].x;
+            gSprites[spriteId].x2 = DisplayWidth() + 32 - gSprites[spriteId].x;
 
         gTasks[taskId].data[0]++;
         break;

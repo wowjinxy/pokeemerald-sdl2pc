@@ -1007,7 +1007,7 @@ static void UpdateEruptionLaunchRockPos(struct Sprite *sprite)
     sprite->sY += sprite->sSpeedY;
     sprite->y = sprite->sY >> 3;
 
-    if (sprite->x < -8 || sprite->x > DISPLAY_WIDTH + 8 || sprite->y < -8 || sprite->y > 120)
+    if (sprite->x < -8 || sprite->x > DisplayWidth() + 8 || sprite->y < -8 || sprite->y > 120)
         sprite->invisible = TRUE;
 }
 

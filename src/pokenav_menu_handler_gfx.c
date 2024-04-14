@@ -33,7 +33,7 @@
 
 #define OPTION_DEFAULT_X   140
 #define OPTION_SELECTED_X  130
-#define OPTION_EXIT_X      (DISPLAY_WIDTH + 16)
+#define OPTION_EXIT_X      (DisplayWidth() + 16)
 
 struct Pokenav_MenuGfx
 {
@@ -1313,7 +1313,7 @@ static void SetupPokenavMenuScanlineEffects(void)
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
     SetGpuRegBits(REG_OFFSET_WININ, WININ_WIN0_ALL);
     SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
-    SetGpuRegBits(REG_OFFSET_WIN0V, DISPLAY_HEIGHT);
+    SetGpuRegBits(REG_OFFSET_WIN0V, DisplayHeight());
     ScanlineEffect_Stop();
     SetMenuOptionGlow();
     ScanlineEffect_SetParams(sPokenavMainMenuScanlineEffectParams);
@@ -1359,8 +1359,8 @@ static void SetMenuOptionGlow(void)
     int menuType = GetPokenavMenuType();
     int cursorPos = GetPokenavCursorPos();
     int r4 = sPokenavMenuOptionLabelGfx[menuType].deltaY * cursorPos + sPokenavMenuOptionLabelGfx[menuType].yStart - 8;
-    CpuFill16(0, gScanlineEffectRegBuffers[0], DISPLAY_HEIGHT * 2);
-    CpuFill16(0, gScanlineEffectRegBuffers[1], DISPLAY_HEIGHT * 2);
+    CpuFill16(0, gScanlineEffectRegBuffers[0], DisplayHeight() * 2);
+    CpuFill16(0, gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
     CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[0][r4], 0x20);
     CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[1][r4], 0x20);
 }

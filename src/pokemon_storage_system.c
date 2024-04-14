@@ -4777,7 +4777,7 @@ static void CreatePartyMonsSprites(bool8 visible)
     {
         for (i = 0; i < count; i++)
         {
-            sStorage->partySprites[i]->y -= DISPLAY_HEIGHT;
+            sStorage->partySprites[i]->y -= DisplayHeight();
             sStorage->partySprites[i]->invisible = TRUE;
         }
     }
@@ -5616,7 +5616,7 @@ static void SpriteCB_OutgoingBoxTitle(struct Sprite *sprite)
     {
         sprite->x += sprite->sSpeed;
         sprite->sOutgoingX = sprite->x + sprite->x2;
-        if (sprite->sOutgoingX < 64 || sprite->sOutgoingX > DISPLAY_WIDTH + 16)
+        if (sprite->sOutgoingX < 64 || sprite->sOutgoingX > DisplayWidth() + 16)
             DestroySprite(sprite);
     }
 }
@@ -5639,7 +5639,7 @@ static void CycleBoxTitleColor(void)
 
 static s16 GetBoxTitleBaseX(const u8 *string)
 {
-    return DISPLAY_WIDTH - 64 - GetStringWidth(FONT_NORMAL, string, 0) / 2;
+    return DisplayWidth() - 64 - GetStringWidth(FONT_NORMAL, string, 0) / 2;
 }
 
 
@@ -5694,8 +5694,8 @@ static void StartBoxScrollArrowsSlide(s8 direction)
     {
         sStorage->arrowSprites[0]->sTimer = 5;
         sStorage->arrowSprites[1]->sTimer = 29;
-        sStorage->arrowSprites[0]->data[2] = DISPLAY_WIDTH + 8;
-        sStorage->arrowSprites[1]->data[2] = DISPLAY_WIDTH + 8;
+        sStorage->arrowSprites[0]->data[2] = DisplayWidth() + 8;
+        sStorage->arrowSprites[1]->data[2] = DisplayWidth() + 8;
     }
     sStorage->arrowSprites[0]->data[7] = 0;
     sStorage->arrowSprites[1]->data[7] = 1;
@@ -5763,7 +5763,7 @@ static void SpriteCB_Arrow(struct Sprite *sprite)
         break;
     case 3:
         sprite->x -= sStorage->scrollSpeed;
-        if (sprite->x <= 72 || sprite->x >= DISPLAY_WIDTH + 8)
+        if (sprite->x <= 72 || sprite->x >= DisplayWidth() + 8)
             sprite->invisible = TRUE;
         if (--sprite->sTimer == 0)
         {
@@ -5909,9 +5909,9 @@ static bool8 UpdateCursorPos(void)
         sStorage->cursorSprite->y = sStorage->cursorNewY >> 8;
 
         // Limit cursor on right
-        if (sStorage->cursorSprite->x > DISPLAY_WIDTH + 16)
+        if (sStorage->cursorSprite->x > DisplayWidth() + 16)
         {
-            tmp = sStorage->cursorSprite->x - (DISPLAY_WIDTH + 16);
+            tmp = sStorage->cursorSprite->x - (DisplayWidth() + 16);
             sStorage->cursorSprite->x = tmp + 64;
         }
 
@@ -5919,13 +5919,13 @@ static bool8 UpdateCursorPos(void)
         if (sStorage->cursorSprite->x < 64)
         {
             tmp = 64 - sStorage->cursorSprite->x;
-            sStorage->cursorSprite->x = DISPLAY_WIDTH + 16 - tmp;
+            sStorage->cursorSprite->x = DisplayWidth() + 16 - tmp;
         }
 
         // Limit cursor on bottom
-        if (sStorage->cursorSprite->y > DISPLAY_HEIGHT + 16)
+        if (sStorage->cursorSprite->y > DisplayHeight() + 16)
         {
-            tmp = sStorage->cursorSprite->y - (DISPLAY_HEIGHT + 16);
+            tmp = sStorage->cursorSprite->y - (DisplayHeight() + 16);
             sStorage->cursorSprite->y = tmp - 16;
         }
 
@@ -5933,7 +5933,7 @@ static bool8 UpdateCursorPos(void)
         if (sStorage->cursorSprite->y < -16)
         {
             tmp = -16 - sStorage->cursorSprite->y;
-            sStorage->cursorSprite->y = DISPLAY_HEIGHT + 16 - tmp;
+            sStorage->cursorSprite->y = DisplayHeight() + 16 - tmp;
         }
 
         // Cursor flips vertically when moving on/off the top buttons

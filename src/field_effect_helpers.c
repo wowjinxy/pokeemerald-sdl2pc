@@ -1514,7 +1514,7 @@ void UpdateRayquazaSpotlightEffect(struct Sprite *sprite)
     switch (sprite->sState)
     {
         case 0:
-            SetGpuReg(REG_OFFSET_BG0VOFS, DISPLAY_WIDTH / 2 - (sprite->sTimer / 3));
+            SetGpuReg(REG_OFFSET_BG0VOFS, DisplayWidth() / 2 - (sprite->sTimer / 3));
             if (sprite->sTimer == 96)
             {
                 for (i = 0; i < 3; i++)

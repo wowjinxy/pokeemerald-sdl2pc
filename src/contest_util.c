@@ -83,8 +83,8 @@ enum {
 #define MAX_BAR_LENGTH (NUM_BAR_SEGMENTS * BAR_SEGMENT_LENGTH)
 
 // Starting x/y for the sliding results screen text box
-#define TEXT_BOX_X (DISPLAY_WIDTH + 32)
-#define TEXT_BOX_Y (DISPLAY_HEIGHT - 16)
+#define TEXT_BOX_X (DisplayWidth() + 32)
+#define TEXT_BOX_Y (DisplayHeight() - 16)
 
 struct ContestResultsInternal
 {
@@ -543,8 +543,8 @@ static void CB2_StartShowContestResults(void)
     gPaletteFade.bufferTransferDisabled = FALSE;
     sContestResults->data->showResultsTaskId = CreateTask(Task_ShowContestResults, 5);
     SetMainCallback2(CB2_ShowContestResults);
-    gBattle_WIN1H = WIN_RANGE(0, DISPLAY_WIDTH);
-    gBattle_WIN1V = WIN_RANGE(DISPLAY_HEIGHT - 32, DISPLAY_HEIGHT);
+    gBattle_WIN1H = WIN_RANGE(0, DisplayWidth());
+    gBattle_WIN1V = WIN_RANGE(DisplayHeight() - 32, DisplayHeight());
     CreateTask(Task_SlideContestResultsBg, 20);
     CalculateContestantsResultData();
     if (gLinkContestFlags & LINK_CONTEST_FLAG_IS_WIRELESS)
@@ -886,8 +886,8 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
     switch (gTasks[taskId].tState)
     {
     case 0:
-        gBattle_WIN0H = WIN_RANGE(0, DISPLAY_WIDTH);
-        gBattle_WIN0V = WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2);
+        gBattle_WIN0H = WIN_RANGE(0, DisplayWidth());
+        gBattle_WIN0V = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2);
 
         GET_CONTEST_WINNER_ID(i);
         species = gContestMons[i].species;
@@ -914,7 +914,7 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
         LoadCompressedSpritePalette(pokePal);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
         gMultiuseSpriteTemplate.paletteTag = pokePal->tag;
-        spriteId = CreateSprite(&gMultiuseSpriteTemplate, DISPLAY_WIDTH + 32, DISPLAY_HEIGHT / 2, 10);
+        spriteId = CreateSprite(&gMultiuseSpriteTemplate, DisplayWidth() + 32, DisplayHeight() / 2, 10);
         gSprites[spriteId].data[1] = species;
         gSprites[spriteId].oam.priority = 0;
         gSprites[spriteId].callback = SpriteCB_WinnerMonSlideIn;
@@ -934,7 +934,7 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
                 gTasks[taskId].tCounter = 32;
 
             counter = gTasks[taskId].tCounter;
-            gBattle_WIN0V = WIN_RANGE(DISPLAY_HEIGHT / 2 - counter, DISPLAY_HEIGHT / 2 + counter);
+            gBattle_WIN0V = WIN_RANGE(DisplayHeight() / 2 - counter, DisplayHeight() / 2 + counter);
             if (counter == 32)
                 gTasks[taskId].tState++;
         }
@@ -956,11 +956,11 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
         {
             u8 top = (gBattle_WIN0V >> 8);
             top += 2;
-            if (top > DISPLAY_HEIGHT / 2)
-                top = DISPLAY_HEIGHT / 2;
+            if (top > DisplayHeight() / 2)
+                top = DisplayHeight() / 2;
 
-            gBattle_WIN0V = WIN_RANGE(top, DISPLAY_HEIGHT - top);
-            if (top == DISPLAY_HEIGHT / 2)
+            gBattle_WIN0V = WIN_RANGE(top, DisplayHeight() - top);
+            if (top == DisplayHeight() / 2)
                 gTasks[taskId].tState++;
         }
         break;
@@ -1230,7 +1230,7 @@ static s32 DrawResultsTextWindow(const u8 *text, u8 spriteId)
     }
     RemoveWindow(windowId);
 
-    return (DISPLAY_WIDTH - (tileWidth + 2) * 8) / 2;
+    return (DisplayWidth() - (tileWidth + 2) * 8) / 2;
 }
 
 static void CreateResultsTextWindowSprites(void)
@@ -1382,7 +1382,7 @@ static void ShowLinkResultsTextBox(const u8 *text)
         gSprites[sprite->data[i]].invisible = FALSE;
     }
 
-    gBattle_WIN0H = WIN_RANGE(0, DISPLAY_WIDTH);
+    gBattle_WIN0H = WIN_RANGE(0, DisplayWidth());
     gBattle_WIN0V = WIN_RANGE(sprite->y - 16, sprite->y + 16);
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR
         | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR);
@@ -1596,10 +1596,10 @@ static void SpriteCB_WinnerMonSlideIn(struct Sprite *sprite)
         sprite->x -= delta >> 8;
         sprite->data[1] += 0x600;
         sprite->data[1] &= 0xFF;
-        if (sprite->x < DISPLAY_WIDTH / 2)
-            sprite->x = DISPLAY_WIDTH / 2;
+        if (sprite->x < DisplayWidth() / 2)
+            sprite->x = DisplayWidth() / 2;
 
-        if (sprite->x == DISPLAY_WIDTH / 2)
+        if (sprite->x == DisplayWidth() / 2)
         {
             sprite->callback = SpriteCallbackDummy;
             sprite->data[1] = 0;
@@ -1629,7 +1629,7 @@ static void Task_CreateConfetti(u8 taskId)
         gTasks[taskId].data[0] = 0;
         if (sContestResults->data->confettiCount < 40)
         {
-            u8 spriteId = CreateSprite(&sSpriteTemplate_Confetti, (Random() % DISPLAY_WIDTH) - 20, 44, 5);
+            u8 spriteId = CreateSprite(&sSpriteTemplate_Confetti, (Random() % DisplayWidth()) - 20, 44, 5);
             gSprites[spriteId].data[0] = Random() % 512;
             gSprites[spriteId].data[1] = (Random() % 24) + 16;
             gSprites[spriteId].data[2] = (Random() % 256) + 48;
@@ -1657,7 +1657,7 @@ static void SpriteCB_Confetti(struct Sprite *sprite)
     if (sContestResults->data->destroyConfetti)
         sprite->invisible = TRUE;
 
-    if (sprite->x > DISPLAY_WIDTH + 8 || sprite->y > 116)
+    if (sprite->x > DisplayWidth() + 8 || sprite->y > 116)
     {
         DestroySprite(sprite);
         sContestResults->data->confettiCount--;

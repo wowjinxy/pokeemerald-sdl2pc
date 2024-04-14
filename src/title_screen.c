@@ -466,7 +466,7 @@ enum {
 
 static void SpriteCB_PokemonLogoShine(struct Sprite *sprite)
 {
-    if (sprite->x < DISPLAY_WIDTH + 32)
+    if (sprite->x < DisplayWidth() + 32)
     {
         // In any mode except SHINE_MODE_SINGLE_NO_BG_COLOR the background
         // color will change, in addition to the shine sprite moving.
@@ -474,7 +474,7 @@ static void SpriteCB_PokemonLogoShine(struct Sprite *sprite)
         {
             u16 backgroundColor;
 
-            if (sprite->x < DISPLAY_WIDTH / 2)
+            if (sprite->x < DisplayWidth() / 2)
             {
                 // Brighten background color
                 if (sprite->sBgColor < 31)
@@ -495,10 +495,10 @@ static void SpriteCB_PokemonLogoShine(struct Sprite *sprite)
 
             // Flash the background green for 4 frames of movement.
             // Otherwise use the updating color.
-            if (sprite->x == DISPLAY_WIDTH / 2 + (3 * SHINE_SPEED)
-             || sprite->x == DISPLAY_WIDTH / 2 + (4 * SHINE_SPEED)
-             || sprite->x == DISPLAY_WIDTH / 2 + (5 * SHINE_SPEED)
-             || sprite->x == DISPLAY_WIDTH / 2 + (6 * SHINE_SPEED))
+            if (sprite->x == DisplayWidth() / 2 + (3 * SHINE_SPEED)
+             || sprite->x == DisplayWidth() / 2 + (4 * SHINE_SPEED)
+             || sprite->x == DisplayWidth() / 2 + (5 * SHINE_SPEED)
+             || sprite->x == DisplayWidth() / 2 + (6 * SHINE_SPEED))
                 gPlttBufferFaded[0] = RGB(24, 31, 12);
             else
                 gPlttBufferFaded[0] = backgroundColor;
@@ -516,7 +516,7 @@ static void SpriteCB_PokemonLogoShine(struct Sprite *sprite)
 
 static void SpriteCB_PokemonLogoShine_Fast(struct Sprite *sprite)
 {
-    if (sprite->x < DISPLAY_WIDTH + 32)
+    if (sprite->x < DisplayWidth() + 32)
         sprite->x += SHINE_SPEED * 2;
     else
         DestroySprite(sprite);
@@ -634,7 +634,7 @@ void CB2_InitTitleScreen(void)
         gMain.state = 4;
         break;
     case 4:
-        PanFadeAndZoomScreen(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, 0x100, 0);
+        PanFadeAndZoomScreen(DisplayWidth() / 2, DisplayHeight() / 2, 0x100, 0);
         SetGpuReg(REG_OFFSET_BG2X_L, -29 * 256);
         SetGpuReg(REG_OFFSET_BG2X_H, -1);
         SetGpuReg(REG_OFFSET_BG2Y_L, -32 * 256);
@@ -665,7 +665,7 @@ void CB2_InitTitleScreen(void)
         if (!UpdatePaletteFade())
         {
             StartPokemonLogoShine(SHINE_MODE_SINGLE_NO_BG_COLOR);
-            ScanlineEffect_InitWave(0, DISPLAY_HEIGHT, 4, 4, 0, SCANLINE_EFFECT_REG_BG1HOFS, TRUE);
+            ScanlineEffect_InitWave(0, DisplayHeight(), 4, 4, 0, SCANLINE_EFFECT_REG_BG1HOFS, TRUE);
             SetMainCallback2(MainCB2);
         }
         break;

@@ -1457,7 +1457,7 @@ static void CB2_StartBlenderLink(void)
         DrawBlenderCenter(&sBerryBlender->bgAffineSrc);
         break;
     case 16:
-        CreateSprite(&sSpriteTemplate_CountdownNumbers, 120, -16, 3);
+        CreateSprite(&sSpriteTemplate_CountdownNumbers, DisplayWidth() / 2, -16, 3);
         sBerryBlender->mainState++;
         break;
     case 17:
@@ -1752,7 +1752,7 @@ static void CB2_StartBlenderLocal(void)
         DrawBlenderCenter(&sBerryBlender->bgAffineSrc);
         break;
     case 16:
-        CreateSprite(&sSpriteTemplate_CountdownNumbers, 120, -16, 3);
+        CreateSprite(&sSpriteTemplate_CountdownNumbers, DisplayWidth() / 2, -16, 3);
         sBerryBlender->mainState++;
         break;
     case 17:
@@ -3113,10 +3113,10 @@ static void DrawBlenderCenter(struct BgAffineSrcData *dest)
 {
     struct BgAffineSrcData affineSrc;
 
-    affineSrc.texX = (DISPLAY_WIDTH / 2) << 8;
-    affineSrc.texY = (DISPLAY_HEIGHT / 2) << 8;
-    affineSrc.scrX = DISPLAY_WIDTH / 2 - sBerryBlender->bg_X;
-    affineSrc.scrY = DISPLAY_HEIGHT / 2 - sBerryBlender->bg_Y;
+    affineSrc.texX = (DisplayWidth() / 2) << 8;
+    affineSrc.texY = (DisplayHeight() / 2) << 8;
+    affineSrc.scrX = DisplayWidth() / 2 - sBerryBlender->bg_X;
+    affineSrc.scrY = DisplayHeight() / 2 - sBerryBlender->bg_Y;
     affineSrc.sx = sBerryBlender->centerScale;
     affineSrc.sy = sBerryBlender->centerScale;
     affineSrc.alpha = sBerryBlender->arrowPos;
@@ -3202,7 +3202,7 @@ static void CreateParticleSprites(void)
         x = gSineTable[(rand & 0xFF) + 64] / 4;
         y = gSineTable[(rand & 0xFF)] / 4;
 
-        spriteId = CreateSprite(&sSpriteTemplate_Particles, x + 120, y + 80, 1);
+        spriteId = CreateSprite(&sSpriteTemplate_Particles, x + DisplayWidth() / 2, y + 80, 1);
         gSprites[spriteId].data[0] = 16 - (Random() % 32);
         gSprites[spriteId].data[1] = 16 - (Random() % 32);
 
@@ -3247,9 +3247,9 @@ static void SpriteCB_CountdownNumber(struct Sprite *sprite)
     {
     case 0:
         sprite->sYPos += 8;
-        if (sprite->sYPos > DISPLAY_HEIGHT / 2 + 8)
+        if (sprite->sYPos > DisplayHeight() / 2 + 8)
         {
-            sprite->sYPos = DISPLAY_HEIGHT / 2 + 8;
+            sprite->sYPos = DisplayHeight() / 2 + 8;
             sprite->sState++;
             PlaySE(SE_BALL_BOUNCE_1);
         }
@@ -3263,12 +3263,12 @@ static void SpriteCB_CountdownNumber(struct Sprite *sprite)
         break;
     case 2:
         sprite->sYPos += 4;
-        if (sprite->sYPos > DISPLAY_HEIGHT + 16)
+        if (sprite->sYPos > DisplayHeight() + 16)
         {
             if (++sprite->sAnimId == 3)
             {
                 DestroySprite(sprite);
-                CreateSprite(&sSpriteTemplate_Start, 120, -20, 2);
+                CreateSprite(&sSpriteTemplate_Start, DisplayWidth() / 2, -20, 2);
             }
             else
             {
@@ -3308,7 +3308,7 @@ static void SpriteCB_Start(struct Sprite *sprite)
         break;
     case 2:
         sprite->data[1] += 4;
-        if (sprite->data[1] > DISPLAY_HEIGHT + 16)
+        if (sprite->data[1] > DisplayHeight() + 16)
         {
             sBerryBlender->mainState++;
             DestroySprite(sprite);

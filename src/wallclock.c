@@ -700,21 +700,21 @@ void CB2_StartWallClock(void)
     gTasks[taskId].tMinuteHandAngle = 0;
     gTasks[taskId].tHourHandAngle = 300;
 
-    spriteId = CreateSprite(&sSpriteTemplate_MinuteHand, 120, 80, 1);
+    spriteId = CreateSprite(&sSpriteTemplate_MinuteHand, DisplayWidth() / 2, 80, 1);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[spriteId].oam.matrixNum = 0;
 
-    spriteId = CreateSprite(&sSpriteTemplate_HourHand, 120, 80, 0);
+    spriteId = CreateSprite(&sSpriteTemplate_HourHand, DisplayWidth() / 2, 80, 0);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[spriteId].oam.matrixNum = 1;
 
-    spriteId = CreateSprite(&sSpriteTemplate_PM, 120, 80, 2);
+    spriteId = CreateSprite(&sSpriteTemplate_PM, DisplayWidth() / 2, 80, 2);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].data[1] = 45;
 
-    spriteId = CreateSprite(&sSpriteTemplate_AM, 120, 80, 2);
+    spriteId = CreateSprite(&sSpriteTemplate_AM, DisplayWidth() / 2, 80, 2);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].data[1] = 90;
 
@@ -748,21 +748,21 @@ void CB2_ViewWallClock(void)
         angle2 = 135;
     }
 
-    spriteId = CreateSprite(&sSpriteTemplate_MinuteHand, 120, 80, 1);
+    spriteId = CreateSprite(&sSpriteTemplate_MinuteHand, DisplayWidth() / 2, 80, 1);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[spriteId].oam.matrixNum = 0;
 
-    spriteId = CreateSprite(&sSpriteTemplate_HourHand, 120, 80, 0);
+    spriteId = CreateSprite(&sSpriteTemplate_HourHand, DisplayWidth() / 2, 80, 0);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[spriteId].oam.matrixNum = 1;
 
-    spriteId = CreateSprite(&sSpriteTemplate_PM, 120, 80, 2);
+    spriteId = CreateSprite(&sSpriteTemplate_PM, DisplayWidth() / 2, 80, 2);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].data[1] = angle1;
 
-    spriteId = CreateSprite(&sSpriteTemplate_AM, 120, 80, 2);
+    spriteId = CreateSprite(&sSpriteTemplate_AM, DisplayWidth() / 2, 80, 2);
     gSprites[spriteId].sTaskId = taskId;
     gSprites[spriteId].data[1] = angle2;
 

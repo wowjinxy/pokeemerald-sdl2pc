@@ -540,13 +540,13 @@ static void AnimUnusedIceCrystalThrow(struct Sprite *sprite)
     sprite->data[4] = gBattleAnimArgs[3] + targetY;
     ConvertPosDataToTranslateLinearData(sprite);
 
-    for (;(targetX >= -32 && targetX <= DISPLAY_WIDTH + 32) && (targetY >= -32 && targetY <= DISPLAY_HEIGHT + 32);
+    for (;(targetX >= -32 && targetX <= DisplayWidth() + 32) && (targetY >= -32 && targetY <= DisplayHeight() + 32);
            targetX += sprite->data[1], targetY += sprite->data[2])
         ;
 
     sprite->data[1] = -sprite->data[1];
     sprite->data[2] = -sprite->data[2];
-    for (;(attackerX >= -32 && attackerX <= DISPLAY_WIDTH + 32) && (attackerY >= -32 && attackerY <= DISPLAY_HEIGHT + 32);
+    for (;(attackerX >= -32 && attackerX <= DisplayWidth() + 32) && (attackerY >= -32 && attackerY <= DisplayHeight() + 32);
            attackerX += sprite->data[1], attackerY += sprite->data[2])
         ;
 
@@ -696,9 +696,9 @@ static void AnimSwirlingSnowball(struct Sprite *sprite)
         sprite->data[0] = 1;
         AnimFastTranslateLinear(sprite);
 
-        if (sprite->x + sprite->x2 > DISPLAY_WIDTH + 16
+        if (sprite->x + sprite->x2 > DisplayWidth() + 16
          || sprite->x + sprite->x2 < -16
-         || sprite->y + sprite->y2 > DISPLAY_HEIGHT
+         || sprite->y + sprite->y2 > DisplayHeight()
          || sprite->y + sprite->y2 < -16)
             break;
     }
@@ -818,9 +818,9 @@ static void AnimMoveParticleBeyondTarget(struct Sprite *sprite)
     {
         sprite->data[0] = 1;
         AnimFastTranslateLinear(sprite);
-        if (sprite->x + sprite->x2 > DISPLAY_WIDTH + 16
+        if (sprite->x + sprite->x2 > DisplayWidth() + 16
          || sprite->x + sprite->x2 < -16
-         || sprite->y + sprite->y2 > DISPLAY_HEIGHT
+         || sprite->y + sprite->y2 > DisplayHeight()
          || sprite->y + sprite->y2 < -16)
             break;
     }
@@ -849,9 +849,9 @@ static void AnimWiggleParticleTowardsTarget(struct Sprite *sprite)
     sprite->data[7] = (sprite->data[7] + sprite->data[6]) & 0xFF;
     if (sprite->data[0] == 1)
     {
-        if (sprite->x + sprite->x2 > DISPLAY_WIDTH + 16
+        if (sprite->x + sprite->x2 > DisplayWidth() + 16
          || sprite->x + sprite->x2 < -16
-         || sprite->y + sprite->y2 > DISPLAY_HEIGHT
+         || sprite->y + sprite->y2 > DisplayHeight()
          || sprite->y + sprite->y2 < -16)
             DestroyAnimSprite(sprite);
     }
@@ -1307,7 +1307,7 @@ static void MovePoisonGasCloud(struct Sprite *sprite)
             if (IsContest())
                 sprite->data[2] = -16;
             else if (GET_BATTLER_SIDE2(gBattleAnimTarget) != B_SIDE_PLAYER)
-                sprite->data[2] = DISPLAY_WIDTH + 16;
+                sprite->data[2] = DisplayWidth() + 16;
             else
                 sprite->data[2] = -16;
 

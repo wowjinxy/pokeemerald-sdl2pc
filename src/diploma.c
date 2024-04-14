@@ -129,7 +129,7 @@ static void DisplayDiplomaText(void)
 {
     if (HasAllMons())
     {
-        SetGpuReg(REG_OFFSET_BG1HOFS, DISPLAY_WIDTH + 16);
+        SetGpuReg(REG_OFFSET_BG1HOFS, DisplayWidth() + 16);
         StringCopy(gStringVar1, gText_DexNational);
     }
     else

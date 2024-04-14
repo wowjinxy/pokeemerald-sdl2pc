@@ -384,10 +384,10 @@ void SortSprites(void)
         s16 sprite1Y = sprite1->oam.y;
         s16 sprite2Y = sprite2->oam.y;
 
-        if (sprite1Y >= DISPLAY_HEIGHT)
+        if (sprite1Y >= DisplayHeight())
             sprite1Y = sprite1Y - 256;
 
-        if (sprite2Y >= DISPLAY_HEIGHT)
+        if (sprite2Y >= DisplayHeight())
             sprite2Y = sprite2Y - 256;
 
         if (sprite1->oam.affineMode == ST_OAM_AFFINE_DOUBLE
@@ -437,10 +437,10 @@ void SortSprites(void)
             sprite1Y = sprite1->oam.y;
             sprite2Y = sprite2->oam.y;
 
-            if (sprite1Y >= DISPLAY_HEIGHT)
+            if (sprite1Y >= DisplayHeight())
                 sprite1Y = sprite1Y - 256;
 
-            if (sprite2Y >= DISPLAY_HEIGHT)
+            if (sprite2Y >= DisplayHeight())
                 sprite2Y = sprite2Y - 256;
 
             if (sprite1->oam.affineMode == ST_OAM_AFFINE_DOUBLE

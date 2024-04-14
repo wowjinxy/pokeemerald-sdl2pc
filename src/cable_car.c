@@ -675,7 +675,7 @@ static void SpriteCB_HikerGoingUp(struct Sprite *sprite)
             break;
         }
 
-        if (sprite->y > DISPLAY_HEIGHT)
+        if (sprite->y > DisplayHeight())
             DestroySprite(sprite);
     }
 }

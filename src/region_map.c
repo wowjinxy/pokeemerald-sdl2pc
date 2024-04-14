@@ -1522,7 +1522,7 @@ static void SpriteCB_PlayerIconMapZoomed(struct Sprite *sprite)
     sprite->y2 = -2 * sRegionMap->scrollY;
     sprite->sY = sprite->y + sprite->y2 + sprite->centerToCornerVecY;
     sprite->sX = sprite->x + sprite->x2 + sprite->centerToCornerVecX;
-    if (sprite->sY < -8 || sprite->sY > DISPLAY_HEIGHT + 8 || sprite->sX < -8 || sprite->sX > DISPLAY_WIDTH + 8)
+    if (sprite->sY < -8 || sprite->sY > DISPLAY_HEIGHT + 8 || sprite->sX < -8 || sprite->sX > DisplayWidth() + 8)
         sprite->sVisible = FALSE;
     else
         sprite->sVisible = TRUE;

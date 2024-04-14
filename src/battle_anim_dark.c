@@ -430,7 +430,7 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
         scanlineParams.dmaDest = &REG_BG1VOFS;
         var0 = WINOUT_WIN01_BG1;
         if (!IsContest())
-            gBattle_BG2_X += DISPLAY_WIDTH;
+            gBattle_BG2_X += DisplayWidth();
     }
     else
     {
@@ -440,7 +440,7 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
         scanlineParams.dmaDest = &REG_BG2VOFS;
         var0 = WINOUT_WIN01_BG2;
         if (!IsContest())
-            gBattle_BG1_X += DISPLAY_WIDTH;
+            gBattle_BG1_X += DisplayWidth();
     }
 
     scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
@@ -462,7 +462,7 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
     SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | (var0 ^ (WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR)));
     SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     gBattle_WIN0H = (task->data[14] << 8) | task->data[15];
-    gBattle_WIN0V = DISPLAY_HEIGHT;
+    gBattle_WIN0V = DisplayHeight();
 
     task->func = AnimTask_MoveAttackerMementoShadow_Step;
 }
@@ -550,12 +550,12 @@ void AnimTask_MoveTargetMementoShadow(u8 taskId)
             if (task->data[3] == 1)
             {
                 SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
-                gBattle_BG2_X += DISPLAY_WIDTH;
+                gBattle_BG2_X += DisplayWidth();
             }
             else
             {
                 SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
-                gBattle_BG1_X += DISPLAY_WIDTH;
+                gBattle_BG1_X += DisplayWidth();
             }
 
             task->data[0]++;
@@ -622,7 +622,7 @@ void AnimTask_MoveTargetMementoShadow(u8 taskId)
 
         SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         gBattle_WIN0H = (task->data[14] << 8) | task->data[15];
-        gBattle_WIN0V = DISPLAY_HEIGHT;
+        gBattle_WIN0V = DisplayHeight();
 
         task->data[0] = 0;
         task->data[1] = 0;
