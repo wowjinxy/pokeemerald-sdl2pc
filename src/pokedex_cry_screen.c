@@ -38,10 +38,10 @@ struct PokedexCryMeterNeedle {
 
 struct PokedexCryScreen
 {
-    u8 cryWaveformBuffer[16];
+    float cryWaveformBuffer[16];
     u8 cryState;
     u8 playhead;
-    u8 waveformPreviousY;
+    float waveformPreviousY;
     u16 unk; // Never read
     u8 playStartPos;
     u16 species;
@@ -354,15 +354,15 @@ static void PlayCryScreenCry(u16 species)
 static void BufferCryWaveformSegment(void)
 {
     u8 i;
-    s8 *baseBuffer;
-    s8 *buffer;
+    float *baseBuffer;
+    float *buffer;
 
     if (gPcmDmaCounter < 2)
         baseBuffer = gSoundInfo.pcmBuffer;
     else
         baseBuffer = gSoundInfo.pcmBuffer + (gSoundInfo.pcmDmaPeriod + 1 - gPcmDmaCounter) * gSoundInfo.pcmSamplesPerVBlank;
 
-    buffer = baseBuffer + 0x630;
+    buffer = baseBuffer + PCM_DMA_BUF_SIZE;
     for (i = 0; i < ARRAY_COUNT(sDexCryScreen->cryWaveformBuffer); i++)
         sDexCryScreen->cryWaveformBuffer[i] = buffer[i * 2] * 2;
 }
@@ -387,18 +387,18 @@ static void AdvancePlayhead(u8 windowId)
 
 // Waveform segments are drawn in alternate vertical slices
 // Note that the waveform isnt put on screen until DrawWaveformWindow
-static void DrawWaveformSegment(u8 position, u8 amplitude)
+static void DrawWaveformSegment(u8 position, float amplitude)
 {
     // Position is a bitfield containing the play start pos, the playhead pos, and which vertical slice half to draw
     #define PLAY_START_POS (position >> 3)
     #define PLAYHEAD_POS   (position & ((1 << 3) - 1))
     #define VERT_SLICE     (position & 1)
 
-    u8 currentPointY;
+    float currentPointY;
     u8 nybble;
     u16 offset;
     u16 temp;
-    u8 y;
+    float y;
 
     temp = (amplitude + 127) * 256;
     y = temp / 1152.0;
