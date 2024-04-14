@@ -458,6 +458,9 @@ void UpdateCameraPanning(void)
     //Update sprite offset of overworld objects
     gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan;
     gSpriteCoordOffsetY = gTotalCameraPixelOffsetY - sVerticalCameraPan - 8;
+
+    gSpriteCoordOffsetX += (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
+    gSpriteCoordOffsetY += (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
 }
 
 static void CameraPanningCB_PanAhead(void)

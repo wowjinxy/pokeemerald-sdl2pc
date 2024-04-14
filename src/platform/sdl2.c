@@ -53,12 +53,12 @@ enum {
 };
 
 struct scanlineData {
-    uint16_t layers[4][DISPLAY_WIDTH];
+    uint16_t layers[NUM_BACKGROUNDS][DISPLAY_WIDTH];
     uint16_t spriteLayers[4][DISPLAY_WIDTH];
-    uint16_t bgcnts[4];
+    uint16_t bgcnts[NUM_BACKGROUNDS];
     uint16_t winMask[DISPLAY_WIDTH];
     //priority bookkeeping
-    char bgtoprio[4]; //background to priority
+    char bgtoprio[NUM_BACKGROUNDS]; //background to priority
     char prioritySortedBgs[4][4];
     char prioritySortedBgsCount[4];
 };
@@ -77,6 +77,7 @@ SDL_atomic_t isFrameAvailable;
 bool speedUp = false;
 unsigned int videoScale = 1;
 bool videoScaleChanged = false;
+bool recenterWindow = false;
 bool isRunning = true;
 bool paused = false;
 double simTime = 0;
@@ -89,7 +90,13 @@ struct SiiRtcInfo internalClock;
 static s32 displayWidth = 0;
 static s32 displayHeight = 0;
 
-#define ANY_RESOLUTION
+static s32 windowWidth = 0;
+static s32 windowHeight = 0;
+
+static bool8 runVCount = TRUE;
+static bool8 runVBlank = TRUE;
+static bool8 runHBlank = TRUE;
+static bool8 layerEnabled[NUM_BACKGROUNDS + 1];
 
 static FILE *sSaveFile = NULL;
 
@@ -160,6 +167,8 @@ int main(int argc, char **argv)
 {
     s32 scrW, scrH;
 
+    int sdlRendererFlags = 0;
+
     // Open an output console on Windows
 #ifdef _WIN32
     AllocConsole() ;
@@ -175,17 +184,26 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    videoScale = 1;
+
     scrW = BASE_DISPLAY_WIDTH;
     scrH = BASE_DISPLAY_HEIGHT;
 
-    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, scrW * videoScale, scrH * videoScale, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    windowWidth = scrW * videoScale;
+    windowHeight = scrH * videoScale;
+
+    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (sdlWindow == NULL)
     {
         fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+    sdlRendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+#endif
+
+    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, sdlRendererFlags);
     if (sdlRenderer == NULL)
     {
         fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -196,7 +214,7 @@ int main(int argc, char **argv)
     SDL_RenderClear(sdlRenderer);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetWindowMinimumSize(sdlWindow, BASE_DISPLAY_WIDTH, BASE_DISPLAY_HEIGHT);
-    SDL_SetWindowMaximumSize(sdlWindow, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    // SDL_SetWindowMaximumSize(sdlWindow, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     if (SetResolution(scrW, scrH) == FALSE)
     {
@@ -226,6 +244,9 @@ int main(int argc, char **argv)
             SDL_Log("We didn't get Float32 audio format.");
         SDL_PauseAudio(0);
     }
+
+    for (unsigned i = 0; i < NUM_BACKGROUNDS + 1; i++)
+        layerEnabled[i] = TRUE;
     
     VDraw(sdlTexture);
     mainLoopThread = SDL_CreateThread(DoMain, "AgbMain", NULL);
@@ -239,6 +260,21 @@ int main(int argc, char **argv)
     while (isRunning)
     {
         ProcessEvents();
+
+        if (videoScaleChanged)
+        {
+            SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
+
+            if (recenterWindow)
+            {
+                SDL_SetWindowPosition(sdlWindow,
+                    SDL_WINDOWPOS_CENTERED_DISPLAY(SDL_GetWindowDisplayIndex(sdlWindow)),
+                    SDL_WINDOWPOS_CENTERED_DISPLAY(SDL_GetWindowDisplayIndex(sdlWindow))
+                );
+            }
+
+            videoScaleChanged = false;
+        }
 
         if (!paused)
         {
@@ -256,18 +292,22 @@ int main(int argc, char **argv)
             {
                 if (SDL_AtomicGet(&isFrameAvailable))
                 {
+                    // FIXME: Yikes.
                     VDraw(sdlTexture);
-                    SDL_RenderClear(sdlRenderer);
-                    SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+
                     SDL_AtomicSet(&isFrameAvailable, 0);
 
                     REG_DISPSTAT |= INTR_FLAG_VBLANK;
 
-                    RunDMAs(DMA_HBLANK);
+                    if (runHBlank)
+                        RunDMAs(DMA_HBLANK);
 
-                    if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
-                        gIntrTable[4]();
-                    REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
+                    if (runVBlank)
+                    {
+                        if (REG_DISPSTAT & DISPSTAT_VBLANK_INTR)
+                            gIntrTable[4]();
+                        REG_DISPSTAT &= ~INTR_FLAG_VBLANK;
+                    }
 
                     SDL_SemPost(vBlankSemaphore);
 
@@ -276,22 +316,8 @@ int main(int argc, char **argv)
             }
         }
 
-        if (videoScaleChanged)
-        {
-            int curW, curH;
-            int newW, newH;
-
-            newW = displayWidth * videoScale;
-            newH = displayHeight * videoScale;
-
-            SDL_GetWindowSize(sdlWindow, &curW, &curH);
-
-            if (curW != newW || curH != newH)
-                SDL_SetWindowSize(sdlWindow, newW, newH);
-
-            videoScaleChanged = false;
-        }
-
+        SDL_RenderClear(sdlRenderer);
+        SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
         SDL_RenderPresent(sdlRenderer);
     }
 
@@ -351,6 +377,20 @@ static void CloseSaveFile()
     }
 }
 
+static void SetVideoScale(int scale)
+{
+    if (scale < 1 || scale > 4)
+        return;
+
+    videoScale = scale;
+    windowWidth = displayWidth * videoScale;
+    windowHeight = displayHeight * videoScale;
+    videoScaleChanged = true;
+    recenterWindow = true;
+
+    printf("Set video scale to %d\n", videoScale);
+}
+
 // Key mappings
 #define KEY_A_BUTTON      SDLK_z
 #define KEY_B_BUTTON      SDLK_x
@@ -407,6 +447,8 @@ void ProcessEvents(void)
             }
             break;
         case SDL_KEYDOWN:
+            if (event.key.state != SDL_PRESSED)
+                break;
             switch (event.key.keysym.sym)
             {
             HANDLE_KEYDOWN(A_BUTTON)
@@ -439,6 +481,50 @@ void ProcessEvents(void)
                     SDL_PauseAudio(1);
                 }
                 break;
+            case SDLK_v:
+                runVBlank = !runVBlank;
+                if (runVBlank) {
+                    printf("Enabled VBlank\n");
+                }
+                else {
+                    printf("Disabled VBlank\n");
+                }
+                break;
+            case SDLK_h:
+                runHBlank = !runHBlank;
+                if (runVBlank) {
+                    printf("Enabled HBlank\n");
+                }
+                else {
+                    printf("Disabled HBlank\n");
+                }
+                break;
+            case SDLK_KP_MINUS:
+                SetVideoScale(videoScale - 1);
+                break;
+            case SDLK_KP_PLUS:
+                SetVideoScale(videoScale + 1);
+                break;
+            default: {
+                int key = event.key.keysym.sym;
+                if (key >= SDLK_1 && key <= SDLK_5) {
+                    key -= SDLK_1;
+                    layerEnabled[key] = !layerEnabled[key];
+                    if (layerEnabled[key]) {
+                        if (key == 5)
+                            printf("Enabled sprite layer\n");
+                        else
+                            printf("Enabled BG layer %d\n", key + 1);
+                    }
+                    else {
+                        if (key == 5)
+                            printf("Disabled sprite layer\n");
+                        else
+                            printf("Disabled BG layer %d\n", key + 1);
+                    }
+                }
+                break;
+                }
             }
             break;
         case SDL_WINDOWEVENT:
@@ -447,20 +533,24 @@ void ProcessEvents(void)
                 unsigned int w = event.window.data1;
                 unsigned int h = event.window.data2;
 
-#ifdef ANY_RESOLUTION
+                windowWidth = w;
+                windowHeight = h;
+
+                videoScale = 0;
+                if (w / BASE_DISPLAY_WIDTH > videoScale)
+                    videoScale = w / BASE_DISPLAY_WIDTH;
+                if (h / BASE_DISPLAY_HEIGHT > videoScale)
+                    videoScale = h / BASE_DISPLAY_HEIGHT;
+                if (videoScale < 1)
+                    videoScale = 1;
+
                 w /= videoScale;
                 h /= videoScale;
 
-                SetResolution(w, h);
-#else
-                videoScale = 0;
-                if (w / DISPLAY_WIDTH > videoScale)
-                    videoScale = w / DISPLAY_WIDTH;
-                if (h / DISPLAY_HEIGHT > videoScale)
-                    videoScale = h / DISPLAY_HEIGHT;
-                if (videoScale < 1)
-                    videoScale = 1;
-#endif
+                printf("Resized screen to %dx%d (scale %d)\n", w, h, videoScale);
+
+                if (SetResolution(w, h) == FALSE)
+                    abort();
 
                 videoScaleChanged = true;
             }
@@ -1171,7 +1261,7 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
     }
 }
 
-static inline uint32_t getBgX(int bgNumber)
+static inline uint32_t getAffineBgX(int bgNumber)
 {
     if (bgNumber == 2)
     {
@@ -1183,7 +1273,7 @@ static inline uint32_t getBgX(int bgNumber)
     }
 }
 
-static inline uint32_t getBgY(int bgNumber)
+static inline uint32_t getAffineBgY(int bgNumber)
 {
     if (bgNumber == 2)
     {
@@ -1250,8 +1340,8 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     unsigned int screenBaseBlock = bgcnt->screenBaseBlock;
     unsigned int mapWidth = 1 << (4 + (bgcnt->screenSize)); // number of tiles
 
-    uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * 0x4000);
-    uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * 0x800);
+    uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * BG_CHAR_SIZE);
+    uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * BG_SCREEN_SIZE);
     uint16_t *pal = (uint16_t *)PLTT;
 
     if (control & BGCNT_MOSAIC)
@@ -1299,8 +1389,8 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     if (pd & 0x8000)
         dmy |= 0xFFFF8000;*/
 
-    s32 currentX = getBgX(bgNum);
-    s32 currentY = getBgY(bgNum);
+    s32 currentX = getAffineBgX(bgNum);
+    s32 currentY = getAffineBgY(bgNum);
     //sign extend 28 bit number
     currentX = ((currentX & (1 << 27)) ? currentX | 0xF0000000 : currentX);
     currentY = ((currentY & (1 << 27)) ? currentY | 0xF0000000 : currentY);
@@ -1752,11 +1842,11 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         // All backgrounds are text mode
         for (bgnum = 3; bgnum >= 0; bgnum--)
         {
-            if (isbgEnabled(bgnum))
+            if (isbgEnabled(bgnum) && layerEnabled[bgnum])
             {
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-                
+
                 RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
         }
@@ -1765,14 +1855,14 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     case 1:
         // BG2 is affine
         bgnum = 2;
-        if (isbgEnabled(bgnum))
+        if (isbgEnabled(bgnum) && layerEnabled[bgnum])
         {
             RenderRotScaleBGScanline(bgnum, scanline.bgcnts[bgnum], REG_BG2X, REG_BG2Y, vcount, scanline.layers[bgnum]);
         }
         // BG0 and BG1 are text mode
         for (bgnum = 1; bgnum >= 0; bgnum--)
         {
-            if (isbgEnabled(bgnum))
+            if (isbgEnabled(bgnum) && layerEnabled[bgnum])
             {
                 uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
                 uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
@@ -1853,7 +1943,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         }
     }
 
-    if (REG_DISPCNT & DISPCNT_OBJ_ON)
+    if (REG_DISPCNT & DISPCNT_OBJ_ON && layerEnabled[4])
         DrawSprites(&scanline, vcount, windowsEnabled);
 
     //iterate trough every priority in order
@@ -1957,18 +2047,22 @@ static void DrawFrame(uint16_t *pixels)
             scanlines[i][j] = backdropColor;
 
         REG_VCOUNT = i;
-        if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
+        if (runVCount)
         {
-            REG_DISPSTAT |= INTR_FLAG_VCOUNT;
-            if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
-                gIntrTable[0]();
+            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
+            {
+                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
+                if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+                    gIntrTable[0]();
+            }
         }
 
         DrawScanline(scanlines[i], i);
         
         REG_DISPSTAT |= INTR_FLAG_HBLANK;
 
-        RunDMAs(DMA_HBLANK);
+        if (runHBlank)
+            RunDMAs(DMA_HBLANK);
         
         if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
             gIntrTable[3]();
@@ -1982,12 +2076,58 @@ static void DrawFrame(uint16_t *pixels)
         memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
 }
 
+#if 0
+static void RunFrame(void)
+{
+    // Calls interrupts, but doesn't actually render the frame.
+    for (i = 0; i < displayHeight; i++)
+    {
+        REG_VCOUNT = i;
+        if (runVCount)
+        {
+            if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
+            {
+                REG_DISPSTAT |= INTR_FLAG_VCOUNT;
+                if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+                    gIntrTable[0]();
+            }
+        }
+
+        REG_DISPSTAT |= INTR_FLAG_HBLANK;
+
+        if (runHBlank)
+            RunDMAs(DMA_HBLANK);
+
+        if (REG_DISPSTAT & DISPSTAT_HBLANK_INTR)
+            gIntrTable[3]();
+
+        REG_DISPSTAT &= ~INTR_FLAG_HBLANK;
+        REG_DISPSTAT &= ~INTR_FLAG_VCOUNT;
+    }
+}
+#endif
+
 void VDraw(SDL_Texture *texture)
 {
+    int pitch = displayWidth * sizeof (Uint16);
+
+#ifdef USE_TEXTURE_LOCK
+    int *pixels = NULL;
+
+    SDL_LockTexture(texture, NULL, (void **)&pixels, &pitch);
+
+    DrawFrame((uint16_t *)pixels);
+
+    SDL_UnlockTexture(texture);
+#else
     static uint16_t image[DISPLAY_WIDTH * DISPLAY_HEIGHT];
 
     DrawFrame(image);
-    SDL_UpdateTexture(texture, NULL, image, displayWidth * sizeof (Uint16));
+
+    // Slow as cheeks but it's 04:27 and I can't get the above to look right.
+    SDL_UpdateTexture(texture, NULL, image, pitch);
+#endif
+
     REG_VCOUNT = displayHeight + 1; // prep for being in VBlank period
 }
 
