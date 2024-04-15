@@ -115,7 +115,9 @@ void AgbMain()
 #ifdef BUGFIX
     SeedRngWithRtc(); // see comment at SeedRngWithRtc definition below
 #endif
+#ifndef PORTABLE
     ClearDma3Requests();
+#endif
     ResetBgs();
     SetDefaultFontsPointer();
 
@@ -373,10 +375,10 @@ void FrameUpdate(void)
 
     gMain.vblankCounter2++;
 
+#ifndef PORTABLE
     CopyBufferedValuesToGpuRegs();
     ProcessDma3Requests();
 
-#ifndef PORTABLE
     gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
 
     m4aSoundMain();

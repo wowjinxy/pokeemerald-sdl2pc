@@ -1,6 +1,7 @@
 #include "global.h"
 #include "dma3.h"
 
+#ifndef PORTABLE
 #define MAX_DMA_REQUESTS 128
 
 #define DMA_REQUEST_COPY32 1
@@ -21,9 +22,11 @@ static struct Dma3Request sDma3Requests[MAX_DMA_REQUESTS];
 
 static vbool8 sDma3ManagerLocked;
 static u8 sDma3RequestCursor;
+#endif
 
 void ClearDma3Requests(void)
 {
+#ifndef PORTABLE
     int i;
 
     sDma3ManagerLocked = TRUE;
@@ -37,10 +40,12 @@ void ClearDma3Requests(void)
     }
 
     sDma3ManagerLocked = FALSE;
+#endif
 }
 
 void ProcessDma3Requests(void)
 {
+#ifndef PORTABLE
     u16 bytesTransferred;
 
     if (sDma3ManagerLocked)
@@ -93,10 +98,21 @@ void ProcessDma3Requests(void)
         if (sDma3RequestCursor >= MAX_DMA_REQUESTS) // loop back to the first DMA request
             sDma3RequestCursor = 0;
     }
+#endif
 }
 
 s16 RequestDma3Copy(const void *src, void *dest, u16 size, u8 mode)
 {
+#ifdef DMA3_DEBUG
+    printf("RequestDma3Copy: (src: %p, dest: %p, size: %d)\n", src, dest, size);
+#endif
+
+#ifdef PORTABLE
+    // Just copy it. Who cares?
+    (void)mode;
+    memcpy(dest, src, size);
+    return 1;
+#else
     int cursor;
     int i = 0;
 
@@ -125,10 +141,21 @@ s16 RequestDma3Copy(const void *src, void *dest, u16 size, u8 mode)
     }
     sDma3ManagerLocked = FALSE;
     return -1;  // no free DMA request was found
+#endif
 }
 
 s16 RequestDma3Fill(s32 value, void *dest, u16 size, u8 mode)
 {
+#ifdef DMA3_DEBUG
+    printf("RequestDma3Fill: (value: %p, dest: %u, size: %d)\n", value, dest, size);
+#endif
+
+#ifdef PORTABLE
+    // Just fill it. Who cares?
+    (void)mode;
+    memset(dest, value, size);
+    return 1;
+#else
     int cursor;
     int i = 0;
 
@@ -158,10 +185,14 @@ s16 RequestDma3Fill(s32 value, void *dest, u16 size, u8 mode)
     }
     sDma3ManagerLocked = FALSE;
     return -1;  // no free DMA request was found
+#endif
 }
 
 s16 CheckForSpaceForDma3Request(s16 index)
 {
+#ifdef PORTABLE
+    return 0;
+#else
     int i = 0;
 
     if (index == -1)  // check if all requests are free
@@ -180,4 +211,5 @@ s16 CheckForSpaceForDma3Request(s16 index)
             return -1;
         return 0;
     }
+#endif
 }
