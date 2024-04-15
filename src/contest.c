@@ -357,6 +357,11 @@ EWRAM_DATA struct ContestWinner gCurContestWinner = {0};
 EWRAM_DATA bool8 gCurContestWinnerIsForArtist = 0;
 EWRAM_DATA u8 gCurContestWinnerSaveIdx = 0;
 
+static u8 eUnzippedContestAudience_Gfx[0x1000];
+static u8 eContestAudienceFrame2_Gfx[0x1000];
+static u8 eContestDebugMode;
+static struct ContestTempSave eContestTempSave;
+
 // IWRAM common vars.
 u32 gContestRngValue;
 
@@ -858,23 +863,22 @@ static const struct CompressedSpriteSheet sSpriteSheets_ContestantsTurnBlinkEffe
     }
 };
 
-// Yup this is super dangerous but that's how it is here
 static const struct SpritePalette sSpritePalettes_ContestantsTurnBlinkEffect[CONTESTANT_COUNT] =
 {
     {
-        .data = (u16 *)(gHeap + 0x1A0A4),
+        .data = eContestTempSave.cachedWindowPalettes[5], // eContestTempSave + 0xA0
         .tag = TAG_BLINK_EFFECT_CONTESTANT0
     },
     {
-        .data = (u16 *)(gHeap + 0x1A0C4),
+        .data = eContestTempSave.cachedWindowPalettes[6], // eContestTempSave + 0xC0
         .tag = TAG_BLINK_EFFECT_CONTESTANT1
     },
     {
-        .data = (u16 *)(gHeap + 0x1A0E4),
+        .data = eContestTempSave.cachedWindowPalettes[7], // eContestTempSave + 0xE0
         .tag = TAG_BLINK_EFFECT_CONTESTANT2
     },
     {
-        .data = (u16 *)(gHeap + 0x1A104),
+        .data = eContestTempSave.cachedWindowPalettes[8], // eContestTempSave + 0x100
         .tag = TAG_BLINK_EFFECT_CONTESTANT3
     }
 };

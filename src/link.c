@@ -452,10 +452,12 @@ static void LinkTestProcessKeyInput(void)
     {
         gShouldAdvanceLinkState = 1;
     }
+#ifndef PORTABLE
     if (JOY_HELD(B_BUTTON))
     {
         InitBlockSend(gHeap + 0x4000, 0x00002004);
     }
+#endif
     if (JOY_NEW(L_BUTTON))
     {
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB(2, 0, 0));

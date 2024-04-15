@@ -10,11 +10,9 @@
 
 #define TRY_FREE_AND_SET_NULL(ptr) if (ptr != NULL) FREE_AND_SET_NULL(ptr)
 
+#ifndef PORTABLE
 #define HEAP_SIZE 0x1C000
 
-#ifdef ALLOC_HEAP
-extern u8 *gHeap;
-#else
 extern u8 gHeap[HEAP_SIZE];
 #endif
 

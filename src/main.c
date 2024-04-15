@@ -58,14 +58,10 @@ const IntrFunc gIntrTableTemplate[] =
 
 #define INTR_COUNT ((int)(sizeof(gIntrTableTemplate)/sizeof(IntrFunc)))
 
+#ifndef PORTABLE
 static u16 sUnusedVar; // Never read
 
-#ifdef PORTABLE
-#ifdef ALLOC_HEAP
-u8 *gHeap;
-#else
 u8 gHeap[HEAP_SIZE];
-#endif
 #endif
 
 u16 gKeyRepeatStartDelay;
@@ -123,13 +119,6 @@ void AgbMain()
     ResetBgs();
     SetDefaultFontsPointer();
 
-#ifdef ALLOC_HEAP
-    // it's just memory
-    gHeap = calloc(HEAP_SIZE, sizeof(u8));
-    if (!gHeap)
-        abort();
-#endif
-
     InitHeap();
 
     gSoftResetDisabled = FALSE;
@@ -140,7 +129,10 @@ void AgbMain()
 #endif
 
     gLinkTransferringData = FALSE;
+
+#ifndef PORTABLE
     sUnusedVar = 0xFC0;
+#endif
 
 #ifndef NDEBUG
 #if (LOG_HANDLER == LOG_HANDLER_MGBA_PRINT)
