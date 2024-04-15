@@ -828,7 +828,7 @@ static void CreateConditionMonPic(u8 id)
         {
             menu->monPicSpriteId = spriteId;
             gSprites[menu->monPicSpriteId].callback = MonPicGfxSpriteCallback;
-            menu->monGfxPtr = (void *)VRAM + BG_VRAM_SIZE + (menu->monGfxTileStart * 32);
+            menu->monGfxPtr = (void *)gpu.spriteGfxData + (menu->monGfxTileStart * 32);
             menu->monPalIndex = OBJ_PLTT_ID(menu->monPalIndex);
         }
     }

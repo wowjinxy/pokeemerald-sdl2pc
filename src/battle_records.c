@@ -388,9 +388,7 @@ static void RemoveTrainerHillRecordsWindow(u8 windowId)
 
 static void ClearVramOamPlttRegs(void)
 {
-    DmaClearLarge16(3, (void *)(VRAM), VRAM_SIZE, 0x1000);
-    DmaClear32(3, OAM, OAM_SIZE);
-    DmaClear16(3, PLTT, PLTT_SIZE);
+    GpuClearAll();
 
     SetGpuReg(REG_OFFSET_DISPCNT, 0);
     SetGpuReg(REG_OFFSET_BG0CNT, 0);

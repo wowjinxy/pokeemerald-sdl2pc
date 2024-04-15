@@ -49,7 +49,6 @@ struct BgCnt
     u16 areaOverflowMode:1;
     u16 screenSize:2;
 };
-typedef volatile struct BgCnt vBgCnt;
 
 struct PlttData
 {

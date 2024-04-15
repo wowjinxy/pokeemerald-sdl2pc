@@ -511,7 +511,7 @@ static bool8 MailReadBuildGraphics(void)
             SetGpuReg(REG_OFFSET_DISPCNT, 0);
             break;
         case 1:
-            CpuFill16(0, (void *)OAM, OAM_SIZE);
+            GpuClearSprites();
             break;
         case 2:
             ResetPaletteFade();

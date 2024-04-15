@@ -612,7 +612,7 @@ static void UNUSED DrawBattlerOnBgDMA(u8 x, u8 y, u8 battlerPosition, u8 arg3, u
     {
         for (j = x; j < x + 8; j++)
         {
-            *((u16 *)(BG_VRAM) + (i * 32) + (j + (arg6 << 10))) = offset | (paletteId << 12);
+            *((u16 *)(gpu.tileMaps) + (i * 32) + (j + (arg6 << 10))) = offset | (paletteId << 12);
             offset++;
         }
     }

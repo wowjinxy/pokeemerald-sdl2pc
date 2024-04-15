@@ -207,7 +207,7 @@ static void ShowContestPainting(void)
         break;
     case 1:
         ResetPaletteFade();
-        DmaFillLarge32(3, 0, (void *)VRAM, VRAM_SIZE, 0x1000);
+        GpuClearData();
         ResetSpriteData();
         gMain.state++;
         break;
@@ -224,7 +224,7 @@ static void ShowContestPainting(void)
     case 4:
         PrintContestPaintingCaption(gCurContestWinnerSaveIdx, gCurContestWinnerIsForArtist);
         SetBackdropFromPalette(sBgPalette);
-        DmaClear32(3, PLTT, PLTT_SIZE);
+        GpuClearPalette();
         BeginFastPaletteFade(2);
         SetVBlankCallback(VBlankCB_ContestPainting);
         sHoldState = 0;
@@ -427,23 +427,23 @@ static void LoadContestPaintingFrame(u8 contestWinnerId, bool8 isForArtist)
         switch (gContestPaintingWinner->contestCategory / NUM_PAINTING_CAPTIONS)
         {
         case CONTEST_CATEGORY_COOL:
-            RLUnCompVram(sPictureFrameTiles_Cool, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Cool, gpu.gfxData);
             RLUnCompWram(sPictureFrameTilemap_Cool, gContestMonPixels);
             break;
         case CONTEST_CATEGORY_BEAUTY:
-            RLUnCompVram(sPictureFrameTiles_Beauty, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Beauty, gpu.gfxData);
             RLUnCompWram(sPictureFrameTilemap_Beauty, gContestMonPixels);
             break;
         case CONTEST_CATEGORY_CUTE:
-            RLUnCompVram(sPictureFrameTiles_Cute, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Cute, gpu.gfxData);
             RLUnCompWram(sPictureFrameTilemap_Cute, gContestMonPixels);
             break;
         case CONTEST_CATEGORY_SMART:
-            RLUnCompVram(sPictureFrameTiles_Smart, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Smart, gpu.gfxData);
             RLUnCompWram(sPictureFrameTilemap_Smart, gContestMonPixels);
             break;
         case CONTEST_CATEGORY_TOUGH:
-            RLUnCompVram(sPictureFrameTiles_Tough, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Tough, gpu.gfxData);
             RLUnCompWram(sPictureFrameTilemap_Tough, gContestMonPixels);
             break;
         }
@@ -469,7 +469,7 @@ static void LoadContestPaintingFrame(u8 contestWinnerId, bool8 isForArtist)
     else if (contestWinnerId < MUSEUM_CONTEST_WINNERS_START)
     {
         // Load Contest Hall lobby frame
-        RLUnCompVram(sPictureFrameTiles_HallLobby, (void *)VRAM);
+        RLUnCompVram(sPictureFrameTiles_HallLobby, gpu.gfxData);
         RLUnCompVram(sPictureFrameTilemap_HallLobby, (void *)(BG_SCREEN_ADDR(12)));
     }
     else
@@ -478,23 +478,23 @@ static void LoadContestPaintingFrame(u8 contestWinnerId, bool8 isForArtist)
         switch (gContestPaintingWinner->contestCategory / NUM_PAINTING_CAPTIONS)
         {
         case CONTEST_CATEGORY_COOL:
-            RLUnCompVram(sPictureFrameTiles_Cool, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Cool, gpu.gfxData);
             RLUnCompVram(sPictureFrameTilemap_Cool, (void *)(BG_SCREEN_ADDR(12)));
             break;
         case CONTEST_CATEGORY_BEAUTY:
-            RLUnCompVram(sPictureFrameTiles_Beauty, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Beauty, gpu.gfxData);
             RLUnCompVram(sPictureFrameTilemap_Beauty, (void *)(BG_SCREEN_ADDR(12)));
             break;
         case CONTEST_CATEGORY_CUTE:
-            RLUnCompVram(sPictureFrameTiles_Cute, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Cute, gpu.gfxData);
             RLUnCompVram(sPictureFrameTilemap_Cute, (void *)(BG_SCREEN_ADDR(12)));
             break;
         case CONTEST_CATEGORY_SMART:
-            RLUnCompVram(sPictureFrameTiles_Smart, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Smart, gpu.gfxData);
             RLUnCompVram(sPictureFrameTilemap_Smart, (void *)(BG_SCREEN_ADDR(12)));
             break;
         case CONTEST_CATEGORY_TOUGH:
-            RLUnCompVram(sPictureFrameTiles_Tough, (void *)VRAM);
+            RLUnCompVram(sPictureFrameTiles_Tough, gpu.gfxData);
             RLUnCompVram(sPictureFrameTilemap_Tough, (void *)(BG_SCREEN_ADDR(12)));
             break;
         }

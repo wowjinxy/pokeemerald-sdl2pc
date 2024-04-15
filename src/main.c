@@ -86,18 +86,18 @@ static void SeedRngWithRtc(void);
 #endif
 static void ReadKeys(void);
 void InitIntrHandlers(void);
-static void WaitForVBlank(void);
 void EnableVCountIntrAtLine150(void);
 
 #define B_START_SELECT (B_BUTTON | START_BUTTON | SELECT_BUTTON)
 
-void AgbMain()
+void GameInit(void)
 {
     // Modern compilers are liberal with the stack on entry to this function,
     // so RegisterRamReset may crash if it resets IWRAM.
 #if !MODERN
     RegisterRamReset(RESET_ALL);
 #endif //MODERN
+    GpuInit();
     *(vu16 *)BG_PLTT = RGB_WHITE; // Set the backdrop to white on startup
     InitGpuRegManager();
     REG_WAITCNT = WAITCNT_PREFETCH_ENABLE | WAITCNT_WS0_S_1 | WAITCNT_WS0_N_3;
@@ -115,9 +115,7 @@ void AgbMain()
 #ifdef BUGFIX
     SeedRngWithRtc(); // see comment at SeedRngWithRtc definition below
 #endif
-#ifndef PORTABLE
     ClearDma3Requests();
-#endif
     ResetBgs();
     SetDefaultFontsPointer();
 
@@ -143,44 +141,45 @@ void AgbMain()
     AGBPrintfInit();
 #endif
 #endif
-    for (;;)
+}
+
+void GameLoop(void)
+{
+    ReadKeys();
+
+    if (gSoftResetDisabled == FALSE
+     && JOY_HELD_RAW(A_BUTTON)
+     && JOY_HELD_RAW(B_START_SELECT) == B_START_SELECT)
     {
-        ReadKeys();
+        rfu_REQ_stopMode();
+        rfu_waitREQComplete();
+        DoSoftReset();
+    }
 
-        if (gSoftResetDisabled == FALSE
-         && JOY_HELD_RAW(A_BUTTON)
-         && JOY_HELD_RAW(B_START_SELECT) == B_START_SELECT)
-        {
-            rfu_REQ_stopMode();
-            rfu_waitREQComplete();
-            DoSoftReset();
-        }
+    if (Overworld_SendKeysToLinkIsRunning() == TRUE)
+    {
+        gLinkTransferringData = TRUE;
+        UpdateLinkAndCallCallbacks();
+        gLinkTransferringData = FALSE;
+    }
+    else
+    {
+        gLinkTransferringData = FALSE;
+        UpdateLinkAndCallCallbacks();
 
-        if (Overworld_SendKeysToLinkIsRunning() == TRUE)
+        if (Overworld_RecvKeysFromLinkIsRunning() == TRUE)
         {
+            gMain.newKeys = 0;
+            ClearSpriteCopyRequests();
             gLinkTransferringData = TRUE;
             UpdateLinkAndCallCallbacks();
             gLinkTransferringData = FALSE;
         }
-        else
-        {
-            gLinkTransferringData = FALSE;
-            UpdateLinkAndCallCallbacks();
-
-            if (Overworld_RecvKeysFromLinkIsRunning() == TRUE)
-            {
-                gMain.newKeys = 0;
-                ClearSpriteCopyRequests();
-                gLinkTransferringData = TRUE;
-                UpdateLinkAndCallCallbacks();
-                gLinkTransferringData = FALSE;
-            }
-        }
-
-        PlayTimeCounter_Update();
-        MapMusicMain();
-        WaitForVBlank();
     }
+
+    PlayTimeCounter_Update();
+    MapMusicMain();
+    VBlankIntrWait();
 }
 
 static void UpdateLinkAndCallCallbacks(void)
@@ -264,11 +263,8 @@ void InitKeys(void)
 
 static void ReadKeys(void)
 {
-#ifndef PORTABLE
-    u16 keyInput = REG_KEYINPUT ^ KEYS_MASK;
-#else
     u16 keyInput = Platform_GetKeyInput();
-#endif
+
     gMain.newKeysRaw = keyInput & ~gMain.heldKeysRaw;
     gMain.newKeys = gMain.newKeysRaw;
     gMain.newAndRepeatedKeys = gMain.newKeysRaw;
@@ -312,17 +308,6 @@ static void ReadKeys(void)
 
 void InitIntrHandlers(void)
 {
-#ifndef PORTABLE
-    int i;
-
-    for (i = 0; i < INTR_COUNT; i++)
-        gIntrTable[i] = gIntrTableTemplate[i];
-
-    DmaCopy32(3, IntrMain, IntrMain_Buffer, sizeof(IntrMain_Buffer));
-
-    INTR_VECTOR = IntrMain_Buffer;
-#endif
-
     SetVBlankCallback(NULL);
     SetHBlankCallback(NULL);
     SetSerialCallback(NULL);
@@ -375,14 +360,7 @@ void FrameUpdate(void)
 
     gMain.vblankCounter2++;
 
-#ifndef PORTABLE
-    CopyBufferedValuesToGpuRegs();
     ProcessDma3Requests();
-
-    gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
-
-    m4aSoundMain();
-#endif
 
     TryReceiveLinkBattleData();
 
@@ -429,10 +407,6 @@ static void VCountIntr(void)
 {
     DoVCountUpdate();
 
-#ifndef PORTABLE
-    m4aSoundVSync();
-#endif
-
     INTR_CHECK |= INTR_FLAG_VCOUNT;
     gMain.intrCheck |= INTR_FLAG_VCOUNT;
 }
@@ -448,18 +422,6 @@ static void SerialIntr(void)
 
 static void IntrDummy(void)
 {}
-
-static void WaitForVBlank(void)
-{
-#ifdef PORTABLE
-    VBlankIntrWait();
-#else
-    gMain.intrCheck &= ~INTR_FLAG_VBLANK;
-
-    while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
-        ;
-#endif
-}
 
 void SetTrainerHillVBlankCounter(u32 *counter)
 {

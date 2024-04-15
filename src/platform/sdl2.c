@@ -15,6 +15,7 @@
 #include "rtc.h"
 #include "gba/defines.h"
 #include "gba/m4a_internal.h"
+#include "gpu_main.h"
 #include "m4a.h"
 #include "main.h"
 #include "cgb_audio.h"
@@ -22,9 +23,6 @@
 u16 INTR_CHECK;
 void *INTR_VECTOR;
 unsigned char REG_BASE[0x400] __attribute__ ((aligned (4)));
-unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
-unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
-unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 unsigned char FLASH_BASE[131072] __attribute__ ((aligned (4)));
 struct SoundInfo *SOUND_INFO_PTR;
 
@@ -55,7 +53,7 @@ enum {
 struct scanlineData {
     uint16_t layers[NUM_BACKGROUNDS][DISPLAY_WIDTH];
     uint16_t spriteLayers[4][DISPLAY_WIDTH];
-    uint16_t bgcnts[NUM_BACKGROUNDS];
+    struct BgCnt *bgcnts[NUM_BACKGROUNDS];
     uint16_t winMask[DISPLAY_WIDTH];
     //priority bookkeeping
     char bgtoprio[NUM_BACKGROUNDS]; //background to priority
@@ -68,12 +66,9 @@ struct bgPriority {
     char subPriority;
 };
 
-SDL_Thread *mainLoopThread;
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
 SDL_Texture *sdlTexture;
-SDL_sem *vBlankSemaphore;
-SDL_atomic_t isFrameAvailable;
 bool speedUp = false;
 unsigned int videoScale = 1;
 bool videoScaleChanged = false;
@@ -86,6 +81,12 @@ double curGameTime = 0;
 double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
+
+#ifdef USE_THREAD
+SDL_Thread *mainLoopThread;
+SDL_sem *vBlankSemaphore;
+SDL_atomic_t isFrameAvailable;
+#endif
 
 static s32 displayWidth = 0;
 static s32 displayHeight = 0;
@@ -100,10 +101,10 @@ static bool8 layerEnabled[NUM_BACKGROUNDS + 1];
 
 static FILE *sSaveFile = NULL;
 
-extern void AgbMain(void);
-extern void DoSoftReset(void);
-
+#ifdef USE_THREAD
 static int DoMain(void *param);
+#endif
+
 static void ProcessEvents(void);
 static void RenderFrame(SDL_Texture *texture);
 
@@ -164,15 +165,89 @@ static bool8 SetResolution(s32 width, s32 height)
         return FALSE;
     }
 
+    printf("Set resolution to %dx%d (scale %d)\n", width, height, videoScale);
+
     return TRUE;
 }
 
-int main(int argc, char **argv)
+static bool8 InitVideo(void)
 {
     s32 scrW, scrH;
 
     int sdlRendererFlags = 0;
 
+    videoScale = 1;
+
+    scrW = BASE_DISPLAY_WIDTH;
+    scrH = BASE_DISPLAY_HEIGHT;
+
+    windowWidth = scrW * videoScale;
+    windowHeight = scrH * videoScale;
+
+    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if (sdlWindow == NULL)
+    {
+        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return FALSE;
+    }
+
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+    sdlRendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+#endif
+
+    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, sdlRendererFlags);
+    if (sdlRenderer == NULL)
+    {
+        fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        return FALSE;
+    }
+
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(sdlRenderer);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    SDL_SetWindowMinimumSize(sdlWindow, BASE_DISPLAY_WIDTH, BASE_DISPLAY_HEIGHT);
+
+    if (SetResolution(scrW, scrH) == FALSE)
+    {
+        return FALSE;
+    }
+
+    for (unsigned i = 0; i < NUM_BACKGROUNDS + 1; i++)
+        layerEnabled[i] = TRUE;
+
+    return TRUE;
+}
+
+static void InitAudio(void)
+{
+    SDL_AudioSpec want;
+
+    SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
+    want.freq = 42048;
+    want.format = AUDIO_F32;
+    want.channels = 2;
+    want.samples = 1024;
+    cgb_audio_init(want.freq);
+
+    if (SDL_OpenAudio(&want, 0) < 0)
+        SDL_Log("Failed to open audio: %s", SDL_GetError());
+    else
+    {
+        if (want.format != AUDIO_F32) /* we let this one thing change. */
+            SDL_Log("We didn't get Float32 audio format.");
+        SDL_PauseAudio(0);
+    }
+}
+
+static void InitTime(void)
+{
+    memset(&internalClock, 0, sizeof(internalClock));
+    internalClock.status = SIIRTCINFO_24HOUR;
+    UpdateInternalClock();
+}
+
+int main(int argc, char **argv)
+{
     // Open an output console on Windows
 #ifdef _WIN32
     AllocConsole() ;
@@ -188,77 +263,27 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    videoScale = 1;
-
-    scrW = BASE_DISPLAY_WIDTH;
-    scrH = BASE_DISPLAY_HEIGHT;
-
-    windowWidth = scrW * videoScale;
-    windowHeight = scrH * videoScale;
-
-    sdlWindow = SDL_CreateWindow("pokeemerald", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (sdlWindow == NULL)
-    {
-        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-#if SDL_VERSION_ATLEAST(2, 0, 18)
-    sdlRendererFlags |= SDL_RENDERER_PRESENTVSYNC;
-#endif
-
-    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, sdlRendererFlags);
-    if (sdlRenderer == NULL)
-    {
-        fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_SetRenderDrawColor(sdlRenderer, 255, 255, 255, 255);
-    SDL_RenderClear(sdlRenderer);
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
-    SDL_SetWindowMinimumSize(sdlWindow, BASE_DISPLAY_WIDTH, BASE_DISPLAY_HEIGHT);
-    // SDL_SetWindowMaximumSize(sdlWindow, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-
-    if (SetResolution(scrW, scrH) == FALSE)
+    if (InitVideo() == FALSE)
     {
         return 1;
     }
 
     simTime = curGameTime = lastGameTime = SDL_GetPerformanceCounter();
 
+    InitAudio();
+
+    InitTime();
+
+    GameInit();
+
+#ifdef USE_THREAD
     isFrameAvailable.value = 0;
     vBlankSemaphore = SDL_CreateSemaphore(0);
 
-    SDL_AudioSpec want;
-
-    SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
-    want.freq = 42048;
-    want.format = AUDIO_F32;
-    want.channels = 2;
-    want.samples = 1024;
-    cgb_audio_init(want.freq);
-
-
-    if (SDL_OpenAudio(&want, 0) < 0)
-        SDL_Log("Failed to open audio: %s", SDL_GetError());
-    else
-    {
-        if (want.format != AUDIO_F32) /* we let this one thing change. */
-            SDL_Log("We didn't get Float32 audio format.");
-        SDL_PauseAudio(0);
-    }
-
-    for (unsigned i = 0; i < NUM_BACKGROUNDS + 1; i++)
-        layerEnabled[i] = TRUE;
-
     mainLoopThread = SDL_CreateThread(DoMain, "AgbMain", NULL);
+#endif
 
     double accumulator = 0.0;
-
-    memset(&internalClock, 0, sizeof(internalClock));
-    internalClock.status = SIIRTCINFO_24HOUR;
-    UpdateInternalClock();
 
     while (isRunning)
     {
@@ -274,6 +299,8 @@ int main(int argc, char **argv)
                     SDL_WINDOWPOS_CENTERED_DISPLAY(SDL_GetWindowDisplayIndex(sdlWindow)),
                     SDL_WINDOWPOS_CENTERED_DISPLAY(SDL_GetWindowDisplayIndex(sdlWindow))
                 );
+
+                recenterWindow = false;
             }
 
             videoScaleChanged = false;
@@ -293,18 +320,22 @@ int main(int argc, char **argv)
 
             while (accumulator >= dt)
             {
+#ifdef USE_THREAD
                 if (SDL_AtomicGet(&isFrameAvailable))
                 {
                     SDL_AtomicSet(&isFrameAvailable, 0);
 
-                    // Calls FrameUpdate
-                    // NOTE: This also runs HBlank DMAs once.
                     RunFrame();
 
                     SDL_SemPost(vBlankSemaphore);
 
                     accumulator -= dt;
                 }
+#else
+                RunFrame();
+
+                accumulator -= dt;
+#endif
             }
 
             // Draws each scanline and runs HBlank DMAs
@@ -562,10 +593,10 @@ void ProcessEvents(void)
                 w /= videoScale;
                 h /= videoScale;
 
-                printf("Resized screen to %dx%d (scale %d)\n", w, h, videoScale);
-
+#ifdef ALLOW_ANY_RESOLUTION
                 if (SetResolution(w, h) == FALSE)
                     abort();
+#endif
 
                 videoScaleChanged = true;
             }
@@ -1192,20 +1223,18 @@ static const uint16_t bgMapSizes[][2] =
 #define applySpriteHorizontalMosaicEffect(x) (x - (x % (mosaicSpriteEffectX+1)))
 #define applySpriteVerticalMosaicEffect(y) (y - (y % (mosaicSpriteEffectY+1)))
 
-static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
+static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
-    unsigned int charBaseBlock = (control >> 2) & 3;
-    unsigned int screenBaseBlock = (control >> 8) & 0x1F;
-    unsigned int bitsPerPixel = ((control >> 7) & 1) ? 8 : 4;
-    unsigned int mapWidth = bgMapSizes[control >> 14][0];
-    unsigned int mapHeight = bgMapSizes[control >> 14][1];
+    unsigned int bitsPerPixel = control->palettes ? 8 : 4;
+    unsigned int mapWidth = bgMapSizes[control->screenSize][0];
+    unsigned int mapHeight = bgMapSizes[control->screenSize][1];
     unsigned int mapWidthInPixels = mapWidth * 8;
     unsigned int mapHeightInPixels = mapHeight * 8;
 
-    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(charBaseBlock);
-    uint16_t *pal = (uint16_t *)PLTT;
-     
-    if (control & BGCNT_MOSAIC)
+    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
+    uint16_t *pal = (uint16_t *)gpu.palette;
+
+    if (control->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
     hoffs &= 0x1FF;
@@ -1213,10 +1242,10 @@ static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16
 
     for (unsigned int x = 0; x < displayWidth; x++)
     {
-        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(screenBaseBlock);
+        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
         // adjust for scroll
         unsigned int xx;
-        if (control & BGCNT_MOSAIC)
+        if (control->mosaic)
             xx = (applyBGHorizontalMosaicEffect(x) + hoffs) & 0x1FF;
         else
             xx = (x + hoffs) & 0x1FF;
@@ -1286,6 +1315,8 @@ static inline uint32_t getAffineBgX(int bgNumber)
     {
         return REG_BG3X;
     }
+
+    return 0;
 }
 
 static inline uint32_t getAffineBgY(int bgNumber)
@@ -1298,6 +1329,8 @@ static inline uint32_t getAffineBgY(int bgNumber)
     {
         return REG_BG3Y;
     }
+
+    return 0;
 }
 
 static inline uint16_t getBgPA(int bgNumber)
@@ -1310,6 +1343,8 @@ static inline uint16_t getBgPA(int bgNumber)
     {
         return REG_BG3PA;
     }
+
+    return 0;
 }
 
 static inline uint16_t getBgPB(int bgNumber)
@@ -1322,6 +1357,8 @@ static inline uint16_t getBgPB(int bgNumber)
     {
         return REG_BG3PB;
     }
+
+    return 0;
 }
 
 static inline uint16_t getBgPC(int bgNumber)
@@ -1334,6 +1371,8 @@ static inline uint16_t getBgPC(int bgNumber)
     {
         return REG_BG3PC;
     }
+
+    return 0;
 }
 
 static inline uint16_t getBgPD(int bgNumber)
@@ -1346,63 +1385,55 @@ static inline uint16_t getBgPD(int bgNumber)
     {
         return REG_BG3PD;
     }
+
+    return 0;
 }
 
-static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
+static void RenderRotScaleBGScanline(int bgNum, struct BgCnt *control, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
 {
-    vBgCnt *bgcnt = (vBgCnt *)&control;
-    unsigned int charBaseBlock = bgcnt->charBaseBlock;
-    unsigned int screenBaseBlock = bgcnt->screenBaseBlock;
-    unsigned int mapWidth = 1 << (4 + (bgcnt->screenSize)); // number of tiles
+    unsigned int charBaseBlock = control->charBaseBlock;
+    unsigned int screenBaseBlock = control->screenBaseBlock;
 
-    uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * BG_CHAR_SIZE);
-    uint8_t *bgmap = (uint8_t *)(VRAM_ + screenBaseBlock * BG_SCREEN_SIZE);
-    uint16_t *pal = (uint16_t *)PLTT;
+    uint8_t *bgtiles = (uint8_t *)(gpu.gfxData + charBaseBlock * BG_CHAR_SIZE);
+    uint8_t *bgmap = (uint8_t *)(gpu.tileMaps + screenBaseBlock * BG_SCREEN_SIZE);
+    uint16_t *pal = (uint16_t *)gpu.palette;
 
-    if (control & BGCNT_MOSAIC)
+    if (control->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
-    
 
     s16 pa = getBgPA(bgNum);
     s16 pb = getBgPB(bgNum);
     s16 pc = getBgPC(bgNum);
     s16 pd = getBgPD(bgNum);
 
-    int sizeX = 128;
-    int sizeY = 128;
+    int sizeX = 1;
+    int sizeY = 1;
+    int yshift = 0;
 
-    switch (bgcnt->screenSize)
+    switch (control->screenSize)
     {
     case 0:
+        sizeX = sizeY = 128;
+        yshift = 4;
         break;
     case 1:
         sizeX = sizeY = 256;
+        yshift = 5;
         break;
     case 2:
         sizeX = sizeY = 512;
+        yshift = 6;
         break;
     case 3:
         sizeX = sizeY = 1024;
+        yshift = 7;
         break;
+    default:
+        return;
     }
 
     int maskX = sizeX - 1;
     int maskY = sizeY - 1;
-
-    int yshift = ((control >> 14) & 3) + 4;
-
-    /*int dx = pa & 0x7FFF;
-    if (pa & 0x8000)
-        dx |= 0xFFFF8000;
-    int dmx = pb & 0x7FFF;
-    if (pb & 0x8000)
-        dmx |= 0xFFFF8000;
-    int dy = pc & 0x7FFF;
-    if (pc & 0x8000)
-        dy |= 0xFFFF8000;
-    int dmy = pd & 0x7FFF;
-    if (pd & 0x8000)
-        dmy |= 0xFFFF8000;*/
 
     s32 currentX = getAffineBgX(bgNum);
     s32 currentY = getAffineBgY(bgNum);
@@ -1416,7 +1447,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     int realX = currentX;
     int realY = currentY;
 
-    if (bgcnt->areaOverflowMode)
+    if (control->areaOverflowMode)
     {
         for (int x = 0; x < displayWidth; x++)
         {
@@ -1468,13 +1499,12 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
     }
     //the only way i could figure out how to get accurate mosaic on affine bgs 
     //luckily i dont think pokemon emerald uses mosaic on affine bgs
-    if (control & BGCNT_MOSAIC && mosaicBGEffectX > 0)
+    if (control->mosaic && mosaicBGEffectX > 0)
     {
         for (int x = 0; x < displayWidth; x++)
         {
             uint16_t color = line[applyBGHorizontalMosaicEffect(x)];
             line[x] = color;
-            
         }
     }
 }
@@ -1578,7 +1608,7 @@ static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* col
     //no background got hit, check if backdrop is enabled and return it if enabled otherwise fail
     if (REG_BLDCNT & BLDCNT_TGT2_BD)
     {
-        *colorOutput = *(uint16_t*)PLTT;
+        *colorOutput = *(uint16_t*)gpu.palette;
         return true;
     }
     else
@@ -1610,7 +1640,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
     int i;
     unsigned int x;
     unsigned int y;
-    void *objtiles = VRAM_ + 0x10000;
+    void *objtiles = gpu.spriteGfxData;
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
     bool winShouldBlendPixel = true;
 
@@ -1621,9 +1651,9 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
         puts("2-D OBJ Character mapping not supported.");
     }
 
-    for (i = 127; i >= 0; i--)
+    for (i = MAX_OAM_SPRITES - 1; i >= 0; i--)
     {
-        struct OamData *oam = &((struct OamData *)OAM)[i];
+        struct OamData *oam = &gpu.spriteList[i];
         unsigned int width;
         unsigned int height;
         uint16_t *pixels;
@@ -1679,10 +1709,10 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
             //TODO: there is probably a better way to do this
             u8 matrixNum = oam->matrixNum * 4;
 
-            struct OamData *oam1 = &((struct OamData *)OAM)[matrixNum];
-            struct OamData *oam2 = &((struct OamData *)OAM)[matrixNum + 1];
-            struct OamData *oam3 = &((struct OamData *)OAM)[matrixNum + 2];
-            struct OamData *oam4 = &((struct OamData *)OAM)[matrixNum + 3];
+            struct OamData *oam1 = &(gpu.spriteList[matrixNum]);
+            struct OamData *oam2 = &(gpu.spriteList[matrixNum + 1]);
+            struct OamData *oam3 = &(gpu.spriteList[matrixNum + 2]);
+            struct OamData *oam4 = &(gpu.spriteList[matrixNum + 3]);
 
             matrix[0][0] = oam1->affineParam;
             matrix[0][1] = oam2->affineParam;
@@ -1722,7 +1752,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
             for (int local_x = -half_width; local_x <= half_width; local_x++)
             {
                 uint8_t *tiledata = (uint8_t *)objtiles;
-                uint16_t *palette = (uint16_t *)(PLTT + 0x200);
+                uint16_t *palette = OBJ_PLTT;
                 int local_mosaicX;
                 int tex_x;
                 int tex_y;
@@ -1841,10 +1871,11 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 
     for (bgnum = 0; bgnum < numOfBgs; bgnum++)
     {
-        uint16_t bgcnt = *(uint16_t*)(REG_ADDR_BG0CNT + bgnum * 2);
-        uint16_t priority;
+        struct BgCnt *bgcnt = (struct BgCnt*)(REG_ADDR_BG0CNT + bgnum * 2);
+        uint16_t priority = bgcnt->priority;
+
         scanline.bgcnts[bgnum] = bgcnt;
-        scanline.bgtoprio[bgnum] = priority = (bgcnt & 3);
+        scanline.bgtoprio[bgnum] = priority;
         
         char priorityCount = scanline.prioritySortedBgsCount[priority];
         scanline.prioritySortedBgs[priority][priorityCount] = bgnum;
@@ -2040,7 +2071,7 @@ static void DrawFrame(uint16_t *pixels)
     u32 j;
     static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
-    uint16_t backdropColor = *(uint16_t *)PLTT;
+    uint16_t backdropColor = *(uint16_t *)gpu.palette;
 
     // backdrop color brightness effects
     if (REG_BLDCNT & BLDCNT_TGT1_BD)
@@ -2064,7 +2095,7 @@ static void DrawFrame(uint16_t *pixels)
 
         REG_VCOUNT = i;
 
-        // The game doesn't use any VCount callbacks, so this is disabled.
+        // The game doesn't use any VCount callbacks anymore, so this is disabled.
 #if 0
         if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
         {
@@ -2092,8 +2123,13 @@ static void DrawFrame(uint16_t *pixels)
         memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
 }
 
+// NOTE: This runs HBlank DMAs once.
 static void RunFrame(void)
 {
+#ifndef USE_THREAD
+    GameLoop();
+#endif
+
     REG_DISPSTAT |= INTR_FLAG_VBLANK;
 
     if (runHBlank)
@@ -2126,10 +2162,13 @@ void RenderFrame(SDL_Texture *texture)
     REG_VCOUNT = displayHeight + 1; // prep for being in VBlank period
 }
 
+#ifdef USE_THREAD
 int DoMain(void *data)
 {
-    AgbMain();
+    while (TRUE)
+        GameLoop();
 }
+#endif
 
 void AudioUpdate(void)
 {
@@ -2145,8 +2184,10 @@ void AudioUpdate(void)
 
 void VBlankIntrWait(void)
 {
+#ifdef USE_THREAD
     SDL_AtomicSet(&isFrameAvailable, 1);
     SDL_SemWait(vBlankSemaphore);
+#endif
 }
 
 u8 BinToBcd(u8 bin)

@@ -147,16 +147,16 @@ static bool8 SetupClearSaveDataScreen(void)
         SetGpuReg(REG_OFFSET_BLDCNT, 0);
         SetGpuReg(REG_OFFSET_BLDALPHA, 0);
         SetGpuReg(REG_OFFSET_BLDY, 0);
-        DmaFill16(3, 0, (void *)VRAM, VRAM_SIZE);
-        DmaFill32(3, 0, (void *)OAM, OAM_SIZE);
-        DmaFill16(3, 0, (void *)(PLTT + 2), PLTT_SIZE - 2);
+        GpuClearData();
+        GpuClearSprites();
+        GpuClearPalette2();
         ResetPaletteFade();
         gPlttBufferUnfaded[0] = RGB_WHITE;
         gPlttBufferFaded[0] = RGB_WHITE;
         gPlttBufferUnfaded[1] = RGB(5, 10, 14);
         gPlttBufferFaded[1] = RGB(5, 10, 14);
         for (i = 0; i < 0x10; i++)
-            ((u16 *)(VRAM + 0x20))[i] = 0x1111;
+            ((u16 *)(gpu.gfxData + 0x20))[i] = 0x1111;
 
         for (i = 0; i < 0x400; i++)
             ((u16 *)(BG_SCREEN_ADDR(30)))[i] = 0x0001;

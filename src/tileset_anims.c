@@ -7,13 +7,6 @@
 #include "battle_transition.h"
 #include "fieldmap.h"
 
-static EWRAM_DATA struct {
-    const u16 *src;
-    u16 *dest;
-    u16 size;
-} sTilesetDMA3TransferBuffer[20] = {0};
-
-static u8 sTilesetDMA3TransferBufferSize;
 static u16 sPrimaryTilesetAnimCounter;
 static u16 sPrimaryTilesetAnimCounterMax;
 static u16 sSecondaryTilesetAnimCounter;
@@ -216,29 +209,29 @@ const u16 gTilesetAnims_Mauville_Flower2_Frame3[] = INCBIN_U16("data/tilesets/se
 const u16 gTilesetAnims_Mauville_Flower2_Frame4[] = INCBIN_U16("data/tilesets/secondary/mauville/anim/flower_2/4.4bpp");
 const u16 tileset_anims_space_1[16] = {};
 
-u16 *const gTilesetAnims_Mauville_Flower1_VDests[] = {
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 96)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 100)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 104)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 108)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 112)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 116)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 120)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 124))
+size_t const gTilesetAnims_Mauville_Flower1_VDests[] = {
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 96),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 100),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 104),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 108),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 112),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 116),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 120),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 124)
 };
 
-u16 *const gTilesetAnims_Mauville_Flower2_VDests[] = {
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 128)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 132)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 136)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 140)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 148)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 152)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 156))
+size_t const gTilesetAnims_Mauville_Flower2_VDests[] = {
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 128),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 132),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 136),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 140),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 148),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 152),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 156)
 };
 
-const u16 *const gTilesetAnims_Mauville_Flower1[] = {
+const size_t const gTilesetAnims_Mauville_Flower1[] = {
     gTilesetAnims_Mauville_Flower1_Frame0,
     gTilesetAnims_Mauville_Flower1_Frame0,
     gTilesetAnims_Mauville_Flower1_Frame1,
@@ -253,7 +246,7 @@ const u16 *const gTilesetAnims_Mauville_Flower1[] = {
     gTilesetAnims_Mauville_Flower1_Frame1
 };
 
-const u16 *const gTilesetAnims_Mauville_Flower2[] = {
+const size_t const gTilesetAnims_Mauville_Flower2[] = {
     gTilesetAnims_Mauville_Flower2_Frame0,
     gTilesetAnims_Mauville_Flower2_Frame0,
     gTilesetAnims_Mauville_Flower2_Frame1,
@@ -291,15 +284,15 @@ const u16 gTilesetAnims_Rustboro_WindyWater_Frame5[] = INCBIN_U16("data/tilesets
 const u16 gTilesetAnims_Rustboro_WindyWater_Frame6[] = INCBIN_U16("data/tilesets/secondary/rustboro/anim/windy_water/6.4bpp");
 const u16 gTilesetAnims_Rustboro_WindyWater_Frame7[] = INCBIN_U16("data/tilesets/secondary/rustboro/anim/windy_water/7.4bpp");
 
-u16 *const gTilesetAnims_Rustboro_WindyWater_VDests[] = {
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 128)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 132)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 136)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 140)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 148)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 152)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 156))
+size_t const gTilesetAnims_Rustboro_WindyWater_VDests[] = {
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 128),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 132),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 136),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 140),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 148),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 152),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 156)
 };
 
 const u16 *const gTilesetAnims_Rustboro_WindyWater[] = {
@@ -349,15 +342,15 @@ const u16 gTilesetAnims_EverGrande_Flowers_Frame6[] = INCBIN_U16("data/tilesets/
 const u16 gTilesetAnims_EverGrande_Flowers_Frame7[] = INCBIN_U16("data/tilesets/secondary/ever_grande/anim/flowers/7.4bpp");
 const u16 tileset_anims_space_4[16] = {};
 
-u16 *const gTilesetAnims_EverGrande_VDests[] = {
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 224)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 228)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 232)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 236)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 240)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 244)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 248)),
-    (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 252))
+size_t const gTilesetAnims_EverGrande_VDests[] = {
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 224),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 228),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 232),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 236),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 240),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 244),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 248),
+    TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 252)
 };
 
 const u16 *const gTilesetAnims_EverGrande_Flowers[] = {
@@ -544,36 +537,18 @@ static const u16 *const sTilesetAnims_BattleDomeFloorLightPals[] = {
     gTilesetAnims_BattleDomePals0_3,
 };
 
-static void ResetTilesetAnimBuffer(void)
+static void TransferTilesetAnim(const u16 *src, size_t destOffset, u16 size)
 {
-    sTilesetDMA3TransferBufferSize = 0;
-    CpuFill32(0, sTilesetDMA3TransferBuffer, sizeof sTilesetDMA3TransferBuffer);
-}
-
-static void AppendTilesetAnimToBuffer(const u16 *src, u16 *dest, u16 size)
-{
-    if (sTilesetDMA3TransferBufferSize < 20)
-    {
-        sTilesetDMA3TransferBuffer[sTilesetDMA3TransferBufferSize].src = src;
-        sTilesetDMA3TransferBuffer[sTilesetDMA3TransferBufferSize].dest = dest;
-        sTilesetDMA3TransferBuffer[sTilesetDMA3TransferBufferSize].size = size;
-        sTilesetDMA3TransferBufferSize ++;
-    }
+    memcpy(gpu.gfxData + destOffset, src, size);
 }
 
 void TransferTilesetAnimsBuffer(void)
 {
-    int i;
-
-    for (i = 0; i < sTilesetDMA3TransferBufferSize; i ++)
-        DmaCopy16(3, sTilesetDMA3TransferBuffer[i].src, sTilesetDMA3TransferBuffer[i].dest, sTilesetDMA3TransferBuffer[i].size);
-
-    sTilesetDMA3TransferBufferSize = 0;
+    // TODO: Delete this.
 }
 
 void InitTilesetAnimations(void)
 {
-    ResetTilesetAnimBuffer();
     _InitPrimaryTilesetAnimation();
     _InitSecondaryTilesetAnimation();
 }
@@ -585,7 +560,6 @@ void InitSecondaryTilesetAnimation(void)
 
 void UpdateTilesetAnimations(void)
 {
-    ResetTilesetAnimBuffer();
     if (++sPrimaryTilesetAnimCounter >= sPrimaryTilesetAnimCounterMax)
         sPrimaryTilesetAnimCounter = 0;
     if (++sSecondaryTilesetAnimCounter >= sSecondaryTilesetAnimCounterMax)
@@ -652,25 +626,25 @@ static void TilesetAnim_Building(u16 timer)
 static void QueueAnimTiles_General_Flower(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_General_Flower);
-    AppendTilesetAnimToBuffer(gTilesetAnims_General_Flower[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(508)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_General_Flower[i], TILE_OFFSET_4BPP(508), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_General_Water(u16 timer)
 {
     u8 i = timer % ARRAY_COUNT(gTilesetAnims_General_Water);
-    AppendTilesetAnimToBuffer(gTilesetAnims_General_Water[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(432)), 30 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_General_Water[i], TILE_OFFSET_4BPP(432), 30 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_General_SandWaterEdge(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_General_SandWaterEdge);
-    AppendTilesetAnimToBuffer(gTilesetAnims_General_SandWaterEdge[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(464)), 10 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_General_SandWaterEdge[i], TILE_OFFSET_4BPP(464), 10 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_General_Waterfall(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_General_Waterfall);
-    AppendTilesetAnimToBuffer(gTilesetAnims_General_Waterfall[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(496)), 6 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_General_Waterfall[i], TILE_OFFSET_4BPP(496), 6 * TILE_SIZE_4BPP);
 }
 
 void InitTilesetAnim_Petalburg(void)
@@ -958,34 +932,34 @@ static void TilesetAnim_BattleFrontierOutsideEast(u16 timer)
 static void QueueAnimTiles_General_LandWaterEdge(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_General_LandWaterEdge);
-    AppendTilesetAnimToBuffer(gTilesetAnims_General_LandWaterEdge[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(480)), 10 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_General_LandWaterEdge[i], TILE_OFFSET_4BPP(480), 10 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Lavaridge_Steam(u8 timer)
 {
     u8 i = timer % ARRAY_COUNT(gTilesetAnims_Lavaridge_Steam);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Lavaridge_Steam[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 288)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Lavaridge_Steam[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 288), 4 * TILE_SIZE_4BPP);
 
     i = (timer + 2) % (int)ARRAY_COUNT(gTilesetAnims_Lavaridge_Steam);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Lavaridge_Steam[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 292)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Lavaridge_Steam[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 292), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Pacifidlog_LogBridges(u8 timer)
 {
     u8 i = timer % ARRAY_COUNT(gTilesetAnims_Pacifidlog_LogBridges);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Pacifidlog_LogBridges[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 464)), 30 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Pacifidlog_LogBridges[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 464), 30 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Underwater_Seaweed(u8 timer)
 {
     u8 i = timer % ARRAY_COUNT(gTilesetAnims_Underwater_Seaweed);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Underwater_Seaweed[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Underwater_Seaweed[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Pacifidlog_WaterCurrents(u8 timer)
 {
     u8 i = timer % ARRAY_COUNT(gTilesetAnims_Pacifidlog_WaterCurrents);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Pacifidlog_WaterCurrents[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496)), 8 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Pacifidlog_WaterCurrents[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496), 8 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Mauville_Flowers(u16 timer_div, u8 timer_mod)
@@ -994,14 +968,14 @@ static void QueueAnimTiles_Mauville_Flowers(u16 timer_div, u8 timer_mod)
     if (timer_div < min(ARRAY_COUNT(gTilesetAnims_Mauville_Flower1), ARRAY_COUNT(gTilesetAnims_Mauville_Flower2)))
     {
         timer_div %= min(ARRAY_COUNT(gTilesetAnims_Mauville_Flower1), ARRAY_COUNT(gTilesetAnims_Mauville_Flower2));
-        AppendTilesetAnimToBuffer(gTilesetAnims_Mauville_Flower1[timer_div], gTilesetAnims_Mauville_Flower1_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
-        AppendTilesetAnimToBuffer(gTilesetAnims_Mauville_Flower2[timer_div], gTilesetAnims_Mauville_Flower2_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+        TransferTilesetAnim(gTilesetAnims_Mauville_Flower1[timer_div], gTilesetAnims_Mauville_Flower1_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+        TransferTilesetAnim(gTilesetAnims_Mauville_Flower2[timer_div], gTilesetAnims_Mauville_Flower2_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
     }
     else
     {
         timer_div %= min(ARRAY_COUNT(gTilesetAnims_Mauville_Flower1_B), ARRAY_COUNT(gTilesetAnims_Mauville_Flower2_B));
-        AppendTilesetAnimToBuffer(gTilesetAnims_Mauville_Flower1_B[timer_div], gTilesetAnims_Mauville_Flower1_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
-        AppendTilesetAnimToBuffer(gTilesetAnims_Mauville_Flower2_B[timer_div], gTilesetAnims_Mauville_Flower2_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+        TransferTilesetAnim(gTilesetAnims_Mauville_Flower1_B[timer_div], gTilesetAnims_Mauville_Flower1_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+        TransferTilesetAnim(gTilesetAnims_Mauville_Flower2_B[timer_div], gTilesetAnims_Mauville_Flower2_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
     }
 }
 
@@ -1010,19 +984,19 @@ static void QueueAnimTiles_Rustboro_WindyWater(u16 timer_div, u8 timer_mod)
     timer_div -= timer_mod;
     timer_div %= ARRAY_COUNT(gTilesetAnims_Rustboro_WindyWater);
     if (gTilesetAnims_Rustboro_WindyWater[timer_div])
-        AppendTilesetAnimToBuffer(gTilesetAnims_Rustboro_WindyWater[timer_div], gTilesetAnims_Rustboro_WindyWater_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+        TransferTilesetAnim(gTilesetAnims_Rustboro_WindyWater[timer_div], gTilesetAnims_Rustboro_WindyWater_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Rustboro_Fountain(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Rustboro_Fountain);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Rustboro_Fountain[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 448)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Rustboro_Fountain[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 448), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Lavaridge_Lava(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Lavaridge_Cave_Lava);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Lavaridge_Cave_Lava[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 160)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Lavaridge_Cave_Lava[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 160), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_EverGrande_Flowers(u16 timer_div, u8 timer_mod)
@@ -1030,37 +1004,37 @@ static void QueueAnimTiles_EverGrande_Flowers(u16 timer_div, u8 timer_mod)
     timer_div -= timer_mod;
     timer_div %= ARRAY_COUNT(gTilesetAnims_EverGrande_Flowers);
 
-    AppendTilesetAnimToBuffer(gTilesetAnims_EverGrande_Flowers[timer_div], gTilesetAnims_EverGrande_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_EverGrande_Flowers[timer_div], gTilesetAnims_EverGrande_VDests[timer_mod], 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Cave_Lava(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Lavaridge_Cave_Lava);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Lavaridge_Cave_Lava[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 416)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Lavaridge_Cave_Lava[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 416), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Dewford_Flag(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Dewford_Flag);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Dewford_Flag[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 170)), 6 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Dewford_Flag[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 170), 6 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_BattleFrontierOutsideWest_Flag(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_BattleFrontierOutsideWest_Flag);
-    AppendTilesetAnimToBuffer(gTilesetAnims_BattleFrontierOutsideWest_Flag[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 218)), 6 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_BattleFrontierOutsideWest_Flag[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 218), 6 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_BattleFrontierOutsideEast_Flag(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_BattleFrontierOutsideEast_Flag);
-    AppendTilesetAnimToBuffer(gTilesetAnims_BattleFrontierOutsideEast_Flag[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 218)), 6 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_BattleFrontierOutsideEast_Flag[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 218), 6 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Slateport_Balloons(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Slateport_Balloons);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Slateport_Balloons[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 224)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Slateport_Balloons[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 224), 4 * TILE_SIZE_4BPP);
 }
 
 static void TilesetAnim_MauvilleGym(u16 timer)
@@ -1113,56 +1087,56 @@ static void TilesetAnim_BattleDome2(u16 timer)
 static void QueueAnimTiles_Building_TVTurnedOn(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Building_TvTurnedOn);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Building_TvTurnedOn[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(496)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Building_TvTurnedOn[i], TILE_OFFSET_4BPP(496), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_SootopolisGym_Waterfalls(u16 timer)
 {
     u16 i = timer % min(ARRAY_COUNT(gTilesetAnims_SootopolisGym_SideWaterfall), ARRAY_COUNT(gTilesetAnims_SootopolisGym_FrontWaterfall));
-    AppendTilesetAnimToBuffer(gTilesetAnims_SootopolisGym_SideWaterfall[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496)), 12 * TILE_SIZE_4BPP);
-    AppendTilesetAnimToBuffer(gTilesetAnims_SootopolisGym_FrontWaterfall[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 464)), 20 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_SootopolisGym_SideWaterfall[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496), 12 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_SootopolisGym_FrontWaterfall[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 464), 20 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_EliteFour_WallLights(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_EliteFour_WallLights);
-    AppendTilesetAnimToBuffer(gTilesetAnims_EliteFour_WallLights[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 504)), 1 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_EliteFour_WallLights[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 504), 1 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_EliteFour_GroundLights(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_EliteFour_FloorLight);
-    AppendTilesetAnimToBuffer(gTilesetAnims_EliteFour_FloorLight[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 480)), 4 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_EliteFour_FloorLight[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 480), 4 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_MauvilleGym_ElectricGates(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_MauvilleGym_ElectricGates);
-    AppendTilesetAnimToBuffer(gTilesetAnims_MauvilleGym_ElectricGates[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144)), 16 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_MauvilleGym_ElectricGates[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 144), 16 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_BikeShop_BlinkingLights(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_BikeShop_BlinkingLights);
-    AppendTilesetAnimToBuffer(gTilesetAnims_BikeShop_BlinkingLights[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496)), 9 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_BikeShop_BlinkingLights[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 496), 9 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_Sootopolis_StormyWater(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_Sootopolis_StormyWater);
-    AppendTilesetAnimToBuffer(gTilesetAnims_Sootopolis_StormyWater[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 240)), 96 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_Sootopolis_StormyWater[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 240), 96 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_BattlePyramid_Torch(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_BattlePyramid_Torch);
-    AppendTilesetAnimToBuffer(gTilesetAnims_BattlePyramid_Torch[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 151)), 8 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_BattlePyramid_Torch[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 151), 8 * TILE_SIZE_4BPP);
 }
 
 static void QueueAnimTiles_BattlePyramid_StatueShadow(u16 timer)
 {
     u16 i = timer % ARRAY_COUNT(gTilesetAnims_BattlePyramid_StatueShadow);
-    AppendTilesetAnimToBuffer(gTilesetAnims_BattlePyramid_StatueShadow[i], (u16 *)(BG_VRAM + TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 135)), 8 * TILE_SIZE_4BPP);
+    TransferTilesetAnim(gTilesetAnims_BattlePyramid_StatueShadow[i], TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 135), 8 * TILE_SIZE_4BPP);
 }
 
 static void BlendAnimPalette_BattleDome_FloorLights(u16 timer)

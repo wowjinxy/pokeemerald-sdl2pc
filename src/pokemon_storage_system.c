@@ -2051,9 +2051,7 @@ static void ResetForPokeStorage(void)
     ResetSpriteData();
     FreeSpriteTileRanges();
     FreeAllSpritePalettes();
-#ifndef PORTABLE
     ClearDma3Requests();
-#endif
     gReservedSpriteTileCount = 0x280;
     UnkUtil_Init(&sStorage->unkUtil, sStorage->unkUtilData, ARRAY_COUNT(sStorage->unkUtilData));
     gKeyRepeatStartDelay = 20;
@@ -2126,7 +2124,7 @@ static void Task_InitPokeStorage(u8 taskId)
     case 2:
         PutWindowTilemap(WIN_DISPLAY_INFO);
         ClearWindowTilemap(WIN_MESSAGE);
-        CpuFill32(0, (void *)VRAM, 0x200);
+        CpuFill32(0, gpu.gfxData, 0x200);
         LoadUserWindowBorderGfx(WIN_MESSAGE, 0xB, BG_PLTT_ID(14));
         break;
     case 3:

@@ -44,25 +44,20 @@ extern struct SoundInfo * SOUND_INFO_PTR;
 extern unsigned short INTR_CHECK;
 extern void * INTR_VECTOR;
 
-extern unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
+#define PLTT      ((unsigned char*)(gpu.palette))
 #endif
 
 #define BG_PLTT       PLTT
 
-#define VRAM_SIZE 0x18000
 #ifndef PORTABLE
+#define VRAM_SIZE 0x18000
 #define VRAM      0x6000000
-#else
-extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
-#define VRAM (u64)VRAM_
 #endif
 
-#define BG_VRAM           VRAM
-#define BG_VRAM_SIZE      0x10000
 #define BG_CHAR_SIZE      0x4000
 #define BG_SCREEN_SIZE    0x800
-#define BG_CHAR_ADDR(n)   (BG_VRAM + (BG_CHAR_SIZE * (n)))
-#define BG_SCREEN_ADDR(n) (BG_VRAM + (BG_SCREEN_SIZE * (n)))
+#define BG_CHAR_ADDR(n)   (gpu.gfxData + (BG_CHAR_SIZE * (n)))
+#define BG_SCREEN_ADDR(n) (gpu.tileMaps + (BG_SCREEN_SIZE * (n)))
 
 #define BG_TILE_H_FLIP(n) (0x400 + (n))
 #define BG_TILE_V_FLIP(n) (0x800 + (n))
@@ -70,18 +65,18 @@ extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 #define NUM_BACKGROUNDS 4
 
 // text-mode BG
-#define OBJ_VRAM0      (VRAM + 0x10000)
-#define OBJ_VRAM0_SIZE 0x8000
+#define OBJ_VRAM0      (gpu.spriteGfxData)
+#define OBJ_VRAM0_SIZE (gpu.spriteGfxDataSize)
 
 // bitmap-mode BG
-#define OBJ_VRAM1      (VRAM + 0x14000)
-#define OBJ_VRAM1_SIZE 0x4000
+#define OBJ_VRAM1      (gpu.spriteGfxData)
+#define OBJ_VRAM1_SIZE (gpu.spriteGfxDataSize)
 
 #define OAM_SIZE 0x400
 #ifndef PORTABLE
 #define OAM      0x7000000
 #else
-extern unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
+#define OAM      (void*)(gpu.spriteList)
 #endif
 
 #define ROM_HEADER_SIZE   0xC0
@@ -95,8 +90,8 @@ extern unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
 #define BASE_DISPLAY_HEIGHT 160
 
 // Max display width
-#define DISPLAY_WIDTH  (BASE_DISPLAY_WIDTH * 4)
-#define DISPLAY_HEIGHT (BASE_DISPLAY_HEIGHT * 4)
+#define DISPLAY_WIDTH  (BASE_DISPLAY_WIDTH * 2)
+#define DISPLAY_HEIGHT (BASE_DISPLAY_HEIGHT * 2)
 
 // Dimensions of the GBA screen in tiles
 #define DISPLAY_TILE_WIDTH  (BASE_DISPLAY_WIDTH / TILE_WIDTH)

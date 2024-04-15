@@ -1,7 +1,9 @@
 #include "global.h"
 #include "dma3.h"
 
-#ifndef PORTABLE
+// #define USE_DMA3_MANAGER
+
+#ifdef USE_DMA3_MANAGER
 #define MAX_DMA_REQUESTS 128
 
 #define DMA_REQUEST_COPY32 1
@@ -26,7 +28,7 @@ static u8 sDma3RequestCursor;
 
 void ClearDma3Requests(void)
 {
-#ifndef PORTABLE
+#ifdef USE_DMA3_MANAGER
     int i;
 
     sDma3ManagerLocked = TRUE;
@@ -45,7 +47,7 @@ void ClearDma3Requests(void)
 
 void ProcessDma3Requests(void)
 {
-#ifndef PORTABLE
+#ifdef USE_DMA3_MANAGER
     u16 bytesTransferred;
 
     if (sDma3ManagerLocked)
@@ -107,7 +109,7 @@ s16 RequestDma3Copy(const void *src, void *dest, u16 size, u8 mode)
     printf("RequestDma3Copy: (src: %p, dest: %p, size: %d)\n", src, dest, size);
 #endif
 
-#ifdef PORTABLE
+#ifndef USE_DMA3_MANAGER
     // Just copy it. Who cares?
     (void)mode;
     memcpy(dest, src, size);
@@ -150,7 +152,7 @@ s16 RequestDma3Fill(s32 value, void *dest, u16 size, u8 mode)
     printf("RequestDma3Fill: (value: %p, dest: %u, size: %d)\n", value, dest, size);
 #endif
 
-#ifdef PORTABLE
+#ifndef USE_DMA3_MANAGER
     // Just fill it. Who cares?
     (void)mode;
     memset(dest, value, size);
@@ -190,7 +192,7 @@ s16 RequestDma3Fill(s32 value, void *dest, u16 size, u8 mode)
 
 s16 CheckForSpaceForDma3Request(s16 index)
 {
-#ifdef PORTABLE
+#ifndef USE_DMA3_MANAGER
     return 0;
 #else
     int i = 0;

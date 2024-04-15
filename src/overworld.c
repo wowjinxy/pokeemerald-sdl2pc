@@ -2088,8 +2088,8 @@ static void ResetScreenForMapLoad(void)
     SetGpuReg(REG_OFFSET_DISPCNT, 0);
     ScanlineEffect_Stop();
 
-    DmaClear16(3, PLTT + 2, PLTT_SIZE - 2);
-    DmaFillLarge16(3, 0, (void *)VRAM, VRAM_SIZE, 0x1000);
+    GpuClearPalette2();
+    GpuClearData();
     ResetOamRange(0, 128);
     LoadOam();
 }

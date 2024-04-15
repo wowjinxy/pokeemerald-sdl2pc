@@ -40,7 +40,6 @@ struct BgConfig2
 
 static struct BgControl sGpuBgConfigs;
 static struct BgConfig2 sGpuBgConfigs2[NUM_BACKGROUNDS];
-static u32 sDmaBusyBitfield[NUM_BACKGROUNDS];
 
 u32 gWindowTileAutoAllocEnabled;
 
@@ -183,14 +182,14 @@ u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode)
     case 0x1:
         offset = sGpuBgConfigs.configs[bg].charBaseIndex * BG_CHAR_SIZE;
         offset = destOffset + offset;
-        cursor = RequestDma3Copy(src, (void *)(offset + BG_VRAM), size, 0);
+        cursor = RequestDma3Copy(src, (void *)(offset + gpu.gfxData), size, 0);
         if (cursor == -1)
             return -1;
         break;
     case 0x2:
         offset = sGpuBgConfigs.configs[bg].mapBaseIndex * BG_SCREEN_SIZE;
         offset = destOffset + offset;
-        cursor = RequestDma3Copy(src, (void *)(offset + BG_VRAM), size, 0);
+        cursor = RequestDma3Copy(src, (void *)(offset + gpu.tileMaps), size, 0);
         if (cursor == -1)
             return -1;
         break;
@@ -298,13 +297,7 @@ int BgTileAllocOp(int bg, int offset, int count, int mode)
 
 void ResetBgsAndClearDma3BusyFlags(u32 leftoverFireRedLeafGreenVariable)
 {
-    int i;
     ResetBgs();
-
-    for (i = 0; i < NUM_BACKGROUNDS; i++)
-    {
-        sDmaBusyBitfield[i] = 0;
-    }
 
     gWindowTileAutoAllocEnabled = leftoverFireRedLeafGreenVariable;
 }
@@ -393,8 +386,6 @@ u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
         return -1;
     }
 
-    sDmaBusyBitfield[cursor / 0x20] |= (1 << (cursor % 0x20));
-
     if (gWindowTileAutoAllocEnabled == TRUE)
         BgTileAllocOp(bg, tileOffset / 0x20, size / 0x20, 1);
 
@@ -409,8 +400,6 @@ u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u16 destOffset)
     {
         return -1;
     }
-
-    sDmaBusyBitfield[cursor / 0x20] |= (1 << (cursor % 0x20));
 
     return cursor;
 }
@@ -432,36 +421,12 @@ u16 Unused_LoadBgPalette(u8 bg, const void *src, u16 size, u16 destOffset)
         return -1;
     }
 
-    sDmaBusyBitfield[cursor / 0x20] |= (1 << (cursor % 0x20));
-
     return (u8)cursor;
 }
 
 bool8 IsDma3ManagerBusyWithBgCopy(void)
 {
-    int i;
-
-#ifdef PORTABLE
-    // HACK: this is often called in a tight loop, not allowing the VBlank thread to run. Suspend thread for now.
-    VBlankIntrWait();
-#endif
-    for (i = 0; i < 0x80; i++)
-    {
-        u8 div = i / 0x20;
-        u8 mod = i % 0x20;
-
-        if ((sDmaBusyBitfield[div] & (1 << mod)))
-        {
-            s8 reqSpace = CheckForSpaceForDma3Request(i);
-            if (reqSpace == -1)
-            {
-                return TRUE;
-            }
-
-            sDmaBusyBitfield[div] &= ~(1 << mod);
-        }
-    }
-
+    // TODO: Remove this.
     return FALSE;
 }
 

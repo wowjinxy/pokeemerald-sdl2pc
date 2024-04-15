@@ -737,7 +737,7 @@ void LoadIntroPart2Graphics(u8 scenery)
     default:
         // Never reached, only called with an argument of 1
         // Clouds are never used in this part of the intro
-        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sCloudsBg_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sCloudsBg_Pal, BG_PLTT_ID(0), sizeof(sCloudsBg_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_Clouds);
@@ -745,7 +745,7 @@ void LoadIntroPart2Graphics(u8 scenery)
         CreateCloudSprites();
         break;
     case 1:
-        LZ77UnCompVram(sTrees_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sTrees_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sTrees_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sTrees_Pal, BG_PLTT_ID(0), sizeof(sTrees_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_TreesSmall);
@@ -844,7 +844,7 @@ void LoadCreditsSceneGraphics(u8 scene)
     case SCENE_OCEAN_MORNING:
     default:
         LoadPalette(&sGrass_Pal, BG_PLTT_ID(15), sizeof(sGrass_Pal));
-        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sCloudsBg_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sCloudsBg_Pal, BG_PLTT_ID(0), sizeof(sCloudsBg_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_Clouds);
@@ -854,7 +854,7 @@ void LoadCreditsSceneGraphics(u8 scene)
         break;
     case SCENE_OCEAN_SUNSET:
         LoadPalette(&sGrassSunset_Pal, BG_PLTT_ID(15), sizeof(sGrassSunset_Pal));
-        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sCloudsBg_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sCloudsBg_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sCloudsBgSunset_Pal, BG_PLTT_ID(0), sizeof(sCloudsBgSunset_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_Clouds);
@@ -865,7 +865,7 @@ void LoadCreditsSceneGraphics(u8 scene)
     case SCENE_FOREST_RIVAL_ARRIVE:
     case SCENE_FOREST_CATCH_RIVAL:
         LoadPalette(&sGrassSunset_Pal, BG_PLTT_ID(15), sizeof(sGrassSunset_Pal));
-        LZ77UnCompVram(sTrees_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sTrees_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sTrees_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sTreesSunset_Pal, BG_PLTT_ID(0), sizeof(sTreesSunset_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_TreesSmall);
@@ -874,7 +874,7 @@ void LoadCreditsSceneGraphics(u8 scene)
         break;
     case SCENE_CITY_NIGHT:
         LoadPalette(&sGrassNight_Pal, BG_PLTT_ID(15), sizeof(sGrassNight_Pal));
-        LZ77UnCompVram(sHouses_Gfx, (void *)(VRAM));
+        LZ77UnCompVram(sHouses_Gfx, (void *)(gpu.gfxData));
         LZ77UnCompVram(sHouses_Tilemap, (void *)(BG_SCREEN_ADDR(6)));
         LoadPalette(&sHouses_Pal, BG_PLTT_ID(0), sizeof(sHouses_Pal));
         LoadCompressedSpriteSheet(sSpriteSheet_HouseSilhouette);

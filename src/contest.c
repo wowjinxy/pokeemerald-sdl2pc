@@ -1035,7 +1035,7 @@ void LoadContestBgAfterMoveAnim(void)
 {
     s32 i;
 
-    LZDecompressVram(gContestInterfaceGfx, (void *)VRAM);
+    LZDecompressVram(gContestInterfaceGfx, gpu.gfxData);
     LZDecompressVram(gContestAudienceGfx, (void *)(BG_SCREEN_ADDR(4)));
     CopyToBgTilemapBuffer(3, gContestAudienceTilemap, 0, 0);
     CopyBgTilemapBufferToVram(3);
@@ -1312,12 +1312,10 @@ static bool8 SetupContestGraphics(u8 *stateVar)
     {
     case 0:
         gPaletteFade.bufferTransferDisabled = TRUE;
-        RequestDma3Fill(0, (void *)VRAM, 0x8000, 1);
-        RequestDma3Fill(0, (void *)VRAM + 0x8000, 0x8000, 1);
-        RequestDma3Fill(0, (void *)VRAM + 0x10000, 0x8000, 1);
+        GpuClearData();
         break;
     case 1:
-        LZDecompressVram(gContestInterfaceGfx, (void *)VRAM);
+        LZDecompressVram(gContestInterfaceGfx, gpu.gfxData);
         break;
     case 2:
         LZDecompressVram(gContestAudienceGfx, (void *)(BG_SCREEN_ADDR(4)));
@@ -2639,8 +2637,8 @@ static void Task_TryStartNextRoundOfAppeals(u8 taskId)
 {
     vu16 sp0 = GetGpuReg(REG_OFFSET_BG0CNT);
     vu16 sp2 = GetGpuReg(REG_OFFSET_BG2CNT);
-    ((vBgCnt *)&sp0)->priority = 0;
-    ((vBgCnt *)&sp2)->priority = 0;
+    ((struct BgCnt *)&sp0)->priority = 0;
+    ((struct BgCnt *)&sp2)->priority = 0;
     SetGpuReg(REG_OFFSET_BG0CNT, sp0);
     SetGpuReg(REG_OFFSET_BG2CNT, sp2);
     eContest.appealNumber++;
@@ -4135,12 +4133,12 @@ static u8 CreateContestantBoxBlinkSprites(u8 contestant)
 
     CopySpriteTiles(0,
                     3,
-                    (void *)VRAM,
+                    gpu.gfxData,
                     (u16 *)(BG_SCREEN_ADDR(28) + gContestantTurnOrder[contestant] * 5 * 64 + 0x26),
                     gContestResources->boxBlinkTiles1);
 
     CopySpriteTiles(0,
-                    3, (void *)VRAM,
+                    3, gpu.gfxData,
                     (u16 *)(BG_SCREEN_ADDR(28) + gContestantTurnOrder[contestant] * 5 * 64 + 0x36),
                     gContestResources->boxBlinkTiles2);
 
@@ -5071,17 +5069,17 @@ static void SetBgForCurtainDrop(void)
     u16 bg0Cnt, bg1Cnt, bg2Cnt;
 
     bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-    ((vBgCnt *)&bg1Cnt)->priority = 0;
-    ((vBgCnt *)&bg1Cnt)->screenSize = 2;
-    ((vBgCnt *)&bg1Cnt)->areaOverflowMode = 0;
-    ((vBgCnt *)&bg1Cnt)->charBaseBlock = 0;
+    ((struct BgCnt *)&bg1Cnt)->priority = 0;
+    ((struct BgCnt *)&bg1Cnt)->screenSize = 2;
+    ((struct BgCnt *)&bg1Cnt)->areaOverflowMode = 0;
+    ((struct BgCnt *)&bg1Cnt)->charBaseBlock = 0;
 
     SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
 
     bg0Cnt = GetGpuReg(REG_OFFSET_BG0CNT);
     bg2Cnt = GetGpuReg(REG_OFFSET_BG2CNT);
-    ((vBgCnt *)&bg0Cnt)->priority = 1;
-    ((vBgCnt *)&bg2Cnt)->priority = 1;
+    ((struct BgCnt *)&bg0Cnt)->priority = 1;
+    ((struct BgCnt *)&bg2Cnt)->priority = 1;
 
     SetGpuReg(REG_OFFSET_BG0CNT, bg0Cnt);
     SetGpuReg(REG_OFFSET_BG2CNT, bg2Cnt);
@@ -5112,10 +5110,10 @@ static void UpdateContestantBoxOrder(void)
     CpuFill32(0, gContestResources->contestBgTilemaps[1], 0x1000);
     Contest_SetBgCopyFlags(1);
     bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-    ((vBgCnt *) &bg1Cnt)->priority = 1;
-    ((vBgCnt *) &bg1Cnt)->screenSize = 0;
-    ((vBgCnt *) &bg1Cnt)->areaOverflowMode = 0;
-    ((vBgCnt *) &bg1Cnt)->charBaseBlock = 2;
+    ((struct BgCnt *) &bg1Cnt)->priority = 1;
+    ((struct BgCnt *) &bg1Cnt)->screenSize = 0;
+    ((struct BgCnt *) &bg1Cnt)->areaOverflowMode = 0;
+    ((struct BgCnt *) &bg1Cnt)->charBaseBlock = 2;
 
     SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
 

@@ -1863,7 +1863,7 @@ static void SpriteCB_FldEffPokeballTrail(struct Sprite *sprite)
 
                 sprite->sPrevX = posX;
                 var = ((REG_BG0CNT >> 8) & 0x1F) << 11;
-                ptr = (u16 *)(BG_VRAM + var);
+                ptr = (u16 *)(gpu.tileMaps + var);
 
                 SET_TILE(ptr, posY - 2, posX, 1);
                 SET_TILE(ptr, posY - 1, posX, 1);
@@ -4071,7 +4071,7 @@ static void GetBg0TilemapDst(u16 **tileset)
 {
     u16 charBase = REG_BG0CNT >> 2;
     charBase <<= 14;
-    *tileset = (u16 *)(BG_VRAM + charBase);
+    *tileset = (u16 *)(gpu.gfxData + charBase);
 }
 
 void GetBg0TilesDst(u16 **tilemap, u16 **tileset)
@@ -4082,8 +4082,8 @@ void GetBg0TilesDst(u16 **tilemap, u16 **tileset)
     screenBase <<= 11;
     charBase <<= 14;
 
-    *tilemap = (u16 *)(BG_VRAM + screenBase);
-    *tileset = (u16 *)(BG_VRAM + charBase);
+    *tilemap = (u16 *)(gpu.tileMaps + screenBase);
+    *tileset = (u16 *)(gpu.gfxData + charBase);
 }
 
 static void FadeScreenBlack(void)

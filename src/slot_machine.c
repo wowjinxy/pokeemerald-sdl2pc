@@ -1138,7 +1138,7 @@ static void SlotMachineSetup_InitBgsWindows(void)
 {
     SetVBlankCallback(NULL);
     SetHBlankCallback(NULL);
-    CpuFill32(0, (void *)VRAM, VRAM_SIZE);
+    GpuClearData();
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     InitWindows(sWindowTemplates);
@@ -1154,12 +1154,14 @@ static void SlotMachineSetup_InitVBlank(void)
 
 static void SlotMachineSetup_InitVRAM(void)
 {
-    DmaClearLarge16(3, (u16 *)(BG_VRAM), BG_VRAM_SIZE, 0x1000);
+    // Not sure this is needed
+    // GpuClearAll();
 }
 
 static void SlotMachineSetup_InitOAM(void)
 {
-    DmaClear16(3, (u16 *)OAM, OAM_SIZE);
+    // This neither
+    // GpuClearSprites();
 }
 
 static void SlotMachineSetup_InitGpuRegs(void)

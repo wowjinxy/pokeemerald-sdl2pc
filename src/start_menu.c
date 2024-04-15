@@ -1213,8 +1213,8 @@ static bool32 InitSaveWindowAfterLinkBattle(u8 *state)
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0);
         SetVBlankCallback(NULL);
         ScanlineEffect_Stop();
-        DmaClear16(3, PLTT, PLTT_SIZE);
-        DmaFillLarge16(3, 0, (void *)VRAM, VRAM_SIZE, 0x1000);
+        GpuClearPalette();
+        GpuClearData();
         break;
     case 1:
         ResetSpriteData();

@@ -833,12 +833,12 @@ void StartMonScrollingBgMask(u8 taskId, int UNUSED unused, u16 scrollSpeed, u8 b
     SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
     bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-    ((vBgCnt *)&bg1Cnt)->priority = 0;
-    ((vBgCnt *)&bg1Cnt)->screenSize = 0;
-    ((vBgCnt *)&bg1Cnt)->areaOverflowMode = 1;
+    ((struct BgCnt *)&bg1Cnt)->priority = 0;
+    ((struct BgCnt *)&bg1Cnt)->screenSize = 0;
+    ((struct BgCnt *)&bg1Cnt)->areaOverflowMode = 1;
     if (!IsContest())
     {
-        ((vBgCnt *)&bg1Cnt)->charBaseBlock = 1;
+        ((struct BgCnt *)&bg1Cnt)->charBaseBlock = 1;
     }
 
     SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
@@ -919,7 +919,7 @@ static void UpdateMonScrollingBgMask(u8 taskId)
                 if (!IsContest())
                 {
                     u16 bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-                    ((vBgCnt *)&bg1Cnt)->charBaseBlock = 0;
+                    ((struct BgCnt *)&bg1Cnt)->charBaseBlock = 0;
                     SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
                 }
 

@@ -3033,7 +3033,7 @@ static bool8 LoadEasyChatScreen(void)
         DeactivateAllTextPrinters();
         LoadEasyChatPalettes();
         InitEasyChatBgs();
-        CpuFastFill(0, (void *)OAM, OAM_SIZE);
+        GpuClearSprites();
         break;
     case 1:
         DecompressAndLoadBgGfxUsingHeap(3, gEasyChatWindow_Gfx, 0, 0, 0);

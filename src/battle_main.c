@@ -623,7 +623,7 @@ static void CB2_InitBattleInternal(void)
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
 
-    CpuFill32(0, (void *)(VRAM), VRAM_SIZE);
+    GpuClearData();
 
     SetGpuReg(REG_OFFSET_MOSAIC, 0);
     SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
@@ -2190,7 +2190,7 @@ void CB2_InitEndLinkBattle(void)
     }
     else
     {
-        CpuFill32(0, (void *)(VRAM), VRAM_SIZE);
+        GpuClearData();
         SetGpuReg(REG_OFFSET_MOSAIC, 0);
         SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
         SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
@@ -2331,7 +2331,7 @@ static void EndLinkBattleInSteps(void)
         }
         break;
     case 3:
-        CpuFill32(0, (void *)VRAM, VRAM_SIZE);
+        GpuClearData();
 
         for (i = 0; i < 2; i++)
             LoadChosenBattleElement(i);
@@ -2418,7 +2418,7 @@ static void CB2_InitAskRecordBattle(void)
 
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
-    CpuFill32(0, (void *)(VRAM), VRAM_SIZE);
+    GpuClearData();
     ResetPaletteFade();
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;

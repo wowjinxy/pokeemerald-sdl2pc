@@ -63,7 +63,7 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
         gBattle_BG3_Y = 0;
         break;
     case 1:
-        CpuFastFill(0, (void *)(VRAM), VRAM_SIZE);
+        GpuClearData();
         break;
     case 2:
         LoadBattleTextboxAndBackground();
@@ -171,12 +171,12 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
 
 static void ClearBattleBgCntBaseBlocks(void)
 {
-    vBgCnt *regBgcnt1, *regBgcnt2;
+    struct BgCnt *regBgcnt1, *regBgcnt2;
 
-    regBgcnt1 = (vBgCnt *)(&REG_BG1CNT);
+    regBgcnt1 = (struct BgCnt *)(&REG_BG1CNT);
     regBgcnt1->charBaseBlock = 0;
 
-    regBgcnt2 = (vBgCnt *)(&REG_BG2CNT);
+    regBgcnt2 = (struct BgCnt *)(&REG_BG2CNT);
     regBgcnt2->charBaseBlock = 0;
 }
 

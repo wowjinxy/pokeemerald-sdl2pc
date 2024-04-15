@@ -295,7 +295,7 @@ EWRAM_DATA bool8 gAffineAnimsDisabled = FALSE;
 
 void ResetSpriteData(void)
 {
-    ResetOamRange(0, 128);
+    ResetOamRange(0, MAX_OAM_SPRITES);
     ResetAllSprites();
     ClearSpriteCopyRequests();
     ResetAffineAnimData();
