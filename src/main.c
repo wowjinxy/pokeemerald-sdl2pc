@@ -130,7 +130,7 @@ void AgbMain()
         abort();
 #endif
 
-    InitHeap(gHeap, HEAP_SIZE);
+    InitHeap();
 
     gSoftResetDisabled = FALSE;
 

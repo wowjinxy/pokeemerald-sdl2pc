@@ -1,214 +1,197 @@
 #include "global.h"
 #include "malloc.h"
 
-static void *sHeapStart;
-static u32 sHeapSize;
+#include <stdlib.h>
 
 #ifndef PORTABLE
 EWRAM_DATA u8 gHeap[HEAP_SIZE] = {0};
 #endif
 
+#define MEMDEBUG
+
 #define MALLOC_SYSTEM_ID 0xA3A3
 
 struct MemBlock {
-    // Whether this block is currently allocated.
-    bool16 flag;
-
     // Magic number used for error checking. Should equal MALLOC_SYSTEM_ID.
     u16 magic;
 
-    // Size of the block (not including this header struct).
-    u32 size;
+    // Size of the block, including this header struct.
+    size_t size;
 
-    // Previous block pointer. Equals sHeapStart if this is the first block.
+    // Size of the block (not including this header struct).
+    size_t block_size;
+
+    // Previous block pointer.
     struct MemBlock *prev;
 
-    // Next block pointer. Equals sHeapStart if this is the last block.
+    // Next block pointer.
     struct MemBlock *next;
 
-    // Data in the memory block. (Arrays of length 0 are a GNU extension.)
-    u8 data[0];
+#ifdef MEMDEBUG
+    const char *debug_file;
+    int debug_line;
+#endif
 };
 
-void PutMemBlockHeader(void *block, struct MemBlock *prev, struct MemBlock *next, u32 size)
-{
-    struct MemBlock *header = (struct MemBlock *)block;
+static struct MemBlock sHeapHead;
+static size_t sHeapUsed;
 
-    header->flag = FALSE;
-    header->magic = MALLOC_SYSTEM_ID;
-    header->size = size;
-    header->prev = prev;
-    header->next = next;
+#ifdef MEMDEBUG
+static void *AllocInternal(u32 size, const char *file, int line)
+#else
+static void *AllocInternal(u32 size)
+#endif
+{
+    struct MemBlock *block = malloc(sizeof(struct MemBlock) + size);
+    if (!block)
+        return NULL;
+
+    block->block_size = size;
+    block->size = sizeof(struct MemBlock) + block->block_size;
+
+#ifdef MEMDEBUG
+    block->debug_file = file;
+    block->debug_line = line;
+#endif
+
+    block->next = sHeapHead.next;
+    block->prev = &sHeapHead;
+    block->next->prev = block;
+
+    sHeapHead.next = block;
+    sHeapUsed += block->block_size;
+
+#ifdef MEMDEBUG
+    printf("AllocInternal: Allocated %p, size %d bytes (%s:%d)\n", block, size, file, line);
+#endif
+
+    return (void *)((uintptr_t)block + sizeof(struct MemBlock));
 }
 
-void PutFirstMemBlockHeader(void *block, u32 size)
+static void FreeInternal(void *pointer)
 {
-    PutMemBlockHeader(block, (struct MemBlock *)block, (struct MemBlock *)block, size - sizeof(struct MemBlock));
+    if (!pointer)
+        return;
+
+    struct MemBlock *block = (struct MemBlock *)((uintptr_t)pointer - sizeof(struct MemBlock));
+
+    block->prev->next = block->next;
+    block->next->prev = block->prev;
+
+#ifdef MEMDEBUG
+    printf("FreeInternal: Freeing %p, size %d bytes (%s:%d)\n", pointer, block->block_size, block->debug_file, block->debug_line);
+#endif
+
+    sHeapUsed -= block->block_size;
+
+    free(block);
 }
 
-void *AllocInternal(void *heapStart, u32 size)
+#ifdef MEMDEBUG
+static void *AllocZeroedInternal(u32 size, const char *file, int line)
+#else
+static void *AllocZeroedInternal(u32 size)
+#endif
 {
-    struct MemBlock *pos = (struct MemBlock *)heapStart;
-    struct MemBlock *head = pos;
-    struct MemBlock *splitBlock;
-    u32 foundBlockSize;
+#ifdef MEMDEBUG
+    void *mem = AllocInternal(size, file, line);
+#else
+    void *mem = AllocInternal(size);
+#endif
 
-    // Alignment
-    if (size & 3)
-        size = 4 * ((size / 4) + 1);
-
-    for (;;) {
-        // Loop through the blocks looking for unused block that's big enough.
-
-        if (!pos->flag) {
-            foundBlockSize = pos->size;
-
-            if (foundBlockSize >= size) {
-                if (foundBlockSize - size < 2 * sizeof(struct MemBlock)) {
-                    // The block isn't much bigger than the requested size,
-                    // so just use it.
-                    pos->flag = TRUE;
-                } else {
-                    // The block is significantly bigger than the requested
-                    // size, so split the rest into a separate block.
-                    foundBlockSize -= sizeof(struct MemBlock);
-                    foundBlockSize -= size;
-
-                    splitBlock = (struct MemBlock *)(pos->data + size);
-
-                    pos->flag = TRUE;
-                    pos->size = size;
-
-                    PutMemBlockHeader(splitBlock, pos, pos->next, foundBlockSize);
-
-                    pos->next = splitBlock;
-
-                    if (splitBlock->next != head)
-                        splitBlock->next->prev = splitBlock;
-                }
-
-                return pos->data;
-            }
-        }
-
-        if (pos->next == head)
-            return NULL;
-
-        pos = pos->next;
+    if (mem == NULL)
+    {
+#ifdef MEMDEBUG
+        printf("AllocZeroedInternal: Failed to allocate %d bytes\n", size);
+#endif
+        return NULL;
     }
-}
 
-void FreeInternal(void *heapStart, void *pointer)
-{
-    if (pointer) {
-        struct MemBlock *head = (struct MemBlock *)heapStart;
-        struct MemBlock *block = (struct MemBlock *)((u8 *)pointer - sizeof(struct MemBlock));
-        block->flag = FALSE;
-
-        // If the freed block isn't the last one, merge with the next block
-        // if it's not in use.
-        if (block->next != head) {
-            if (!block->next->flag) {
-                block->size += sizeof(struct MemBlock) + block->next->size;
-                block->next->magic = 0;
-                block->next = block->next->next;
-                if (block->next != head)
-                    block->next->prev = block;
-            }
-        }
-
-        // If the freed block isn't the first one, merge with the previous block
-        // if it's not in use.
-        if (block != head) {
-            if (!block->prev->flag) {
-                block->prev->next = block->next;
-
-                if (block->next != head)
-                    block->next->prev = block->prev;
-
-                block->magic = 0;
-                block->prev->size += sizeof(struct MemBlock) + block->size;
-            }
-        }
-    }
-}
-
-void *AllocZeroedInternal(void *heapStart, u32 size)
-{
-    void *mem = AllocInternal(heapStart, size);
-
-    if (mem != NULL) {
-        if (size & 3)
-            size = 4 * ((size / 4) + 1);
-
-        CpuFill32(0, mem, size);
-    }
+    memset(mem, 0x00, size);
 
     return mem;
 }
 
-bool32 CheckMemBlockInternal(void *heapStart, void *pointer)
+bool32 CheckMemBlockInternal(void *pointer)
 {
-    struct MemBlock *head = (struct MemBlock *)heapStart;
-    struct MemBlock *block = (struct MemBlock *)((u8 *)pointer - sizeof(struct MemBlock));
+    struct MemBlock *block = (struct MemBlock *)((uintptr_t)pointer - sizeof(struct MemBlock));
 
-    if (block->magic != MALLOC_SYSTEM_ID)
-        return FALSE;
-
-    if (block->next->magic != MALLOC_SYSTEM_ID)
-        return FALSE;
-
-    if (block->next != head && block->next->prev != block)
-        return FALSE;
-
-    if (block->prev->magic != MALLOC_SYSTEM_ID)
-        return FALSE;
-
-    if (block->prev != head && block->prev->next != block)
-        return FALSE;
-
-    if (block->next != head && block->next != (struct MemBlock *)(block->data + block->size))
+    if (block->magic != MALLOC_SYSTEM_ID
+    || block->next->prev != block
+    || block->prev->next != block)
         return FALSE;
 
     return TRUE;
 }
 
-void InitHeap(void *heapStart, u32 heapSize)
+void InitHeap(void)
 {
-    sHeapStart = heapStart;
-    sHeapSize = heapSize;
-    PutFirstMemBlockHeader(heapStart, heapSize);
+    if (sHeapUsed)
+    {
+        struct MemBlock *block, *next;
+        void *data;
+
+#ifdef MEMDEBUG
+        printf("InitHeap called while %u bytes of memory are in use\n", sHeapUsed);
+#endif
+
+        for (block = sHeapHead.next; block != &sHeapHead; block = next)
+        {
+            next = block->next;
+            Free((void *)((uintptr_t)block + sizeof(struct MemBlock)));
+        }
+    }
+
+    memset(&sHeapHead, 0, sizeof sHeapHead);
+
+    sHeapHead.next = &sHeapHead;
+    sHeapHead.prev = sHeapHead.next;
+
+    sHeapUsed = 0;
 }
 
-void *Alloc(u32 size)
+#ifdef MEMDEBUG
+void *MemAlloc(u32 size, const char *file, int line)
 {
-    return AllocInternal(sHeapStart, size);
+    return AllocInternal(size, file, line);
 }
 
-void *AllocZeroed(u32 size)
+void *MemAllocZeroed(u32 size, const char *file, int line)
 {
-    return AllocZeroedInternal(sHeapStart, size);
+    return AllocZeroedInternal(size, file, line);
 }
+#else
+void *MemAlloc(u32 size)
+{
+    return AllocInternal(size);
+}
+
+void *MemAllocZeroed(u32 size)
+{
+    return AllocZeroedInternal(size);
+}
+#endif
 
 void Free(void *pointer)
 {
-    FreeInternal(sHeapStart, pointer);
+    FreeInternal(pointer);
 }
 
 bool32 CheckMemBlock(void *pointer)
 {
-    return CheckMemBlockInternal(sHeapStart, pointer);
+    return CheckMemBlockInternal(pointer);
 }
 
 bool32 CheckHeap()
 {
-    struct MemBlock *pos = (struct MemBlock *)sHeapStart;
+    struct MemBlock *block = sHeapHead.next;
 
-    do {
-        if (!CheckMemBlockInternal(sHeapStart, pos->data))
+    for (; block != &sHeapHead; block = block->next)
+    {
+        void *data = (void *)((uintptr_t)block + sizeof(struct MemBlock));
+        if (!CheckMemBlockInternal(data))
             return FALSE;
-        pos = pos->next;
-    } while (pos != (struct MemBlock *)sHeapStart);
+    }
 
     return TRUE;
 }

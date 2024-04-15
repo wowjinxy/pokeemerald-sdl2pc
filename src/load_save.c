@@ -131,7 +131,7 @@ void MoveSaveBlocks_ResetHeap(void)
 #endif
 
     // heap was destroyed in the copying process, so reset it
-    InitHeap(gHeap, HEAP_SIZE);
+    InitHeap();
 
     // restore interrupt functions
     gMain.hblankCallback = hblankCB;

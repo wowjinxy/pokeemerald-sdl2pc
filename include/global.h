@@ -5,6 +5,10 @@
 #include <string.h>
 #include <limits.h>
 
+#ifdef PORTABLE
+#include <stdlib.h>
+#endif
+
 #include "config.h" // we need to define config before gba headers as print stuff needs the functions nulled before defines.
 #include "gba/gba.h"
 
@@ -82,7 +86,7 @@ int strcmp(const char *, const char*);
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-#if MODERN
+#if defined MODERN && !defined PORTABLE
 #define abs(x) (((x) < 0) ? -(x) : (x))
 #endif
 
