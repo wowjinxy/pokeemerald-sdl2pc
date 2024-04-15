@@ -1862,8 +1862,7 @@ static void SpriteCB_FldEffPokeballTrail(struct Sprite *sprite)
                 u16 *ptr;
 
                 sprite->sPrevX = posX;
-                var = ((REG_BG0CNT >> 8) & 0x1F) << 11;
-                ptr = (u16 *)(gpu.tileMaps + var);
+                ptr = GpuGetTilemapPtr(0);
 
                 SET_TILE(ptr, posY - 2, posX, 1);
                 SET_TILE(ptr, posY - 1, posX, 1);
@@ -4069,21 +4068,13 @@ static void VBlankCB_BattleTransition(void)
 
 static void GetBg0TilemapDst(u16 **tileset)
 {
-    u16 charBase = REG_BG0CNT >> 2;
-    charBase <<= 14;
-    *tileset = (u16 *)(gpu.gfxData + charBase);
+    *tileset = GpuGetGfxPtr(0);
 }
 
 void GetBg0TilesDst(u16 **tilemap, u16 **tileset)
 {
-    u16 screenBase = REG_BG0CNT >> 8;
-    u16 charBase = REG_BG0CNT >> 2;
-
-    screenBase <<= 11;
-    charBase <<= 14;
-
-    *tilemap = (u16 *)(gpu.tileMaps + screenBase);
-    *tileset = (u16 *)(gpu.gfxData + charBase);
+    *tilemap = GpuGetTilemapPtr(0);
+    *tileset = GpuGetGfxPtr(0);
 }
 
 static void FadeScreenBlack(void)

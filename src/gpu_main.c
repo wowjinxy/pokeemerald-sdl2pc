@@ -5,9 +5,9 @@ struct GpuState gpu;
 
 void GpuInit(void)
 {
-    gpu.gfxDataSize = 256 * 1000;
-    gpu.tileMapsSize = 256 * 1000;
-    gpu.spriteGfxDataSize = 256 * 1000;
+    gpu.gfxDataSize = BG_CHAR_SIZE * 3;
+    gpu.tileMapsSize = BG_SCREEN_SIZE * 32;
+    gpu.spriteGfxDataSize = 32000;
 
     gpu.gfxData = calloc(1, gpu.gfxDataSize);
     if (!gpu.gfxData)
@@ -49,4 +49,69 @@ void GpuClearAll(void)
     GpuClearData();
     GpuClearSprites();
     GpuClearPalette();
+}
+
+void *GpuGetGfxPtr(u8 bgNum)
+{
+    u16 *bgcnt = NULL;
+
+    size_t offset;
+
+    switch (bgNum)
+    {
+    case 0:
+        bgcnt = (u16 *)REG_ADDR_BG0CNT;
+        break;
+    case 1:
+        bgcnt = (u16 *)REG_ADDR_BG1CNT;
+        break;
+    case 2:
+        bgcnt = (u16 *)REG_ADDR_BG2CNT;
+        break;
+    case 3:
+        bgcnt = (u16 *)REG_ADDR_BG3CNT;
+        break;
+    default:
+        return NULL;
+    }
+
+    offset = ((*bgcnt) >> 2) & 3;
+
+    return gpu.gfxData + (offset * BG_CHAR_SIZE);
+}
+
+void *GpuGetTilemapPtr(u8 bgNum)
+{
+    u16 *bgcnt = NULL;
+
+    size_t offset;
+
+    switch (bgNum)
+    {
+    case 0:
+        bgcnt = (u16 *)REG_ADDR_BG0CNT;
+        break;
+    case 1:
+        bgcnt = (u16 *)REG_ADDR_BG1CNT;
+        break;
+    case 2:
+        bgcnt = (u16 *)REG_ADDR_BG2CNT;
+        break;
+    case 3:
+        bgcnt = (u16 *)REG_ADDR_BG3CNT;
+        break;
+    default:
+        return NULL;
+    }
+
+    offset = ((*bgcnt) >> 8) & 0x1F;
+
+    return gpu.tileMaps + (offset * BG_SCREEN_SIZE);
+}
+
+void GpuClearTilemap(u8 bgNum)
+{
+    void *ptr = GpuGetTilemapPtr(bgNum);
+    if (ptr)
+        CpuFill32(0, ptr, BG_SCREEN_SIZE);
 }

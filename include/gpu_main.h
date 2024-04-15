@@ -9,4 +9,8 @@ void GpuClearPalette(void);
 void GpuClearPalette2(void);
 void GpuClearAll(void);
 
+void *GpuGetGfxPtr(u8 bgNum);
+void *GpuGetTilemapPtr(u8 bgNum);
+void GpuClearTilemap(u8 bgNum);
+
 #endif

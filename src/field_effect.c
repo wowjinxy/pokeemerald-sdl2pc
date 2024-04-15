@@ -166,7 +166,7 @@ static void FieldMoveShowMonOutdoorsEffect_ShrinkBanner(struct Task *);
 static void FieldMoveShowMonOutdoorsEffect_RestoreBg(struct Task *);
 static void FieldMoveShowMonOutdoorsEffect_End(struct Task *);
 static void VBlankCB_FieldMoveShowMonOutdoors(void);
-static void LoadFieldMoveOutdoorStreaksTilemap(u16);
+static void LoadFieldMoveOutdoorStreaksTilemap(void*);
 
 static void Task_FieldMoveShowMonIndoors(u8);
 static void FieldMoveShowMonIndoorsEffect_Init(struct Task *);
@@ -2609,7 +2609,7 @@ static void FieldMoveShowMonOutdoorsEffect_Init(struct Task *task)
 {
     task->data[11] = REG_WININ;
     task->data[12] = REG_WINOUT;
-    StoreWordInTwoHalfwords((u16*) &task->data[13], (u32)gMain.vblankCallback);
+    task->intrCallbackPtr = gMain.vblankCallback;
     task->tWinHoriz = WIN_RANGE(DisplayWidth(), DisplayWidth() + 1);
     task->tWinVert = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);
     task->tWinIn = WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR;
@@ -2624,12 +2624,10 @@ static void FieldMoveShowMonOutdoorsEffect_Init(struct Task *task)
 
 static void FieldMoveShowMonOutdoorsEffect_LoadGfx(struct Task *task)
 {
-    u16 offset = ((REG_BG0CNT >> 2) << 14);
-    u16 delta = ((REG_BG0CNT >> 8) << 11);
-    CpuCopy16(sFieldMoveStreaksOutdoors_Gfx, (void *)(gpu.gfxData + offset), 0x200);
-    CpuFill32(0, (void *)(gpu.tileMaps + delta), 0x800);
+    CpuCopy16(sFieldMoveStreaksOutdoors_Gfx, GpuGetGfxPtr(0), 0x200);
+    GpuClearTilemap(0);
     LoadPalette(sFieldMoveStreaksOutdoors_Pal, BG_PLTT_ID(15), sizeof(sFieldMoveStreaksOutdoors_Pal));
-    LoadFieldMoveOutdoorStreaksTilemap(delta);
+    LoadFieldMoveOutdoorStreaksTilemap(GpuGetTilemapPtr(0));
     task->tState++;
 }
 
@@ -2696,8 +2694,7 @@ static void FieldMoveShowMonOutdoorsEffect_ShrinkBanner(struct Task *task)
 
 static void FieldMoveShowMonOutdoorsEffect_RestoreBg(struct Task *task)
 {
-    u16 bg0cnt = (REG_BG0CNT >> 8) << 11;
-    CpuFill32(0, (void *)gpu.tileMaps + bg0cnt, 0x800);
+    GpuClearTilemap(0);
     task->tWinHoriz = DisplayWidth() + 1;
     task->tWinVert = DisplayHeight() + 1;
     task->tWinIn = task->data[11];
@@ -2707,9 +2704,8 @@ static void FieldMoveShowMonOutdoorsEffect_RestoreBg(struct Task *task)
 
 static void FieldMoveShowMonOutdoorsEffect_End(struct Task *task)
 {
-    IntrCallback callback;
-    LoadWordFromTwoHalfwords((u16 *)&task->data[13], (u32 *)&callback);
-    SetVBlankCallback(callback);
+    if (task->intrCallbackPtr)
+        SetVBlankCallback(task->intrCallbackPtr);
     InitTextBoxGfxAndPrinters();
     FreeResourcesAndDestroySprite(&gSprites[task->tMonSpriteId], task->tMonSpriteId);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON);
@@ -2718,10 +2714,10 @@ static void FieldMoveShowMonOutdoorsEffect_End(struct Task *task)
 
 static void VBlankCB_FieldMoveShowMonOutdoors(void)
 {
-    IntrCallback callback;
     struct Task *task = &gTasks[FindTaskIdByFunc(Task_FieldMoveShowMonOutdoors)];
-    LoadWordFromTwoHalfwords((u16 *)&task->data[13], (u32 *)&callback);
-    callback();
+    if (task->intrCallbackPtr)
+        task->intrCallbackPtr();
+
     SetGpuReg(REG_OFFSET_WIN0H, task->tWinHoriz);
     SetGpuReg(REG_OFFSET_WIN0V, task->tWinVert);
     SetGpuReg(REG_OFFSET_WININ, task->tWinIn);
@@ -2730,11 +2726,11 @@ static void VBlankCB_FieldMoveShowMonOutdoors(void)
     SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
 }
 
-static void LoadFieldMoveOutdoorStreaksTilemap(u16 offs)
+static void LoadFieldMoveOutdoorStreaksTilemap(void *ptr)
 {
     u16 i;
     u16 *dest;
-    dest = (u16 *)(gpu.tileMaps + ARRAY_COUNT(sFieldMoveStreaksOutdoors_Tilemap) + offs);
+    dest = (u16 *)(ptr + ARRAY_COUNT(sFieldMoveStreaksOutdoors_Tilemap));
     for (i = 0; i < ARRAY_COUNT(sFieldMoveStreaksOutdoors_Tilemap); i++, dest++)
     {
         *dest = sFieldMoveStreaksOutdoors_Tilemap[i] | 0xF000;
@@ -2777,20 +2773,16 @@ static void FieldMoveShowMonIndoorsEffect_Init(struct Task *task)
 {
     SetGpuReg(REG_OFFSET_BG0HOFS, task->tBgHoriz);
     SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
-    StoreWordInTwoHalfwords((u16 *)&task->data[13], (u32)gMain.vblankCallback);
+    task->intrCallbackPtr = gMain.vblankCallback;
     SetVBlankCallback(VBlankCB_FieldMoveShowMonIndoors);
     task->tState++;
 }
 
 static void FieldMoveShowMonIndoorsEffect_LoadGfx(struct Task *task)
 {
-    u16 offset;
-    u16 delta;
-    offset = ((REG_BG0CNT >> 2) << 14);
-    delta = ((REG_BG0CNT >> 8) << 11);
-    task->data[12] = delta;
-    CpuCopy16(sFieldMoveStreaksIndoors_Gfx, (void *)(gpu.gfxData + offset), 0x80);
-    CpuFill32(0, (void *)(gpu.tileMaps + delta), 0x800);
+    task->genericPtr[0] = GpuGetTilemapPtr(0);
+    CpuCopy16(sFieldMoveStreaksIndoors_Gfx, GpuGetGfxPtr(0), 0x80);
+    GpuClearTilemap(0);
     LoadPalette(sFieldMoveStreaksIndoors_Pal, BG_PLTT_ID(15), sizeof(sFieldMoveStreaksIndoors_Pal));
     task->tState++;
 }
@@ -2833,12 +2825,9 @@ static void FieldMoveShowMonIndoorsEffect_SlideBannerOff(struct Task *task)
 
 static void FieldMoveShowMonIndoorsEffect_End(struct Task *task)
 {
-    IntrCallback intrCallback;
-    u16 bg0cnt;
-    bg0cnt = (REG_BG0CNT >> 8) << 11;
-    CpuFill32(0, (void *)gpu.tileMaps + bg0cnt, 0x800);
-    LoadWordFromTwoHalfwords((u16 *)&task->data[13], (u32 *)&intrCallback);
-    SetVBlankCallback(intrCallback);
+    GpuClearTilemap(0);
+    if (task->intrCallbackPtr)
+        SetVBlankCallback(task->intrCallbackPtr);
     InitTextBoxGfxAndPrinters();
     FreeResourcesAndDestroySprite(&gSprites[task->tMonSpriteId], task->tMonSpriteId);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON);
@@ -2847,11 +2836,9 @@ static void FieldMoveShowMonIndoorsEffect_End(struct Task *task)
 
 static void VBlankCB_FieldMoveShowMonIndoors(void)
 {
-    IntrCallback intrCallback;
-    struct Task *task;
-    task = &gTasks[FindTaskIdByFunc(Task_FieldMoveShowMonIndoors)];
-    LoadWordFromTwoHalfwords((u16 *)&task->data[13], (u32 *)&intrCallback);
-    intrCallback();
+    struct Task *task = &gTasks[FindTaskIdByFunc(Task_FieldMoveShowMonIndoors)];
+    if (task->intrCallbackPtr)
+        task->intrCallbackPtr();
     SetGpuReg(REG_OFFSET_BG0HOFS, task->tBgHoriz);
     SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
 }
@@ -2877,7 +2864,7 @@ static bool8 SlideIndoorBannerOnscreen(struct Task *task)
     {
         dstOffs = (32 - dstOffs) & 0x1f;
         srcOffs = (32 - task->tBgOffset) & 0x1f;
-        dest = (u16 *)(gpu.tileMaps + 0x140 + (u16)task->data[12]);
+        dest = (u16 *)(task->genericPtr[0] + 0x140);
         for (i = 0; i < 10; i++)
         {
             dest[dstOffs + i * 32] = sFieldMoveStreaksIndoors_Tilemap[srcOffs + i * 32];
@@ -2904,7 +2891,7 @@ static bool8 SlideIndoorBannerOffscreen(struct Task *task)
     if (dstOffs >= task->tBgOffset)
     {
         dstOffs = (task->tBgHoriz >> 3) & 0x1f;
-        dest = (u16 *)(gpu.tileMaps + 0x140 + (u16)task->data[12]);
+        dest = (u16 *)(task->genericPtr[0] + 0x140);
         for (i = 0; i < 10; i++)
         {
             dest[dstOffs + i * 32] = 0xf000;

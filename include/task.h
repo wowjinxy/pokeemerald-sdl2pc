@@ -25,6 +25,7 @@ struct Task
         TaskFunc funcPtr_task;
         struct Sprite *spritePtr;
         struct Pokemon *monPtr;
+        void (*intrCallbackPtr)(void); // should be IntrCallback
     };
 };
 
