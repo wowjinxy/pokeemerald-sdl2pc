@@ -37,9 +37,15 @@
 #define CPU_COPY(src, dest, size, bit) CPU_COPY_UNCHECKED(src, dest, size, bit)
 #endif
 
+#ifdef PORTABLE
+#define CpuCopy8(src, dest, size) memcpy(dest, src, size)
+#define CpuCopy16(src, dest, size) memcpy(dest, src, size)
+#define CpuCopy32(src, dest, size) memcpy(dest, src, size)
+#else
 #define CpuCopy8(src, dest, size) CPU_COPY(src, dest, size, 8)
 #define CpuCopy16(src, dest, size) CPU_COPY(src, dest, size, 16)
 #define CpuCopy32(src, dest, size) CPU_COPY(src, dest, size, 32)
+#endif
 
 #define CpuFastFill(value, dest, size)                               \
 {                                                                    \
