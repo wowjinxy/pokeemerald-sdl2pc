@@ -123,7 +123,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -132,7 +133,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 7,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -141,7 +143,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 6,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -378,11 +381,11 @@ void CB2_ChooseStarter(void)
 
     SetVBlankCallback(NULL);
 
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(3);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
 
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
@@ -424,14 +427,14 @@ void CB2_ChooseStarter(void)
     SetVBlankCallback(VblankCB_StarterChoose);
     SetMainCallback2(CB2_StarterChoose);
 
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 7);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 7);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
 
     ShowBg(0);
     ShowBg(2);
@@ -597,8 +600,8 @@ static void CreateStarterPokemonLabel(u8 selection)
     labelRight = (sStarterLabelCoords[selection][0] + 13) * 8 + 4;
     labelTop = sStarterLabelCoords[selection][1] * 8;
     labelBottom = (sStarterLabelCoords[selection][1] + 4) * 8;
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(labelLeft, labelRight));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(labelTop, labelBottom));
+    SetGpuWindowX(0, WIN_RANGE(labelLeft, labelRight));
+    SetGpuWindowY(0, WIN_RANGE(labelTop, labelBottom));
 }
 
 static void ClearStarterLabel(void)
@@ -607,8 +610,8 @@ static void ClearStarterLabel(void)
     ClearWindowTilemap(sStarterLabelWindowId);
     RemoveWindow(sStarterLabelWindowId);
     sStarterLabelWindowId = WINDOW_NONE;
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
     ScheduleBgCopyTilemapToVram(0);
 }
 

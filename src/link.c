@@ -179,12 +179,6 @@ static const struct BlockRequest sBlockRequests[] = {
     [BLOCK_REQ_SIZE_220]  = {gBlockSendBuffer, 220},
     [BLOCK_REQ_SIZE_40]   = {gBlockSendBuffer,  40}
 };
-static const u8 sBGControlRegs[] = {
-    REG_OFFSET_BG0CNT,
-    REG_OFFSET_BG1CNT,
-    REG_OFFSET_BG2CNT,
-    REG_OFFSET_BG3CNT
-};
 static const char sASCIIGameFreakInc[] = "GameFreak inc.";
 static const char sASCIITestPrint[] = "TEST PRINT\nP0\nP1\nP2\nP3";
 static const struct BgTemplate sLinkErrorBgTemplates[] = {
@@ -268,17 +262,26 @@ static void InitLinkTestBG(u8 paletteNum, u8 bgNum, u8 screenBaseBlock, u8 charB
     switch (bgNum)
     {
         case 1:
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_SCREENBASE(screenBaseBlock) | BGCNT_PRIORITY(1) | BGCNT_CHARBASE(charBaseBlock));
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundPriority(1, 1);
+            SetGpuBackgroundCharBaseBlock(charBaseBlock);
+            SetGpuBackgroundScreenBaseBlock(1, screenBaseBlock);
             break;
         case 2:
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_SCREENBASE(screenBaseBlock) | BGCNT_PRIORITY(1) | BGCNT_CHARBASE(charBaseBlock));
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundPriority(2, 1);
+            SetGpuBackgroundCharBaseBlock(2, charBaseBlock);
+            SetGpuBackgroundScreenBaseBlock(2, screenBaseBlock);
             break;
         case 3:
-            SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_SCREENBASE(screenBaseBlock) | BGCNT_PRIORITY(1) | BGCNT_CHARBASE(charBaseBlock));
+            ClearGpuBackgroundState(3);
+            SetGpuBackgroundPriority(3, 1);
+            SetGpuBackgroundCharBaseBlock(3, charBaseBlock);
+            SetGpuBackgroundScreenBaseBlock(3, screenBaseBlock);
             break;
     }
-    SetGpuReg(REG_OFFSET_BG0HOFS + bgNum * 4, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS + bgNum * 4, 0);
+    SetGpuBackgroundX(bgNum, 0);
+    SetGpuBackgroundY(bgNum, 0);
 }
 
 static void UNUSED LoadLinkTestBgGfx(u8 paletteNum, u8 bgNum, u8 screenBaseBlock, u8 charBaseBlock)
@@ -288,7 +291,11 @@ static void UNUSED LoadLinkTestBgGfx(u8 paletteNum, u8 bgNum, u8 screenBaseBlock
     gLinkTestBGInfo.screenBaseBlock = screenBaseBlock;
     gLinkTestBGInfo.paletteNum = paletteNum;
     gLinkTestBGInfo.baseChar = 0;
-    SetGpuReg(sBGControlRegs[bgNum], BGCNT_SCREENBASE(screenBaseBlock) | BGCNT_CHARBASE(charBaseBlock));
+    ClearGpuBackgroundState(bgNum);
+    SetGpuBackgroundCharBaseBlock(bgNum, charBaseBlock);
+    SetGpuBackgroundScreenBaseBlock(bgNum, screenBaseBlock);
+    SetGpuBackgroundWidth(bgNum, 256);
+    SetGpuBackgroundHeight(bgNum, 256);
 }
 
 static void UNUSED LinkTestScreen(void)
@@ -307,7 +314,7 @@ static void UNUSED LinkTestScreen(void)
         gSaveBlock2Ptr->playerTrainerId[i] = Random() % 256;
 
     InitLinkTestBG(0, 2, 4, 0, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_ON);
     CreateTask(Task_DestroySelf, 0);
     RunTasks();
     AnimateSprites();
@@ -1595,7 +1602,7 @@ void CB2_LinkError(void)
 {
     u8 *tilemapBuffer;
 
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     m4aMPlayStop(&gMPlayInfo_SE1);
     m4aMPlayStop(&gMPlayInfo_SE2);
     m4aMPlayStop(&gMPlayInfo_SE3);
@@ -1622,12 +1629,12 @@ void CB2_LinkError(void)
     {
         DeactivateAllTextPrinters();
         ResetTempTileDataBuffers();
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
         ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
         LoadPalette(gStandardMenuPalette, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
         gSoftResetDisabled = FALSE;

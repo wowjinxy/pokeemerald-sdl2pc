@@ -817,7 +817,7 @@ static void AnimSuperpowerOrb_Step(struct Sprite *sprite)
 {
     if (++sprite->data[0] == 180)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
 
         sprite->data[0] = 16;
         sprite->data[1] = sprite->x;

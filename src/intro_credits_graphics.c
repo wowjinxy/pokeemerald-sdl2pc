@@ -764,22 +764,22 @@ void SetIntroPart2BgCnt(u8 scenery)
     {
     default:
     case 0:
-        SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(6)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(7)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1)
-                                   | BGCNT_CHARBASE(1)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(15)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+        ClearGpuBackgroundState(3);
+        SetGpuBackgroundPriority(3, 3);
+        SetGpuBackgroundCharBaseBlock(3, 0);
+        SetGpuBackgroundScreenBaseBlock(3, 6);
+
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 0);
+        SetGpuBackgroundScreenBaseBlock(2, 7);
+
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundPriority(1, 1);
+        SetGpuBackgroundCharBaseBlock(1, 1);
+        SetGpuBackgroundScreenBaseBlock(1, 15);
+
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                     | DISPCNT_OBJ_1D_MAP
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
@@ -787,22 +787,22 @@ void SetIntroPart2BgCnt(u8 scenery)
                                     | DISPCNT_OBJ_ON);
         break;
     case 1:
-        SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(6)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(7)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1)
-                                   | BGCNT_CHARBASE(1)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(15)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+        ClearGpuBackgroundState(3);
+        SetGpuBackgroundPriority(3, 3);
+        SetGpuBackgroundCharBaseBlock(3, 0);
+        SetGpuBackgroundScreenBaseBlock(3, 6);
+
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 0);
+        SetGpuBackgroundScreenBaseBlock(2, 7);
+
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundPriority(1, 1);
+        SetGpuBackgroundCharBaseBlock(1, 1);
+        SetGpuBackgroundScreenBaseBlock(1, 15);
+
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                     | DISPCNT_OBJ_1D_MAP
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
@@ -810,22 +810,22 @@ void SetIntroPart2BgCnt(u8 scenery)
                                     | DISPCNT_OBJ_ON);
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(6)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(7)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1)
-                                   | BGCNT_CHARBASE(1)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_SCREENBASE(15)
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+        ClearGpuBackgroundState(3);
+        SetGpuBackgroundPriority(3, 3);
+        SetGpuBackgroundCharBaseBlock(3, 0);
+        SetGpuBackgroundScreenBaseBlock(3, 6);
+
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 0);
+        SetGpuBackgroundScreenBaseBlock(2, 7);
+
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundPriority(1, 1);
+        SetGpuBackgroundCharBaseBlock(1, 1);
+        SetGpuBackgroundScreenBaseBlock(1, 15);
+
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                     | DISPCNT_OBJ_1D_MAP
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
@@ -888,22 +888,22 @@ void LoadCreditsSceneGraphics(u8 scene)
 
 void SetCreditsSceneBgCnt(u8 scene)
 {
-    SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3)
-                               | BGCNT_CHARBASE(0)
-                               | BGCNT_16COLOR
-                               | BGCNT_SCREENBASE(6)
-                               | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2)
-                               | BGCNT_CHARBASE(0)
-                               | BGCNT_16COLOR
-                               | BGCNT_SCREENBASE(7)
-                               | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1)
-                               | BGCNT_CHARBASE(1)
-                               | BGCNT_16COLOR
-                               | BGCNT_SCREENBASE(15)
-                               | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+    ClearGpuBackgroundState(3);
+    SetGpuBackgroundPriority(3, 3);
+    SetGpuBackgroundCharBaseBlock(3, 0);
+    SetGpuBackgroundScreenBaseBlock(3, 6);
+
+    ClearGpuBackgroundState(2);
+    SetGpuBackgroundPriority(2, 2);
+    SetGpuBackgroundCharBaseBlock(2, 0);
+    SetGpuBackgroundScreenBaseBlock(2, 7);
+
+    ClearGpuBackgroundState(1);
+    SetGpuBackgroundPriority(1, 1);
+    SetGpuBackgroundCharBaseBlock(1, 1);
+    SetGpuBackgroundScreenBaseBlock(1, 15);
+
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG_ALL_ON
                                 | DISPCNT_OBJ_ON);
@@ -954,8 +954,8 @@ static void Task_BicycleBgAnimation(u8 taskId)
         offset -= (u16)bg1Speed << 4;
         gTasks[taskId].tBg1PosHi = offset >> 16;
         gTasks[taskId].tBg1PosLo = offset;
-        SetGpuReg(REG_OFFSET_BG1HOFS, gTasks[taskId].tBg1PosHi);
-        SetGpuReg(REG_OFFSET_BG1VOFS, gIntroCredits_MovingSceneryVBase + gIntroCredits_MovingSceneryVOffset);
+        SetGpuBackgroundX(1, gTasks[taskId].tBg1PosHi);
+        SetGpuBackgroundY(1, gIntroCredits_MovingSceneryVBase + gIntroCredits_MovingSceneryVOffset);
     }
 
     // Move BG2
@@ -966,11 +966,11 @@ static void Task_BicycleBgAnimation(u8 taskId)
         offset -= (u16)bg2Speed << 4;
         gTasks[taskId].tBg2PosHi = offset >> 16;
         gTasks[taskId].tBg2PosLo = offset;
-        SetGpuReg(REG_OFFSET_BG2HOFS, gTasks[taskId].tBg2PosHi);
+        SetGpuBackgroundX(2, gTasks[taskId].tBg2PosHi);
         if (gTasks[taskId].tMode != 0)
-            SetGpuReg(REG_OFFSET_BG2VOFS, gIntroCredits_MovingSceneryVBase + gIntroCredits_MovingSceneryVOffset);
+            SetGpuBackgroundY(2, gIntroCredits_MovingSceneryVBase + gIntroCredits_MovingSceneryVOffset);
         else
-            SetGpuReg(REG_OFFSET_BG2VOFS, gIntroCredits_MovingSceneryVBase);
+            SetGpuBackgroundY(2, gIntroCredits_MovingSceneryVBase);
     }
 
     // Move BG3
@@ -981,8 +981,8 @@ static void Task_BicycleBgAnimation(u8 taskId)
         offset -= (u16)bg3Speed << 4;
         gTasks[taskId].tBg3PosHi = offset >> 16;
         gTasks[taskId].tBg3PosLo = offset;
-        SetGpuReg(REG_OFFSET_BG3HOFS, gTasks[taskId].tBg3PosHi);
-        SetGpuReg(REG_OFFSET_BG3VOFS, gIntroCredits_MovingSceneryVBase);
+        SetGpuBackgroundX(3, gTasks[taskId].tBg3PosHi);
+        SetGpuBackgroundY(3, gIntroCredits_MovingSceneryVBase);
     }
 }
 

@@ -50,19 +50,19 @@ static const u32 sDiplomaTiles[] = INCBIN_U32("graphics/diploma/tiles.4bpp.lz");
 void CB2_ShowDiploma(void)
 {
     SetVBlankCallback(NULL);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
+    ClearGpuBackgroundState(3);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
     GpuClearAll();
     ScanlineEffect_Stop();
     ResetTasks();
@@ -126,12 +126,12 @@ static void DisplayDiplomaText(void)
 {
     if (HasAllMons())
     {
-        SetGpuReg(REG_OFFSET_BG1HOFS, DisplayWidth() + 16);
+        SetGpuBackgroundX(1, DisplayWidth() + 16);
         StringCopy(gStringVar1, gText_DexNational);
     }
     else
     {
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
+        SetGpuBackgroundX(1, 0);
         StringCopy(gStringVar1, gText_DexHoenn);
     }
     StringExpandPlaceholders(gStringVar4, gText_PokedexDiploma);
@@ -146,7 +146,8 @@ static const struct BgTemplate sDiplomaBgTemplates[2] =
         .bg = 0,
         .charBaseIndex = 1,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -155,7 +156,8 @@ static const struct BgTemplate sDiplomaBgTemplates[2] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 6,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -167,12 +169,12 @@ static void InitDiplomaBg(void)
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sDiplomaBgTemplates, ARRAY_COUNT(sDiplomaBgTemplates));
     SetBgTilemapBuffer(1, sDiplomaTilemapPtr);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 }
 
 static const struct WindowTemplate sDiplomaWinTemplates[2] =

@@ -28,7 +28,8 @@ static const struct BgTemplate sClearSaveBgTemplates[2] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -37,7 +38,8 @@ static const struct BgTemplate sClearSaveBgTemplates[2] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -135,18 +137,18 @@ static bool8 SetupClearSaveDataScreen(void)
     case 0:
     default:
         SetVBlankCallback(NULL);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
         GpuClearData();
         GpuClearSprites();
         GpuClearPalette2();
@@ -164,10 +166,10 @@ static bool8 SetupClearSaveDataScreen(void)
         ResetSpriteData();
         ResetBgsAndClearDma3BusyFlags(0);
         InitBgsFromTemplates(0, sClearSaveBgTemplates, ARRAY_COUNT(sClearSaveBgTemplates));
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(3);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         InitClearSaveDataScreenWindows();
         BeginNormalPaletteFade(PALETTES_BG, 0, 0x10, 0, RGB_WHITEALPHA);
         EnableInterrupts(INTR_FLAG_VBLANK);

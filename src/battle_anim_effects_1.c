@@ -3965,8 +3965,8 @@ static void AnimProtect(struct Sprite *sprite)
     sprite->data[0] = gBattleAnimArgs[2];
     sprite->data[2] = OBJ_PLTT_ID(IndexOfSpritePaletteTag(ANIM_TAG_PROTECT));
     sprite->data[7] = 16;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
     sprite->callback = AnimProtect_Step;
 }
 
@@ -3993,7 +3993,7 @@ static void AnimProtect_Step(struct Sprite *sprite)
     {
         sprite->data[6] = 0;
         sprite->data[7] -= 1;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
     }
 
     if (sprite->data[0] > 0)
@@ -4004,7 +4004,7 @@ static void AnimProtect_Step(struct Sprite *sprite)
     {
         sprite->data[6] = 0;
         sprite->data[7]++;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[7], sprite->data[7]));
         if (sprite->data[7] == 16)
         {
             sprite->invisible = TRUE;
@@ -4024,8 +4024,8 @@ static void AnimMilkBottle(struct Sprite *sprite)
     sprite->data[4] = 0;
     sprite->data[6] = 0;
     sprite->data[7] = 16;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
     sprite->callback = AnimMilkBottle_Step1;
 }
 
@@ -4045,7 +4045,7 @@ static void AnimMilkBottle_Step1(struct Sprite *sprite)
             else if (sprite->data[7] > 0)
                 sprite->data[7]--;
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
             if (sprite->data[6] == 16 && sprite->data[7] == 0)
             {
                 sprite->data[1] = 0;
@@ -4082,7 +4082,7 @@ static void AnimMilkBottle_Step1(struct Sprite *sprite)
             sprite->data[7]++;
         }
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
         if (sprite->data[6] == 0 && sprite->data[7] == 16)
         {
             sprite->data[1] = 0;
@@ -4095,8 +4095,8 @@ static void AnimMilkBottle_Step1(struct Sprite *sprite)
         sprite->data[0]++;
         break;
     case 4:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 0));
         DestroyAnimSprite(sprite);
         break;
     }
@@ -4873,7 +4873,7 @@ void AnimTask_ConversionAlphaBlend(u8 taskId)
         {
             gTasks[taskId].data[0] = 0;
             gTasks[taskId].data[1]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - gTasks[taskId].data[1], gTasks[taskId].data[1]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - gTasks[taskId].data[1], gTasks[taskId].data[1]));
             if (gTasks[taskId].data[1] == 16)
                 gTasks[taskId].data[2]++;
         }
@@ -4911,7 +4911,7 @@ void AnimTask_Conversion2AlphaBlend(u8 taskId)
     {
         gTasks[taskId].data[0] = 0;
         gTasks[taskId].data[1]++;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
         if (gTasks[taskId].data[1] == 16)
             DestroyAnimVisualTask(taskId);
     }

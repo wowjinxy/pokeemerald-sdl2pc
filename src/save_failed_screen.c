@@ -68,7 +68,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -77,7 +78,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0,
@@ -86,7 +88,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0,
@@ -180,19 +183,19 @@ static void CB2_SaveFailedScreen(void)
     case 0:
     default:
         SetVBlankCallback(NULL);
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
-        SetGpuReg(REG_OFFSET_BG3CNT, 0);
-        SetGpuReg(REG_OFFSET_BG2CNT, 0);
-        SetGpuReg(REG_OFFSET_BG1CNT, 0);
-        SetGpuReg(REG_OFFSET_BG0CNT, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ClearGpuBackgroundState(3);
+        ClearGpuBackgroundState(2);
+        ClearGpuBackgroundState(1);
+        ClearGpuBackgroundState(0);
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 0);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
         GpuClearAll();
         LZ77UnCompVram(gBirchBagGrass_Gfx, gpu.gfxData);
         LZ77UnCompVram(gBirchBagTilemap, (void *)(BG_SCREEN_ADDR(14)));
@@ -226,7 +229,7 @@ static void CB2_SaveFailedScreen(void)
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         EnableInterrupts(1);
         SetVBlankCallback(VBlankCB);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(2);
         ShowBg(3);

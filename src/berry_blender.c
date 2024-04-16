@@ -312,7 +312,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 0,
         .charBaseIndex = 3,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -321,7 +322,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 1,
         .charBaseIndex = 2,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -330,7 +332,8 @@ static const struct BgTemplate sBgTemplates[3] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 8,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 1,
         .priority = 0,
         .baseTile = 0,
@@ -1068,7 +1071,7 @@ static void CB2_LoadBerryBlender(void)
     switch (sBerryBlender->mainState)
     {
     case 0:
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ResetSpriteData();
         FreeAllSpritePalettes();
         SetVBlankCallback(NULL);
@@ -1275,7 +1278,7 @@ static void StartBlender(void)
 {
     s32 i;
 
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     if (sBerryBlender == NULL)
         sBerryBlender = AllocZeroed(sizeof(*sBerryBlender));
 
@@ -1437,7 +1440,7 @@ static void CB2_StartBlenderLink(void)
         sBerryBlender->centerScale += 4;
         if (sBerryBlender->centerScale > 255)
         {
-            SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2));
+            SetGpuBackgroundPriority(2, 2);
             sBerryBlender->mainState++;
             sBerryBlender->centerScale = 256;
             sBerryBlender->arrowPos = sArrowStartPos[sArrowStartPosIds[sBerryBlender->numPlayers - 2]];
@@ -1500,7 +1503,7 @@ static void CB2_StartBlenderLink(void)
 
 static void InitBlenderBgs(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
 
     ResetSpriteData();
     FreeAllSpritePalettes();
@@ -1737,7 +1740,7 @@ static void CB2_StartBlenderLocal(void)
             sBerryBlender->mainState++;
             sBerryBlender->centerScale = 256;
             sBerryBlender->arrowPos = sArrowStartPos[sArrowStartPosIds[sBerryBlender->numPlayers - 2]];
-            SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2));
+            SetGpuBackgroundPriority(2, 2);
             sBerryBlender->framesToWait = 0;
             PlaySE(SE_TRUCK_DOOR);
             PrintPlayerNames();
@@ -3168,11 +3171,11 @@ static void SetBgPos(void)
     if (!sBerryBlender)
         return;
 #endif
-    SetGpuReg(REG_OFFSET_BG1HOFS, sBerryBlender->bg_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, sBerryBlender->bg_Y);
+    SetGpuBackgroundX(1, sBerryBlender->bg_X);
+    SetGpuBackgroundY(1, sBerryBlender->bg_Y);
 
-    SetGpuReg(REG_OFFSET_BG0HOFS, sBerryBlender->bg_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, sBerryBlender->bg_Y);
+    SetGpuBackgroundX(0, sBerryBlender->bg_X);
+    SetGpuBackgroundY(0, sBerryBlender->bg_Y);
 }
 
 static void SpriteCB_Particle(struct Sprite *sprite)

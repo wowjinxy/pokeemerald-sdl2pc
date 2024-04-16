@@ -504,8 +504,8 @@ void StartMirageTowerFossilFallAndSink(void)
 
 static void SetBgShakeOffsets(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, sBgShakeOffsets->bgHOFS);
-    SetGpuReg(REG_OFFSET_BG0VOFS, sBgShakeOffsets->bgVOFS);
+    SetGpuBackgroundX(0, sBgShakeOffsets->bgHOFS);
+    SetGpuBackgroundY(0, sBgShakeOffsets->bgVOFS);
 }
 
 static void UpdateBgShake(u8 taskId)
@@ -647,8 +647,8 @@ static void DoMirageTowerDisintegration(u8 taskId)
         FREE_AND_SET_NULL(sMirageTowerTilemapBuffer);
         break;
     case 6:
-        SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2));
-        SetGpuRegBits(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(0));
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundPriority(0, 0);
         SetBgAttribute(0, BG_ATTR_PRIORITY, 0);
         InitStandardTextBoxWindows();
         break;

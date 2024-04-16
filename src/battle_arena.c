@@ -388,7 +388,7 @@ u8 BattleArena_ShowJudgmentWindow(u8 *state)
     {
     case 0:
         BeginNormalPaletteFade(0x7FFFFF1C, 4, 0, 8, RGB_BLACK);
-        SetGpuReg(REG_OFFSET_WININ, (WININ_WIN0_ALL & ~WININ_WIN0_BG0) | WININ_WIN1_ALL);
+        SetGpuWindowIn((WININ_WIN0_ALL & ~WININ_WIN0_BG0) | WININ_WIN1_ALL);
         LoadCompressedSpriteSheet(sBattleArenaJudgmentSymbolsSpriteSheet);
         LoadCompressedPalette(gBattleArenaJudgmentSymbolsPalette, OBJ_PLTT_ID(15), PLTT_SIZE_4BPP);
         gBattle_WIN0H = 0xFF;
@@ -425,7 +425,7 @@ u8 BattleArena_ShowJudgmentWindow(u8 *state)
     case 3:
         if (!IsDma3ManagerBusyWithBgCopy())
         {
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL | WININ_WIN1_ALL);
+            SetGpuWindowIn(WININ_WIN0_ALL | WININ_WIN1_ALL);
 
             // Create dividing line for the the score totals at the bottom
             for (i = 0; i < 8; i++)
@@ -487,7 +487,7 @@ u8 BattleArena_ShowJudgmentWindow(u8 *state)
         (*state)++;
         break;
     case JUDGMENT_STATE_FINISHED + 1:
-        SetGpuReg(REG_OFFSET_WININ, (WININ_WIN0_ALL & ~WININ_WIN0_BG0) | WININ_WIN1_ALL);
+        SetGpuWindowIn((WININ_WIN0_ALL & ~WININ_WIN0_BG0) | WININ_WIN1_ALL);
         HandleBattleWindow(5, 0, 24, 13, WINDOW_CLEAR);
         CopyBgTilemapBufferToVram(0);
         m4aMPlayVolumeControl(&gMPlayInfo_BGM, TRACKS_ALL, 256);
@@ -497,7 +497,7 @@ u8 BattleArena_ShowJudgmentWindow(u8 *state)
     case JUDGMENT_STATE_FINISHED + 2:
         if (!gPaletteFade.active)
         {
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL | WININ_WIN1_ALL);
+            SetGpuWindowIn(WININ_WIN0_ALL | WININ_WIN1_ALL);
             FreeSpriteTilesByTag(TAG_JUDGMENT_ICON);
             result = ARENA_RESULT_STEP_DONE;
             (*state)++;

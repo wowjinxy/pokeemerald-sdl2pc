@@ -794,8 +794,8 @@ static u8 UpdateHardwarePaletteFade(void)
 
 static void UpdateBlendRegisters(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, (u16)gPaletteFade_blendCnt);
-    SetGpuReg(REG_OFFSET_BLDY, gPaletteFade.y);
+    SetGpuState(GPU_STATE_BLDCNT, (u16)gPaletteFade_blendCnt);
+    SetGpuState(GPU_STATE_BLDY, gPaletteFade.y);
     if (gPaletteFade.hardwareFadeFinishing)
     {
         gPaletteFade.hardwareFadeFinishing = FALSE;

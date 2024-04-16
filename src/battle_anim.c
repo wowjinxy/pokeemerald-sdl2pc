@@ -690,7 +690,8 @@ void MoveBattlerSpriteToBG(u8 battlerId, bool8 toBG_2, bool8 setSpriteInvisible)
         CpuFill16(0xFF, animBg.bgTilemap, BG_SCREEN_SIZE);
 
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 2);
-        SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 1);
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 512);
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(1, BG_ANIM_AREA_OVERFLOW_MODE, 0);
 
         battlerSpriteId = gBattlerSpriteIds[battlerId];
@@ -703,8 +704,8 @@ void MoveBattlerSpriteToBG(u8 battlerId, bool8 toBG_2, bool8 setSpriteInvisible)
         if (setSpriteInvisible)
             gSprites[gBattlerSpriteIds[battlerId]].invisible = TRUE;
 
-        SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-        SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+        SetGpuBackgroundX(1, gBattle_BG1_X);
+        SetGpuBackgroundY(1, gBattle_BG1_Y);
 
         LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(battlerId)], BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
         CpuCopy32(&gPlttBufferUnfaded[OBJ_PLTT_ID(battlerId)], (void *)(BG_PLTT + PLTT_OFFSET_4BPP(animBg.paletteId)), PLTT_SIZE_4BPP);
@@ -727,7 +728,8 @@ void MoveBattlerSpriteToBG(u8 battlerId, bool8 toBG_2, bool8 setSpriteInvisible)
         CpuFill16(0, animBg.bgTiles + 0x1000, 0x1000);
         CpuFill16(0, animBg.bgTilemap + 0x400, 0x800);
         SetAnimBgAttribute(2, BG_ANIM_PRIORITY, 2);
-        SetAnimBgAttribute(2, BG_ANIM_SCREEN_SIZE, 1);
+        SetAnimBgAttribute(2, BG_ANIM_SCREEN_WIDTH, 512);
+        SetAnimBgAttribute(2, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(2, BG_ANIM_AREA_OVERFLOW_MODE, 0);
 
         battlerSpriteId = gBattlerSpriteIds[battlerId];
@@ -738,8 +740,8 @@ void MoveBattlerSpriteToBG(u8 battlerId, bool8 toBG_2, bool8 setSpriteInvisible)
         if (setSpriteInvisible)
             gSprites[gBattlerSpriteIds[battlerId]].invisible = TRUE;
 
-        SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-        SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
+        SetGpuBackgroundX(2, gBattle_BG2_X);
+        SetGpuBackgroundY(2, gBattle_BG2_Y);
 
         LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(battlerId)], BG_PLTT_ID(9), PLTT_SIZE_4BPP);
         CpuCopy32(&gPlttBufferUnfaded[OBJ_PLTT_ID(battlerId)], (void *)(BG_PLTT + PLTT_OFFSET_4BPP(9)), PLTT_SIZE_4BPP);
@@ -1019,8 +1021,8 @@ static void Cmd_setalpha(void)
     sBattleAnimScriptPtr++;
     half1 = *(sBattleAnimScriptPtr++);
     half2 = *(sBattleAnimScriptPtr++) << 8;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, half1 | half2);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, half1 | half2);
 }
 
 static void Cmd_setbldcnt(void)
@@ -1030,14 +1032,14 @@ static void Cmd_setbldcnt(void)
     sBattleAnimScriptPtr++;
     half1 = *(sBattleAnimScriptPtr++);
     half2 = *(sBattleAnimScriptPtr++) << 8;
-    SetGpuReg(REG_OFFSET_BLDCNT, half1 | half2);
+    SetGpuState(GPU_STATE_BLDCNT, half1 | half2);
 }
 
 static void Cmd_blendoff(void)
 {
     sBattleAnimScriptPtr++;
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
 }
 
 static void Cmd_call(void)

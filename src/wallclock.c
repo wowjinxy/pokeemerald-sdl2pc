@@ -628,11 +628,11 @@ static void VBlankCB_WallClock(void)
 static void LoadWallClockGraphics(void)
 {
     SetVBlankCallback(NULL);
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(3);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
     ChangeBgX(1, 0, BG_COORD_SET);
@@ -672,10 +672,10 @@ static void WallClockInit(void)
     EnableInterrupts(INTR_FLAG_VBLANK);
     SetVBlankCallback(VBlankCB_WallClock);
     SetMainCallback2(CB2_WallClock);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
     ShowBg(0);
     ShowBg(2);
     ShowBg(3);

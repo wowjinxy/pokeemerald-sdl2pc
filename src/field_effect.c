@@ -2614,10 +2614,10 @@ static void FieldMoveShowMonOutdoorsEffect_Init(struct Task *task)
     task->tWinVert = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);
     task->tWinIn = WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR;
     task->tWinOut = WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR;
-    SetGpuReg(REG_OFFSET_WIN0H, task->tWinHoriz);
-    SetGpuReg(REG_OFFSET_WIN0V, task->tWinVert);
-    SetGpuReg(REG_OFFSET_WININ, task->tWinIn);
-    SetGpuReg(REG_OFFSET_WINOUT, task->tWinOut);
+    SetGpuWindowX(0, task->tWinHoriz);
+    SetGpuWindowY(0, task->tWinVert);
+    SetGpuWindowIn(task->tWinIn);
+    SetGpuWindowOut(task->tWinOut);
     SetVBlankCallback(VBlankCB_FieldMoveShowMonOutdoors);
     task->tState++;
 }
@@ -2718,12 +2718,12 @@ static void VBlankCB_FieldMoveShowMonOutdoors(void)
     if (task->intrCallbackPtr)
         task->intrCallbackPtr();
 
-    SetGpuReg(REG_OFFSET_WIN0H, task->tWinHoriz);
-    SetGpuReg(REG_OFFSET_WIN0V, task->tWinVert);
-    SetGpuReg(REG_OFFSET_WININ, task->tWinIn);
-    SetGpuReg(REG_OFFSET_WINOUT, task->tWinOut);
-    SetGpuReg(REG_OFFSET_BG0HOFS, task->tBgHoriz);
-    SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
+    SetGpuWindowX(0, task->tWinHoriz);
+    SetGpuWindowY(0, task->tWinVert);
+    SetGpuWindowIn(task->tWinIn);
+    SetGpuWindowOut(task->tWinOut);
+    SetGpuBackgroundX(0, task->tBgHoriz);
+    SetGpuBackgroundY(0, task->tBgVert);
 }
 
 static void LoadFieldMoveOutdoorStreaksTilemap(void *ptr)
@@ -2771,8 +2771,8 @@ static void Task_FieldMoveShowMonIndoors(u8 taskId)
 
 static void FieldMoveShowMonIndoorsEffect_Init(struct Task *task)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, task->tBgHoriz);
-    SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
+    SetGpuBackgroundX(0, task->tBgHoriz);
+    SetGpuBackgroundY(0, task->tBgVert);
     task->intrCallbackPtr = gMain.vblankCallback;
     SetVBlankCallback(VBlankCB_FieldMoveShowMonIndoors);
     task->tState++;
@@ -2791,8 +2791,8 @@ static void FieldMoveShowMonIndoorsEffect_SlideBannerOn(struct Task *task)
 {
     if (SlideIndoorBannerOnscreen(task))
     {
-        SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(0, DisplayWidth()));
-        SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(DisplayHeight() / 4, DisplayHeight() - DisplayHeight() / 4));
+        SetGpuWindowX(1, WIN_RANGE(0, DisplayWidth()));
+        SetGpuWindowY(1, WIN_RANGE(DisplayHeight() / 4, DisplayHeight() - DisplayHeight() / 4));
         gSprites[task->tMonSpriteId].callback = SpriteCB_FieldMoveMonSlideOnscreen;
         task->tState++;
     }
@@ -2811,8 +2811,8 @@ static void FieldMoveShowMonIndoorsEffect_RestoreBg(struct Task *task)
     AnimateIndoorShowMonBg(task);
     task->tBgOffsetIdx = task->tBgHoriz & 7;
     task->tBgOffset = 0;
-    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(0xFF, 0xFF));
-    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(0xFF, 0xFF));
+    SetGpuWindowX(1, WIN_RANGE(0xFF, 0xFF));
+    SetGpuWindowY(1, WIN_RANGE(0xFF, 0xFF));
     task->tState++;
 }
 
@@ -2839,8 +2839,8 @@ static void VBlankCB_FieldMoveShowMonIndoors(void)
     struct Task *task = &gTasks[FindTaskIdByFunc(Task_FieldMoveShowMonIndoors)];
     if (task->intrCallbackPtr)
         task->intrCallbackPtr();
-    SetGpuReg(REG_OFFSET_BG0HOFS, task->tBgHoriz);
-    SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
+    SetGpuBackgroundX(0, task->tBgHoriz);
+    SetGpuBackgroundY(0, task->tBgVert);
 }
 
 static void AnimateIndoorShowMonBg(struct Task *task)
@@ -3074,11 +3074,11 @@ u8 FldEff_RayquazaSpotlight(void)
     sprite->data[3] = -1;
     sprite->data[4] = sprite->y;
     sprite->data[5] = 0;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 14));
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(14, 14));
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     LoadPalette(sSpotlight_Pal, BG_PLTT_ID(12), sizeof(sSpotlight_Pal));
-    SetGpuReg(REG_OFFSET_BG0VOFS, 120);
+    SetGpuBackgroundY(0, 120);
     for (i = 3; i < 15; i++)
     {
         for (j = 12; j < 18; j++)

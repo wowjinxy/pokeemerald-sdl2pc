@@ -225,7 +225,8 @@ static const struct BgTemplate sShopBuyMenuBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -234,7 +235,8 @@ static const struct BgTemplate sShopBuyMenuBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -243,7 +245,8 @@ static const struct BgTemplate sShopBuyMenuBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -252,7 +255,8 @@ static const struct BgTemplate sShopBuyMenuBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -714,16 +718,16 @@ static void BuyMenuInitBgs(void)
     SetBgTilemapBuffer(1, sShopData->tilemapBuffers[1]);
     SetBgTilemapBuffer(2, sShopData->tilemapBuffers[3]);
     SetBgTilemapBuffer(3, sShopData->tilemapBuffers[2]);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);

@@ -116,7 +116,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -125,7 +126,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -134,7 +136,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 3,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -552,13 +555,13 @@ static void InitPyramidBagBgs(void)
     SetBgTilemapBuffer(2, gPyramidBagMenu->tilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(2);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                   DISPCNT_OBJ_1D_MAP |
                                   DISPCNT_OBJ_ON);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static bool8 LoadPyramidBagGfx(void)

@@ -1223,13 +1223,13 @@ static void AnimWhiteHalo(struct Sprite *sprite)
     sprite->callback = WaitAnimForDuration;
     sprite->data[1] = 7;
     StoreSpriteCallbackInData6(sprite, AnimWhiteHalo_Step1);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
 }
 
 static void AnimWhiteHalo_Step1(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
     if (--sprite->data[1] < 0)
     {
         sprite->invisible = TRUE;
@@ -1239,8 +1239,8 @@ static void AnimWhiteHalo_Step1(struct Sprite *sprite)
 
 static void AnimWhiteHalo_Step2(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
     DestroyAnimSprite(sprite);
 }
 
@@ -1268,15 +1268,15 @@ static void AnimTealAlert(struct Sprite *sprite)
 
 static void AnimMeanLookEye(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     sprite->data[0] = 4;
     sprite->callback = AnimMeanLookEye_Step1;
 }
 
 static void AnimMeanLookEye_Step1(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
 
     if (sprite->data[1])
         sprite->data[0]--;
@@ -1288,8 +1288,8 @@ static void AnimMeanLookEye_Step1(struct Sprite *sprite)
 
     if (sprite->data[2]++ > 70)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         StartSpriteAffineAnim(sprite, 1);
         sprite->data[2] = 0;
         sprite->invisible = TRUE;
@@ -1342,15 +1342,15 @@ static void AnimMeanLookEye_Step3(struct Sprite *sprite)
     {
         sprite->data[0] = 16;
         sprite->data[1] = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 0));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 0));
         sprite->callback = AnimMeanLookEye_Step4;
     }
 }
 
 static void AnimMeanLookEye_Step4(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
 
     if (sprite->data[1]++ > 1)
     {
@@ -1363,8 +1363,8 @@ static void AnimMeanLookEye_Step4(struct Sprite *sprite)
 
     if (sprite->data[0] < 0)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyAnimSprite(sprite);
     }
 }
@@ -1540,12 +1540,12 @@ void AnimTask_IsHealingMove(u8 taskId)
 
 static void AnimSpotlight(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
-    SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
-    SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
+    SetGpuWindowX(0, gBattle_WIN0H);
+    SetGpuWindowY(0, gBattle_WIN0V);
 
     InitSpritePosToAnimTarget(sprite, FALSE);
 
@@ -1598,8 +1598,8 @@ static void AnimSpotlight_Step1(struct Sprite *sprite)
 
 static void AnimSpotlight_Step2(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
-    SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) ^ DISPCNT_OBJWIN_ON);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+    SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) ^ DISPCNT_OBJWIN_ON);
     DestroyAnimSprite(sprite);
 }
 
@@ -1675,19 +1675,19 @@ void AnimTask_CreateSpotlight(u8 taskId)
 {
     if (IsContest())
     {
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
         gBattle_WIN1H = WIN_RANGE(152, DisplayWidth());
         gBattle_WIN1V = WIN_RANGE(0, DisplayHeight());
-        SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN0H);
-        SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN0V);
+        SetGpuWindowX(1, gBattle_WIN0H);
+        SetGpuWindowY(1, gBattle_WIN0V);
     }
     else
     {
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
         gBattle_WIN1H = WIN_RANGE(0, DisplayWidth());
         gBattle_WIN1V = WIN_RANGE(120, DisplayHeight());
-        SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN1H);
-        SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN1V);
+        SetGpuWindowX(1, gBattle_WIN1H);
+        SetGpuWindowY(1, gBattle_WIN1V);
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
     }
 
@@ -1696,7 +1696,7 @@ void AnimTask_CreateSpotlight(u8 taskId)
 
 void AnimTask_RemoveSpotlight(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     gBattle_WIN1H = 0;
     gBattle_WIN1V = 0;
     if (!IsContest())
@@ -2260,7 +2260,7 @@ void AnimTask_TransformMon(u8 taskId)
     switch (gTasks[taskId].data[0])
     {
     case 0:
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
         if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
             SetAnimBgAttribute(1, BG_ANIM_MOSAIC, 1);
         else
@@ -2275,7 +2275,7 @@ void AnimTask_TransformMon(u8 taskId)
             gTasks[taskId].data[2] = 0;
             gTasks[taskId].data[1]++;
             stretch = gTasks[taskId].data[1];
-            SetGpuReg(REG_OFFSET_MOSAIC, (stretch << 4) | stretch);
+            SetGpuState(GPU_STATE_MOSAIC, (stretch << 4) | stretch);
             if (stretch == 15)
                 gTasks[taskId].data[0]++;
         }
@@ -2333,14 +2333,14 @@ void AnimTask_TransformMon(u8 taskId)
             gTasks[taskId].data[2] = 0;
             gTasks[taskId].data[1]--;
             stretch = gTasks[taskId].data[1];
-            SetGpuReg(REG_OFFSET_MOSAIC, (stretch << 4) | stretch);
+            SetGpuState(GPU_STATE_MOSAIC, (stretch << 4) | stretch);
 
             if (stretch == 0)
                 gTasks[taskId].data[0]++;
         }
         break;
     case 4:
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
         if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
             SetAnimBgAttribute(1, BG_ANIM_MOSAIC, 0);
         else
@@ -2379,9 +2379,10 @@ void AnimTask_MorningSunLightBeam(u8 taskId)
     switch (gTasks[taskId].data[0])
     {
     case 0:
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
-        SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         if (!IsContest())
             SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
@@ -2419,7 +2420,7 @@ void AnimTask_MorningSunLightBeam(u8 taskId)
             if (++gTasks[taskId].data[1] > 12)
                 gTasks[taskId].data[1] = 12;
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
 
             if (gTasks[taskId].data[1] == 12)
                 gTasks[taskId].data[0]++;
@@ -2429,7 +2430,7 @@ void AnimTask_MorningSunLightBeam(u8 taskId)
         if (--gTasks[taskId].data[1] < 0)
             gTasks[taskId].data[1] = 0;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
 
         if (!gTasks[taskId].data[1])
         {
@@ -2457,8 +2458,8 @@ void AnimTask_MorningSunLightBeam(u8 taskId)
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         gBattle_BG1_X = 0;
         gBattle_BG1_Y = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyAnimVisualTask(taskId);
         break;
     }
@@ -2560,9 +2561,10 @@ void AnimTask_DoomDesireLightBeam(u8 taskId)
     switch (gTasks[taskId].data[0])
     {
     case 0:
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(3, 13));
-        SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(3, 13));
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+        SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         if (!IsContest())
             SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
@@ -2621,7 +2623,7 @@ void AnimTask_DoomDesireLightBeam(u8 taskId)
         if (--gTasks[taskId].data[1] <= 4)
             gTasks[taskId].data[1] = 5;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(3, gTasks[taskId].data[1]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(3, gTasks[taskId].data[1]));
         if (gTasks[taskId].data[1] == 5)
             gTasks[taskId].data[0]++;
         break;
@@ -2633,7 +2635,7 @@ void AnimTask_DoomDesireLightBeam(u8 taskId)
         if (++gTasks[taskId].data[1] > 13)
             gTasks[taskId].data[1] = 13;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(3, gTasks[taskId].data[1]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(3, gTasks[taskId].data[1]));
         if (gTasks[taskId].data[1] == 13)
             gTasks[taskId].data[0] = 1;
         break;
@@ -2646,8 +2648,8 @@ void AnimTask_DoomDesireLightBeam(u8 taskId)
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         gBattle_BG1_X = 0;
         gBattle_BG1_Y = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyAnimVisualTask(taskId);
         break;
     }
@@ -3089,12 +3091,12 @@ static void AnimFlatterConfetti_Step(struct Sprite *sprite)
 // arg 2: duration of fully-opened spotlight
 static void AnimFlatterSpotlight(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
-    SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
-    SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
+    SetGpuWindowX(0, gBattle_WIN0H);
+    SetGpuWindowY(0, gBattle_WIN0V);
 
     sprite->data[0] = gBattleAnimArgs[2];
     InitSpritePosToAnimTarget(sprite, FALSE);
@@ -3127,8 +3129,8 @@ static void AnimFlatterSpotlight_Step(struct Sprite *sprite)
         }
         break;
     case 3:
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
-        SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) ^ DISPCNT_OBJWIN_ON);
+        SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+        SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) ^ DISPCNT_OBJWIN_ON);
         DestroyAnimSprite(sprite);
         break;
     }
@@ -3253,8 +3255,8 @@ void AnimTask_RolePlaySilhouette(u8 taskId)
     gSprites[spriteId].oam.objMode = ST_OAM_OBJ_BLEND;
     FillPalette(RGB_WHITE, OBJ_PLTT_ID(gSprites[spriteId].oam.paletteNum), PLTT_SIZE_4BPP);
     gSprites[spriteId].oam.priority = priority;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
 
     gTasks[taskId].data[0] = spriteId;
     gTasks[taskId].func = AnimTask_RolePlaySilhouette_Step1;
@@ -3266,7 +3268,7 @@ static void AnimTask_RolePlaySilhouette_Step1(u8 taskId)
     {
         gTasks[taskId].data[10] = 0;
         gTasks[taskId].data[1]++;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[1], 16 - gTasks[taskId].data[1]));
         if (gTasks[taskId].data[1] == 10)
         {
             gTasks[taskId].data[10] = 256;
@@ -3328,14 +3330,14 @@ void AnimTask_AcidArmor(u8 taskId)
     if (GetBattlerSpriteBGPriorityRank(battler) == 1)
     {
         scanlineParams.dmaDest = &REG_BG1HOFS;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
         bgX = gBattle_BG1_X;
         bgY = gBattle_BG1_Y;
     }
     else
     {
         scanlineParams.dmaDest = &REG_BG2HOFS;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
         bgX = gBattle_BG2_X;
         bgY = gBattle_BG2_Y;
     }
@@ -3427,7 +3429,7 @@ static void AnimTask_AcidArmor_Step(u8 taskId)
             else
                 task->data[4]++;
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
             if (task->data[3] == 0 && task->data[4] == 16)
             {
                 task->data[2] = 0;
@@ -3455,7 +3457,7 @@ static void AnimTask_AcidArmor_Step(u8 taskId)
         else
             task->data[4]--;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
         if (task->data[3] == 16 && task->data[4] == 0)
         {
             task->data[2] = 0;
@@ -4718,7 +4720,7 @@ static void AnimForesightMagnifyingGlass_Step(struct Sprite *sprite)
         else
             sprite->data[2]++;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], sprite->data[2]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], sprite->data[2]));
         if (++sprite->data[0] == 32)
         {
             sprite->invisible = TRUE;
@@ -5431,7 +5433,7 @@ static void AnimRecycle(struct Sprite *sprite)
     sprite->data[6] = 0;
     sprite->data[7] = 16;
     sprite->callback = AnimRecycle_Step;
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
 }
 
 static void AnimRecycle_Step(struct Sprite *sprite)
@@ -5454,7 +5456,7 @@ static void AnimRecycle_Step(struct Sprite *sprite)
             }
 
             sprite->data[1]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
             if (sprite->data[7] == 0)
                 sprite->data[2]++;
         }
@@ -5483,7 +5485,7 @@ static void AnimRecycle_Step(struct Sprite *sprite)
             }
 
             sprite->data[1]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[6], sprite->data[7]));
             if (sprite->data[7] == 16)
                 sprite->data[2]++;
         }

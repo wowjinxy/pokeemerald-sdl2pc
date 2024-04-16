@@ -109,7 +109,8 @@ static const struct BgTemplate sHof_BgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -118,7 +119,8 @@ static const struct BgTemplate sHof_BgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -127,7 +129,8 @@ static const struct BgTemplate sHof_BgTemplates[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -379,9 +382,9 @@ static bool8 InitHallOfFameScreen(void)
         gMain.state++;
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 7));
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 7));
+        SetGpuState(GPU_STATE_BLDY, 0);
         InitHofBgs();
         sHofGfxPtr->state = 0;
         gMain.state++;
@@ -688,13 +691,13 @@ static void Task_Hof_WaitToDisplayPlayer(u8 taskId)
     else
     {
         gTasks[taskId].tFrameCount++;
-        SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].tFrameCount * 256);
+        SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].tFrameCount * 256);
     }
 }
 
 static void Task_Hof_DisplayPlayer(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
     ShowBg(3);
@@ -810,9 +813,9 @@ void CB2_DoHallOfFamePC(void)
         gMain.state++;
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
         InitHofBgs();
         gMain.state++;
         break;
@@ -838,9 +841,9 @@ void CB2_DoHallOfFamePC(void)
         {
             u8 taskId, i;
 
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 7));
-            SetGpuReg(REG_OFFSET_BLDY, 0);
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 7));
+            SetGpuState(GPU_STATE_BLDY, 0);
             taskId = CreateTask(Task_HofPC_CopySaveData, 0);
 
             for (i = 0; i < PARTY_SIZE; i++)
@@ -1302,7 +1305,7 @@ static bool8 LoadHofBgs(void)
         InitTextBoxGfxAndPrinters();
         break;
     case 4:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         ShowBg(0);
         ShowBg(1);
         ShowBg(3);

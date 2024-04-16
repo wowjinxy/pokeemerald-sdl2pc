@@ -72,7 +72,8 @@ static const struct BgTemplate sBGTemplates[] = {
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0x000
@@ -80,7 +81,8 @@ static const struct BgTemplate sBGTemplates[] = {
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0x000
@@ -88,7 +90,8 @@ static const struct BgTemplate sBGTemplates[] = {
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 13,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0x000
@@ -96,7 +99,8 @@ static const struct BgTemplate sBGTemplates[] = {
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0x000
@@ -413,9 +417,9 @@ static bool32 HandleMysteryGiftOrEReaderSetup(s32 isEReader)
         InitWindows(sMainWindows);
         DeactivateAllTextPrinters();
         ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
         gMain.state++;
         break;
     case 1:

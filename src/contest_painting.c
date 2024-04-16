@@ -107,7 +107,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 10,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -228,7 +229,7 @@ static void ShowContestPainting(void)
         BeginFastPaletteFade(2);
         SetVBlankCallback(VBlankCB_ContestPainting);
         sHoldState = 0;
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_ON);
         SetMainCallback2(CB2_HoldContestPainting);
         break;
     }
@@ -313,13 +314,25 @@ static void PrintContestPaintingCaption(u8 contestType, bool8 isForArtist)
 
 static void InitContestPaintingBg(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     REG_IE |= INTR_FLAG_VBLANK;
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(2) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(12) | BGCNT_MOSAIC | BGCNT_16COLOR | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1) | BGCNT_CHARBASE(1) | BGCNT_SCREENBASE(10) | BGCNT_MOSAIC | BGCNT_16COLOR | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundPriority(0, 2);
+    SetGpuBackgroundCharBaseBlock(0, 0);
+    SetGpuBackgroundScreenBaseBlock(0, 12);
+    SetGpuBackgroundMosaicEnabled(0, 1);
+    SetGpuBackgroundWidth(0, 256);
+    SetGpuBackgroundHeight(0, 256);
+    ClearGpuBackgroundState(1);
+    SetGpuBackgroundPriority(1, 1);
+    SetGpuBackgroundCharBaseBlock(1, 1);
+    SetGpuBackgroundScreenBaseBlock(1, 10);
+    SetGpuBackgroundMosaicEnabled(1, 1);
+    SetGpuBackgroundWidth(1, 256);
+    SetGpuBackgroundHeight(1, 256);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 }
 
 static void InitContestPaintingVars(bool8 reset)
@@ -343,13 +356,17 @@ static void UpdateContestPaintingMosaicEffect(void)
 {
     if (!sVarsInitialized)
     {
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
     }
     else
     {
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1) | BGCNT_CHARBASE(1) | BGCNT_SCREENBASE(10) | BGCNT_MOSAIC | BGCNT_16COLOR | BGCNT_TXT256x256);
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundPriority(1, 1);
+        SetGpuBackgroundCharBaseBlock(1, 1);
+        SetGpuBackgroundScreenBaseBlock(1, 10);
+        SetGpuBackgroundMosaicEnabled(1, 1);
         sMosaicVal = sFadeCounter / 2;
-        SetGpuReg(REG_OFFSET_MOSAIC, (sMosaicVal << 12) | (sMosaicVal << 8) | (sMosaicVal << 4) | (sMosaicVal << 0));
+        SetGpuState(GPU_STATE_MOSAIC, (sMosaicVal << 12) | (sMosaicVal << 8) | (sMosaicVal << 4) | (sMosaicVal << 0));
     }
 }
 

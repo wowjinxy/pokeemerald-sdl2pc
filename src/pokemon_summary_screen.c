@@ -322,7 +322,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -331,7 +332,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 2,
         .mapBaseIndex = 27,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -340,7 +342,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 25,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0,
@@ -349,7 +352,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 29,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0,
@@ -1290,8 +1294,8 @@ static void InitBGs(void)
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
     ScheduleBgCopyTilemapToVram(3);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);

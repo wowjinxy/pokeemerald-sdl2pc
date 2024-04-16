@@ -61,7 +61,8 @@ static const struct BgTemplate sBerryFixBgTemplates[] = {
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -70,7 +71,8 @@ static const struct BgTemplate sBerryFixBgTemplates[] = {
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -200,7 +202,7 @@ void CB2_InitBerryFixProgram(void)
     ResetSpriteData();
     ResetTasks();
     ScanlineEffect_Stop();
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     sBerryFix = AllocZeroed(sizeof(*sBerryFix));
     sBerryFix->state = MAINSTATE_INIT;
     sBerryFix->curScene = SCENE_NONE;
@@ -277,13 +279,13 @@ static void BerryFix_GpuSet(void)
 {
     s32 width, left;
 
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    ClearGpuBackgroundState(0);
+    ClearGpuBackgroundState(1);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 
     GpuClearAll();
     ResetBgsAndClearDma3BusyFlags(0);
@@ -297,7 +299,7 @@ static void BerryFix_GpuSet(void)
     DeactivateAllTextPrinters();
 
     DmaCopy32(3, sText_Pal, BG_PLTT + PLTT_OFFSET_4BPP(15), sizeof(sText_Pal));
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP);
     FillWindowPixelBuffer(WIN_GAME_NAMES, PIXEL_FILL(0));
     FillWindowPixelBuffer(WIN_TURN_OFF_TITLE, PIXEL_FILL(0));
     FillWindowPixelBuffer(WIN_TITLE, PIXEL_FILL(10));

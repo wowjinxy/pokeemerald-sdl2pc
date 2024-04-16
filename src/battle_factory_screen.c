@@ -312,7 +312,8 @@ static const struct BgTemplate sSelect_BgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 24,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -321,7 +322,8 @@ static const struct BgTemplate sSelect_BgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 25,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -330,7 +332,8 @@ static const struct BgTemplate sSelect_BgTemplates[] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 27,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -899,7 +902,8 @@ static const struct BgTemplate sSwap_BgTemplates[4] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 24,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -908,7 +912,8 @@ static const struct BgTemplate sSwap_BgTemplates[4] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 25,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -917,7 +922,8 @@ static const struct BgTemplate sSwap_BgTemplates[4] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 26,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -926,7 +932,8 @@ static const struct BgTemplate sSwap_BgTemplates[4] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 27,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -1164,16 +1171,16 @@ static void CB2_InitSelectScreen(void)
         ChangeBgY(1, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(1, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
         gMain.state++;
         break;
     case 2:
@@ -1215,7 +1222,7 @@ static void CB2_InitSelectScreen(void)
         ShowBg(1);
         SetVBlankCallback(VBlankCB_SelectScreen);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_1D_MAP);
 #ifdef UBFIX
         if (sFactorySelectScreen && sFactorySelectScreen->fromSummaryScreen)
 #else
@@ -1224,8 +1231,8 @@ static void CB2_InitSelectScreen(void)
         {
             Select_SetWinRegs(88, 152, 32, 96);
             ShowBg(3);
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         }
         else
         {
@@ -2139,15 +2146,15 @@ static void Select_Task_OpenChosenMonPics(u8 taskId)
         task->tWinTop = 64;
         task->tWinBottom = 65;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
         break;
     case 1:
         ShowBg(3);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         break;
     case 2:
         task->tWinTop -= 4;
@@ -2158,7 +2165,7 @@ static void Select_Task_OpenChosenMonPics(u8 taskId)
             task->tWinBottom = 96;
             ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         if (task->tWinTop != 32)
             return;
         break;
@@ -2181,10 +2188,10 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
         task->tWinTop = 32;
         task->tWinBottom = 96;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
         task->tState++;
         break;
     case 1:
@@ -2195,7 +2202,7 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
             task->tWinTop = 64;
             task->tWinBottom = 65;
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         if (task->tWinTop == 64)
             task->tState++;
         break;
@@ -2246,10 +2253,10 @@ static void Select_HideChosenMons(void)
 static void Select_SetWinRegs(s16 mWin0H, s16 nWin0H, s16 mWin0V, s16 nWin0V)
 {
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(mWin0H, nWin0H));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(mWin0V, nWin0V));
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
+    SetGpuWindowX(0, WIN_RANGE(mWin0H, nWin0H));
+    SetGpuWindowY(0, WIN_RANGE(mWin0V, nWin0V));
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
+    SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
 }
 
 static bool32 Select_AreSpeciesValid(u16 monId)
@@ -3280,14 +3287,14 @@ static void CB2_InitSwapScreen(void)
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(1, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
         gMain.state++;
         break;
     case 2:
@@ -3374,15 +3381,15 @@ static void CB2_InitSwapScreen(void)
         break;
     case 14:
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
         if (sFactorySwapScreen->fromSummaryScreen == TRUE)
         {
             ShowBg(3);
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         }
         else
         {
@@ -4183,16 +4190,16 @@ static void Task_OpenMonPic(u8 taskId)
         task->tWinTop = 64;
         task->tWinBottom = 65;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
         break;
     case 1:
         // Show mon pic bg
         ShowBg(3);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         break;
     case 2:
         // Animate mon pic bg
@@ -4203,7 +4210,7 @@ static void Task_OpenMonPic(u8 taskId)
             task->tWinTop = 32;
             task->tWinBottom = 96;
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         if (task->tWinTop != 32)
             return;
         break;
@@ -4231,10 +4238,10 @@ static void Task_CloseMonPic(u8 taskId)
         task->tWinTop = 32;
         task->tWinBottom = 96;
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_CLR | WINOUT_WIN01_OBJ);
         task->tState++;
         break;
     case 1:
@@ -4246,7 +4253,7 @@ static void Task_CloseMonPic(u8 taskId)
             task->tWinTop = 64;
             task->tWinBottom = 65;
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         if (task->tWinTop == 64)
             task->tState++;
         break;

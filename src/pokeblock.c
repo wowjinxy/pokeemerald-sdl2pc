@@ -169,7 +169,8 @@ static const struct BgTemplate sBgTemplatesForPokeblockMenu[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -178,7 +179,8 @@ static const struct BgTemplate sBgTemplatesForPokeblockMenu[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -187,7 +189,8 @@ static const struct BgTemplate sBgTemplatesForPokeblockMenu[] =
         .bg = 2,
         .charBaseIndex = 3,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -627,13 +630,13 @@ static void HandleInitBackgrounds(void)
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(2);
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
 
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
 
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static bool8 LoadPokeblockMenuGfx(void)

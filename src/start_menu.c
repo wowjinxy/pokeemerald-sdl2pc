@@ -202,7 +202,8 @@ static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -1210,7 +1211,7 @@ static bool32 InitSaveWindowAfterLinkBattle(u8 *state)
     switch (*state)
     {
     case 0:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
         SetVBlankCallback(NULL);
         ScanlineEffect_Stop();
         GpuClearPalette();

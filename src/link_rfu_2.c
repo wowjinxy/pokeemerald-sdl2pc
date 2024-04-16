@@ -2579,7 +2579,7 @@ static void UNUSED Debug_RfuIdle(void)
         for (i = 0; i < TRAINER_ID_LENGTH; i++)
             gSaveBlock2Ptr->playerTrainerId[i] = Random() % 256;
 
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_1D_MAP);
         RunTasks();
         AnimateSprites();
         BuildOamBuffer();

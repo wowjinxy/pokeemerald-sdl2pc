@@ -747,7 +747,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -756,7 +757,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -765,7 +767,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 1,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -774,7 +777,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -1103,10 +1107,10 @@ static void SlotMachine_VBlankCB(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
-    SetGpuReg(REG_OFFSET_WIN0H, sSlotMachine->win0h);
-    SetGpuReg(REG_OFFSET_WIN0V, sSlotMachine->win0v);
-    SetGpuReg(REG_OFFSET_WININ, sSlotMachine->winIn);
-    SetGpuReg(REG_OFFSET_WINOUT, sSlotMachine->winOut);
+    SetGpuWindowX(0, sSlotMachine->win0h);
+    SetGpuWindowY(0, sSlotMachine->win0v);
+    SetGpuWindowIn(sSlotMachine->winIn);
+    SetGpuWindowOut(sSlotMachine->winOut);
 }
 
 #define tMachineId    data[0]
@@ -1149,7 +1153,7 @@ static void SlotMachineSetup_InitVBlank(void)
 {
     SetVBlankCallback(SlotMachine_VBlankCB);
     EnableInterrupts(INTR_FLAG_VBLANK);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON);
 }
 
 static void SlotMachineSetup_InitVRAM(void)
@@ -1166,22 +1170,22 @@ static void SlotMachineSetup_InitOAM(void)
 
 static void SlotMachineSetup_InitGpuRegs(void)
 {
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_OBJ);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(9, 8));
+    ClearGpuBackgroundState(0);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(3);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_OBJ);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(9, 8));
 }
 
 // Set up initial state of slot machine
@@ -3562,8 +3566,8 @@ static void ReelTime_Init(struct Task *task)
     task->tRtReelSpeed = 1280;
     gSpriteCoordOffsetX = 0;
     gSpriteCoordOffsetY = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
     LoadReelTimeWindowTilemap(REG_OFFSET_BG3VOFS, 0);
     CreateReelTimeMachineSprites();
     CreateReelTimePikachuSprite();
@@ -3581,7 +3585,7 @@ static void ReelTime_WindowEnter(struct Task *task)
     gSpriteCoordOffsetX -= 8;
     task->data[1] += 8;
     r3 = ((task->data[1] + DisplayWidth()) & 0xff) >> 3;
-    SetGpuReg(REG_OFFSET_BG1HOFS, task->data[1] & 0x1ff);
+    SetGpuBackgroundX(1, task->data[1] & 0x1ff);
     if (r3 != task->data[2] && task->data[3] <= 18)
     {
         task->data[2] = r3;
@@ -3755,7 +3759,7 @@ static void ReelTime_CloseWindow(struct Task *task)
     task->data[1] += 8;
     task->data[3] += 8;
     r4 = ((task->data[1] - 8) & 0xff) >> 3;
-    SetGpuReg(REG_OFFSET_BG1HOFS, task->data[1] & 0x1ff);
+    SetGpuBackgroundX(1, task->data[1] & 0x1ff);
     if (task->data[3] >> 3 <= 25)
         ClearReelTimeWindowTilemap(r4);
     else
@@ -3771,7 +3775,7 @@ static void ReelTime_DestroySprites(struct Task *task)
     sSlotMachine->reelTimeSpinsUsed = 0;
     sSlotMachine->reelTimeSpinsLeft = sSlotMachine->reelTimeDraw;
     gSpriteCoordOffsetX = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
+    SetGpuBackgroundX(1, 0);
     sSlotMachine->reelSpeed = REEL_NORMAL_SPEED;
     DestroyReelTimePikachuSprite();
     DestroyReelTimeMachineSprites();
@@ -3825,7 +3829,7 @@ static void ReelTime_ExplodeMachine(struct Task *task)
 static void ReelTime_WaitExplode(struct Task *task)
 {
     gSpriteCoordOffsetY = task->data[4];
-    SetGpuReg(REG_OFFSET_BG1VOFS, task->data[4]);
+    SetGpuBackgroundY(1, task->data[4]);
     if (task->tTimer1 & 0x01)
         task->data[4] = -task->data[4];
     if ((++task->tTimer1 & 0x1f) == 0)
@@ -3845,7 +3849,7 @@ static void ReelTime_WaitExplode(struct Task *task)
 static void ReelTime_WaitSmoke(struct Task *task)
 {
     gSpriteCoordOffsetY = 0;
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
+    SetGpuBackgroundY(1, 0);
     if (IsReelTimeSmokeAnimFinished())
     {
         task->tState++; // RT_TASK_CLOSE_WINDOW_FAILURE
@@ -3856,7 +3860,7 @@ static void ReelTime_WaitSmoke(struct Task *task)
 static void ReelTime_EndFailure(struct Task *task)
 {
     gSpriteCoordOffsetX = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
+    SetGpuBackgroundX(1, 0);
     PlayNewMapMusic(sSlotMachine->backupMapMusic);
     DestroyReelTimePikachuSprite();
     DestroyBrokenReelTimeMachineSprite();
@@ -4839,14 +4843,14 @@ static void SpriteCB_DigitalDisplay_AButtonStop(struct Sprite *sprite)
             sprite->oam.mosaic = TRUE;
             sprite->invisible = FALSE;
             StartSpriteAnim(sprite, 1);
-            SetGpuReg(REG_OFFSET_MOSAIC, ((sprite->sCounter << 4) | sprite->sCounter) << 8);
+            SetGpuState(GPU_STATE_MOSAIC, ((sprite->sCounter << 4) | sprite->sCounter) << 8);
         }
         break;
     case 1:
         sprite->sCounter -= (sprite->data[2] >> 8);
         if (sprite->sCounter < 0)
             sprite->sCounter = 0;
-        SetGpuReg(REG_OFFSET_MOSAIC, ((sprite->sCounter << 4) | sprite->sCounter) << 8);
+        SetGpuState(GPU_STATE_MOSAIC, ((sprite->sCounter << 4) | sprite->sCounter) << 8);
         sprite->data[2] &= 0xff;
         sprite->data[2] += 0x80;
         if (sprite->sCounter == 0)
@@ -4997,7 +5001,7 @@ static void EndDigitalDisplayScene_Dummy(void)
 
 static void EndDigitalDisplayScene_StopReel(void)
 {
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
 }
 
 static void EndDigitalDisplayScene_Win(void)

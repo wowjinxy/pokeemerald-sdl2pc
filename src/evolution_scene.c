@@ -218,13 +218,13 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     SetVBlankCallback(NULL);
     GpuClearData();
 
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WIN1H, 0);
-    SetGpuReg(REG_OFFSET_WIN1V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowX(1, 0);
+    SetGpuWindowY(1, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
 
     ResetPaletteFade();
 
@@ -300,7 +300,7 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
 
     memcpy(&sEvoStructPtr->savedPalette, &gPlttBufferUnfaded[BG_PLTT_ID(2)], sizeof(sEvoStructPtr->savedPalette));
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
 
     SetHBlankCallback(EvoDummyFunc);
     SetVBlankCallback(VBlankCB_EvolutionScene);
@@ -324,13 +324,13 @@ static void CB2_EvolutionSceneLoadGraphics(void)
     SetVBlankCallback(NULL);
     GpuClearData();
 
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WIN1H, 0);
-    SetGpuReg(REG_OFFSET_WIN1V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowX(1, 0);
+    SetGpuWindowY(1, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
 
     ResetPaletteFade();
 
@@ -365,7 +365,7 @@ static void CB2_EvolutionSceneLoadGraphics(void)
     gSprites[id].callback = SpriteCallbackDummy_2;
     gSprites[id].oam.paletteNum = 2;
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
 
     SetHBlankCallback(EvoDummyFunc);
     SetVBlankCallback(VBlankCB_EvolutionScene);
@@ -387,7 +387,7 @@ static void CB2_TradeEvolutionSceneLoadGraphics(void)
     switch (gMain.state)
     {
     case 0:
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         SetHBlankCallback(NULL);
         SetVBlankCallback(NULL);
         ResetSpriteData();
@@ -460,7 +460,7 @@ static void CB2_TradeEvolutionSceneLoadGraphics(void)
         ShowBg(0);
         ShowBg(1);
         SetMainCallback2(CB2_TradeEvolutionSceneUpdate);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_1D_MAP);
         break;
     }
 }
@@ -1127,7 +1127,9 @@ static void Task_TradeEvolutionScene(u8 taskId)
             var = gSprites[sEvoStructPtr->preEvoSpriteId].oam.paletteNum + 16;
             sEvoGraphicsTaskId = EvolutionSparkles_SpiralUpward(var);
             gTasks[taskId].tState++;
-            SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3) | BGCNT_SCREENBASE(6));
+            ClearGpuBackgroundState(3);
+            SetGpuBackgroundPriority(3, 3);
+            SetGpuBackgroundScreenBaseBlock(3, 6);
         }
         break;
     case T_EVOSTATE_SPARKLE_ARC:
@@ -1440,14 +1442,14 @@ static void EvoDummyFunc(void)
 
 static void VBlankCB_EvolutionScene(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
-    SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-    SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
-    SetGpuReg(REG_OFFSET_BG3HOFS, gBattle_BG3_X);
-    SetGpuReg(REG_OFFSET_BG3VOFS, gBattle_BG3_Y);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
+    SetGpuBackgroundX(2, gBattle_BG2_X);
+    SetGpuBackgroundY(2, gBattle_BG2_Y);
+    SetGpuBackgroundX(3, gBattle_BG3_X);
+    SetGpuBackgroundY(3, gBattle_BG3_Y);
 
     LoadOam();
     ProcessSpriteCopyRequests();
@@ -1457,14 +1459,14 @@ static void VBlankCB_EvolutionScene(void)
 
 static void VBlankCB_TradeEvolutionScene(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
-    SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-    SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
-    SetGpuReg(REG_OFFSET_BG3HOFS, gBattle_BG3_X);
-    SetGpuReg(REG_OFFSET_BG3VOFS, gBattle_BG3_Y);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
+    SetGpuBackgroundX(2, gBattle_BG2_X);
+    SetGpuBackgroundY(2, gBattle_BG2_Y);
+    SetGpuBackgroundX(3, gBattle_BG3_X);
+    SetGpuBackgroundY(3, gBattle_BG3_Y);
 
     LoadOam();
     ProcessSpriteCopyRequests();
@@ -1621,9 +1623,9 @@ static void StartBgAnimation(bool8 isLink)
 
     if (!isLink)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG2);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG2_ON | DISPCNT_BG1_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG2);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 8));
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG2_ON | DISPCNT_BG1_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
 
         SetBgAttribute(innerBgId, BG_ATTR_PRIORITY, 2);
         SetBgAttribute(outerBgId, BG_ATTR_PRIORITY, 2);
@@ -1633,9 +1635,9 @@ static void StartBgAnimation(bool8 isLink)
     }
     else
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG3_ON | DISPCNT_BG1_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 8));
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG3_ON | DISPCNT_BG1_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
     }
 
     CreateTask(Task_UpdateBgPalette, 5);
@@ -1669,13 +1671,13 @@ static void StopBgAnimation(void)
 
 static void RestoreBgAfterAnim(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
     gBattle_BG2_X = 0;
-    SetBgAttribute(1, BG_ATTR_PRIORITY, GetBattleBgTemplateData(1, 5));
-    SetBgAttribute(2, BG_ATTR_PRIORITY, GetBattleBgTemplateData(2, 5));
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG3_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
+    SetBgAttribute(1, BG_ATTR_PRIORITY, GetBattleBgTemplateData(1, 6));
+    SetBgAttribute(2, BG_ATTR_PRIORITY, GetBattleBgTemplateData(2, 6));
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG3_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
     Free(sBgAnimPal);
 }
 

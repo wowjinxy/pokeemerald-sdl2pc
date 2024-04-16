@@ -229,8 +229,8 @@ u16 GetGeneratedTrainerIdLower(void)
 
 void EnableVCountIntrAtLine150(void)
 {
-    u16 gpuReg = (GetGpuReg(REG_OFFSET_DISPSTAT) & 0xFF) | (150 << 8);
-    SetGpuReg(REG_OFFSET_DISPSTAT, gpuReg | DISPSTAT_VCOUNT_INTR);
+    u16 gpuReg = (GetGpuState(GPU_STATE_DISPSTAT) & 0xFF) | (150 << 8);
+    SetGpuState(GPU_STATE_DISPSTAT, gpuReg | DISPSTAT_VCOUNT_INTR);
     EnableInterrupts(INTR_FLAG_VCOUNT);
 }
 

@@ -126,7 +126,8 @@ const struct BgTemplate gBattleBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 24,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -135,7 +136,8 @@ const struct BgTemplate gBattleBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 28,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -144,7 +146,8 @@ const struct BgTemplate gBattleBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -153,7 +156,8 @@ const struct BgTemplate gBattleBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 26,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -735,10 +739,10 @@ void InitBattleBgsVideo(void)
     DisableInterrupts(INTR_FLAG_HBLANK);
     EnableInterrupts(INTR_FLAG_VBLANK | INTR_FLAG_VCOUNT | INTR_FLAG_TIMER3 | INTR_FLAG_SERIAL);
     BattleInitBgsAndWindows();
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON | DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJWIN_ON | DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
 }
 
 void LoadBattleMenuWindowGfx(void)
@@ -1128,14 +1132,21 @@ void DrawBattleEntryBackground(void)
         LZDecompressVram(gBattleVSFrame_Gfx, (void *)(BG_CHAR_ADDR(1)));
         LZDecompressVram(gVsLettersGfx, (void *)OBJ_VRAM0);
         LoadCompressedPalette(gBattleVSFrame_Pal, BG_PLTT_ID(6), PLTT_SIZE_4BPP);
-        SetBgAttribute(1, BG_ATTR_SCREENSIZE, 1);
-        SetGpuReg(REG_OFFSET_BG1CNT, 0x5C04);
+        SetBgAttribute(1, BG_ATTR_SCREENWIDTH, 512);
+        SetBgAttribute(1, BG_ATTR_SCREENHEIGHT, 256);
+        // SetGpuState(GPU_STATE_BG1CNT, 0x5C04);
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundCharBaseBlock(1, 1);
+        SetGpuBackgroundScreenBaseBlock(1, 24);
+        SetGpuBackgroundAreaOverflowMode(1, 1);
+        SetGpuBackgroundWidth(1, 256);
+        SetGpuBackgroundWidth(1, 512);
         CopyToBgTilemapBuffer(1, gBattleVSFrame_Tilemap, 0, 0);
         CopyToBgTilemapBuffer(2, gBattleVSFrame_Tilemap, 0, 0);
         CopyBgTilemapBufferToVram(1);
         CopyBgTilemapBufferToVram(2);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuWindowIn(WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+        SetGpuWindowOut(WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         gBattle_BG1_Y = 0xFF5C;
         gBattle_BG2_Y = 0xFF5C;
         LoadCompressedSpriteSheetUsingHeap(&sVsLettersSpriteSheet);

@@ -36,7 +36,8 @@ static const struct BgTemplate sMenuBgTemplates[3] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 0x1F,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -45,7 +46,8 @@ static const struct BgTemplate sMenuBgTemplates[3] =
         .bg = 2,
         .charBaseIndex = 3,
         .mapBaseIndex = 0x1D,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -54,7 +56,8 @@ static const struct BgTemplate sMenuBgTemplates[3] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 0x1E,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -206,9 +209,9 @@ static u32 LoopedTask_OpenConditionGraphMenu(s32 state)
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG3_ON);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG3_ON);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         DecompressAndCopyTileDataToVram(3, gPokenavCondition_Gfx, 0, 0, 0);
         return LT_INC_AND_PAUSE;
     case 2:
@@ -789,7 +792,7 @@ void FreeConditionGraphMenuSubstruct2(void)
         SetLeftHeaderSpritesInvisibility();
     }
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
     FreeConditionMenuGfx(menu);
     SetExitVBlank();
     FreePokenavSubstruct(POKENAV_SUBSTRUCT_CONDITION_GRAPH_MENU_GFX);

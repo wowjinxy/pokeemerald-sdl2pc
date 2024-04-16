@@ -323,8 +323,8 @@ static void AnimStringWrap_Step(struct Sprite *sprite)
 
 static void AnimSpiderWeb(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
 
     sprite->data[0] = 16;
     sprite->callback = AnimSpiderWeb_Step;
@@ -339,7 +339,7 @@ static void AnimSpiderWeb_Step(struct Sprite *sprite)
     else if (sprite->data[1]++ & 1)
     {
         sprite->data[0]--;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
 
         if (sprite->data[0] == 0)
         {
@@ -351,8 +351,8 @@ static void AnimSpiderWeb_Step(struct Sprite *sprite)
 
 static void AnimSpiderWeb_End(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
     DestroyAnimSprite(sprite);
 }
 

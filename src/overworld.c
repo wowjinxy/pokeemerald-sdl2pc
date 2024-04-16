@@ -269,7 +269,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -278,7 +279,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -287,7 +289,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -296,7 +299,8 @@ static const struct BgTemplate sOverworldBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -2085,7 +2089,7 @@ static void ResetMirageTowerAndSaveBlockPtrs(void)
 
 static void ResetScreenForMapLoad(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     ScanlineEffect_Stop();
 
     GpuClearPalette2();
@@ -2106,16 +2110,16 @@ static void InitOverworldGraphicsRegisters(void)
 {
     ClearScheduledBgCopiesToVram();
     ResetTempTileDataBuffers();
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WINOBJ_BG0);
-    SetGpuReg(REG_OFFSET_WIN0H, 0xFF);
-    SetGpuReg(REG_OFFSET_WIN0V, 0xFF);
-    SetGpuReg(REG_OFFSET_WIN1H, 0xFFFF);
-    SetGpuReg(REG_OFFSET_WIN1V, 0xFFFF);
-    SetGpuReg(REG_OFFSET_BLDCNT, gOverworldBackgroundLayerFlags[1] | gOverworldBackgroundLayerFlags[2] | gOverworldBackgroundLayerFlags[3]
+    SetGpuState(GPU_STATE_MOSAIC, 0);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
+    SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WINOBJ_BG0);
+    SetGpuWindowX(0, 0xFF);
+    SetGpuWindowY(0, 0xFF);
+    SetGpuWindowX(1, 0xFFFF);
+    SetGpuWindowY(1, 0xFFFF);
+    SetGpuState(GPU_STATE_BLDCNT, gOverworldBackgroundLayerFlags[1] | gOverworldBackgroundLayerFlags[2] | gOverworldBackgroundLayerFlags[3]
                                | BLDCNT_TGT2_OBJ | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(13, 7));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(13, 7));
     InitOverworldBgs();
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
@@ -2128,7 +2132,7 @@ static void InitOverworldGraphicsRegisters(void)
     ChangeBgY(2, 0, BG_COORD_SET);
     ChangeBgX(3, 0, BG_COORD_SET);
     ChangeBgY(3, 0, BG_COORD_SET);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON
                                 | DISPCNT_OBJ_1D_MAP | DISPCNT_HBLANK_INTERVAL);
     ShowBg(0);
     ShowBg(1);

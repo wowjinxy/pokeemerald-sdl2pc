@@ -2752,8 +2752,8 @@ static void AnimSoftBoiledEgg_Step3_Callback1(struct Sprite *sprite)
     {
         sprite->data[0] = 16;
         sprite->data[1] = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND((u16)sprite->data[0], 0));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND((u16)sprite->data[0], 0));
         sprite->callback = AnimSoftBoiledEgg_Step3_Callback2;
     }
 }
@@ -2763,7 +2763,7 @@ static void AnimSoftBoiledEgg_Step3_Callback2(struct Sprite *sprite)
     if (sprite->data[1]++ % 3 == 0)
     {
         sprite->data[0]--;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[0], 16 - sprite->data[0]));
         if (sprite->data[0] == 0)
             sprite->callback = AnimSoftBoiledEgg_Step4;
     }
@@ -2783,8 +2783,8 @@ static void AnimSoftBoiledEgg_Step4(struct Sprite *sprite)
 
 static void AnimSoftBoiledEgg_Step4_Callback(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
     DestroyAnimSprite(sprite);
 }
 
@@ -3082,12 +3082,12 @@ void AnimTask_FakeOut(u8 taskId)
 
     gBattle_WIN0H = win0h;
     gBattle_WIN0V = DisplayHeight();
-    SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
-    SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_ALL);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_ALL | WINOUT_WINOBJ_ALL);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_DARKEN);
-    SetGpuReg(REG_OFFSET_BLDY, 16);
+    SetGpuWindowX(0, gBattle_WIN0H);
+    SetGpuWindowY(0, gBattle_WIN0V);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_ALL);
+    SetGpuWindowOut(WINOUT_WIN01_ALL | WINOUT_WINOBJ_ALL);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_DARKEN);
+    SetGpuState(GPU_STATE_BLDY, 16);
     gTasks[taskId].data[0] = win0v;
     gTasks[taskId].data[1] = win0h;
     gTasks[taskId].func = AnimTask_FakeOut_Step1;
@@ -3113,17 +3113,17 @@ static void AnimTask_FakeOut_Step2(u8 taskId)
     if (++gTasks[taskId].data[10] == 5)
     {
         gTasks[taskId].data[11] = 0x88;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_LIGHTEN);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_LIGHTEN);
         BlendPalettes(GetBattlePalettesMask(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE), 16, RGB_WHITE);
     }
     else if (gTasks[taskId].data[10] > 4)
     {
         gBattle_WIN0H = 0;
         gBattle_WIN0V = 0;
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+        SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
         DestroyAnimVisualTask(taskId);
     }
 }
@@ -3245,17 +3245,18 @@ void AnimTask_HeartsBackground(u8 taskId)
 {
     struct BattleAnimBgData animBg;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 3);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
     GetBattleAnimBg1Data(&animBg);
     AnimLoadCompressedBgGfx(animBg.bgId, gBattleAnimBgImage_Attract, animBg.tilesOffset);
     AnimLoadCompressedBgTilemapHandleContest(&animBg, gBattleAnimBgTilemap_Attract, FALSE);
@@ -3274,7 +3275,7 @@ static void AnimTask_HeartsBackground_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 16)
             {
                 gTasks[taskId].data[12]++;
@@ -3294,7 +3295,7 @@ static void AnimTask_HeartsBackground_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]--;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 0)
             {
                 gTasks[taskId].data[12]++;
@@ -3311,8 +3312,8 @@ static void AnimTask_HeartsBackground_Step(u8 taskId)
         if (!IsContest())
             SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 0);
 
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         DestroyAnimVisualTask(taskId);
         break;
@@ -3323,17 +3324,18 @@ void AnimTask_ScaryFace(u8 taskId)
 {
     struct BattleAnimBgData animBg;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
     GetBattleAnimBg1Data(&animBg);
     if (IsContest())
         AnimLoadCompressedBgTilemapHandleContest(&animBg, &gBattleAnimBgTilemap_ScaryFaceContest, FALSE);
@@ -3358,7 +3360,7 @@ static void AnimTask_ScaryFace_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 14)
             {
                 gTasks[taskId].data[12]++;
@@ -3378,7 +3380,7 @@ static void AnimTask_ScaryFace_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]--;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 0)
             {
                 gTasks[taskId].data[12]++;
@@ -3396,8 +3398,8 @@ static void AnimTask_ScaryFace_Step(u8 taskId)
         if (!IsContest())
             SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 0);
 
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         DestroyAnimVisualTask(taskId);
         break;

@@ -504,7 +504,7 @@ static void AnimDefensiveWall_Step1(struct Sprite *sprite)
 
 static void AnimDefensiveWall_Step2(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[3], 16 - sprite->data[3]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[3], 16 - sprite->data[3]));
     if (sprite->data[3] == 13)
         sprite->callback = AnimDefensiveWall_Step3;
     else
@@ -535,7 +535,7 @@ static void AnimDefensiveWall_Step3(struct Sprite *sprite)
 
 static void AnimDefensiveWall_Step4(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[3], 16 - sprite->data[3]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[3], 16 - sprite->data[3]));
 
     if (--sprite->data[3] == -1)
     {
@@ -760,8 +760,8 @@ void AnimTask_ImprisonOrbs(u8 taskId)
     var1 = GetBattlerSpriteCoordAttr(gBattleAnimAttacker, BATTLER_COORD_ATTR_HEIGHT) / 3;
     task->data[12] = var0 > var1 ? var0 : var1;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
 
     task->func = AnimTask_ImprisonOrbs_Step;
 }
@@ -813,7 +813,7 @@ static void AnimTask_ImprisonOrbs_Step(u8 taskId)
         else
             task->data[4]++;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
         if (++task->data[1] == 32)
         {
             for (i = 8; i < 13; i++)
@@ -829,8 +829,8 @@ static void AnimTask_ImprisonOrbs_Step(u8 taskId)
         task->data[0]++;
         break;
     case 3:
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         DestroyAnimVisualTask(taskId);
         break;
     }
@@ -1128,8 +1128,8 @@ static void AnimPsychoBoost(struct Sprite *sprite)
             sprite->y += 12;
 
         sprite->data[1] = 8;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
         sprite->data[0]++;
         break;
     case 1:
@@ -1145,7 +1145,7 @@ static void AnimPsychoBoost(struct Sprite *sprite)
         {
             sprite->data[2] = 0;
             sprite->data[1]--;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(sprite->data[1], 16 - sprite->data[1]));
             if (sprite->data[1] == 0)
             {
                 sprite->data[0]++;
@@ -1158,8 +1158,8 @@ static void AnimPsychoBoost(struct Sprite *sprite)
         sprite->data[3] &= 0xFF;
         break;
     case 3:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyAnimSprite(sprite);
         break;
     }

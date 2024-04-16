@@ -209,7 +209,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 0x1F,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -218,7 +219,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 0x1E,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -227,7 +229,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 3,
         .charBaseIndex = 3,
         .mapBaseIndex = 0x1D,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0x100
@@ -236,7 +239,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 0x17,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -1324,9 +1328,9 @@ static bool8 LoadUsePokeblockMenuGfx(void)
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 136 << 6, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         break;
     case 1:
         sGraph_Gfx = Alloc(6656);

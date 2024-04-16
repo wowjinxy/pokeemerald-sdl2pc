@@ -796,7 +796,8 @@ static const struct BgTemplate sPokedex_BgTemplate[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -805,7 +806,8 @@ static const struct BgTemplate sPokedex_BgTemplate[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 13,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -814,7 +816,8 @@ static const struct BgTemplate sPokedex_BgTemplate[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -823,7 +826,8 @@ static const struct BgTemplate sPokedex_BgTemplate[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -861,7 +865,8 @@ static const struct BgTemplate sInfoScreen_BgTemplate[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -870,7 +875,8 @@ static const struct BgTemplate sInfoScreen_BgTemplate[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 13,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -879,7 +885,8 @@ static const struct BgTemplate sInfoScreen_BgTemplate[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -888,7 +895,8 @@ static const struct BgTemplate sInfoScreen_BgTemplate[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -946,7 +954,8 @@ static const struct BgTemplate sNewEntryInfoScreen_BgTemplate[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -955,7 +964,8 @@ static const struct BgTemplate sNewEntryInfoScreen_BgTemplate[] =
         .bg = 3,
         .charBaseIndex = 1,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1450,7 +1460,8 @@ static const struct BgTemplate sSearchMenu_BgTemplate[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -1459,7 +1470,8 @@ static const struct BgTemplate sSearchMenu_BgTemplate[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 13,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -1468,7 +1480,8 @@ static const struct BgTemplate sSearchMenu_BgTemplate[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 14,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -1477,7 +1490,8 @@ static const struct BgTemplate sSearchMenu_BgTemplate[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1662,7 +1676,7 @@ void Task_OpenPokedexMainPage(u8 taskId)
 
 static void Task_HandlePokedexInput(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BG0VOFS, sPokedexView->menuY);
+    SetGpuBackgroundY(0, sPokedexView->menuY);
 
     if (sPokedexView->menuY)
     {
@@ -1725,7 +1739,7 @@ static void Task_WaitForScroll(u8 taskId)
 
 static void Task_HandlePokedexStartMenuInput(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BG0VOFS, sPokedexView->menuY);
+    SetGpuBackgroundY(0, sPokedexView->menuY);
 
     //If menu is not open, slide it up, on screen
     if (sPokedexView->menuY != 80)
@@ -1865,7 +1879,7 @@ static void Task_OpenSearchResults(u8 taskId)
 
 static void Task_HandleSearchResultsInput(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BG0VOFS, sPokedexView->menuY);
+    SetGpuBackgroundY(0, sPokedexView->menuY);
 
     if (sPokedexView->menuY)
     {
@@ -1926,7 +1940,7 @@ static void Task_WaitForSearchResultsScroll(u8 taskId)
 
 static void Task_HandleSearchResultsStartMenuInput(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BG0VOFS, sPokedexView->menuY);
+    SetGpuBackgroundY(0, sPokedexView->menuY);
 
     if (sPokedexView->menuY != 96)
     {
@@ -2059,7 +2073,7 @@ static bool8 LoadPokedexListPage(u8 page)
         SetVBlankCallback(NULL);
         sPokedexView->currentPage = page;
         ResetOtherVideoRegisters(0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, sPokedexView->initialVOffset);
+        SetGpuBackgroundY(2, sPokedexView->initialVOffset);
         ResetBgsAndClearDma3BusyFlags(0);
         InitBgsFromTemplates(0, sPokedex_BgTemplate, ARRAY_COUNT(sPokedex_BgTemplate));
         SetBgTilemapBuffer(3, AllocZeroed(BG_SCREEN_SIZE));
@@ -2115,16 +2129,16 @@ static bool8 LoadPokedexListPage(u8 page)
         gMain.state++;
         break;
     case 5:
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL | WININ_WIN1_ALL);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_ALL | WINOUT_WINOBJ_BG0 | WINOUT_WINOBJ_BG2 | WINOUT_WINOBJ_BG3 | WINOUT_WINOBJ_OBJ);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_OBJWIN_ON);
+        SetGpuWindowIn(WININ_WIN0_ALL | WININ_WIN1_ALL);
+        SetGpuWindowOut(WINOUT_WIN01_ALL | WINOUT_WINOBJ_BG0 | WINOUT_WINOBJ_BG2 | WINOUT_WINOBJ_BG3 | WINOUT_WINOBJ_OBJ);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(1, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_OBJWIN_ON);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -2498,7 +2512,7 @@ static void CreateMonSpritesAtPos(u16 selectedMon, u16 ignored)
     }
 
     CreateMonListEntry(0, selectedMon, ignored);
-    SetGpuReg(REG_OFFSET_BG2VOFS, sPokedexView->initialVOffset);
+    SetGpuBackgroundY(2, sPokedexView->initialVOffset);
 
     sPokedexView->listVOffset = 0;
     sPokedexView->listMovingVOffset = 0;
@@ -2523,7 +2537,7 @@ static bool8 UpdateDexListScroll(u8 direction, u8 monMoveIncrement, u8 scrollTim
                     gSprites[sPokedexView->monSpriteIds[i]].data[5] += monMoveIncrement;
             }
             step = LIST_SCROLL_STEP * (scrollTimerMax - sPokedexView->scrollTimer) / scrollTimerMax;
-            SetGpuReg(REG_OFFSET_BG2VOFS, sPokedexView->initialVOffset + sPokedexView->listMovingVOffset * LIST_SCROLL_STEP - step);
+            SetGpuBackgroundY(2, sPokedexView->initialVOffset + sPokedexView->listMovingVOffset * LIST_SCROLL_STEP - step);
             sPokedexView->pokeBallRotation -= sPokedexView->pokeBallRotationStep;
             break;
         case 2: // Down
@@ -2533,7 +2547,7 @@ static bool8 UpdateDexListScroll(u8 direction, u8 monMoveIncrement, u8 scrollTim
                     gSprites[sPokedexView->monSpriteIds[i]].data[5] -= monMoveIncrement;
             }
             step = LIST_SCROLL_STEP * (scrollTimerMax - sPokedexView->scrollTimer) / scrollTimerMax;
-            SetGpuReg(REG_OFFSET_BG2VOFS, sPokedexView->initialVOffset + sPokedexView->listMovingVOffset * LIST_SCROLL_STEP + step);
+            SetGpuBackgroundY(2, sPokedexView->initialVOffset + sPokedexView->listMovingVOffset * LIST_SCROLL_STEP + step);
             sPokedexView->pokeBallRotation += sPokedexView->pokeBallRotationStep;
             break;
         }
@@ -2541,7 +2555,7 @@ static bool8 UpdateDexListScroll(u8 direction, u8 monMoveIncrement, u8 scrollTim
     }
     else
     {
-        SetGpuReg(REG_OFFSET_BG2VOFS, sPokedexView->initialVOffset + sPokedexView->listVOffset * LIST_SCROLL_STEP);
+        SetGpuBackgroundY(2, sPokedexView->initialVOffset + sPokedexView->listVOffset * LIST_SCROLL_STEP);
         return TRUE;
     }
 }
@@ -3297,10 +3311,10 @@ static void Task_LoadInfoScreen(u8 taskId)
         }
         break;
     case 7:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -3490,7 +3504,8 @@ static void Task_LoadAreaScreen(u8 taskId)
         LoadScreenSelectBarSubmenu(0xD);
         HighlightSubmenuScreenSelectBarItem(0, 0xD);
         LoadPokedexBgPalette(sPokedexView->isSearchResults);
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(13) | BGCNT_16COLOR | BGCNT_TXT256x256);
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundScreenBaseBlock(1, 13);
         gMain.state++;
         break;
     case 2:
@@ -3613,10 +3628,10 @@ static void Task_LoadCryScreen(u8 taskId)
         gMain.state++;
         break;
     case 9:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -3797,10 +3812,10 @@ static void Task_LoadSizeScreen(u8 taskId)
         gMain.state++;
         break;
     case 8:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -4004,10 +4019,10 @@ static void Task_DisplayCaughtMonDexPage(u8 taskId)
         gTasks[taskId].tState++;
         break;
     case 5:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         ShowBg(2);
         ShowBg(3);
         gTasks[taskId].tState++;
@@ -4053,7 +4068,7 @@ static void Task_ExitCaughtMonPage(u8 taskId)
         const u32 *lzPaletteData;
         void *buffer;
 
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         FreeAllWindowBuffers();
         buffer = GetBgTilemapBuffer(2);
         if (buffer)
@@ -4438,30 +4453,30 @@ static void ResetOtherVideoRegisters(u16 regBits)
     if (!(regBits & DISPCNT_BG0_ON))
     {
         ClearGpuRegBits(0, DISPCNT_BG0_ON);
-        SetGpuReg(REG_OFFSET_BG0CNT, 0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+        ClearGpuBackgroundState(0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
     }
     if (!(regBits & DISPCNT_BG1_ON))
     {
         ClearGpuRegBits(0, DISPCNT_BG1_ON);
-        SetGpuReg(REG_OFFSET_BG1CNT, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
     }
     if (!(regBits & DISPCNT_BG2_ON))
     {
         ClearGpuRegBits(0, DISPCNT_BG2_ON);
-        SetGpuReg(REG_OFFSET_BG2CNT, 0);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundY(2, 0);
     }
     if (!(regBits & DISPCNT_BG3_ON))
     {
         ClearGpuRegBits(0, DISPCNT_BG3_ON);
-        SetGpuReg(REG_OFFSET_BG3CNT, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+        ClearGpuBackgroundState(3);
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 0);
     }
     if (!(regBits & DISPCNT_OBJ_ON))
     {
@@ -4876,10 +4891,10 @@ static void Task_LoadSearchMenu(u8 taskId)
         gMain.state++;
         break;
     case 3:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);

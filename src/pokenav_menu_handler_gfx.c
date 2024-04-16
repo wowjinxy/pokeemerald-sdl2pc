@@ -113,7 +113,8 @@ static const struct BgTemplate sPokenavMainMenuBgTemplates[] = {
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0x000
@@ -121,7 +122,8 @@ static const struct BgTemplate sPokenavMainMenuBgTemplates[] = {
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 23,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0x000
@@ -129,7 +131,8 @@ static const struct BgTemplate sPokenavMainMenuBgTemplates[] = {
         .bg = 3,
         .charBaseIndex = 3,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0x000
@@ -1033,7 +1036,7 @@ static void StartOptionZoom(struct Sprite ** sprites)
         sprites++;
     }
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
     taskId = CreateTask(Task_OptionBlend, 3);
     gTasks[taskId].tBlendDelay = 8;
     gfx->numIconsBlending++;
@@ -1140,8 +1143,8 @@ static void Task_OptionBlend(u8 taskId)
         case 0:
             tBlendTarget1 = 16;
             tBlendTarget2 = 0;
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_NONE | BLDCNT_TGT2_ALL);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_NONE | BLDCNT_TGT2_ALL);
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
             tBlendState++;
             break;
         case 1:
@@ -1157,12 +1160,12 @@ static void Task_OptionBlend(u8 taskId)
                 if (tBlendTarget2 > 16)
                     tBlendTarget2 = 16;
             }
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(tBlendTarget1, tBlendTarget2));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(tBlendTarget1, tBlendTarget2));
             tBlendCounter++;
             if (tBlendCounter == 12)
             {
                 ((struct Pokenav_MenuGfx *)GetSubstructPtr(POKENAV_SUBSTRUCT_MENU_GFX))->numIconsBlending--;
-                SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+                SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
                 DestroyTask(taskId);
             }
             break;
@@ -1308,12 +1311,12 @@ static void VBlankCB_PokenavMainMenu(void)
 
 static void SetupPokenavMenuScanlineEffects(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
+    SetGpuState(GPU_STATE_BLDY, 0);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-    SetGpuRegBits(REG_OFFSET_WININ, WININ_WIN0_ALL);
-    SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
-    SetGpuRegBits(REG_OFFSET_WIN0V, DisplayHeight());
+    SetGpuWindowIn(GetGpuWindowIn() | WININ_WIN0_ALL);
+    SetGpuWindowOut(SetGpuWindowOut() | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
+    SetGpuWindowY(0, DisplayHeight());
     ScanlineEffect_Stop();
     SetMenuOptionGlow();
     ScanlineEffect_SetParams(sPokenavMainMenuScanlineEffectParams);
@@ -1323,7 +1326,7 @@ static void SetupPokenavMenuScanlineEffects(void)
 
 static void DestroyMenuOptionGlowTask(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
     ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
     ScanlineEffect_Stop();
     DestroyTask(FindTaskIdByFunc(Task_CurrentMenuOptionGlow));
@@ -1332,13 +1335,13 @@ static void DestroyMenuOptionGlowTask(void)
 
 static void ResetBldCnt(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void InitMenuOptionGlow(void)
 {
     SetMenuOptionGlow();
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
 }
 
 static void Task_CurrentMenuOptionGlow(u8 taskId)
@@ -1350,7 +1353,7 @@ static void Task_CurrentMenuOptionGlow(u8 taskId)
         data[0] = 0;
         data[1] += 3;
         data[1] &= 0x7F;
-        SetGpuReg(REG_OFFSET_BLDY, gSineTable[data[1]] >> 5);
+        SetGpuState(GPU_STATE_BLDY, gSineTable[data[1]] >> 5);
     }
 }
 

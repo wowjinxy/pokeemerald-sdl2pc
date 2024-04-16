@@ -1830,8 +1830,8 @@ static bool32 SlideTreeBordersOut(void)
         if (x < sTreeBorderXPos[sGame->numPlayers - 1])
         {
             // Update position
-            SetGpuReg(REG_OFFSET_BG1HOFS,  (x * 8)); // BG_TREE_LEFT
-            SetGpuReg(REG_OFFSET_BG2HOFS, -(x * 8)); // BG_TREE_RIGHT
+            SetGpuBackgroundX(1,  (x * 8)); // BG_TREE_LEFT
+            SetGpuBackgroundX(2, -(x * 8)); // BG_TREE_RIGHT
             return FALSE;
         }
         else
@@ -3356,7 +3356,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = BG_INTERFACE,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -3365,7 +3366,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = BG_TREE_LEFT,
         .charBaseIndex = 2,
         .mapBaseIndex = 12,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -3374,7 +3376,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = BG_TREE_RIGHT,
         .charBaseIndex = 2,
         .mapBaseIndex = 14,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -3383,7 +3386,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = BG_SCENERY,
         .charBaseIndex = 3,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -5164,7 +5168,7 @@ static u8 GetPlayAgainState(void)
 static void InitBgs(void)
 {
     GpuClearAll();
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     ChangeBgX(0, 0, BG_COORD_SET);
@@ -5177,7 +5181,7 @@ static void InitBgs(void)
     ChangeBgY(3, 0, BG_COORD_SET);
     InitStandardTextBoxWindows();
     InitTextBoxGfxAndPrinters();
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     SetBgTilemapBuffer(BG_SCENERY, sGfx->tilemapBuffers[0]);
     SetBgTilemapBuffer(BG_TREE_LEFT, sGfx->tilemapBuffers[1]);
     SetBgTilemapBuffer(BG_TREE_RIGHT, sGfx->tilemapBuffers[2]);

@@ -947,7 +947,7 @@ void Weather_SetBlendCoeffs(u8 eva, u8 evb)
     gWeatherPtr->currBlendEVB = evb;
     gWeatherPtr->targetBlendEVA = eva;
     gWeatherPtr->targetBlendEVB = evb;
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(eva, evb));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(eva, evb));
 }
 
 void Weather_SetTargetBlendCoeffs(u8 eva, u8 evb, int delay)
@@ -987,7 +987,7 @@ bool8 Weather_UpdateBlend(void)
         }
     }
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gWeatherPtr->currBlendEVA, gWeatherPtr->currBlendEVB));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gWeatherPtr->currBlendEVA, gWeatherPtr->currBlendEVB));
 
     if (gWeatherPtr->currBlendEVA == gWeatherPtr->targetBlendEVA
      && gWeatherPtr->currBlendEVB == gWeatherPtr->targetBlendEVB)

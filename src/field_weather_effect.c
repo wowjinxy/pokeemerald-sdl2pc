@@ -305,16 +305,16 @@ static void UpdateDroughtBlend(u8 taskId)
         task->tBlendY = 0;
         task->tBlendDelay = 0;
         task->tWinRange = REG_WININ;
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL | WININ_WIN1_ALL);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuWindowIn(WININ_WIN0_ALL | WININ_WIN1_ALL);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
+        SetGpuState(GPU_STATE_BLDY, 0);
         task->tState++;
         // fall through
     case 1:
         task->tBlendY += 3;
         if (task->tBlendY > 16)
             task->tBlendY = 16;
-        SetGpuReg(REG_OFFSET_BLDY, task->tBlendY);
+        SetGpuState(GPU_STATE_BLDY, task->tBlendY);
         if (task->tBlendY >= 16)
             task->tState++;
         break;
@@ -329,13 +329,13 @@ static void UpdateDroughtBlend(u8 taskId)
                 task->tBlendY = 0;
                 task->tState++;
             }
-            SetGpuReg(REG_OFFSET_BLDY, task->tBlendY);
+            SetGpuState(GPU_STATE_BLDY, task->tBlendY);
         }
         break;
     case 3:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_WININ, task->tWinRange);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuWindowIn(task->tWinRange);
         task->tState++;
         break;
     case 4:
@@ -1532,7 +1532,7 @@ void Ash_InitVars(void)
     if (!gWeatherPtr->ashSpritesCreated)
     {
         Weather_SetBlendCoeffs(0, 16);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(64, 63)); // These aren't valid blend coefficients!
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(64, 63)); // These aren't valid blend coefficients!
     }
 }
 
@@ -1591,7 +1591,7 @@ bool8 Ash_Finish(void)
         }
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         gWeatherPtr->finishStep++;
         return FALSE;
     default:

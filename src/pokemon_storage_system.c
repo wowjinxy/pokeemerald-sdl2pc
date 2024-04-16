@@ -1005,7 +1005,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -1014,7 +1015,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0x100
@@ -1023,7 +1025,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 27,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -1032,7 +1035,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 3,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1981,7 +1985,7 @@ static void VBlankCB_PokeStorage(void)
     ProcessSpriteCopyRequests();
     UnkUtil_Run();
     TransferPlttBuffer();
-    SetGpuReg(REG_OFFSET_BG2HOFS, sStorage->bg2_X);
+    SetGpuBackgroundX(2, sStorage->bg2_X);
 }
 
 static void CB2_PokeStorage(void)
@@ -2035,14 +2039,14 @@ static void CB2_ReturnToPokeStorage(void)
 
 static void ResetAllBgCoords(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
 }
 
 static void ResetForPokeStorage(void)
@@ -2073,10 +2077,10 @@ static void SetMonIconTransparency(void)
 {
     if (sStorage->boxOption == OPTION_MOVE_ITEMS)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(7, 11));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(7, 11));
     }
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
 }
 
 static void SetPokeStorageTask(TaskFunc newFunc)
@@ -2091,7 +2095,7 @@ static void Task_InitPokeStorage(u8 taskId)
     {
     case 0:
         SetVBlankCallback(NULL);
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ResetForPokeStorage();
         if (sStorage->isReopening)
         {
@@ -3809,7 +3813,10 @@ static void FreePokeStorageData(void)
 
 static void SetScrollingBackground(void)
 {
-    SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3) | BGCNT_CHARBASE(3) | BGCNT_16COLOR | BGCNT_SCREENBASE(31));
+    ClearGpuBackgroundState(3);
+    SetGpuBackgroundPriority(3, 3);
+    SetGpuBackgroundCharBaseBlock(3, 3);
+    SetGpuBackgroundScreenBaseBlock(3, 31);
     DecompressAndLoadBgGfxUsingHeap(3, sScrollingBg_Gfx, 0, 0, 0);
     LZ77UnCompVram(sScrollingBg_Tilemap, (void *)BG_SCREEN_ADDR(31));
 }
@@ -3857,8 +3864,10 @@ static void InitPalettesAndSprites(void)
         LoadPalette(sScrollingBg_Pal, BG_PLTT_ID(3), sizeof(sScrollingBg_Pal));
     else
         LoadPalette(sScrollingBgMoveItems_Pal, BG_PLTT_ID(3), sizeof(sScrollingBgMoveItems_Pal));
-
-    SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1) | BGCNT_CHARBASE(1) | BGCNT_16COLOR | BGCNT_SCREENBASE(30));
+    ClearGpuBackgroundState(1);
+    SetGpuBackgroundPriority(1, 1);
+    SetGpuBackgroundCharBaseBlock(1, 1);
+    SetGpuBackgroundScreenBaseBlock(1, 30);
     CreateDisplayMonSprite();
     CreateMarkingComboSprite();
     CreateWaveformSprites();
@@ -3905,7 +3914,7 @@ static void StartDisplayMonMosaicEffect(void)
         sStorage->displayMonSprite->data[0] = 10;
         sStorage->displayMonSprite->data[1] = 1;
         sStorage->displayMonSprite->callback = SpriteCB_DisplayMonMosaic;
-        SetGpuReg(REG_OFFSET_MOSAIC, (sStorage->displayMonSprite->data[0] << 12) | (sStorage->displayMonSprite->data[0] << 8));
+        SetGpuState(GPU_STATE_MOSAIC, (sStorage->displayMonSprite->data[0] << 12) | (sStorage->displayMonSprite->data[0] << 8));
     }
 }
 
@@ -3919,7 +3928,7 @@ static void SpriteCB_DisplayMonMosaic(struct Sprite *sprite)
     sprite->data[0] -= sprite->data[1];
     if (sprite->data[0] < 0)
         sprite->data[0] = 0;
-    SetGpuReg(REG_OFFSET_MOSAIC, (sprite->data[0] << 12) | (sprite->data[0] << 8));
+    SetGpuState(GPU_STATE_MOSAIC, (sprite->data[0] << 12) | (sprite->data[0] << 8));
     if (sprite->data[0] == 0)
     {
         sprite->oam.mosaic = FALSE;
@@ -4271,7 +4280,8 @@ static void UpdateBoxToSendMons(void)
 
 static void InitPokeStorageBg0(void)
 {
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(29));
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundScreenBaseBlock(0, 29);
     LoadUserWindowBorderGfx(WIN_MESSAGE, 2, BG_PLTT_ID(13));
     FillBgTilemapBufferRect(0, 0, 0, 0, 32, 20, 17);
     CopyBgTilemapBufferToVram(0);
@@ -5239,7 +5249,12 @@ static void Task_InitBox(u8 taskId)
         InitBoxTitle(task->tBoxId);
         CreateBoxScrollArrows();
         InitBoxMonSprites(task->tBoxId);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) | BGCNT_CHARBASE(2) | BGCNT_SCREENBASE(27) | BGCNT_TXT512x256);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 2);
+        SetGpuBackgroundScreenBaseBlock(2, 27);
+        SetGpuBackgroundWidth(2, 512);
+        SetGpuBackgroundHeight(2, 256);
         break;
     case 4:
         DestroyTask(taskId);
@@ -8197,7 +8212,7 @@ static bool8 MultiMove_Start(void)
         CopyWindowToVram8Bit(sStorage->multiMoveWindowId, COPYWIN_FULL);
         BlendPalettes(0x3F00, 8, RGB_WHITE);
         StartCursorAnim(CURSOR_ANIM_OPEN);
-        SetGpuRegBits(REG_OFFSET_BG0CNT, BGCNT_256COLOR);
+        SetGpuBackground8bppMode(0, 0);
         sMultiMove->state++;
         break;
     case 2:
@@ -8611,7 +8626,7 @@ static void MultiMove_ResetBg(void)
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
     SetBgAttribute(0, BG_ATTR_PALETTEMODE, 0);
-    ClearGpuRegBits(REG_OFFSET_BG0CNT, BGCNT_256COLOR);
+    SetGpuBackground8bppMode(0, 0);
     FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
     CopyBgTilemapBufferToVram(0);
 }
@@ -9817,29 +9832,9 @@ static void UNUSED TilemapUtil_UpdateAll(void)
     }
 }
 
-struct
-{
-    u16 width;
-    u16 height;
-} static const sTilemapDimensions[][4] =
-{
-    [BG_TYPE_NORMAL] = {
-        { 256,  256},
-        { 512,  256},
-        { 256,  512},
-        { 512,  512},
-    },
-    [BG_TYPE_AFFINE] = {
-        { 128,  128},
-        { 256,  256},
-        { 512,  512},
-        {1024, 1024},
-    },
-};
-
 static void TilemapUtil_SetMap(u8 id, u8 bg, const void *tilemap, u16 width, u16 height)
 {
-    u16 bgScreenSize, bgType;
+    u16 bgType;
 
     if (id >= sNumTilemapUtilIds)
         return;
@@ -9850,10 +9845,9 @@ static void TilemapUtil_SetMap(u8 id, u8 bg, const void *tilemap, u16 width, u16
     sTilemapUtil[id].width = width;
     sTilemapUtil[id].height = height;
 
-    bgScreenSize = GetBgAttribute(bg, BG_ATTR_SCREENSIZE);
     bgType = GetBgAttribute(bg, BG_ATTR_TYPE);
-    sTilemapUtil[id].altWidth = sTilemapDimensions[bgType][bgScreenSize].width;
-    sTilemapUtil[id].altHeight = sTilemapDimensions[bgType][bgScreenSize].height;
+    sTilemapUtil[id].altWidth = GetBgAttribute(bg, BG_ATTR_SCREENWIDTH);
+    sTilemapUtil[id].altHeight = GetBgAttribute(bg, BG_ATTR_SCREENHEIGHT);
     if (bgType != BG_TYPE_NORMAL)
         sTilemapUtil[id].tileSize = 1;
     else

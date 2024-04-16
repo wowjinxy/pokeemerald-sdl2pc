@@ -443,13 +443,14 @@ void AnimTask_UnusedLevelUpHealthBox(u8 taskId)
     battler = gBattleAnimAttacker;
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 0);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
     SetAnimBgAttribute(1, BG_ANIM_AREA_OVERFLOW_MODE, 1);
     SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
@@ -498,7 +499,7 @@ static void AnimTask_UnusedLevelUpHealthBox_Step(u8 taskId)
         {
             gTasks[taskId].data[11] = 0;
             gTasks[taskId].data[12]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[12], 16 - gTasks[taskId].data[12]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[12], 16 - gTasks[taskId].data[12]));
             if (gTasks[taskId].data[12] == 8)
                 gTasks[taskId].data[15]++;
         }
@@ -512,20 +513,20 @@ static void AnimTask_UnusedLevelUpHealthBox_Step(u8 taskId)
         {
             gTasks[taskId].data[11] = 0;
             gTasks[taskId].data[12]--;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[12], 16 - gTasks[taskId].data[12]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[12], 16 - gTasks[taskId].data[12]));
             if (gTasks[taskId].data[12] == 0)
             {
                 ResetBattleAnimBg(FALSE);
                 gBattle_WIN0H = 0;
                 gBattle_WIN0V = 0;
-                SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-                SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+                SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+                SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
                 if (!IsContest())
                     SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 0);
 
-                SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) ^ DISPCNT_OBJWIN_ON);
-                SetGpuReg(REG_OFFSET_BLDCNT, 0);
-                SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
+                SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) ^ DISPCNT_OBJWIN_ON);
+                SetGpuState(GPU_STATE_BLDCNT, 0);
+                SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 0));
                 DestroySprite(&gSprites[gTasks[taskId].data[0]]);
                 DestroySprite(&gSprites[gTasks[taskId].data[2]]);
                 SetAnimBgAttribute(1, BG_ANIM_AREA_OVERFLOW_MODE, 0);
@@ -1349,8 +1350,8 @@ static void SpriteCB_Ball_FadeOut(struct Sprite *sprite)
         sprite->data[1] = 0;
         sprite->data[2] = 0;
         sprite->oam.objMode = ST_OAM_OBJ_BLEND;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
         paletteIndex = IndexOfSpritePaletteTag(sprite->template->paletteTag);
         BeginNormalPaletteFade(1 << (paletteIndex + 0x10), 0, 0, 16, RGB_WHITE);
         sprite->sState++;
@@ -1360,7 +1361,7 @@ static void SpriteCB_Ball_FadeOut(struct Sprite *sprite)
         {
             sprite->data[1] = 0;
             sprite->data[2]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[2], sprite->data[2]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - sprite->data[2], sprite->data[2]));
             if (sprite->data[2] == 16)
                 sprite->sState++;
         }
@@ -1372,8 +1373,8 @@ static void SpriteCB_Ball_FadeOut(struct Sprite *sprite)
     default:
         if (!gPaletteFade.active)
         {
-            SetGpuReg(REG_OFFSET_BLDCNT, 0);
-            SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+            SetGpuState(GPU_STATE_BLDCNT, 0);
+            SetGpuState(GPU_STATE_BLDALPHA, 0);
 
             sprite->sFrame = 0;
             sprite->callback = DestroySpriteAfterOneFrame;
@@ -2164,11 +2165,11 @@ void AnimTask_SubstituteFadeToInvisible(u8 taskId)
     {
     case 0:
         if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == B_POSITION_OPPONENT_LEFT)
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
         else
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
         gTasks[taskId].data[15]++;
         break;
     case 1:
@@ -2176,7 +2177,7 @@ void AnimTask_SubstituteFadeToInvisible(u8 taskId)
         {
             gTasks[taskId].data[1] = 0;
             gTasks[taskId].data[0]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - gTasks[taskId].data[0], gTasks[taskId].data[0]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - gTasks[taskId].data[0], gTasks[taskId].data[0]));
             if (gTasks[taskId].data[0] == 16)
                 gTasks[taskId].data[15]++;
         }

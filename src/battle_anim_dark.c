@@ -193,11 +193,11 @@ void AnimTask_AttackerFadeToInvisible(u8 taskId)
     gTasks[taskId].data[0] = gBattleAnimArgs[0];
     battler = gBattleAnimAttacker;
     gTasks[taskId].data[1] = 16;
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
     if (GetBattlerSpriteBGPriorityRank(battler) == 1)
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
     else
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
 
     gTasks[taskId].func = AnimTask_AttackerFadeToInvisible_Step;
 }
@@ -211,7 +211,7 @@ static void AnimTask_AttackerFadeToInvisible_Step(u8 taskId)
         blendA++;
         blendB--;
         gTasks[taskId].data[1] = BLDALPHA_BLEND(blendB, blendA);
-        SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].data[1]);
+        SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].data[1]);
         gTasks[taskId].data[2] = 0;
         if (blendA == 16)
         {
@@ -230,7 +230,7 @@ void AnimTask_AttackerFadeFromInvisible(u8 taskId)
     gTasks[taskId].data[0] = gBattleAnimArgs[0];
     gTasks[taskId].data[1] = BLDALPHA_BLEND(0, 16);
     gTasks[taskId].func = AnimTask_AttackerFadeFromInvisible_Step;
-    SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].data[1]);
+    SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].data[1]);
 }
 
 static void AnimTask_AttackerFadeFromInvisible_Step(u8 taskId)
@@ -242,12 +242,12 @@ static void AnimTask_AttackerFadeFromInvisible_Step(u8 taskId)
         blendA--;
         blendB++;
         gTasks[taskId].data[1] = (blendA << 8) | blendB;
-        SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].data[1]);
+        SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].data[1]);
         gTasks[taskId].data[2] = 0;
         if (blendA == 0)
         {
-            SetGpuReg(REG_OFFSET_BLDCNT, 0);
-            SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+            SetGpuState(GPU_STATE_BLDCNT, 0);
+            SetGpuState(GPU_STATE_BLDALPHA, 0);
             DestroyAnimVisualTask(taskId);
         }
     }
@@ -259,11 +259,11 @@ static void AnimTask_AttackerFadeFromInvisible_Step(u8 taskId)
 
 void AnimTask_InitAttackerFadeFromInvisible(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
     else
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
 
     DestroyAnimVisualTask(taskId);
 }
@@ -425,7 +425,7 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
     {
         GetBattleAnimBg1Data(&animBg);
         task->data[10] = gBattle_BG1_Y;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
         FillPalette(RGB_BLACK, BG_PLTT_ID(animBg.paletteId), PLTT_SIZE_4BPP);
         scanlineParams.dmaDest = &REG_BG1VOFS;
         var0 = WINOUT_WIN01_BG1;
@@ -435,7 +435,7 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
     else
     {
         task->data[10] = gBattle_BG2_Y;
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
         FillPalette(RGB_BLACK, BG_PLTT_ID(9), PLTT_SIZE_4BPP);
         scanlineParams.dmaDest = &REG_BG2VOFS;
         var0 = WINOUT_WIN01_BG2;
@@ -459,8 +459,8 @@ void AnimTask_MoveAttackerMementoShadow(u8 taskId)
     }
 
     ScanlineEffect_SetParams(scanlineParams);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | (var0 ^ (WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR)));
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | (var0 ^ (WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR)));
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
     gBattle_WIN0H = (task->data[14] << 8) | task->data[15];
     gBattle_WIN0V = DisplayHeight();
 
@@ -488,7 +488,7 @@ static void AnimTask_MoveAttackerMementoShadow_Step(u8 taskId)
                     task->data[12]--;
             }
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[11], task->data[12]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[11], task->data[12]));
 
             if (task->data[11] == 12 && task->data[12] == 8)
                 task->data[0]++;
@@ -540,8 +540,8 @@ void AnimTask_MoveTargetMementoShadow(u8 taskId)
         {
             gBattle_WIN0H = 0;
             gBattle_WIN0V = 0;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+            SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
             DestroyAnimVisualTask(taskId);
         }
         else
@@ -549,12 +549,12 @@ void AnimTask_MoveTargetMementoShadow(u8 taskId)
             task->data[3] = GetBattlerSpriteBGPriorityRank(gBattleAnimTarget);
             if (task->data[3] == 1)
             {
-                SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+                SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
                 gBattle_BG2_X += DisplayWidth();
             }
             else
             {
-                SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
+                SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
                 gBattle_BG1_X += DisplayWidth();
             }
 
@@ -616,18 +616,18 @@ void AnimTask_MoveTargetMementoShadow(u8 taskId)
         break;
     case 4:
         if (task->data[3] == 1)
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+            SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         else
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+            SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
 
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         gBattle_WIN0H = (task->data[14] << 8) | task->data[15];
         gBattle_WIN0V = DisplayHeight();
 
         task->data[0] = 0;
         task->data[1] = 0;
         task->data[2] = 0;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 8));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 8));
         task->func = AnimTask_MoveTargetMementoShadow_Step;
         break;
     }
@@ -687,7 +687,7 @@ static void AnimTask_MoveTargetMementoShadow_Step(u8 taskId)
                     task->data[12]++;
             }
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[11], task->data[12]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[11], task->data[12]));
             if (task->data[11] == 0 && task->data[12] == 16)
                 task->data[0]++;
         }
@@ -699,8 +699,8 @@ static void AnimTask_MoveTargetMementoShadow_Step(u8 taskId)
     case 4:
         gBattle_WIN0H = 0;
         gBattle_WIN0V = 0;
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+        SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         DestroyAnimVisualTask(taskId);
         break;
     }
@@ -822,13 +822,14 @@ void AnimTask_MetallicShine(u8 taskId)
 
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG0 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 12));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 12));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 0);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
@@ -912,14 +913,14 @@ static void AnimTask_MetallicShine_Step(u8 taskId)
         {
             gBattle_WIN0H = 0;
             gBattle_WIN0V = 0;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+            SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
             if (!IsContest())
                 SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 0);
 
-            SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) ^ DISPCNT_OBJWIN_ON);
-            SetGpuReg(REG_OFFSET_BLDCNT, 0);
-            SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+            SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) ^ DISPCNT_OBJWIN_ON);
+            SetGpuState(GPU_STATE_BLDCNT, 0);
+            SetGpuState(GPU_STATE_BLDALPHA, 0);
             DestroyAnimVisualTask(taskId);
         }
     }

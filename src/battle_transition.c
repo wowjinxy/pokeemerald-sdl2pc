@@ -1148,10 +1148,10 @@ static void Task_Blur(u8 taskId)
 
 static bool8 Blur_Init(struct Task *task)
 {
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuRegBits(REG_OFFSET_BG1CNT, BGCNT_MOSAIC);
-    SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_MOSAIC);
-    SetGpuRegBits(REG_OFFSET_BG3CNT, BGCNT_MOSAIC);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
+    SetGpuBackgroundMosaicEnabled(1, 1);
+    SetGpuBackgroundMosaicEnabled(2, 1);
+    SetGpuBackgroundMosaicEnabled(3, 1);
     task->tState++;
     return TRUE;
 }
@@ -1167,7 +1167,7 @@ static bool8 Blur_Main(struct Task *task)
         task->tDelay = 4;
         if (++task->tCounter == 10)
             BeginNormalPaletteFade(PALETTES_ALL, -1, 0, 16, RGB_BLACK);
-        SetGpuReg(REG_OFFSET_MOSAIC, (task->tCounter & 15) * 17);
+        SetGpuState(GPU_STATE_MOSAIC, (task->tCounter & 15) * 17);
         if (task->tCounter > 14)
             task->tState++;
     }
@@ -2463,8 +2463,8 @@ static bool8 Mugshot_WaitPlayerSlide(struct Task *task)
         DmaStop(0);
         memset(gScanlineEffectRegBuffers[0], 0, DisplayHeight() * 2);
         memset(gScanlineEffectRegBuffers[1], 0, DisplayHeight() * 2);
-        SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuWindowX(0, DisplayWidth());
+        SetGpuState(GPU_STATE_BLDY, 0);
         task->tState++;
         task->tTimer = 0;
         task->tFadeSpread = 0;
@@ -2577,9 +2577,9 @@ static void VBlankCB_MugshotsFadeOut(void)
 static void HBlankCB_Mugshots(void)
 {
     if (REG_VCOUNT < DisplayHeight() / 2)
-        REG_BG0HOFS = sTransitionData->BG0HOFS_Lower;
+        SetGpuBackgroundX(0, sTransitionData->BG0HOFS_Lower);
     else
-        REG_BG0HOFS = sTransitionData->BG0HOFS_Upper;
+        SetGpuBackgroundX(0, sTransitionData->BG0HOFS_Upper);
 }
 
 static void Mugshots_CreateTrainerPics(struct Task *task)
@@ -3450,7 +3450,12 @@ static bool8 Rayquaza_Init(struct Task *task)
     InitTransitionData();
     ScanlineEffect_Clear();
 
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_CHARBASE(2) | BGCNT_SCREENBASE(26) | BGCNT_TXT256x512);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundCharBaseBlock(0, 2);
+    SetGpuBackgroundScreenBaseBlock(0, 26);
+    SetGpuBackgroundWidth(0, 256);
+    SetGpuBackgroundHeight(0, 512);
+
     GetBg0TilesDst(&tilemap, &tileset);
     CpuFill16(0, tilemap, BG_SCREEN_SIZE);
     CpuCopy16(sRayquaza_Tileset, tileset, 0x2000);
@@ -4649,8 +4654,8 @@ static void Task_ScrollBg(u8 taskId)
 {
     if (!(gTasks[taskId].tScrollUpdateFlag ^= 1))
     {
-        SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_X);
-        SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_Y);
+        SetGpuBackgroundY(0, gBattle_BG0_X);
+        SetGpuBackgroundX(0, gBattle_BG0_Y);
         gBattle_BG0_X += gTasks[taskId].tScrollXDir;
         gBattle_BG0_Y += gTasks[taskId].tScrollYDir;
     }
@@ -4669,8 +4674,8 @@ static bool8 FrontierSquaresScroll_Init(struct Task *task)
 
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_Y);
+    SetGpuBackgroundY(0, gBattle_BG0_X);
+    SetGpuBackgroundX(0, gBattle_BG0_Y);
 
     task->tSquareNum = 0;
 
@@ -4755,8 +4760,8 @@ static bool8 FrontierSquaresScroll_End(struct Task *task)
 {
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_Y);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(0, gBattle_BG0_Y);
 
     FillBgTilemapBufferRect_Palette0(0, 1, 0, 0, 32, 32);
     CopyBgTilemapBufferToVram(0);

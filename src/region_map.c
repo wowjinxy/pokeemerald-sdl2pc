@@ -361,7 +361,8 @@ static const struct BgTemplate sFlyMapBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0
     },
@@ -369,7 +370,8 @@ static const struct BgTemplate sFlyMapBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 3,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1
     },
@@ -377,7 +379,8 @@ static const struct BgTemplate sFlyMapBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 28,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 1,
         .priority = 2
     }
@@ -603,7 +606,8 @@ bool8 LoadRegionMapGfx(void)
         sRegionMap->blinkPlayerIcon = FALSE;
         if (sRegionMap->bgManaged)
         {
-            SetBgAttribute(sRegionMap->bgNum, BG_ATTR_SCREENSIZE, 2);
+            SetBgAttribute(sRegionMap->bgNum, BG_ATTR_SCREENWIDTH, 512);
+            SetBgAttribute(sRegionMap->bgNum, BG_ATTR_SCREENHEIGHT, 512);
             SetBgAttribute(sRegionMap->bgNum, BG_ATTR_CHARBASEINDEX, sRegionMap->charBaseIdx);
             SetBgAttribute(sRegionMap->bgNum, BG_ATTR_MAPBASEINDEX, sRegionMap->mapBaseIdx);
             SetBgAttribute(sRegionMap->bgNum, BG_ATTR_WRAPAROUND, 1);
@@ -931,14 +935,12 @@ void UpdateRegionMapVideoRegs(void)
 {
     if (sRegionMap->needUpdateVideoRegs)
     {
-        SetGpuReg(REG_OFFSET_BG2PA, sRegionMap->bg2pa);
-        SetGpuReg(REG_OFFSET_BG2PB, sRegionMap->bg2pb);
-        SetGpuReg(REG_OFFSET_BG2PC, sRegionMap->bg2pc);
-        SetGpuReg(REG_OFFSET_BG2PD, sRegionMap->bg2pd);
-        SetGpuReg(REG_OFFSET_BG2X_L, sRegionMap->bg2x);
-        SetGpuReg(REG_OFFSET_BG2X_H, sRegionMap->bg2x >> 16);
-        SetGpuReg(REG_OFFSET_BG2Y_L, sRegionMap->bg2y);
-        SetGpuReg(REG_OFFSET_BG2Y_H, sRegionMap->bg2y >> 16);
+        SetGpuAffineBgA(2, sRegionMap->bg2pa);
+        SetGpuAffineBgB(2, sRegionMap->bg2pb);
+        SetGpuAffineBgC(2, sRegionMap->bg2pc);
+        SetGpuAffineBgD(2, sRegionMap->bg2pd);
+        SetGpuAffineBgX(2, sRegionMap->bg2x);
+        SetGpuAffineBgY(2, sRegionMap->bg2y);
         sRegionMap->needUpdateVideoRegs = FALSE;
     }
 }
@@ -1650,15 +1652,15 @@ void CB2_OpenFlyMap(void)
     {
     case 0:
         SetVBlankCallback(NULL);
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 0);
         sFlyMap = Alloc(sizeof(*sFlyMap));
         if (sFlyMap == NULL)
         {
@@ -1724,7 +1726,7 @@ void CB2_OpenFlyMap(void)
         gMain.state++;
         break;
     case 10:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         ShowBg(0);
         ShowBg(1);

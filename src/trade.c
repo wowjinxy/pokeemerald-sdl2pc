@@ -556,8 +556,8 @@ static void CB2_CreateTradeMenu(void)
         break;
     case 7:
         CalculateEnemyPartyCount();
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         sTradeMenu->partyCounts[TRADE_PLAYER] = gPlayerPartyCount;
         sTradeMenu->partyCounts[TRADE_PARTNER] = gEnemyPartyCount;
 
@@ -677,7 +677,7 @@ static void CB2_CreateTradeMenu(void)
         gMain.state++;
         break;
     case 19:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         LoadTradeBgGfx(2);
         gMain.state++;
         break;
@@ -864,7 +864,7 @@ static void CB2_ReturnToTradeMenu(void)
         gMain.state++;
         break;
     case 19:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         LoadTradeBgGfx(2);
         gMain.state++;
         break;
@@ -962,8 +962,8 @@ static void CB2_TradeMenu(void)
     DrawSelectedMonScreen(TRADE_PLAYER);
     DrawSelectedMonScreen(TRADE_PARTNER);
 
-    SetGpuReg(REG_OFFSET_BG2HOFS, sTradeMenu->bg2hofs++);
-    SetGpuReg(REG_OFFSET_BG3HOFS, sTradeMenu->bg3hofs--);
+    SetGpuBackgroundX(2, sTradeMenu->bg2hofs++);
+    SetGpuBackgroundX(3, sTradeMenu->bg3hofs--);
 
     RunTextPrintersAndIsPrinter0Active();
     RunTasks();
@@ -992,7 +992,7 @@ static void LoadTradeBgGfx(u8 state)
         break;
     case 2:
         for (i = 0; i < 4; i++)
-            SetGpuReg(REG_OFFSET_BG0HOFS + (i * 2), 0);
+            SetGpuBackgroundX(i, 0);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -2711,28 +2711,26 @@ static void SetTradeBGAffine(void)
     struct BgAffineDstData affine;
 
     DoBgAffineSet(&affine, sTradeAnim->texX * 0x100, sTradeAnim->texY * 0x100, sTradeAnim->scrX, sTradeAnim->scrY, sTradeAnim->sXY, sTradeAnim->sXY, sTradeAnim->alpha);
-    SetGpuReg(REG_OFFSET_BG2PA, affine.pa);
-    SetGpuReg(REG_OFFSET_BG2PB, affine.pb);
-    SetGpuReg(REG_OFFSET_BG2PC, affine.pc);
-    SetGpuReg(REG_OFFSET_BG2PD, affine.pd);
-    SetGpuReg(REG_OFFSET_BG2X_L, affine.dx);
-    SetGpuReg(REG_OFFSET_BG2X_H, affine.dx >> 16);
-    SetGpuReg(REG_OFFSET_BG2Y_L, affine.dy);
-    SetGpuReg(REG_OFFSET_BG2Y_H, affine.dy >> 16);
+    SetGpuAffineBgA(2, affine.pa);
+    SetGpuAffineBgB(2, affine.pb);
+    SetGpuAffineBgC(2, affine.pc);
+    SetGpuAffineBgD(2, affine.pd);
+    SetGpuAffineBgX(2, affine.dx);
+    SetGpuAffineBgY(2, affine.dy);
 }
 
 static void SetTradeGpuRegs(void)
 {
     u16 dispcnt;
 
-    SetGpuReg(REG_OFFSET_BG1VOFS, sTradeAnim->bg1vofs);
-    SetGpuReg(REG_OFFSET_BG1HOFS, sTradeAnim->bg1hofs);
+    SetGpuBackgroundY(1, sTradeAnim->bg1vofs);
+    SetGpuBackgroundX(1, sTradeAnim->bg1hofs);
 
-    dispcnt = GetGpuReg(REG_OFFSET_DISPCNT);
+    dispcnt = GetGpuState(GPU_STATE_DISPCNT);
     if ((dispcnt & 7) == DISPCNT_MODE_0)
     {
-        SetGpuReg(REG_OFFSET_BG2VOFS, sTradeAnim->bg2vofs);
-        SetGpuReg(REG_OFFSET_BG2HOFS, sTradeAnim->bg2hofs);
+        SetGpuBackgroundY(2, sTradeAnim->bg2vofs);
+        SetGpuBackgroundX(2, sTradeAnim->bg2hofs);
     }
     else
     {
@@ -2971,7 +2969,7 @@ void LinkTradeDrawWindow(void)
 
 static void TradeAnimInit_LoadGfx(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sTradeSequenceBgTemplates, ARRAY_COUNT(sTradeSequenceBgTemplates));
     ChangeBgX(0, 0, BG_COORD_SET);
@@ -3163,16 +3161,17 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
     case 0:
         sTradeAnim->bg2vofs = 0;
         sTradeAnim->bg2hofs = 180;
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) |
-                                     BGCNT_CHARBASE(1) |
-                                     BGCNT_16COLOR |
-                                     BGCNT_SCREENBASE(18) |
-                                     BGCNT_TXT512x256);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 1);
+        SetGpuBackgroundCharBaseBlock(2, 1);
+        SetGpuBackgroundScreenBaseBlock(2, 18);
+        SetGpuBackgroundWidth(2, 512);
+        SetGpuBackgroundHeight(2, 256);
         LoadPalette(gTradeGba2_Pal, BG_PLTT_ID(1), 3 * PLTT_SIZE_4BPP);
         DmaCopyLarge16(3, gTradeGba_Gfx, (void *) BG_CHAR_ADDR(1), 0x1420, 0x1000);
         DmaCopy16Defvars(3, gTradePlatform_Tilemap, (void *) BG_SCREEN_ADDR(18), 0x1000);
@@ -3180,18 +3179,19 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
     case 1:
         sTradeAnim->bg1hofs = 0;
         sTradeAnim->bg1vofs = 348;
-        SetGpuReg(REG_OFFSET_BG1VOFS, 348);
-        SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(2) |
-                                     BGCNT_CHARBASE(0) |
-                                     BGCNT_16COLOR |
-                                     BGCNT_SCREENBASE(5) |
-                                     BGCNT_TXT256x512);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) |
-                                     BGCNT_CHARBASE(1) |
-                                     BGCNT_16COLOR |
-                                     BGCNT_SCREENBASE(18) |
-                                     BGCNT_TXT256x512);
-
+        SetGpuBackgroundY(1, 348);
+        ClearGpuBackgroundState(1);
+        SetGpuBackgroundPriority(1, 2);
+        SetGpuBackgroundCharBaseBlock(1, 2);
+        SetGpuBackgroundScreenBaseBlock(1, 5);
+        SetGpuBackgroundWidth(1, 256);
+        SetGpuBackgroundHeight(1, 512);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 1);
+        SetGpuBackgroundScreenBaseBlock(2, 18);
+        SetGpuBackgroundWidth(2, 256);
+        SetGpuBackgroundHeight(2, 512);
         if (sTradeAnim->isCableTrade)
         {
             DmaCopy16Defvars(3, sGbaMapCable, (void *) BG_SCREEN_ADDR(5), 0x1000);
@@ -3202,7 +3202,7 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         }
 
         DmaCopyLarge16(3, gTradeGba_Gfx, (void *) BG_CHAR_ADDR(0), 0x1420, 0x1000);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_OBJ_ON);
@@ -3212,7 +3212,7 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         sTradeAnim->bg1hofs = 0;
         if (!sTradeAnim->isCableTrade)
         {
-            SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                           DISPCNT_OBJ_1D_MAP |
                                           DISPCNT_BG1_ON |
                                           DISPCNT_OBJ_ON);
@@ -3221,7 +3221,7 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         }
         else
         {
-            SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                           DISPCNT_OBJ_1D_MAP |
                                           DISPCNT_BG1_ON |
                                           DISPCNT_OBJ_ON);
@@ -3234,22 +3234,24 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         LZ77UnCompVram(sWirelessSignal_Gfx, (void *) BG_CHAR_ADDR(1));
         LZ77UnCompVram(sWirelessSignal_Tilemap, (void *) BG_SCREEN_ADDR(18));
         sTradeAnim->bg2vofs = 80;
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
         break;
     case 4:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(3) |
-                                     BGCNT_CHARBASE(1) |
-                                     BGCNT_256COLOR |
-                                     BGCNT_SCREENBASE(18) |
-                                     BGCNT_AFF128x128);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 3);
+        SetGpuBackgroundCharBaseBlock(2, 1);
+        SetGpuBackgroundScreenBaseBlock(2, 18);
+        SetGpuBackground8bppMode(2, 1);
+        SetGpuBackgroundWidth(2, 128);
+        SetGpuBackgroundHeight(2, 128);
         sTradeAnim->texX = 64;
         sTradeAnim->texY = 92;
         sTradeAnim->sXY = 32;
@@ -3272,15 +3274,17 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         sTradeAnim->bg1hofs = 0;
         break;
     case 6:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(3) |
-                                     BGCNT_CHARBASE(1) |
-                                     BGCNT_256COLOR |
-                                     BGCNT_SCREENBASE(18) |
-                                     BGCNT_AFF128x128);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 3);
+        SetGpuBackgroundCharBaseBlock(2, 1);
+        SetGpuBackgroundScreenBaseBlock(2, 18);
+        SetGpuBackground8bppMode(2, 1);
+        SetGpuBackgroundWidth(2, 128);
+        SetGpuBackgroundHeight(2, 128);
         sTradeAnim->texX = 64;
         sTradeAnim->texY = 92;
         sTradeAnim->sXY = 256;
@@ -3303,12 +3307,13 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
     case 7:
         sTradeAnim->bg2vofs = 0;
         sTradeAnim->bg2hofs = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) |
-                                     BGCNT_CHARBASE(1) |
-                                     BGCNT_16COLOR |
-                                     BGCNT_SCREENBASE(18) |
-                                     BGCNT_TXT512x256);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        ClearGpuBackgroundState(2);
+        SetGpuBackgroundPriority(2, 2);
+        SetGpuBackgroundCharBaseBlock(2, 1);
+        SetGpuBackgroundScreenBaseBlock(2, 18);
+        SetGpuBackgroundWidth(2, 512);
+        SetGpuBackgroundHeight(2, 256);
         LoadPalette(gTradeGba2_Pal, BG_PLTT_ID(1), 3 * PLTT_SIZE_4BPP);
         DmaCopyLarge16(3, gTradeGba_Gfx, (void *) BG_CHAR_ADDR(1), 0x1420, 0x1000);
         DmaCopy16Defvars(3, gTradePlatform_Tilemap, (void *) BG_SCREEN_ADDR(18), 0x1000);
@@ -3542,10 +3547,10 @@ static bool8 DoTradeAnim_Cable(void)
         if (gSprites[sTradeAnim->connectionSpriteId2].animEnded)
         {
             DestroySprite(&gSprites[sTradeAnim->connectionSpriteId2]);
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND |
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND |
                                          BLDCNT_TGT2_BG1 |
                                          BLDCNT_TGT2_BG2);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 4));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 4));
             sTradeAnim->state++;
         }
         break;
@@ -3566,7 +3571,7 @@ static bool8 DoTradeAnim_Cable(void)
         if ((sTradeAnim->bg1vofs -= 2) == 166)
             sTradeAnim->state = STATE_LINK_MON_TRAVEL_OFFSCREEN;
 
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_OBJ_ON);
@@ -3693,7 +3698,7 @@ static bool8 DoTradeAnim_Cable(void)
         sTradeAnim->state++;
         break;
     case STATE_WAIT_FADE_OUT_TO_GBA_RECV:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_OBJ_ON);
@@ -3780,7 +3785,7 @@ static bool8 DoTradeAnim_Cable(void)
         sTradeAnim->state++;
         break;
     case STATE_WAIT_FADE_IN_TO_NEW_MON:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
@@ -3823,7 +3828,7 @@ static bool8 DoTradeAnim_Cable(void)
         sTradeAnim->state++;
         break;
     case STATE_NEW_MON_MSG:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
@@ -4013,11 +4018,11 @@ static bool8 DoTradeAnim_Wireless(void)
         if (gSprites[sTradeAnim->connectionSpriteId2].animEnded)
         {
             DestroySprite(&gSprites[sTradeAnim->connectionSpriteId2]);
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 |
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 |
                                          BLDCNT_TGT1_OBJ |
                                          BLDCNT_EFFECT_BLEND |
                                          BLDCNT_TGT2_BG2);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 4));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 4));
 
             // Start wireless signal effect
             CreateTask(Task_AnimateWirelessSignal, 5);
@@ -4043,7 +4048,7 @@ static bool8 DoTradeAnim_Wireless(void)
         if ((sTradeAnim->bg1vofs -= 3) == 166)
             sTradeAnim->state = STATE_LINK_MON_TRAVEL_OFFSCREEN;
 
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_1 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_OBJ_ON);
@@ -4174,7 +4179,7 @@ static bool8 DoTradeAnim_Wireless(void)
         sTradeAnim->state++;
         break;
     case STATE_WAIT_FADE_OUT_TO_GBA_RECV:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_OBJ_ON);
@@ -4191,7 +4196,7 @@ static bool8 DoTradeAnim_Wireless(void)
         }
         break;
     case STATE_PAN_TO_GBA_WIRELESS:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_BG2_ON |
@@ -4277,7 +4282,7 @@ static bool8 DoTradeAnim_Wireless(void)
         sTradeAnim->state++;
         break;
     case STATE_WAIT_FADE_IN_TO_NEW_MON:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
                                       DISPCNT_OBJ_ON);
@@ -4320,7 +4325,7 @@ static bool8 DoTradeAnim_Wireless(void)
         sTradeAnim->state++;
         break;
     case STATE_NEW_MON_MSG:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
@@ -4938,14 +4943,14 @@ static void Task_OpenCenterWhiteColumn(u8 taskId)
         sTradeAnim->wirelessWinTop = 0;
         sTradeAnim->wirelessWinBottom = DisplayHeight();
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_OBJ);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 |
+        SetGpuWindowOut(WINOUT_WIN01_OBJ);
+        SetGpuWindowIn(WININ_WIN0_BG0 |
                                     WININ_WIN0_BG1 |
                                     WININ_WIN0_OBJ);
     }
 
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE2(sTradeAnim->wirelessWinLeft, sTradeAnim->wirelessWinRight));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE2(sTradeAnim->wirelessWinTop, sTradeAnim->wirelessWinBottom));
+    SetGpuWindowX(0, WIN_RANGE2(sTradeAnim->wirelessWinLeft, sTradeAnim->wirelessWinRight));
+    SetGpuWindowY(0, WIN_RANGE2(sTradeAnim->wirelessWinTop, sTradeAnim->wirelessWinBottom));
 
     data[0]++;
     sTradeAnim->wirelessWinLeft -= 5;
@@ -4963,14 +4968,14 @@ static void Task_CloseCenterWhiteColumn(u8 taskId)
     {
         sTradeAnim->wirelessWinLeft = 80;
         sTradeAnim->wirelessWinRight = DisplayWidth() - 80;
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_OBJ);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 |
+        SetGpuWindowOut(WINOUT_WIN01_OBJ);
+        SetGpuWindowIn(WININ_WIN0_BG0 |
                                     WININ_WIN0_BG1 |
                                     WININ_WIN0_OBJ);
     }
 
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE2(sTradeAnim->wirelessWinLeft, sTradeAnim->wirelessWinRight));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE2(sTradeAnim->wirelessWinTop, sTradeAnim->wirelessWinBottom));
+    SetGpuWindowX(0, WIN_RANGE2(sTradeAnim->wirelessWinLeft, sTradeAnim->wirelessWinRight));
+    SetGpuWindowY(0, WIN_RANGE2(sTradeAnim->wirelessWinTop, sTradeAnim->wirelessWinBottom));
 
     if (sTradeAnim->wirelessWinLeft != DisplayWidth() / 2)
     {

@@ -791,7 +791,8 @@ static const struct BgTemplate sEasyChatBgTemplates[] = {
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -800,7 +801,8 @@ static const struct BgTemplate sEasyChatBgTemplates[] = {
         .bg = 1,
         .charBaseIndex = 3,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -809,7 +811,8 @@ static const struct BgTemplate sEasyChatBgTemplates[] = {
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0x80,
@@ -818,7 +821,8 @@ static const struct BgTemplate sEasyChatBgTemplates[] = {
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0,
@@ -3067,8 +3071,8 @@ static bool8 LoadEasyChatScreen(void)
         else
         {
             SetWindowDimensions(0, 0, 0, 0);
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+            SetGpuWindowOut(WINOUT_WIN01_BG0
                                        | WINOUT_WIN01_BG1
                                        | WINOUT_WIN01_BG3
                                        | WINOUT_WIN01_OBJ
@@ -3923,7 +3927,7 @@ static void InitEasyChatBgs(void)
     ChangeBgY(2, 0, BG_COORD_SET);
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON);
 }
 
 static void LoadEasyChatPalettes(void)
@@ -4620,8 +4624,8 @@ static void SetWindowDimensions(u8 left, u8 top, u8 width, u8 height)
 {
     u16 horizontalDimensions = WIN_RANGE(left, left + width);
     u16 verticalDimensions = WIN_RANGE(top, top + height);
-    SetGpuReg(REG_OFFSET_WIN0H, horizontalDimensions);
-    SetGpuReg(REG_OFFSET_WIN0V, verticalDimensions);
+    SetGpuWindowX(0, horizontalDimensions);
+    SetGpuWindowY(0, verticalDimensions);
 }
 
 static void LoadEasyChatGfx(void)

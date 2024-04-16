@@ -467,8 +467,8 @@ static void NamingScreen_Init(void)
     sNamingScreen->state = STATE_FADE_IN;
     sNamingScreen->bg1vOffset = 0;
     sNamingScreen->bg2vOffset = 0;
-    sNamingScreen->bg1Priority = BGCNT_PRIORITY(1);
-    sNamingScreen->bg2Priority = BGCNT_PRIORITY(2);
+    sNamingScreen->bg1Priority = 1;
+    sNamingScreen->bg2Priority = 2;
     sNamingScreen->bgToReveal = 0;
     sNamingScreen->bgToHide = 1;
     sNamingScreen->template = sNamingScreenTemplates[sNamingScreen->templateNum];
@@ -500,7 +500,7 @@ static void NamingScreen_InitBGs(void)
 
     GpuClearAll();
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
 
@@ -519,9 +519,9 @@ static void NamingScreen_InitBGs(void)
     for (i = 0; i < WIN_COUNT; i++)
         sNamingScreen->windows[i] = AddWindow(&sWindowTemplates[i]);
 
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 8));
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 8));
 
     SetBgTilemapBuffer(1, sNamingScreen->tilemapBuffer1);
     SetBgTilemapBuffer(2, sNamingScreen->tilemapBuffer2);
@@ -1978,8 +1978,8 @@ static void DrawKeyboardPageOnDeck(void)
     u8 bg;
     u8 bg_;
     u8 windowId;
-    u8 bg1Priority = GetGpuReg(REG_OFFSET_BG1CNT) & 3;
-    u8 bg2Priority = GetGpuReg(REG_OFFSET_BG2CNT) & 3;
+    u8 bg1Priority = GetGpuBackgroundPriority(1);
+    u8 bg2Priority = GetGpuBackgroundPriority(2);
 
     if (bg1Priority > bg2Priority)
     {
@@ -2034,12 +2034,10 @@ static void VBlankCB_NamingScreen(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
-    SetGpuReg(REG_OFFSET_BG1VOFS, sNamingScreen->bg1vOffset);
-    SetGpuReg(REG_OFFSET_BG2VOFS, sNamingScreen->bg2vOffset);
-    SetGpuReg(REG_OFFSET_BG1CNT, GetGpuReg(REG_OFFSET_BG1CNT) & 0xFFFC);
-    SetGpuRegBits(REG_OFFSET_BG1CNT, sNamingScreen->bg1Priority);
-    SetGpuReg(REG_OFFSET_BG2CNT, GetGpuReg(REG_OFFSET_BG2CNT) & 0xFFFC);
-    SetGpuRegBits(REG_OFFSET_BG2CNT, sNamingScreen->bg2Priority);
+    SetGpuBackgroundY(1, sNamingScreen->bg1vOffset);
+    SetGpuBackgroundY(2, sNamingScreen->bg2vOffset);
+    SetGpuBackgroundPriority(1, sNamingScreen->bg1Priority);
+    SetGpuBackgroundPriority(2, sNamingScreen->bg2Priority);
 }
 
 static void NamingScreen_ShowBgs(void)

@@ -1490,7 +1490,7 @@ static bool8 AnimateRayquazaInFigure8(struct Sprite *sprite)
     }
 
     // Update spotlight to sweep left and right with Rayquaza
-    SetGpuReg(REG_OFFSET_BG0HOFS, -sprite->x2);
+    SetGpuBackgroundX(0, -sprite->x2);
 
     if (++sprite->sAnimCounter == FIGURE_8_LENGTH)
     {
@@ -1514,7 +1514,7 @@ void UpdateRayquazaSpotlightEffect(struct Sprite *sprite)
     switch (sprite->sState)
     {
         case 0:
-            SetGpuReg(REG_OFFSET_BG0VOFS, DisplayWidth() / 2 - (sprite->sTimer / 3));
+            SetGpuBackgroundY(0, DisplayWidth() / 2 - (sprite->sTimer / 3));
             if (sprite->sTimer == 96)
             {
                 for (i = 0; i < 3; i++)
@@ -1610,7 +1610,7 @@ void UpdateRayquazaSpotlightEffect(struct Sprite *sprite)
                     ((u16 *)(BG_SCREEN_ADDR(31)))[i * 32 + j] = 0;
                 }
             }
-            SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+            SetGpuBackgroundY(0, 0);
             FieldEffectStop(sprite, FLDEFF_RAYQUAZA_SPOTLIGHT);
             break;
     }

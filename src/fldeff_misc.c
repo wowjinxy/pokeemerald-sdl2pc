@@ -362,18 +362,18 @@ static void Task_ComputerScreenOpenEffect(u8 taskId)
         task->tWinBottom = DisplayHeight() / 2 + 1;
 
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+        SetGpuWindowOut(0);
 
         break;
     case 1:
-        task->tBlendCnt = GetGpuReg(REG_OFFSET_BLDCNT);
-        task->tBlendY = GetGpuReg(REG_OFFSET_BLDY);
+        task->tBlendCnt = GetGpuState(GPU_STATE_BLDCNT);
+        task->tBlendY = GetGpuState(GPU_STATE_BLDY);
 
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_ALL | BLDCNT_EFFECT_LIGHTEN);
-        SetGpuReg(REG_OFFSET_BLDY, 16);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_ALL | BLDCNT_EFFECT_LIGHTEN);
+        SetGpuState(GPU_STATE_BLDY, 16);
 
         break;
     case 2:
@@ -384,12 +384,12 @@ static void Task_ComputerScreenOpenEffect(u8 taskId)
         {
             task->tWinLeft = 0;
             task->tWinRight = DisplayWidth();
-            SetGpuReg(REG_OFFSET_BLDY, 0);
-            SetGpuReg(REG_OFFSET_BLDCNT, task->tBlendCnt);
+            SetGpuState(GPU_STATE_BLDY, 0);
+            SetGpuState(GPU_STATE_BLDCNT, task->tBlendCnt);
             BlendPalettes(PALETTES_ALL, 0, 0);
             gPlttBufferFaded[0] = 0;
         }
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
 
         if (task->tWinLeft != 0)
             return;
@@ -404,13 +404,13 @@ static void Task_ComputerScreenOpenEffect(u8 taskId)
             task->tWinBottom = DisplayHeight();
             ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
 
         if (task->tWinTop != 0)
             return;
         break;
     default:
-        SetGpuReg(REG_OFFSET_BLDCNT, task->tBlendCnt);
+        SetGpuState(GPU_STATE_BLDCNT, task->tBlendCnt);
         DestroyTask(taskId);
         return;
     }
@@ -433,10 +433,10 @@ static void Task_ComputerScreenCloseEffect(u8 taskId)
         task->tWinBottom = DisplayHeight();
 
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+        SetGpuWindowOut(0);
         break;
     case 2:
         task->tWinTop += task->tVertIncrement;
@@ -446,10 +446,10 @@ static void Task_ComputerScreenCloseEffect(u8 taskId)
         {
             task->tWinTop = DisplayHeight() / 2;
             task->tWinBottom = DisplayHeight() / 2 + 1;
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_ALL | BLDCNT_EFFECT_LIGHTEN);
-            SetGpuReg(REG_OFFSET_BLDY, 16);
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_ALL | BLDCNT_EFFECT_LIGHTEN);
+            SetGpuState(GPU_STATE_BLDY, 16);
         }
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(task->tWinTop, task->tWinBottom));
+        SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
 
         if (task->tWinTop != DisplayHeight() / 2)
             return;
@@ -465,15 +465,15 @@ static void Task_ComputerScreenCloseEffect(u8 taskId)
             BlendPalettes(PALETTES_ALL, 16, 0);
             gPlttBufferFaded[0] = 0;
         }
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(task->tWinLeft, task->tWinRight));
+        SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
 
         if (task->tWinLeft != DisplayWidth() / 2)
             return;
         break;
     default:
         ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         DestroyTask(taskId);
         return;
     }
@@ -1220,7 +1220,7 @@ static void Task_FieldPoisonEffect(u8 taskId)
         DestroyTask(taskId);
         return;
     }
-    SetGpuReg(REG_OFFSET_MOSAIC, (tMosaic << 4) | tMosaic);
+    SetGpuState(GPU_STATE_MOSAIC, (tMosaic << 4) | tMosaic);
 }
 
 #undef tState

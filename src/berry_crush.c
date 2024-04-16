@@ -421,7 +421,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0,
@@ -430,7 +431,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 13,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0,
@@ -439,7 +441,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 12,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0,
@@ -448,7 +451,8 @@ static const struct BgTemplate sBgTemplates[4] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 11,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0,
@@ -1182,7 +1186,7 @@ static s32 ShowGameDisplay(void)
     case 0:
         SetVBlankCallback(NULL);
         SetHBlankCallback(NULL);
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ScanlineEffect_Stop();
         ResetTempTileDataBuffers();
         break;
@@ -1208,8 +1212,8 @@ static s32 ShowGameDisplay(void)
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         break;
     case 4:
         FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
@@ -1248,7 +1252,7 @@ static s32 ShowGameDisplay(void)
         LoadWirelessStatusIndicatorSpriteGfx();
         CreateWirelessStatusIndicatorSprite(0,  0);
         CreateGameSprites(game);
-        SetGpuReg(REG_OFFSET_BG1VOFS, -gSpriteCoordOffsetY);
+        SetGpuBackgroundY(1, -gSpriteCoordOffsetY);
         ChangeBgX(1, 0, BG_COORD_SET);
         ChangeBgY(1, 0, BG_COORD_SET);
         break;
@@ -1336,7 +1340,7 @@ static s32 HideGameDisplay(void)
 static s32 UpdateGame(struct BerryCrushGame *game)
 {
     gSpriteCoordOffsetY = game->depth + game->vibration;
-    SetGpuReg(REG_OFFSET_BG1VOFS, -gSpriteCoordOffsetY);
+    SetGpuBackgroundY(1, -gSpriteCoordOffsetY);
 
     if (game->gameState == STATE_PLAYING)
         PrintTimer(&game->gfx, game->timer);
@@ -2483,9 +2487,9 @@ static u32 Cmd_DropLid(struct BerryCrushGame *game,  u8 *args)
         break;
     case 1:
         game->vibration = sIntroOutroVibrationData[game->gfx.vibrationIdx][game->gfx.counter];
-        SetGpuReg(REG_OFFSET_BG0VOFS, -game->vibration);
-        SetGpuReg(REG_OFFSET_BG2VOFS, -game->vibration);
-        SetGpuReg(REG_OFFSET_BG3VOFS, -game->vibration);
+        SetGpuBackgroundY(0, -game->vibration);
+        SetGpuBackgroundY(2, -game->vibration);
+        SetGpuBackgroundY(3, -game->vibration);
         game->gfx.counter++;
         if (game->gfx.counter < game->gfx.numVibrations)
             return 0;
@@ -2497,9 +2501,9 @@ static u32 Cmd_DropLid(struct BerryCrushGame *game,  u8 *args)
         return 0;
     case 2:
         game->vibration = 0;
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundY(3, 0);
         Rfu_SetLinkStandbyCallback();
         break;
     case 3:
@@ -2832,9 +2836,9 @@ static u32 Cmd_PlayGame_Leader(struct BerryCrushGame *game, u8 *args)
     memset(&game->localState, 0, sizeof(game->localState));
     memset(&game->recvCmd, 0, sizeof(game->recvCmd));
     RecvLinkData(game);
-    SetGpuReg(REG_OFFSET_BG0VOFS, -game->vibration);
-    SetGpuReg(REG_OFFSET_BG2VOFS, -game->vibration);
-    SetGpuReg(REG_OFFSET_BG3VOFS, -game->vibration);
+    SetGpuBackgroundY(0, -game->vibration);
+    SetGpuBackgroundY(2, -game->vibration);
+    SetGpuBackgroundY(3, -game->vibration);
     if (game->endGame)
     {
         if (game->timer >= MAX_TIME)
@@ -2865,9 +2869,9 @@ static u32 Cmd_PlayGame_Member(struct BerryCrushGame *game, u8 *args)
     memset(&game->localState, 0, sizeof(game->localState));
     memset(&game->recvCmd, 0, sizeof(game->recvCmd));
     RecvLinkData(game);
-    SetGpuReg(REG_OFFSET_BG0VOFS, -game->vibration);
-    SetGpuReg(REG_OFFSET_BG2VOFS, -game->vibration);
-    SetGpuReg(REG_OFFSET_BG3VOFS, -game->vibration);
+    SetGpuBackgroundY(0, -game->vibration);
+    SetGpuBackgroundY(2, -game->vibration);
+    SetGpuBackgroundY(3, -game->vibration);
     if (game->endGame)
     {
         if (game->timer >= MAX_TIME)
@@ -2911,9 +2915,9 @@ static u32 Cmd_FinishGame(struct BerryCrushGame *game, u8 *args)
         break;
     case 2:
         game->vibration = sIntroOutroVibrationData[game->gfx.vibrationIdx][game->gfx.counter];
-        SetGpuReg(REG_OFFSET_BG0VOFS, -game->vibration);
-        SetGpuReg(REG_OFFSET_BG2VOFS, -game->vibration);
-        SetGpuReg(REG_OFFSET_BG3VOFS, -game->vibration);
+        SetGpuBackgroundY(0, -game->vibration);
+        SetGpuBackgroundY(2, -game->vibration);
+        SetGpuBackgroundY(3, -game->vibration);
         if (++game->gfx.counter < game->gfx.numVibrations)
             return 0;
         if (game->gfx.vibrationIdx != 0)
@@ -2926,9 +2930,9 @@ static u32 Cmd_FinishGame(struct BerryCrushGame *game, u8 *args)
         break;
     case 3:
         game->vibration = 0;
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundY(3, 0);
         break;
     case 4:
         if (!AreEffectsFinished(game, &game->gfx))
@@ -2969,9 +2973,9 @@ static u32 Cmd_HandleTimeUp(struct BerryCrushGame *game, u8 *args)
             return 0;
         Rfu_SetLinkStandbyCallback();
         game->cmdTimer = 0;
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundY(3, 0);
         break;
     case 3:
         if (!IsLinkTaskFinished())

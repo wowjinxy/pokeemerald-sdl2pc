@@ -75,7 +75,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -519,7 +520,7 @@ static void Task_ResetRtc_Init(u8 taskId)
 
 void CB2_InitResetRtcScreen(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     SetVBlankCallback(NULL);
     GpuClearPalette();
     GpuClearData();
@@ -542,7 +543,7 @@ static void InitResetRtcScreenBgAndWindows(void)
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     ScheduleBgCopyTilemapToVram(0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     InitWindows(sWindowTemplates);
     DeactivateAllTextPrinters();

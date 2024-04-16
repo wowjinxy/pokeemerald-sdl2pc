@@ -43,7 +43,8 @@ static const struct BgTemplate sTrainerHillRecordsBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -52,7 +53,8 @@ static const struct BgTemplate sTrainerHillRecordsBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -390,26 +392,26 @@ static void ClearVramOamPlttRegs(void)
 {
     GpuClearAll();
 
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    ClearGpuBackgroundState(1);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    ClearGpuBackgroundState(2);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    ClearGpuBackgroundState(3);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 }
 
 static void ClearTasksAndGraphicalStructs(void)
@@ -435,7 +437,7 @@ static void ResetBgCoordinates(void)
 
 static void SetDispcntReg(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG0_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_1D_MAP);
 }
 
 static void LoadTrainerHillRecordsWindowGfx(u8 bgId)

@@ -1098,7 +1098,7 @@ static bool8 UpdateOrbEffectBlend(u16 shakeDir)
             hi++;
     }
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(lo, hi));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(lo, hi));
 
     if (lo == 0 && hi == 16)
         return TRUE;
@@ -1131,9 +1131,9 @@ static void Task_OrbEffect(u8 taskId)
         tWinOut = REG_WINOUT;
         ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
         SetGpuRegBits(REG_OFFSET_BLDCNT, gOrbEffectBackgroundLayerFlags[0]);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(12, 7));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 7));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+        SetGpuWindowOut(WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
         SetBgTilemapPalette(0, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT, 0xF);
         ScheduleBgCopyTilemapToVram(0);
         SetOrbFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], tCenterX, tCenterY, 1);
@@ -1192,12 +1192,12 @@ static void Task_OrbEffect(u8 taskId)
         }
         break;
     case 5:
-        SetGpuReg(REG_OFFSET_WIN0H, 255);
-        SetGpuReg(REG_OFFSET_DISPCNT, tDispCnt);
-        SetGpuReg(REG_OFFSET_BLDCNT, tBldCnt);
-        SetGpuReg(REG_OFFSET_BLDALPHA, tBldAlpha);
-        SetGpuReg(REG_OFFSET_WININ, tWinIn);
-        SetGpuReg(REG_OFFSET_WINOUT, tWinOut);
+        SetGpuWindowX(0, 255);
+        SetGpuState(GPU_STATE_DISPCNT, tDispCnt);
+        SetGpuState(GPU_STATE_BLDCNT, tBldCnt);
+        SetGpuState(GPU_STATE_BLDALPHA, tBldAlpha);
+        SetGpuWindowIn(tWinIn);
+        SetGpuWindowOut(tWinOut);
         ScriptContext_Enable();
         DestroyTask(taskId);
         break;

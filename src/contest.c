@@ -699,7 +699,8 @@ static const struct BgTemplate sContestBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 0x18,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -708,7 +709,8 @@ static const struct BgTemplate sContestBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 2,
         .mapBaseIndex = 0x1E,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -717,7 +719,8 @@ static const struct BgTemplate sContestBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 0x1C,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -726,7 +729,8 @@ static const struct BgTemplate sContestBgTemplates[] =
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 0x1A,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1009,12 +1013,12 @@ void ResetLinkContestBoolean(void)
 
 static void SetupContestGpuRegs(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG0 | WINOUT_WINOBJ_BG1 | WINOUT_WINOBJ_BG2 | WINOUT_WINOBJ_BG3 | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG0 | WINOUT_WINOBJ_BG1 | WINOUT_WINOBJ_BG2 | WINOUT_WINOBJ_BG3 | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
 
     gBattle_BG0_X = 0;
@@ -1411,17 +1415,11 @@ static void Task_RaiseCurtainAtStart(u8 taskId)
         gTasks[taskId].data[0]++;
         break;
     case 3:
-    {
-        u16 bg0Cnt = GetGpuReg(REG_OFFSET_BG0CNT);
-        u16 bg2Cnt = GetGpuReg(REG_OFFSET_BG2CNT);
-        ((struct BgCnt *)&bg0Cnt)->priority = 0;
-        ((struct BgCnt *)&bg2Cnt)->priority = 0;
-        SetGpuReg(REG_OFFSET_BG0CNT, bg0Cnt);
-        SetGpuReg(REG_OFFSET_BG2CNT, bg2Cnt);
+        SetGpuBackgroundPriority(0, 0);
+        SetGpuBackgroundPriority(2, 0);
         SlideApplauseMeterIn();
         gTasks[taskId].data[0]++;
         break;
-    }
     case 4:
     default:
         if (eContest.applauseMeterIsMoving)
@@ -1452,18 +1450,18 @@ static void CB2_ContestMain(void)
 
 static void VBlankCB_Contest(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
-    SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-    SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
-    SetGpuReg(REG_OFFSET_BG3HOFS, gBattle_BG3_X);
-    SetGpuReg(REG_OFFSET_BG3VOFS, gBattle_BG3_Y);
-    SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
-    SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
-    SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN1H);
-    SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN1V);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
+    SetGpuBackgroundX(2, gBattle_BG2_X);
+    SetGpuBackgroundY(2, gBattle_BG2_Y);
+    SetGpuBackgroundX(3, gBattle_BG3_X);
+    SetGpuBackgroundY(3, gBattle_BG3_Y);
+    SetGpuWindowX(0, gBattle_WIN0H);
+    SetGpuWindowY(0, gBattle_WIN0V);
+    SetGpuWindowX(1, gBattle_WIN1H);
+    SetGpuWindowY(1, gBattle_WIN1V);
     TransferPlttBuffer();
     LoadOam();
     ProcessSpriteCopyRequests();
@@ -2635,12 +2633,8 @@ static void Task_UpdateContestantBoxOrder(u8 taskId)
 
 static void Task_TryStartNextRoundOfAppeals(u8 taskId)
 {
-    vu16 sp0 = GetGpuReg(REG_OFFSET_BG0CNT);
-    vu16 sp2 = GetGpuReg(REG_OFFSET_BG2CNT);
-    ((struct BgCnt *)&sp0)->priority = 0;
-    ((struct BgCnt *)&sp2)->priority = 0;
-    SetGpuReg(REG_OFFSET_BG0CNT, sp0);
-    SetGpuReg(REG_OFFSET_BG2CNT, sp2);
+    SetGpuBackgroundPriority(0, 0);
+    SetGpuBackgroundPriority(2, 0);
     eContest.appealNumber++;
     if (eContest.appealNumber == CONTEST_NUM_APPEALS)
     {
@@ -4175,14 +4169,14 @@ static void DestroyContestantBoxBlinkSprites(u8 spriteId)
 
 static void SetBlendForContestantBoxBlink(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(7, 9));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(7, 9));
 }
 
 static void ResetBlendForContestantBoxBlink(void)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
 }
 
 // To indicate whose turn is up
@@ -5066,28 +5060,21 @@ bool8 IsContestantAllowedToCombo(u8 contestant)
 static void SetBgForCurtainDrop(void)
 {
     s32 i;
-    u16 bg0Cnt, bg1Cnt, bg2Cnt;
 
-    bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-    ((struct BgCnt *)&bg1Cnt)->priority = 0;
-    ((struct BgCnt *)&bg1Cnt)->screenSize = 2;
-    ((struct BgCnt *)&bg1Cnt)->areaOverflowMode = 0;
-    ((struct BgCnt *)&bg1Cnt)->charBaseBlock = 0;
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundPriority(1, 0);
+    SetGpuBackgroundWidth(1, 256);
+    SetGpuBackgroundHeight(1, 512);
+    SetGpuBackgroundAreaOverflowMode(1, 0);
+    SetGpuBackgroundCharBaseBlock(1, 0);
 
-    SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
-
-    bg0Cnt = GetGpuReg(REG_OFFSET_BG0CNT);
-    bg2Cnt = GetGpuReg(REG_OFFSET_BG2CNT);
-    ((struct BgCnt *)&bg0Cnt)->priority = 1;
-    ((struct BgCnt *)&bg2Cnt)->priority = 1;
-
-    SetGpuReg(REG_OFFSET_BG0CNT, bg0Cnt);
-    SetGpuReg(REG_OFFSET_BG2CNT, bg2Cnt);
+    SetGpuBackgroundPriority(0, 1);
+    SetGpuBackgroundPriority(2, 1);
 
     gBattle_BG1_X = DisplayWidth();
     gBattle_BG1_Y = DisplayHeight();
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
 
     CpuFill32(0, gContestResources->contestBgTilemaps[1], 0x1000);
 
@@ -5104,18 +5091,15 @@ static void SetBgForCurtainDrop(void)
 static void UpdateContestantBoxOrder(void)
 {
     s32 i;
-    u16 bg1Cnt;
 
     RequestDma3Fill(0,(void *)(BG_CHAR_ADDR(2)), 0x2000, 1);
     CpuFill32(0, gContestResources->contestBgTilemaps[1], 0x1000);
     Contest_SetBgCopyFlags(1);
-    bg1Cnt = GetGpuReg(REG_OFFSET_BG1CNT);
-    ((struct BgCnt *) &bg1Cnt)->priority = 1;
-    ((struct BgCnt *) &bg1Cnt)->screenSize = 0;
-    ((struct BgCnt *) &bg1Cnt)->areaOverflowMode = 0;
-    ((struct BgCnt *) &bg1Cnt)->charBaseBlock = 2;
-
-    SetGpuReg(REG_OFFSET_BG1CNT, bg1Cnt);
+    SetGpuBackgroundPriority(1, 1);
+    SetGpuBackgroundWidth(1, 256);
+    SetGpuBackgroundHeight(1, 256);
+    SetGpuBackgroundAreaOverflowMode(1, 0);
+    SetGpuBackgroundCharBaseBlock(1, 2);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;

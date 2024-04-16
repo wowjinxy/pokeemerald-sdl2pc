@@ -681,10 +681,10 @@ s32 WonderNews_Enter(void)
         ChangeBgY(1, 0, BG_COORD_SET);
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DisplayWidth()));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(26, 152));
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
+        SetGpuWindowX(0, WIN_RANGE(0, DisplayWidth()));
+        SetGpuWindowY(0, WIN_RANGE(26, 152));
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
         break;
     case 2:
@@ -753,10 +753,10 @@ s32 WonderNews_Exit(bool32 useCancel)
         if (UpdatePaletteFade())
             return 0;
         ChangeBgY(2, 0, BG_COORD_SET);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
         ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
         break;
     case 2:

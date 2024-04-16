@@ -11,11 +11,6 @@
 #include "trig.h"
 #include "constants/trainers.h"
 
-static EWRAM_DATA u16 sBgCnt = 0;
-
-extern const u8 gBattleAnimBgCntSet[];
-extern const u8 gBattleAnimBgCntGet[];
-
 static void BattleIntroSlide1(u8);
 static void BattleIntroSlide2(u8);
 static void BattleIntroSlide3(u8);
@@ -40,59 +35,58 @@ void SetAnimBgAttribute(u8 bgId, u8 attributeId, u8 value)
 {
     if (bgId < 4)
     {
-        sBgCnt = GetGpuReg(gBattleAnimBgCntSet[bgId]);
         switch (attributeId)
         {
-        case BG_ANIM_SCREEN_SIZE:
-            ((struct BgCnt *)&sBgCnt)->screenSize = value;
+        case BG_ANIM_SCREEN_WIDTH:
+            SetGpuBackgroundWidth(bgId, value);
+            break;
+        case BG_ANIM_SCREEN_HEIGHT:
+            SetGpuBackgroundHeight(bgId, value);
             break;
         case BG_ANIM_AREA_OVERFLOW_MODE:
-            ((struct BgCnt *)&sBgCnt)->areaOverflowMode = value;
+            SetGpuBackgroundAreaOverflowMode(bgId, value);
             break;
         case BG_ANIM_MOSAIC:
-            ((struct BgCnt *)&sBgCnt)->mosaic = value;
+            SetGpuBackgroundMosaicEnabled(bgId, value);
             break;
         case BG_ANIM_CHAR_BASE_BLOCK:
-            ((struct BgCnt *)&sBgCnt)->charBaseBlock = value;
+            SetGpuBackgroundCharBaseBlock(bgId, value);
             break;
         case BG_ANIM_PRIORITY:
-            ((struct BgCnt *)&sBgCnt)->priority = value;
+            SetGpuBackgroundPriority(bgId, value);
             break;
         case BG_ANIM_PALETTES_MODE:
-            ((struct BgCnt *)&sBgCnt)->palettes = value;
+            SetGpuBackground8bppMode(bgId, value);
             break;
         case BG_ANIM_SCREEN_BASE_BLOCK:
-            ((struct BgCnt *)&sBgCnt)->screenBaseBlock = value;
+            SetGpuBackgroundScreenBaseBlock(bgId, value);
             break;
         }
-
-        SetGpuReg(gBattleAnimBgCntSet[bgId], sBgCnt);
     }
 }
 
 int GetAnimBgAttribute(u8 bgId, u8 attributeId)
 {
-    u16 bgCnt;
-
     if (bgId < 4)
     {
-        bgCnt = GetGpuReg(gBattleAnimBgCntGet[bgId]);
         switch (attributeId)
         {
-        case BG_ANIM_SCREEN_SIZE:
-            return ((struct BgCnt *)&bgCnt)->screenSize;
+        case BG_ANIM_SCREEN_WIDTH:
+            return GetGpuBackgroundWidth(bgId);
+        case BG_ANIM_SCREEN_HEIGHT:
+            return GetGpuBackgroundHeight(bgId);
         case BG_ANIM_AREA_OVERFLOW_MODE:
-            return ((struct BgCnt *)&bgCnt)->areaOverflowMode;
+            return GetGpuBackgroundAreaOverflowMode(bgId);
         case BG_ANIM_MOSAIC:
-            return ((struct BgCnt *)&bgCnt)->mosaic;
+            return GetGpuBackgroundMosaicEnabled(bgId);
         case BG_ANIM_CHAR_BASE_BLOCK:
-            return ((struct BgCnt *)&bgCnt)->charBaseBlock;
+            return GetGpuBackgroundCharBaseBlock(bgId);
         case BG_ANIM_PRIORITY:
-            return ((struct BgCnt *)&bgCnt)->priority;
+            return GetGpuBackgroundPriority(bgId);
         case BG_ANIM_PALETTES_MODE:
-            return ((struct BgCnt *)&bgCnt)->palettes;
+            return GetGpuBackground8bppMode(bgId);
         case BG_ANIM_SCREEN_BASE_BLOCK:
-            return ((struct BgCnt *)&bgCnt)->screenBaseBlock;
+            return GetGpuBackgroundScreenBaseBlock(bgId);
         }
     }
 
@@ -144,11 +138,11 @@ static void BattleIntroSlideEnd(u8 taskId)
     gBattle_BG1_Y = 0;
     gBattle_BG2_X = 0;
     gBattle_BG2_Y = 0;
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
 }
 
 static void BattleIntroSlide1(u8 taskId)
@@ -174,7 +168,7 @@ static void BattleIntroSlide1(u8 taskId)
         if (--gTasks[taskId].data[2] == 0)
         {
             gTasks[taskId].tState++;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
         }
         break;
     case 2:
@@ -226,8 +220,16 @@ static void BattleIntroSlide1(u8 taskId)
             CpuFill32(0, (void *)BG_SCREEN_ADDR(28), BG_SCREEN_SIZE);
             SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 0);
             SetBgAttribute(2, BG_ATTR_CHARBASEINDEX, 0);
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT256x512);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
+
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            SetGpuBackgroundWidth(1, 256);
+            SetGpuBackgroundHeight(1, 512);
+
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
         }
         break;
     case 4:
@@ -282,7 +284,7 @@ static void BattleIntroSlide2(u8 taskId)
         if (--gTasks[taskId].data[2] == 0)
         {
             gTasks[taskId].tState++;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
         }
         break;
     case 2:
@@ -301,9 +303,9 @@ static void BattleIntroSlide2(u8 taskId)
         {
             if (--gTasks[taskId].data[3] == 0)
             {
-                SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ);
-                SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(15, 0));
-                SetGpuReg(REG_OFFSET_BLDY, 0);
+                SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ);
+                SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(15, 0));
+                SetGpuState(GPU_STATE_BLDY, 0);
             }
         }
         else
@@ -335,8 +337,16 @@ static void BattleIntroSlide2(u8 taskId)
             CpuFill32(0, (void *)BG_SCREEN_ADDR(28), BG_SCREEN_SIZE);
             SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 0);
             SetBgAttribute(2, BG_ATTR_CHARBASEINDEX, 0);
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT256x512);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
+
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            SetGpuBackgroundWidth(1, 256);
+            SetGpuBackgroundHeight(1, 512);
+
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
         }
         break;
     case 4:
@@ -345,7 +355,7 @@ static void BattleIntroSlide2(u8 taskId)
     }
 
     if (gTasks[taskId].tState != 4)
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[4], 0));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[4], 0));
 }
 
 static void BattleIntroSlide3(u8 taskId)
@@ -356,9 +366,9 @@ static void BattleIntroSlide3(u8 taskId)
     switch (gTasks[taskId].tState)
     {
     case 0:
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 8));
+        SetGpuState(GPU_STATE_BLDY, 0);
         gTasks[taskId].data[4] = BLDALPHA_BLEND(8, 8);
         if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
         {
@@ -375,7 +385,7 @@ static void BattleIntroSlide3(u8 taskId)
         if (--gTasks[taskId].data[2] == 0)
         {
             gTasks[taskId].tState++;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
         }
         break;
     case 2:
@@ -423,8 +433,16 @@ static void BattleIntroSlide3(u8 taskId)
             CpuFill32(0, (void *)BG_SCREEN_ADDR(28), BG_SCREEN_SIZE);
             SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 0);
             SetBgAttribute(2, BG_ATTR_CHARBASEINDEX, 0);
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT256x512);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
+
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            SetGpuBackgroundWidth(1, 256);
+            SetGpuBackgroundHeight(1, 512);
+
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
         }
         break;
     case 4:
@@ -433,7 +451,7 @@ static void BattleIntroSlide3(u8 taskId)
     }
 
     if (gTasks[taskId].tState != 4)
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[4], 0));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[4], 0));
 }
 
 static void BattleIntroSlideLink(u8 taskId)
@@ -470,8 +488,8 @@ static void BattleIntroSlideLink(u8 taskId)
             gSprites[gBattleStruct->linkBattleVsSpriteId_V].callback = SpriteCB_VsLetterInit;
             gSprites[gBattleStruct->linkBattleVsSpriteId_S].oam.objMode = ST_OAM_OBJ_WINDOW;
             gSprites[gBattleStruct->linkBattleVsSpriteId_S].callback = SpriteCB_VsLetterInit;
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2);
+            SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
+            SetGpuWindowOut(WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2);
         }
         break;
     case 2:
@@ -502,10 +520,19 @@ static void BattleIntroSlideLink(u8 taskId)
         {
             gScanlineEffect.state = 3;
             gTasks[taskId].tState++;
+
             SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 0);
             SetBgAttribute(2, BG_ATTR_CHARBASEINDEX, 0);
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT256x512);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
+
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            SetGpuBackgroundWidth(1, 256);
+            SetGpuBackgroundHeight(1, 512);
+
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
         }
         break;
     case 4:
@@ -526,11 +553,24 @@ static void BattleIntroSlidePartner(u8 taskId)
         if (--gTasks[taskId].data[2] == 0)
         {
             gTasks[taskId].tState++;
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(2) | BGCNT_CHARBASE(2) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT512x256);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) | BGCNT_CHARBASE(2) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
-            SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
-            SetGpuReg(REG_OFFSET_WININ, WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
-            SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
+
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundPriority(1, 2);
+            SetGpuBackgroundCharBaseBlock(1, 2);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            SetGpuBackgroundWidth(1, 512);
+            SetGpuBackgroundHeight(1, 256);
+
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundPriority(2, 2);
+            SetGpuBackgroundCharBaseBlock(2, 2);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
+
+            SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+            SetGpuWindowIn(WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
+            SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR);
             gBattle_BG0_Y = -48;
             gBattle_BG1_X = DisplayWidth();
             gBattle_BG2_X = -DisplayWidth();
@@ -569,11 +609,19 @@ static void BattleIntroSlidePartner(u8 taskId)
         if (!gBattle_BG0_Y)
         {
             CpuFill32(0, (void *)BG_SCREEN_ADDR(28), BG_SCREEN_SIZE * 4);
-            SetGpuReg(REG_OFFSET_DISPCNT, GetGpuReg(REG_OFFSET_DISPCNT) & ~DISPCNT_WIN1_ON);
+            SetGpuState(GPU_STATE_DISPCNT, GetGpuState(GPU_STATE_DISPCNT) & ~DISPCNT_WIN1_ON);
             SetBgAttribute(1, BG_ATTR_CHARBASEINDEX, 0);
             SetBgAttribute(2, BG_ATTR_CHARBASEINDEX, 0);
-            SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(28) | BGCNT_TXT256x512);
-            SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(0) | BGCNT_CHARBASE(0) | BGCNT_16COLOR | BGCNT_SCREENBASE(30) | BGCNT_TXT512x256);
+            ClearGpuBackgroundState(1);
+            SetGpuBackgroundPriority(1, 0);
+            SetGpuBackgroundCharBaseBlock(1, 0);
+            SetGpuBackgroundScreenBaseBlock(1, 28);
+            ClearGpuBackgroundState(2);
+            SetGpuBackgroundPriority(2, 0);
+            SetGpuBackgroundCharBaseBlock(2, 0);
+            SetGpuBackgroundScreenBaseBlock(2, 30);
+            SetGpuBackgroundWidth(2, 512);
+            SetGpuBackgroundHeight(2, 256);
             gScanlineEffect.state = 3;
             gTasks[taskId].tState++;
         }

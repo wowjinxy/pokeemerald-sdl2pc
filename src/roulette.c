@@ -426,7 +426,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -436,7 +437,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 4,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -446,7 +448,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 1,
         .mapBaseIndex = 6,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 1,
         .priority = 2,
         .baseTile = 0
@@ -1060,10 +1063,10 @@ static void VBlankCB_Roulette(void)
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
     UpdateWheelPosition();
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0x200 - sRoulette->gridX);
+    SetGpuBackgroundX(1, 0x200 - sRoulette->gridX);
 
     if (sRoulette->shroomishShadowTimer)
-        SetGpuReg(REG_OFFSET_BLDALPHA, sRoulette->shroomishShadowAlpha);
+        SetGpuState(GPU_STATE_BLDALPHA, sRoulette->shroomishShadowAlpha);
 
     if (sRoulette->updateGridHighlight)
     {
@@ -1190,10 +1193,10 @@ static void CB2_LoadRoulette(void)
     case 1:
         InitRouletteBgAndWindows();
         DeactivateAllTextPrinters();
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_NONE |
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_NONE |
                                      BLDCNT_TGT2_BG2 |
                                      BLDCNT_TGT2_BD);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(10, 6));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(10, 6));
         break;
     case 2:
         ResetPaletteFade();
@@ -1236,7 +1239,7 @@ static void CB2_LoadRoulette(void)
         gSpriteCoordOffsetY = 0;
         break;
     case 7:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 |
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_OBJ_ON);
         CopyBgTilemapBufferToVram(1);
@@ -1283,10 +1286,10 @@ static void Task_StartPlaying(u8 taskId)
 {
     if (UpdatePaletteFade() == 0)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_NONE |
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_NONE |
                                      BLDCNT_TGT2_BG2 |
                                      BLDCNT_TGT2_BD);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 8));
         gTasks[taskId].tBallNum = 0;
         ResetBallDataForNewSpin(taskId);
         ResetHits();
@@ -1988,9 +1991,9 @@ static void Task_ExitRoulette(u8 taskId)
         gSpriteCoordOffsetX = gSpriteCoordOffsetY = 0;
         ResetVramOamAndBgCntRegs();
         ResetAllBgsCoordinates();
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
         FreeAllSpritePalettes();
         ResetPaletteFade();
         ResetSpriteData();
@@ -2315,18 +2318,17 @@ static void UpdateWheelPosition(void)
 {
     s32 bg2x;
     s32 bg2y;
-    SetGpuReg(REG_OFFSET_BG2PA, sRoulette->wheelRotation.a);
-    SetGpuReg(REG_OFFSET_BG2PB, sRoulette->wheelRotation.b);
-    SetGpuReg(REG_OFFSET_BG2PC, sRoulette->wheelRotation.c);
-    SetGpuReg(REG_OFFSET_BG2PD, sRoulette->wheelRotation.d);
+
+    SetGpuAffineBgA(2, sRoulette->wheelRotation.a);
+    SetGpuAffineBgB(2, sRoulette->wheelRotation.b);
+    SetGpuAffineBgC(2, sRoulette->wheelRotation.c);
+    SetGpuAffineBgD(2, sRoulette->wheelRotation.d);
     bg2x = 0x7400 - sRoulette->wheelRotation.a * (gSpriteCoordOffsetX + 116)
                 - sRoulette->wheelRotation.b * (gSpriteCoordOffsetY + 80);
     bg2y = 0x5400 - sRoulette->wheelRotation.c * (gSpriteCoordOffsetX + 116)
                 - sRoulette->wheelRotation.d * (gSpriteCoordOffsetY + 80);
-    SetGpuReg(REG_OFFSET_BG2X_L, bg2x);
-    SetGpuReg(REG_OFFSET_BG2X_H, (bg2x & 0x0fff0000) >> 16);
-    SetGpuReg(REG_OFFSET_BG2Y_L, bg2y);
-    SetGpuReg(REG_OFFSET_BG2Y_H, (bg2y & 0x0fff0000) >> 16);
+    SetGpuAffineBgX(2, bg2x);
+    SetGpuAffineBgY(2, bg2y);
 }
 
 static const u8 sFiller[3] = {};

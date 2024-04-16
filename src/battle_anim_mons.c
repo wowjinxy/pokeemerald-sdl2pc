@@ -738,15 +738,15 @@ void RunStoredCallbackWhenAnimEnds(struct Sprite *sprite)
 
 void DestroyAnimSpriteAndDisableBlend(struct Sprite *sprite)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
     DestroyAnimSprite(sprite);
 }
 
 void DestroyAnimVisualTaskAndDisableBlend(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
     DestroyAnimVisualTask(taskId);
 }
 
@@ -1031,12 +1031,14 @@ void UpdateAnimBg3ScreenSize(bool8 largeScreenSize)
 {
     if (!largeScreenSize || IsContest())
     {
-        SetAnimBgAttribute(3, BG_ANIM_SCREEN_SIZE, 0);
+        SetAnimBgAttribute(3, BG_ANIM_SCREEN_WIDTH, 256);
+        SetAnimBgAttribute(3, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(3, BG_ANIM_AREA_OVERFLOW_MODE, 1);
     }
     else
     {
-        SetAnimBgAttribute(3, BG_ANIM_SCREEN_SIZE, 1);
+        SetAnimBgAttribute(3, BG_ANIM_SCREEN_WIDTH, 512);
+        SetAnimBgAttribute(3, BG_ANIM_SCREEN_HEIGHT, 256);
         SetAnimBgAttribute(3, BG_ANIM_AREA_OVERFLOW_MODE, 0);
     }
 }
@@ -1672,7 +1674,7 @@ void AnimTask_AlphaFadeIn(u8 taskId)
     gTasks[taskId].data[6] = v1;
     gTasks[taskId].data[7] = gBattleAnimArgs[2];
     gTasks[taskId].data[8] = gBattleAnimArgs[3];
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gBattleAnimArgs[0], gBattleAnimArgs[1]));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gBattleAnimArgs[0], gBattleAnimArgs[1]));
     gTasks[taskId].func = AnimTask_AlphaFadeIn_Step;
 }
 
@@ -1693,7 +1695,7 @@ static void AnimTask_AlphaFadeIn_Step(u8 taskId)
             if (task->data[4] != task->data[8])
                 task->data[4] += task->data[6];
         }
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(task->data[3], task->data[4]));
         if (task->data[3] == task->data[7] && task->data[4] == task->data[8])
         {
             DestroyAnimVisualTask(taskId);

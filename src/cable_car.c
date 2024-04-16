@@ -97,7 +97,8 @@ static const struct BgTemplate sBgTemplates[4] = {
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -106,7 +107,8 @@ static const struct BgTemplate sBgTemplates[4] = {
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -115,7 +117,8 @@ static const struct BgTemplate sBgTemplates[4] = {
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -124,7 +127,8 @@ static const struct BgTemplate sBgTemplates[4] = {
         .bg = 3,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -558,12 +562,12 @@ static void VBlankCB_CableCar(void)
 {
     CopyBgTilemapBufferToVram(0);
     CopyBgTilemapBufferToVram(3);
-    SetGpuReg(REG_OFFSET_BG3HOFS, sCableCar->bg3HorizontalOffset);
-    SetGpuReg(REG_OFFSET_BG3VOFS, sCableCar->bg3VerticalOffset);
-    SetGpuReg(REG_OFFSET_BG1HOFS, sCableCar->bg1HorizontalOffset);
-    SetGpuReg(REG_OFFSET_BG1VOFS, sCableCar->bg1VerticalOffset);
-    SetGpuReg(REG_OFFSET_BG0HOFS, sCableCar->bg0HorizontalOffset);
-    SetGpuReg(REG_OFFSET_BG0VOFS, sCableCar->bg0VerticalOffset);
+    SetGpuBackgroundX(3, sCableCar->bg3HorizontalOffset);
+    SetGpuBackgroundY(3, sCableCar->bg3VerticalOffset);
+    SetGpuBackgroundX(1, sCableCar->bg1HorizontalOffset);
+    SetGpuBackgroundY(1, sCableCar->bg1VerticalOffset);
+    SetGpuBackgroundX(0, sCableCar->bg0HorizontalOffset);
+    SetGpuBackgroundY(0, sCableCar->bg0VerticalOffset);
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
@@ -714,34 +718,34 @@ static void SetBgRegs(bool8 active)
     {
     case FALSE:
     default:
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
-        SetGpuReg(REG_OFFSET_BG3CNT, 0);
-        SetGpuReg(REG_OFFSET_BG2CNT, 0);
-        SetGpuReg(REG_OFFSET_BG1CNT, 0);
-        SetGpuReg(REG_OFFSET_BG0CNT, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowY(1, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ClearGpuBackgroundState(3);
+        ClearGpuBackgroundState(2);
+        ClearGpuBackgroundState(1);
+        ClearGpuBackgroundState(0);
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 0);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
+        SetGpuBackgroundX(0, 0);
+        SetGpuBackgroundY(0, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         break;
     case TRUE:
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowY(1, 0);
         if (!GOING_DOWN)
         {
             sCableCar->bg3HorizontalOffset = 176;
@@ -761,22 +765,22 @@ static void SetBgRegs(bool8 active)
             sCableCar->bg0VerticalOffset = 0;
         }
 
-        SetGpuReg(REG_OFFSET_BG3HOFS, sCableCar->bg3HorizontalOffset);
-        SetGpuReg(REG_OFFSET_BG3VOFS, sCableCar->bg3VerticalOffset);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, sCableCar->bg1HorizontalOffset);
-        SetGpuReg(REG_OFFSET_BG1VOFS, sCableCar->bg1VerticalOffset);
-        SetGpuReg(REG_OFFSET_BG0HOFS, sCableCar->bg0HorizontalOffset);
-        SetGpuReg(REG_OFFSET_BG0VOFS, sCableCar->bg0VerticalOffset);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuBackgroundX(3, sCableCar->bg3HorizontalOffset);
+        SetGpuBackgroundY(3, sCableCar->bg3VerticalOffset);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundX(1, sCableCar->bg1HorizontalOffset);
+        SetGpuBackgroundY(1, sCableCar->bg1VerticalOffset);
+        SetGpuBackgroundX(0, sCableCar->bg0HorizontalOffset);
+        SetGpuBackgroundY(0, sCableCar->bg0VerticalOffset);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         CopyBgTilemapBufferToVram(1);
         CopyBgTilemapBufferToVram(2);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
         ShowBg(3);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL);
         break;
     }
 }

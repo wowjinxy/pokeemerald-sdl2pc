@@ -231,7 +231,7 @@ size_t const gTilesetAnims_Mauville_Flower2_VDests[] = {
     TILE_OFFSET_4BPP(NUM_TILES_IN_PRIMARY + 156)
 };
 
-const size_t const gTilesetAnims_Mauville_Flower1[] = {
+const u16 *const gTilesetAnims_Mauville_Flower1[] = {
     gTilesetAnims_Mauville_Flower1_Frame0,
     gTilesetAnims_Mauville_Flower1_Frame0,
     gTilesetAnims_Mauville_Flower1_Frame1,
@@ -246,7 +246,7 @@ const size_t const gTilesetAnims_Mauville_Flower1[] = {
     gTilesetAnims_Mauville_Flower1_Frame1
 };
 
-const size_t const gTilesetAnims_Mauville_Flower2[] = {
+const u16 *const gTilesetAnims_Mauville_Flower2[] = {
     gTilesetAnims_Mauville_Flower2_Frame0,
     gTilesetAnims_Mauville_Flower2_Frame0,
     gTilesetAnims_Mauville_Flower2_Frame1,

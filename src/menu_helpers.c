@@ -93,11 +93,11 @@ static const struct SpriteTemplate sSpriteTemplate_SwapLine =
 // code
 void ResetVramOamAndBgCntRegs(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(3);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
     GpuClearAll();
 }
 

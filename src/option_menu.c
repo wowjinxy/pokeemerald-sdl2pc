@@ -116,7 +116,8 @@ static const struct BgTemplate sOptionMenuBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -125,7 +126,8 @@ static const struct BgTemplate sOptionMenuBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 1,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -160,7 +162,7 @@ void CB2_InitOptionMenu(void)
         break;
     case 1:
         GpuClearAll();
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ResetBgsAndClearDma3BusyFlags(0);
         InitBgsFromTemplates(0, sOptionMenuBgTemplates, ARRAY_COUNT(sOptionMenuBgTemplates));
         ChangeBgX(0, 0, BG_COORD_SET);
@@ -173,14 +175,14 @@ void CB2_InitOptionMenu(void)
         ChangeBgY(3, 0, BG_COORD_SET);
         InitWindows(sOptionMenuWinTemplates);
         DeactivateAllTextPrinters();
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_CLR);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_DARKEN);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 4);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(WININ_WIN0_BG0);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_DARKEN);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 4);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
         gMain.state++;
@@ -371,8 +373,8 @@ static void Task_OptionMenuFadeOut(u8 taskId)
 
 static void HighlightOptionMenuItem(u8 index)
 {
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(16, DisplayWidth() - 16));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(index * 16 + 40, index * 16 + 56));
+    SetGpuWindowX(0, WIN_RANGE(16, DisplayWidth() - 16));
+    SetGpuWindowY(0, WIN_RANGE(index * 16 + 40, index * 16 + 56));
 }
 
 static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)

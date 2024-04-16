@@ -620,7 +620,8 @@ static const struct BgTemplate sTourneyTreeBgTemplates[4] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -629,7 +630,8 @@ static const struct BgTemplate sTourneyTreeBgTemplates[4] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -638,7 +640,8 @@ static const struct BgTemplate sTourneyTreeBgTemplates[4] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -647,7 +650,8 @@ static const struct BgTemplate sTourneyTreeBgTemplates[4] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -660,7 +664,8 @@ static const struct BgTemplate sInfoCardBgTemplates[4] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 20,
-        .screenSize = 3,
+        .screenWidth = 512,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -669,7 +674,8 @@ static const struct BgTemplate sInfoCardBgTemplates[4] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 24,
-        .screenSize = 3,
+        .screenWidth = 512,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -678,7 +684,8 @@ static const struct BgTemplate sInfoCardBgTemplates[4] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 28,
-        .screenSize = 3,
+        .screenWidth = 512,
+        .screenHeight = 512,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -687,7 +694,8 @@ static const struct BgTemplate sInfoCardBgTemplates[4] =
         .bg = 3,
         .charBaseIndex = 2,
         .mapBaseIndex = 7,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -3084,16 +3092,16 @@ static void Task_ShowTourneyInfoCard(u8 taskId)
         gTasks[taskId].tState++;
         break;
     case 1:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WIN1H, 0);
-        SetGpuReg(REG_OFFSET_WIN1V, 0);
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowX(1, 0);
+        SetGpuWindowY(1, 0);
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         ResetPaletteFade();
         ResetSpriteData();
         FreeAllSpritePalettes();
@@ -3137,7 +3145,7 @@ static void Task_ShowTourneyInfoCard(u8 taskId)
         {
             DisplayTrainerInfoOnCard(0, tournamentId);
         }
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
         if (mode != INFOCARD_NEXT_OPPONENT)
         {
             // Scroll up arrow
@@ -5360,16 +5368,16 @@ static void Task_ShowTourneyTree(u8 taskId)
         gTasks[taskId].tState++;
         break;
     case 1:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 0);
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(88, 96));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DisplayHeight() - 1));
-        SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(144, 152));
-        SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(0, DisplayHeight() - 1));
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
+        SetGpuWindowX(0, WIN_RANGE(88, 96));
+        SetGpuWindowY(0, WIN_RANGE(0, DisplayHeight() - 1));
+        SetGpuWindowX(1, WIN_RANGE(144, 152));
+        SetGpuWindowY(1, WIN_RANGE(0, DisplayHeight() - 1));
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         ResetPaletteFade();
         ResetSpriteData();
         FreeAllSpritePalettes();
@@ -5407,7 +5415,7 @@ static void Task_ShowTourneyTree(u8 taskId)
                 CreateSprite(&sCancelButtonSpriteTemplate, 218, 12, 0);
         }
 
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_1D_MAP);
         gTasks[taskId].tState++;
         break;
     case 4:
@@ -5671,12 +5679,12 @@ static void VblankCb_TourneyInfoCard(void)
 {
     ChangeBgX(3, 0x80, BG_COORD_ADD);
     ChangeBgY(3, 0x80, BG_COORD_SUB);
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
-    SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-    SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
+    SetGpuBackgroundX(2, gBattle_BG2_X);
+    SetGpuBackgroundY(2, gBattle_BG2_Y);
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
@@ -5761,10 +5769,10 @@ static void HblankCb_TourneyTree(void)
 
 static void VblankCb_TourneyTree(void)
 {
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
     ChangeBgY(2, 0x80, BG_COORD_SUB);
     ChangeBgY(3, 0x80, BG_COORD_ADD);
     LoadOam();

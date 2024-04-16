@@ -36,7 +36,8 @@ static const struct BgTemplate sBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -98,8 +99,8 @@ void CB2_InitMysteryEventMenu(void)
         FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT);
         LoadUserWindowBorderGfx(0, 1, BG_PLTT_ID(13));
         Menu_LoadStdPalAt(BG_PLTT_ID(14));
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
         CreateTask(Task_DestroySelf, 0);
         StopMapMusic();
         RunTasks();

@@ -517,8 +517,8 @@ static void StartAreaGlow(void)
     sPokedexAreaScreen->areaShadeBldArgLo = 0;
     sPokedexAreaScreen->areaShadeBldArgHi = 64;
     sPokedexAreaScreen->markerFlashCounter = 1;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     DoAreaGlow();
 }
 
@@ -540,7 +540,7 @@ static void DoAreaGlow(void)
 
             x = gSineTable[sPokedexAreaScreen->areaShadeBldArgLo] >> 4;
             y = gSineTable[sPokedexAreaScreen->areaShadeBldArgHi] >> 4;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(x, y));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(x, y));
             sPokedexAreaScreen->markerTimer = 0;
             if (sPokedexAreaScreen->glowTimer == 64)
             {
@@ -638,7 +638,7 @@ static void Task_ShowPokedexAreaScreen(u8 taskId)
         BeginNormalPaletteFade(PALETTES_ALL & ~(0x14), 0, 16, 0, RGB_BLACK);
         break;
     case 10:
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG0 | BLDCNT_TGT2_ALL);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG0 | BLDCNT_TGT2_ALL);
         StartAreaGlow();
         ShowBg(2);
         ShowBg(3); // TryShowPokedexAreaMap will have done this already

@@ -41,13 +41,13 @@ typedef uint_fast32_t uf32;
 struct BgCnt
 {
     u16 priority:2;
-    u16 charBaseBlock:2;
-    u16 dsCharBaseBlock:2;
+    u16 charBaseBlock;
     u16 mosaic:1;
     u16 palettes:1;
-    u16 screenBaseBlock:5;
+    u16 screenBaseBlock;
     u16 areaOverflowMode:1;
-    u16 screenSize:2;
+    u16 screenWidth;
+    u16 screenHeight;
 };
 
 struct PlttData

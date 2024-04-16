@@ -233,7 +233,7 @@ void ShowMapNamePopup(void)
         {
             // New pop up window
             sPopupTaskId = CreateTask(Task_MapNamePopUpWindow, 90);
-            SetGpuReg(REG_OFFSET_BG0VOFS, POPUP_OFFSCREEN_Y);
+            SetGpuBackgroundY(0, POPUP_OFFSCREEN_Y);
             gTasks[sPopupTaskId].tState = STATE_PRINT;
             gTasks[sPopupTaskId].tYOffset = POPUP_OFFSCREEN_Y;
         }
@@ -310,7 +310,7 @@ static void Task_MapNamePopUpWindow(u8 taskId)
         HideMapNamePopUpWindow();
         return;
     }
-    SetGpuReg(REG_OFFSET_BG0VOFS, task->tYOffset);
+    SetGpuBackgroundY(0, task->tYOffset);
 }
 
 void HideMapNamePopUpWindow(void)

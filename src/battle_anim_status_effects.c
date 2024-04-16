@@ -386,8 +386,8 @@ void AnimTask_FrozenIceCube(u8 taskId)
 
     if (IsContest())
         x -= 6;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     spriteId = CreateSprite(&sFrozenIceCubeSpriteTemplate, x, y, 4);
     if (GetSpriteTileStartByTag(ANIM_TAG_ICE_CUBE) == 0xFFFF)
         gSprites[spriteId].invisible = TRUE;
@@ -408,7 +408,7 @@ static void AnimTask_FrozenIceCube_Step1(u8 taskId)
     {
         u8 var = gTasks[taskId].data[1];
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(var, 16 - var));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(var, 16 - var));
     }
 }
 
@@ -457,7 +457,7 @@ static void AnimTask_FrozenIceCube_Step3(u8 taskId)
     {
         u8 var = gTasks[taskId].data[1];
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(var, 16 - var));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(var, 16 - var));
     }
 }
 
@@ -473,8 +473,8 @@ static void AnimTask_FrozenIceCube_Step4(u8 taskId)
     }
     else if (gTasks[taskId].data[1] == 39)
     {
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyAnimVisualTask(taskId);
     }
 }

@@ -115,7 +115,7 @@ void CB2_UnionRoomBattle(void)
     switch (gMain.state)
     {
     case 0:
-        SetGpuReg(REG_OFFSET_DISPCNT, 0x0000);
+        SetGpuState(GPU_STATE_DISPCNT, 0x0000);
         sBattle = AllocZeroed(sizeof(struct UnionRoomBattle));
         ResetSpriteData();
         FreeAllSpritePalettes();

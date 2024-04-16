@@ -415,7 +415,8 @@ static const struct BgTemplate sMainMenuBgTemplates[] = {
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -424,7 +425,8 @@ static const struct BgTemplate sMainMenuBgTemplates[] = {
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 7,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -435,7 +437,8 @@ static const struct BgTemplate sBirchBgTemplate = {
     .bg = 0,
     .charBaseIndex = 3,
     .mapBaseIndex = 30,
-    .screenSize = 0,
+    .screenWidth = 256,
+        .screenHeight = 256,
     .paletteMode = 0,
     .priority = 0,
     .baseTile = 0
@@ -558,16 +561,16 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
 {
     SetVBlankCallback(NULL);
 
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
 
     GpuClearData();
     GpuClearSprites();
@@ -594,18 +597,18 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
     DeactivateAllTextPrinters();
     LoadMainMenuWindowFrameTiles(0, MAIN_MENU_BORDER_TILE);
 
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 
     EnableInterrupts(1);
     SetVBlankCallback(VBlankCB_MainMenu);
     SetMainCallback2(CB2_MainMenu);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     HideBg(1);
     CreateTask(Task_MainMenuCheckSaveFile, 0);
@@ -628,13 +631,13 @@ static void Task_MainMenuCheckSaveFile(u8 taskId)
 
     if (!gPaletteFade.active)
     {
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 7);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 7);
 
         if (IsWirelessAdapterConnected())
             tWirelessAdapterConnected = TRUE;
@@ -706,13 +709,13 @@ static void Task_MainMenuCheckBattery(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 7);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 7);
 
         if (!(RtcGetErrorStatus() & RTC_ERR_FLAG_MASK))
         {
@@ -744,13 +747,13 @@ static void Task_DisplayMainMenu(u8 taskId)
 
     if (!gPaletteFade.active)
     {
-        SetGpuReg(REG_OFFSET_WIN0H, 0);
-        SetGpuReg(REG_OFFSET_WIN0V, 0);
-        SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 | WININ_WIN0_OBJ);
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-        SetGpuReg(REG_OFFSET_BLDY, 7);
+        SetGpuWindowX(0, 0);
+        SetGpuWindowY(0, 0);
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_OBJ);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_DARKEN | BLDCNT_TGT1_BG0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDY, 7);
 
         palette = RGB_BLACK;
         LoadPalette(&palette, BG_PLTT_ID(15) + 14, PLTT_SIZEOF(1));
@@ -896,8 +899,8 @@ static bool8 HandleMainMenuInput(u8 taskId)
     {
         PlaySE(SE_SELECT);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_WHITEALPHA);
-        SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DisplayWidth()));
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DisplayHeight()));
+        SetGpuWindowX(0, WIN_RANGE(0, DisplayWidth()));
+        SetGpuWindowY(0, WIN_RANGE(0, DisplayHeight()));
         gTasks[taskId].func = Task_HandleMainMenuBPressed;
     }
     else if ((JOY_NEW(DPAD_UP)) && tCurrItem > 0)
@@ -1089,12 +1092,12 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
                 gTasks[taskId].func = Task_DisplayMainMenuInvalidActionError;
                 gPlttBufferUnfaded[BG_PLTT_ID(15) + 1] = RGB_WHITE;
                 gPlttBufferFaded[BG_PLTT_ID(15) + 1] = RGB_WHITE;
-                SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-                SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-                SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-                SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-                SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-                SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+                SetGpuBackgroundX(2, 0);
+                SetGpuBackgroundY(2, 0);
+                SetGpuBackgroundX(1, 0);
+                SetGpuBackgroundY(1, 0);
+                SetGpuBackgroundX(0, 0);
+                SetGpuBackgroundY(0, 0);
                 BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
                 return;
         }
@@ -1169,7 +1172,7 @@ static void Task_DisplayMainMenuInvalidActionError(u8 taskId)
 
 static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 isScrolled)
 {
-    SetGpuReg(REG_OFFSET_WIN0H, MENU_WIN_HCOORDS);
+    SetGpuWindowX(0, MENU_WIN_HCOORDS);
 
     switch (menuType)
     {
@@ -1179,10 +1182,10 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
             {
                 case 0:
                 default:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(0));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(0));
                     break;
                 case 1:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(1));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(1));
                     break;
             }
             break;
@@ -1191,13 +1194,13 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
             {
                 case 0:
                 default:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(2));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(2));
                     break;
                 case 1:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(3));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(3));
                     break;
                 case 2:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(4));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(4));
                     break;
             }
             break;
@@ -1206,16 +1209,16 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
             {
                 case 0:
                 default:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(2));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(2));
                     break;
                 case 1:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(3));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(3));
                     break;
                 case 2:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(4));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(4));
                     break;
                 case 3:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(5));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(5));
                     break;
             }
             break;
@@ -1224,28 +1227,28 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
             {
                 case 0:
                 default:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(2));
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(2));
                     break;
                 case 1:
                     if (isScrolled)
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(3) - MENU_SCROLL_SHIFT);
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(3) - MENU_SCROLL_SHIFT);
                     else
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(3));
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(3));
                     break;
                 case 2:
                     if (isScrolled)
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(4) - MENU_SCROLL_SHIFT);
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(4) - MENU_SCROLL_SHIFT);
                     else
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(4));
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(4));
                     break;
                 case 3:
                     if (isScrolled)
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(5) - MENU_SCROLL_SHIFT);
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(5) - MENU_SCROLL_SHIFT);
                     else
-                        SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(5));
+                        SetGpuWindowY(0, MENU_WIN_VCOORDS(5));
                     break;
                 case 4:
-                    SetGpuReg(REG_OFFSET_WIN0V, MENU_WIN_VCOORDS(6) - MENU_SCROLL_SHIFT);
+                    SetGpuWindowY(0, MENU_WIN_VCOORDS(6) - MENU_SCROLL_SHIFT);
                     break;
             }
             break;
@@ -1264,16 +1267,16 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
 
 static void Task_NewGameBirchSpeech_Init(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     InitBgFromTemplate(&sBirchBgTemplate);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 
     LZ77UnCompVram(sBirchSpeechShadowGfx, gpu.gfxData);
     LZ77UnCompVram(sBirchSpeechBgMap, (void *)(BG_SCREEN_ADDR(7)));
@@ -1436,7 +1439,7 @@ static void Task_NewGameBirchSpeech_SlidePlatformAway(u8 taskId)
     if (gTasks[taskId].tBG1HOFS != -60)
     {
         gTasks[taskId].tBG1HOFS -= 2;
-        SetGpuReg(REG_OFFSET_BG1HOFS, gTasks[taskId].tBG1HOFS);
+        SetGpuBackgroundX(1, gTasks[taskId].tBG1HOFS);
     }
     else
     {
@@ -1646,7 +1649,7 @@ static void Task_NewGameBirchSpeech_SlidePlatformAway2(u8 taskId)
     if (gTasks[taskId].tBG1HOFS)
     {
         gTasks[taskId].tBG1HOFS += 2;
-        SetGpuReg(REG_OFFSET_BG1HOFS, gTasks[taskId].tBG1HOFS);
+        SetGpuBackgroundX(1, gTasks[taskId].tBG1HOFS);
     }
     else
     {
@@ -1767,7 +1770,7 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
     {
         spriteId = gTasks[taskId].tPlayerSpriteId;
         gSprites[spriteId].callback = SpriteCB_Null;
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
         gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
     }
@@ -1792,20 +1795,20 @@ static void CB2_NewGameBirchSpeech_ReturnFromNamingScreen(void)
     u16 savedIme;
 
     ResetBgsAndClearDma3BusyFlags(0);
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     InitBgsFromTemplates(0, sMainMenuBgTemplates, ARRAY_COUNT(sMainMenuBgTemplates));
     InitBgFromTemplate(&sBirchBgTemplate);
     SetVBlankCallback(NULL);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
     GpuClearAll();
     ResetPaletteFade();
     LZ77UnCompVram(sBirchSpeechShadowGfx, (u8 *)gpu.gfxData);
@@ -1835,15 +1838,15 @@ static void CB2_NewGameBirchSpeech_ReturnFromNamingScreen(void)
     gSprites[spriteId].y = 60;
     gSprites[spriteId].invisible = FALSE;
     gTasks[taskId].tPlayerSpriteId = spriteId;
-    SetGpuReg(REG_OFFSET_BG1HOFS, -60);
+    SetGpuBackgroundX(1, -60);
     BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
     ShowBg(0);
     ShowBg(1);
     savedIme = REG_IME;
@@ -1939,7 +1942,7 @@ static void Task_NewGameBirchSpeech_FadeOutTarget1InTarget2(u8 taskId)
         gTasks[taskId].tAlphaCoeff1--;
         gTasks[taskId].tAlphaCoeff2++;
         alphaCoeff2 = gTasks[taskId].tAlphaCoeff2 << 8;
-        SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].tAlphaCoeff1 + alphaCoeff2);
+        SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].tAlphaCoeff1 + alphaCoeff2);
     }
 }
 
@@ -1947,9 +1950,9 @@ static void NewGameBirchSpeech_StartFadeOutTarget1InTarget2(u8 taskId, u8 delay)
 {
     u8 taskId2;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_OBJ);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_OBJ);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDY, 0);
     gTasks[taskId].tIsDoneFadingSprites = 0;
     taskId2 = CreateTask(Task_NewGameBirchSpeech_FadeOutTarget1InTarget2, 0);
     gTasks[taskId2].tMainTask = taskId;
@@ -1978,7 +1981,7 @@ static void Task_NewGameBirchSpeech_FadeInTarget1OutTarget2(u8 taskId)
         gTasks[taskId].tAlphaCoeff1++;
         gTasks[taskId].tAlphaCoeff2--;
         alphaCoeff2 = gTasks[taskId].tAlphaCoeff2 << 8;
-        SetGpuReg(REG_OFFSET_BLDALPHA, gTasks[taskId].tAlphaCoeff1 + alphaCoeff2);
+        SetGpuState(GPU_STATE_BLDALPHA, gTasks[taskId].tAlphaCoeff1 + alphaCoeff2);
     }
 }
 
@@ -1986,9 +1989,9 @@ static void NewGameBirchSpeech_StartFadeInTarget1OutTarget2(u8 taskId, u8 delay)
 {
     u8 taskId2;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_OBJ);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_OBJ);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDY, 0);
     gTasks[taskId].tIsDoneFadingSprites = 0;
     taskId2 = CreateTask(Task_NewGameBirchSpeech_FadeInTarget1OutTarget2, 0);
     gTasks[taskId2].tMainTask = taskId;
@@ -2122,8 +2125,8 @@ static void CreateMainMenuErrorWindow(const u8 *str)
     PutWindowTilemap(7);
     CopyWindowToVram(7, COPYWIN_GFX);
     DrawMainMenuWindowBorder(&sWindowTemplates_MainMenu[7], MAIN_MENU_BORDER_TILE);
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(9, DisplayWidth() - 9));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(113, DisplayHeight() - 1));
+    SetGpuWindowX(0, WIN_RANGE(9, DisplayWidth() - 9));
+    SetGpuWindowY(0, WIN_RANGE(113, DisplayHeight() - 1));
 }
 
 static void MainMenu_FormatSavegameText(void)

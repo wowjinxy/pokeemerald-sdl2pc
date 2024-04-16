@@ -51,7 +51,8 @@ static const struct BgTemplate sFieldRegionMapBgTemplates[] = {
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -59,7 +60,8 @@ static const struct BgTemplate sFieldRegionMapBgTemplates[] = {
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 28,
-        .screenSize = 2,
+        .screenWidth = 256,
+        .screenHeight = 512,
         .paletteMode = 1,
         .priority = 2,
         .baseTile = 0
@@ -100,15 +102,15 @@ void FieldInitRegionMap(MainCallback callback)
 
 static void MCB2_InitRegionMapRegisters(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
     ResetSpriteData();
     FreeAllSpritePalettes();
     ResetBgsAndClearDma3BusyFlags(0);

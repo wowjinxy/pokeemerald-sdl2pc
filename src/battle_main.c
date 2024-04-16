@@ -625,11 +625,11 @@ static void CB2_InitBattleInternal(void)
 
     GpuClearData();
 
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
+    SetGpuWindowX(0, DisplayWidth());
+    SetGpuWindowY(0, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
 
     gBattle_WIN0H = DisplayWidth();
 
@@ -2075,8 +2075,16 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
 static void UNUSED HBlankCB_Battle(void)
 {
+#if 0
     if (REG_VCOUNT < DisplayHeight() && REG_VCOUNT >= 111)
-        SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_SCREENBASE(24) | BGCNT_TXT256x512);
+    {
+        ClearGpuBackgroundState(0);
+        SetGpuBackgroundCharBaseBlock(0, 0);
+        SetGpuBackgroundScreenBaseBlock(0, 24);
+        SetGpuBackgroundWidth(0, 256);
+        SetGpuBackgroundHeight(0, 512);
+    }
+#endif
 }
 
 void VBlankCB_Battle(void)
@@ -2085,18 +2093,18 @@ void VBlankCB_Battle(void)
     if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED)))
         Random();
 
-    SetGpuReg(REG_OFFSET_BG0HOFS, gBattle_BG0_X);
-    SetGpuReg(REG_OFFSET_BG0VOFS, gBattle_BG0_Y);
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
-    SetGpuReg(REG_OFFSET_BG2HOFS, gBattle_BG2_X);
-    SetGpuReg(REG_OFFSET_BG2VOFS, gBattle_BG2_Y);
-    SetGpuReg(REG_OFFSET_BG3HOFS, gBattle_BG3_X);
-    SetGpuReg(REG_OFFSET_BG3VOFS, gBattle_BG3_Y);
-    SetGpuReg(REG_OFFSET_WIN0H, gBattle_WIN0H);
-    SetGpuReg(REG_OFFSET_WIN0V, gBattle_WIN0V);
-    SetGpuReg(REG_OFFSET_WIN1H, gBattle_WIN1H);
-    SetGpuReg(REG_OFFSET_WIN1V, gBattle_WIN1V);
+    SetGpuBackgroundX(0, gBattle_BG0_X);
+    SetGpuBackgroundY(0, gBattle_BG0_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
+    SetGpuBackgroundX(2, gBattle_BG2_X);
+    SetGpuBackgroundY(2, gBattle_BG2_Y);
+    SetGpuBackgroundX(3, gBattle_BG3_X);
+    SetGpuBackgroundY(3, gBattle_BG3_Y);
+    SetGpuWindowX(0, gBattle_WIN0H);
+    SetGpuWindowY(0, gBattle_WIN0V);
+    SetGpuWindowX(1, gBattle_WIN1H);
+    SetGpuWindowY(1, gBattle_WIN1V);
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
@@ -2191,11 +2199,11 @@ void CB2_InitEndLinkBattle(void)
     else
     {
         GpuClearData();
-        SetGpuReg(REG_OFFSET_MOSAIC, 0);
-        SetGpuReg(REG_OFFSET_WIN0H, DisplayWidth());
-        SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
-        SetGpuReg(REG_OFFSET_WININ, 0);
-        SetGpuReg(REG_OFFSET_WINOUT, 0);
+        SetGpuState(GPU_STATE_MOSAIC, 0);
+        SetGpuWindowX(0, DisplayWidth());
+        SetGpuWindowY(0, WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1));
+        SetGpuWindowIn(0);
+        SetGpuWindowOut(0);
         gBattle_WIN0H = DisplayWidth();
         gBattle_WIN0V = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);
         ScanlineEffect_Clear();
@@ -2232,7 +2240,7 @@ void CB2_InitEndLinkBattle(void)
         ResetSpriteData();
         ResetTasks();
         DrawBattleEntryBackground();
-        SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+        SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
         FreeAllSpritePalettes();
         gReservedSpritePaletteCount = MAX_BATTLERS_COUNT;
         SetVBlankCallback(VBlankCB_Battle);
@@ -2396,15 +2404,18 @@ u32 GetBattleBgTemplateData(u8 arrayId, u8 caseId)
         ret = gBattleBgTemplates[arrayId].mapBaseIndex;
         break;
     case 3:
-        ret = gBattleBgTemplates[arrayId].screenSize;
+        ret = gBattleBgTemplates[arrayId].screenWidth;
         break;
     case 4:
+        ret = gBattleBgTemplates[arrayId].screenHeight;
+        break;
+    case 5:
         ret = gBattleBgTemplates[arrayId].paletteMode;
         break;
-    case 5: // Only this case is used
+    case 6: // Only this case is used
         ret = gBattleBgTemplates[arrayId].priority;
         break;
-    case 6:
+    case 7:
         ret = gBattleBgTemplates[arrayId].baseTile;
         break;
     }
@@ -2429,7 +2440,7 @@ static void CB2_InitAskRecordBattle(void)
     gBattle_BG3_X = 0;
     gBattle_BG3_Y = 0;
     InitBattleBgsVideo();
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     LoadBattleMenuWindowGfx();
 
     for (i = 0; i < 2; i++)

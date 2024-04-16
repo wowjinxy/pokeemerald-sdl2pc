@@ -190,7 +190,7 @@ void DisableInterrupts(u16 mask)
 
 static void UpdateRegDispstatIntrBits(u16 regIE)
 {
-    u16 oldValue = GetGpuReg(REG_OFFSET_DISPSTAT) & (DISPSTAT_HBLANK_INTR | DISPSTAT_VBLANK_INTR);
+    u16 oldValue = GetGpuState(GPU_STATE_DISPSTAT) & (DISPSTAT_HBLANK_INTR | DISPSTAT_VBLANK_INTR);
     u16 newValue = 0;
 
     if (regIE & INTR_FLAG_VBLANK)
@@ -200,5 +200,5 @@ static void UpdateRegDispstatIntrBits(u16 regIE)
         newValue |= DISPSTAT_HBLANK_INTR;
 
     if (oldValue != newValue)
-        SetGpuReg(REG_OFFSET_DISPSTAT, newValue);
+        SetGpuState(GPU_STATE_DISPSTAT, newValue);
 }

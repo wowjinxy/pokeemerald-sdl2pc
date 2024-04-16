@@ -534,7 +534,8 @@ static const struct BgTemplate sBgTemplates[] = {
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 7,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -542,7 +543,8 @@ static const struct BgTemplate sBgTemplates[] = {
         .bg = 1,
         .charBaseIndex = 3,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -550,7 +552,8 @@ static const struct BgTemplate sBgTemplates[] = {
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 23,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -558,7 +561,8 @@ static const struct BgTemplate sBgTemplates[] = {
         .bg = 3,
         .charBaseIndex = 1,
         .mapBaseIndex = 15,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 1
@@ -3037,14 +3041,14 @@ static void ResetGpuBgState(void)
     ShowBg(2);
     ShowBg(3);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
     ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
     SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(64, DisplayWidth()));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(0, DisplayHeight() - 16));
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG0 | WININ_WIN0_BG2 | WININ_WIN0_BG3
+    SetGpuWindowX(0, WIN_RANGE(64, DisplayWidth()));
+    SetGpuWindowY(0, WIN_RANGE(0, DisplayHeight() - 16));
+    SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG2 | WININ_WIN0_BG3
                               | WININ_WIN0_OBJ | WININ_WIN0_CLR);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
+    SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR);
 }
 
 static void SetBgTilemapBuffers(void)

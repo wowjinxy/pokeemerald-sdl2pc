@@ -1683,8 +1683,8 @@ void Task_HidePartyStatusSummary(u8 taskId)
     for (i = 0; i < PARTY_SIZE; i++)
         ballIconSpriteIds[i] = gTasks[taskId].tBallIconSpriteId(i);
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
 
     gTasks[taskId].tBlend = 16;
 
@@ -1731,7 +1731,7 @@ static void Task_HidePartyStatusSummary_BattleStart_1(u8 taskId)
         if (--gTasks[taskId].tBlend < 0)
             return;
 
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].tBlend, 16 - gTasks[taskId].tBlend));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].tBlend, 16 - gTasks[taskId].tBlend));
     }
     if (gTasks[taskId].tBlend == 0)
         gTasks[taskId].func = Task_HidePartyStatusSummary_BattleStart_2;
@@ -1770,8 +1770,8 @@ static void Task_HidePartyStatusSummary_BattleStart_2(u8 taskId)
     else if (gTasks[taskId].tBlend == -3)
     {
         gBattleSpritesDataPtr->healthBoxesData[battlerId].partyStatusSummaryShown = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyTask(taskId);
     }
 }
@@ -1784,7 +1784,7 @@ static void Task_HidePartyStatusSummary_DuringBattle(u8 taskId)
 
     if (--gTasks[taskId].tBlend >= 0)
     {
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].tBlend, 16 - gTasks[taskId].tBlend));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].tBlend, 16 - gTasks[taskId].tBlend));
     }
     else if (gTasks[taskId].tBlend == -1)
     {
@@ -1802,8 +1802,8 @@ static void Task_HidePartyStatusSummary_DuringBattle(u8 taskId)
     else if (gTasks[taskId].tBlend == -3)
     {
         gBattleSpritesDataPtr->healthBoxesData[battlerId].partyStatusSummaryShown = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         DestroyTask(taskId);
     }
 }

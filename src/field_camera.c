@@ -77,12 +77,12 @@ void FieldUpdateBgTilemapScroll(void)
     r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan;
     r4 = sVerticalCameraPan + sFieldCameraOffset.yPixelOffset + 8;
 
-    SetGpuReg(REG_OFFSET_BG1HOFS, r5);
-    SetGpuReg(REG_OFFSET_BG1VOFS, r4);
-    SetGpuReg(REG_OFFSET_BG2HOFS, r5);
-    SetGpuReg(REG_OFFSET_BG2VOFS, r4);
-    SetGpuReg(REG_OFFSET_BG3HOFS, r5);
-    SetGpuReg(REG_OFFSET_BG3VOFS, r4);
+    SetGpuBackgroundX(1, r5);
+    SetGpuBackgroundY(1, r4);
+    SetGpuBackgroundX(2, r5);
+    SetGpuBackgroundY(2, r4);
+    SetGpuBackgroundX(3, r5);
+    SetGpuBackgroundY(3, r4);
 }
 
 void GetCameraOffsetWithPan(s16 *x, s16 *y)

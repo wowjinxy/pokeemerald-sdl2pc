@@ -171,7 +171,8 @@ static const struct BgTemplate sBackgroundTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -435,7 +436,7 @@ void CB2_StartCreditsSequence(void)
     bikeTaskId = gTasks[taskId].tTaskId_BikeScene;
     gTasks[bikeTaskId].tState = 40;
 
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0xFFFC);
+    SetGpuBackgroundY(0, 0xFFFC);
 
     pageTaskId = CreateTask(Task_UpdatePage, 0);
 
@@ -504,7 +505,7 @@ static void Task_ReadyBikeScene(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ResetCreditsTasks(taskId);
         gTasks[taskId].func = Task_SetBikeScene;
     }
@@ -527,7 +528,7 @@ static void Task_ReadyShowMons(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         ResetCreditsTasks(taskId);
         gTasks[taskId].func = Task_LoadShowMons;
     }
@@ -577,14 +578,13 @@ static void Task_LoadShowMons(u8 taskId)
         gTasks[gTasks[taskId].tTaskId_ShowMons].data[2] = gTasks[taskId].tSceneNum; // data[2] never read
 
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 32);
-        SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3)
-                                   | BGCNT_CHARBASE(0)
-                                   | BGCNT_SCREENBASE(7)
-                                   | BGCNT_16COLOR
-                                   | BGCNT_TXT256x256);
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+        SetGpuBackgroundX(3, 0);
+        SetGpuBackgroundY(3, 32);
+        ClearGpuBackgroundState(3);
+        SetGpuBackgroundPriority(3, 3);
+        SetGpuBackgroundCharBaseBlock(3, 0);
+        SetGpuBackgroundScreenBaseBlock(3, 7);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                     | DISPCNT_OBJ_1D_MAP
                                     | DISPCNT_BG0_ON
                                     | DISPCNT_BG3_ON
@@ -629,13 +629,11 @@ static void Task_CreditsTheEnd3(u8 taskId)
     FreeAllSpritePalettes();
     BeginNormalPaletteFade(PALETTES_ALL, 8, 16, 0, RGB_BLACK);
 
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(0)
-                               | BGCNT_CHARBASE(0)
-                               | BGCNT_SCREENBASE(7)
-                               | BGCNT_16COLOR
-                               | BGCNT_TXT256x256);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundScreenBaseBlock(0, 7);
+
     EnableInterrupts(INTR_FLAG_VBLANK);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG0_ON);
 
@@ -699,20 +697,20 @@ static void Task_CreditsSoftReset(u8 taskId)
 
 static void ResetGpuAndVram(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
 
-    SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    SetGpuBackgroundX(3, 0);
+    SetGpuBackgroundY(3, 0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
 
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
 
     GpuClearData();
     GpuClearSprites();
@@ -1187,15 +1185,15 @@ static bool8 LoadBikeScene(u8 scene, u8 taskId)
     {
     default:
     case 0:
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
-        SetGpuReg(REG_OFFSET_BG3HOFS, 8);
-        SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuBackgroundX(3, 8);
+        SetGpuBackgroundY(3, 0);
+        SetGpuBackgroundX(2, 0);
+        SetGpuBackgroundY(2, 0);
+        SetGpuBackgroundX(1, 0);
+        SetGpuBackgroundY(1, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         ResetSpriteData();
         FreeAllSpritePalettes();
         gMain.state = 1;
@@ -1474,8 +1472,8 @@ static void SpriteCB_CreditsMon(struct Sprite *sprite)
         }
         else
         {
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
+            SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3);
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 0));
             sprite->oam.objMode = ST_OAM_OBJ_BLEND;
             sprite->data[3] = 16;
             sprite->sState++;
@@ -1489,7 +1487,7 @@ static void SpriteCB_CreditsMon(struct Sprite *sprite)
             sprite->data[3]--;
 
             data3 = 16 - sprite->data[3];
-            SetGpuReg(REG_OFFSET_BLDALPHA, (data3 << 8) + sprite->data[3]);
+            SetGpuState(GPU_STATE_BLDALPHA, (data3 << 8) + sprite->data[3]);
         }
         else
         {
@@ -1501,8 +1499,8 @@ static void SpriteCB_CreditsMon(struct Sprite *sprite)
         sprite->sState++;
         break;
     case 10:
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         FreeAndDestroyMonPicSprite(sprite->data[6]);
         break;
     }

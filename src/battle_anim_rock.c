@@ -394,18 +394,19 @@ void AnimTask_LoadSandstormBackground(u8 taskId)
     struct BattleAnimBgData animBg;
 
     var0 = 0;
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
 
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
 
     GetBattleAnimBg1Data(&animBg);
     AnimLoadCompressedBgGfx(animBg.bgId, gBattleAnimBgImage_Sandstorm, animBg.tilesOffset);
@@ -437,7 +438,7 @@ static void AnimTask_LoadSandstormBackground_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]++;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 7)
             {
                 gTasks[taskId].data[12]++;
@@ -457,7 +458,7 @@ static void AnimTask_LoadSandstormBackground_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]--;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 0)
             {
                 gTasks[taskId].data[12]++;
@@ -476,8 +477,8 @@ static void AnimTask_LoadSandstormBackground_Step(u8 taskId)
 
         gBattle_BG1_X = 0;
         gBattle_BG1_Y = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         DestroyAnimVisualTask(taskId);
         break;

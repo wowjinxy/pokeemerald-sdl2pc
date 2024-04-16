@@ -508,7 +508,7 @@ static bool8 MailReadBuildGraphics(void)
         case 0:
             SetVBlankCallback(NULL);
             ScanlineEffect_Stop();
-            SetGpuReg(REG_OFFSET_DISPCNT, 0);
+            SetGpuState(GPU_STATE_DISPCNT, 0);
             break;
         case 1:
             GpuClearSprites();
@@ -525,16 +525,16 @@ static bool8 MailReadBuildGraphics(void)
         case 5:
             FreeAllSpritePalettes();
             ResetTempTileDataBuffers();
-            SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-            SetGpuReg(REG_OFFSET_BG0VOFS, 0);
-            SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-            SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-            SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-            SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-            SetGpuReg(REG_OFFSET_BG3HOFS, 0);
-            SetGpuReg(REG_OFFSET_BG3VOFS, 0);
-            SetGpuReg(REG_OFFSET_BLDCNT,  0);
-            SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+            SetGpuBackgroundX(0, 0);
+            SetGpuBackgroundY(0, 0);
+            SetGpuBackgroundX(1, 0);
+            SetGpuBackgroundY(1, 0);
+            SetGpuBackgroundY(2, 0);
+            SetGpuBackgroundX(2, 0);
+            SetGpuBackgroundX(3, 0);
+            SetGpuBackgroundY(3, 0);
+            SetGpuState(GPU_STATE_BLDCNT,  0);
+            SetGpuState(GPU_STATE_BLDALPHA, 0);
             break;
         case 6:
             ResetBgsAndClearDma3BusyFlags(0);
@@ -610,7 +610,7 @@ static bool8 MailReadBuildGraphics(void)
             }
             break;
         case 18:
-            SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
             ShowBg(0);
             ShowBg(1);
             ShowBg(2);

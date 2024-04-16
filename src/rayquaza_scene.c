@@ -503,7 +503,8 @@ static const struct BgTemplate sBgTemplates_DuoFight[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -512,7 +513,8 @@ static const struct BgTemplate sBgTemplates_DuoFight[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -521,7 +523,8 @@ static const struct BgTemplate sBgTemplates_DuoFight[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -776,7 +779,8 @@ static const struct BgTemplate sBgTemplates_TakesFlight[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -785,7 +789,8 @@ static const struct BgTemplate sBgTemplates_TakesFlight[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -794,7 +799,8 @@ static const struct BgTemplate sBgTemplates_TakesFlight[] =
         .bg = 2,
         .charBaseIndex = 1,
         .mapBaseIndex = 29,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -866,7 +872,8 @@ static const struct BgTemplate sBgTemplates_Descends[] =
         .bg = 0,
         .charBaseIndex = 0,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -875,7 +882,8 @@ static const struct BgTemplate sBgTemplates_Descends[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -884,7 +892,8 @@ static const struct BgTemplate sBgTemplates_Descends[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -893,7 +902,8 @@ static const struct BgTemplate sBgTemplates_Descends[] =
         .bg = 3,
         .charBaseIndex = 1,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -967,7 +977,8 @@ static const struct BgTemplate sBgTemplates_Charges[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -976,7 +987,8 @@ static const struct BgTemplate sBgTemplates_Charges[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -985,7 +997,8 @@ static const struct BgTemplate sBgTemplates_Charges[] =
         .bg = 2,
         .charBaseIndex = 2,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -994,7 +1007,8 @@ static const struct BgTemplate sBgTemplates_Charges[] =
         .bg = 3,
         .charBaseIndex = 3,
         .mapBaseIndex = 28,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 3,
         .baseTile = 0
@@ -1260,7 +1274,8 @@ static const struct BgTemplate sBgTemplates_ChasesAway[] =
         .bg = 0,
         .charBaseIndex = 1,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -1269,7 +1284,8 @@ static const struct BgTemplate sBgTemplates_ChasesAway[] =
         .bg = 1,
         .charBaseIndex = 1,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -1278,7 +1294,8 @@ static const struct BgTemplate sBgTemplates_ChasesAway[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -1357,18 +1374,18 @@ static void Task_SetNextAnim(u8 taskId)
 // This function is used in scenes where sprites in these borders need to be hidden
 static void SetWindowsHideVertBorders(void)
 {
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(0, DisplayWidth()));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(24, DisplayHeight() - 24));
+    SetGpuWindowIn(WININ_WIN0_ALL);
+    SetGpuWindowOut(0);
+    SetGpuWindowX(0, WIN_RANGE(0, DisplayWidth()));
+    SetGpuWindowY(0, WIN_RANGE(24, DisplayHeight() - 24));
     gPlttBufferUnfaded[0] = 0;
     gPlttBufferFaded[0] = 0;
 }
 
 static void ResetWindowDimensions(void)
 {
-    SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_ALL);
-    SetGpuReg(REG_OFFSET_WINOUT, WINOUT_WIN01_ALL);
+    SetGpuWindowIn(WININ_WIN0_ALL);
+    SetGpuWindowOut(WINOUT_WIN01_ALL);
 }
 
 
@@ -1578,11 +1595,11 @@ static void InitDuoFightSceneBgs(void)
     ScheduleBgCopyTilemapToVram(0);
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void LoadDuoFightSceneGfx(void)
@@ -1721,7 +1738,7 @@ static void Task_HandleDuoFight(u8 taskId)
                 DuoFightEnd(taskId, 2);
                 return;
             case 380:
-                SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
+                SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
                 gTasks[tHelperTaskId].func = DuoFight_PanOffScene;
                 gTasks[tHelperTaskId].data[0] = 0;
                 gTasks[tHelperTaskId].data[2] = data[2];
@@ -1779,7 +1796,7 @@ static void DuoFight_PanOffScene(u8 taskId)
     if (tTimer != 16)
     {
         tTimer++;
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16 - tTimer, tTimer));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16 - tTimer, tTimer));
     }
 }
 
@@ -2016,11 +2033,11 @@ static void InitTakesFlightSceneBgs(void)
     ScheduleBgCopyTilemapToVram(0);
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void LoadTakesFlightSceneGfx(void)
@@ -2045,8 +2062,8 @@ static void Task_RayTakesFlightAnim(u8 taskId)
     PlayNewMapMusic(MUS_RAYQUAZA_APPEARS);
     InitTakesFlightSceneBgs();
     LoadTakesFlightSceneGfx();
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(8, 8));
     BlendPalettes(PALETTES_ALL, 16, 0);
     SetVBlankCallback(VBlankCB_RayquazaScene);
     CreateTask(Task_TakesFlight_CreateSmoke, 0);
@@ -2219,12 +2236,12 @@ static void InitDescendsSceneBgs(void)
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
     ScheduleBgCopyTilemapToVram(3);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
     ShowBg(3);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void LoadDescendsSceneGfx(void)
@@ -2251,7 +2268,7 @@ static void LoadDescendsSceneGfx(void)
 // Draw ray of light emerging from the clouds
 static void HBlankCB_RayDescends(void)
 {
-    u16 vcount = GetGpuReg(REG_OFFSET_VCOUNT);
+    u16 vcount = GetGpuState(GPU_STATE_VCOUNT);
     if (vcount >= 24 && vcount <= 135 && vcount - 24 <= sRayScene->revealedLightLine)
         REG_BLDALPHA = 0xD08; // This line is above where light has been revealed, draw it
     else
@@ -2285,7 +2302,7 @@ static void Task_RayDescendsAnim(u8 taskId)
     InitDescendsSceneBgs();
     LoadDescendsSceneGfx();
     SetGpuRegBits(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
     SetVBlankCallback(VBlankCB_RayquazaScene);
     sRayScene->revealedLightLine = 0;
@@ -2469,12 +2486,12 @@ static void InitChargesSceneBgs(void)
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
     ScheduleBgCopyTilemapToVram(3);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_WIN0_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_WIN0_ON);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
     ShowBg(3);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void LoadChargesSceneGfx(void)
@@ -2656,11 +2673,11 @@ static void InitChasesAwaySceneBgs(void)
     ScheduleBgCopyTilemapToVram(0);
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_WIN0_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_WIN0_ON);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
 }
 
 static void LoadChasesAwaySceneGfx(void)
@@ -2697,8 +2714,8 @@ static void Task_RayChasesAwayAnim(u8 taskId)
     LoadChasesAwaySceneGfx();
     SetWindowsHideVertBorders();
     ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(9, 14));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(9, 14));
     BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
     SetVBlankCallback(VBlankCB_RayquazaScene);
     tState = 0;
@@ -2790,7 +2807,7 @@ static void Task_ChasesAway_AnimateBg(u8 taskId)
     s16 *data = gTasks[taskId].data;
     if ((tTimer & 0xF) == 0)
     {
-        SetGpuReg(REG_OFFSET_BLDALPHA, ((tBlendHi + 14) << 8 & 0x1F00) | ((tBlendLo + 9) & 0xF));
+        SetGpuState(GPU_STATE_BLDALPHA, ((tBlendHi + 14) << 8 & 0x1F00) | ((tBlendLo + 9) & 0xF));
         tBlendHi -= tBlendHiDir;
         tBlendLo += tBlendLoDir;
         if (tBlendHi == -3 || tBlendHi == 0)

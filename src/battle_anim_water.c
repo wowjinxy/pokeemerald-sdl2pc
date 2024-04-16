@@ -806,10 +806,11 @@ void AnimTask_CreateSurfWave(u8 taskId)
     x = &gBattle_BG1_X;
     y = &gBattle_BG1_Y;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 1);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 512);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
     GetBattleAnimBg1Data(&animBg);
     if (!IsContest())
     {
@@ -857,8 +858,8 @@ void AnimTask_CreateSurfWave(u8 taskId)
         gTasks[taskId].data[1] = 1;
         gTasks[taskId2].data[3] = 0;
     }
-    SetGpuReg(REG_OFFSET_BG1HOFS, *x);
-    SetGpuReg(REG_OFFSET_BG1VOFS, *y);
+    SetGpuBackgroundX(1, *x);
+    SetGpuBackgroundY(1, *y);
     if (gTasks[taskId2].data[3] == 0)
     {
         gTasks[taskId2].data[4] = 48;
@@ -932,8 +933,8 @@ static void AnimTask_CreateSurfWave_Step2(u8 taskId)
             SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 0);
         *BGptrX = 0;
         *BGptrY = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 0));
         gTasks[gTasks[taskId].data[15]].data[15] = -1;
         DestroyAnimVisualTask(taskId);
     }

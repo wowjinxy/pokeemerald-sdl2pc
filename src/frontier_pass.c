@@ -200,7 +200,8 @@ static const struct BgTemplate sPassBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -209,7 +210,8 @@ static const struct BgTemplate sPassBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -218,7 +220,8 @@ static const struct BgTemplate sPassBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 1,
         .mapBaseIndex = 29,
-        .screenSize = 1,
+        .screenWidth = 512,
+        .screenHeight = 256,
         .paletteMode = 1,
         .priority = 0,
         .baseTile = 0
@@ -231,7 +234,8 @@ static const struct BgTemplate sMapBgTemplates[] =
         .bg = 0,
         .charBaseIndex = 2,
         .mapBaseIndex = 31,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 0,
         .baseTile = 0
@@ -240,7 +244,8 @@ static const struct BgTemplate sMapBgTemplates[] =
         .bg = 1,
         .charBaseIndex = 0,
         .mapBaseIndex = 30,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 1,
         .baseTile = 0
@@ -249,7 +254,8 @@ static const struct BgTemplate sMapBgTemplates[] =
         .bg = 2,
         .charBaseIndex = 0,
         .mapBaseIndex = 29,
-        .screenSize = 0,
+        .screenWidth = 256,
+        .screenHeight = 256,
         .paletteMode = 0,
         .priority = 2,
         .baseTile = 0
@@ -566,11 +572,11 @@ struct
 
 static void ResetGpuRegsAndBgs(void)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG3CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(3);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
     ChangeBgX(1, 0, BG_COORD_SET);
@@ -579,15 +585,15 @@ static void ResetGpuRegsAndBgs(void)
     ChangeBgY(2, 0, BG_COORD_SET);
     ChangeBgX(3, 0, BG_COORD_SET);
     ChangeBgY(3, 0, BG_COORD_SET);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_WIN0H, 0);
-    SetGpuReg(REG_OFFSET_WIN0V, 0);
-    SetGpuReg(REG_OFFSET_WIN1H, 0);
-    SetGpuReg(REG_OFFSET_WIN1V, 0);
-    SetGpuReg(REG_OFFSET_WININ, 0);
-    SetGpuReg(REG_OFFSET_WINOUT, 0);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuWindowX(0, 0);
+    SetGpuWindowY(0, 0);
+    SetGpuWindowX(1, 0);
+    SetGpuWindowY(1, 0);
+    SetGpuWindowIn(0);
+    SetGpuWindowOut(0);
     GpuClearData();
     GpuClearSprites();
 }
@@ -791,7 +797,7 @@ static bool32 InitFrontierPass(void)
         }
         break;
     case 9:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -834,7 +840,7 @@ static bool32 HideFrontierPass(void)
             return FALSE;
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         HideBg(0);
         HideBg(1);
         HideBg(2);
@@ -1089,7 +1095,7 @@ static void Task_PassAreaZoom(u8 taskId)
             tScaleY = Q_8_8(1.984375);
             tScaleSpeedX = -0x15;
             tScaleSpeedY = -0x15;
-            SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
             ShowBg(0);
             ShowBg(1);
             ShowBg(2);
@@ -1429,7 +1435,7 @@ static bool32 InitFrontierMap(void)
         CopyBgTilemapBufferToVram(2);
         break;
     case 6:
-        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -1459,7 +1465,7 @@ static bool32 ExitFrontierMap(void)
     case 1:
         if (UpdatePaletteFade())
             return FALSE;
-        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, 0);
         HideBg(0);
         HideBg(1);
         HideBg(2);

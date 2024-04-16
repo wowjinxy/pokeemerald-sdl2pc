@@ -1208,18 +1208,10 @@ void SoftReset(u32 resetFlags)
     exit(0);
 }
 
-static const uint16_t bgMapSizes[][2] =
-{
-    {32, 32},
-    {64, 32},
-    {32, 64},
-    {64, 64},
-};
-
-#define mosaicBGEffectX (REG_MOSAIC & 0xF)
-#define mosaicBGEffectY ((REG_MOSAIC >> 4) & 0xF)
-#define mosaicSpriteEffectX ((REG_MOSAIC >> 8) & 0xF)
-#define mosaicSpriteEffectY ((REG_MOSAIC >> 12) & 0xF)
+#define mosaicBGEffectX (gpu.mosaic & 0xF)
+#define mosaicBGEffectY ((gpu.mosaic >> 4) & 0xF)
+#define mosaicSpriteEffectX ((gpu.mosaic >> 8) & 0xF)
+#define mosaicSpriteEffectY ((gpu.mosaic >> 12) & 0xF)
 #define applyBGHorizontalMosaicEffect(x) (x - (x % (mosaicBGEffectX+1)))
 #define applyBGVerticalMosaicEffect(y) (y - (y % (mosaicBGEffectY+1)))
 #define applySpriteHorizontalMosaicEffect(x) (x - (x % (mosaicSpriteEffectX+1)))
@@ -1228,10 +1220,10 @@ static const uint16_t bgMapSizes[][2] =
 static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
     unsigned int bitsPerPixel = control->palettes ? 8 : 4;
-    unsigned int mapWidth = bgMapSizes[control->screenSize][0];
-    unsigned int mapHeight = bgMapSizes[control->screenSize][1];
-    unsigned int mapWidthInPixels = mapWidth * 8;
-    unsigned int mapHeightInPixels = mapHeight * 8;
+    unsigned int mapWidthInPixels = control->screenWidth * 8;
+    unsigned int mapHeightInPixels = control->screenHeight * 8;
+    unsigned int mapWidth = mapWidthInPixels / 8;
+    unsigned int mapHeight = mapHeightInPixels / 8;
 
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
@@ -1245,15 +1237,17 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
     for (unsigned int x = 0; x < displayWidth; x++)
     {
         uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
+
         // adjust for scroll
         unsigned int xx;
         if (control->mosaic)
-            xx = (applyBGHorizontalMosaicEffect(x) + hoffs) & 0x1FF;
+            xx = applyBGHorizontalMosaicEffect(x) + hoffs;
         else
-            xx = (x + hoffs) & 0x1FF;
-        
-        unsigned int yy = (lineNum + voffs) & 0x1FF;
-        
+            xx = x + hoffs;
+
+        unsigned int yy = lineNum + voffs;
+
+#if 0
         //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
         if (xx > 255 && mapWidthInPixels > 256) {
             bgmap += 0x400;
@@ -1263,14 +1257,18 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
             //the width check is for 512x512 mode support, it jumps by two screen bases instead
             bgmap += (mapWidthInPixels > 256) ? 0x800 : 0x400;
         }
-        
+
         //maximum width for bgtile block is 256
         xx &= 0xFF;
         yy &= 0xFF;
+#endif
+
+        xx %= mapWidthInPixels;
+        yy %= mapHeightInPixels;
 
         unsigned int mapX = xx / 8;
         unsigned int mapY = yy / 8;
-        uint16_t entry = bgmap[mapY * 32 + mapX];
+        uint16_t entry = bgmap[(mapY * mapWidth) + mapX];
 
         unsigned int tileNum = entry & 0x3FF;
         unsigned int paletteNum = (entry >> 12) & 0xF;
@@ -1311,11 +1309,11 @@ static inline uint32_t getAffineBgX(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2X;
+        return gpu.affineBg2.x;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3X;
+        return gpu.affineBg3.x;
     }
 
     return 0;
@@ -1325,11 +1323,11 @@ static inline uint32_t getAffineBgY(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2Y;
+        return gpu.affineBg2.y;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3Y;
+        return gpu.affineBg3.y;
     }
 
     return 0;
@@ -1339,11 +1337,11 @@ static inline uint16_t getBgPA(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2PA;
+        return gpu.affineBg2.pa;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3PA;
+        return gpu.affineBg3.pa;
     }
 
     return 0;
@@ -1353,11 +1351,11 @@ static inline uint16_t getBgPB(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2PB;
+        return gpu.affineBg2.pb;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3PB;
+        return gpu.affineBg3.pb;
     }
 
     return 0;
@@ -1367,11 +1365,11 @@ static inline uint16_t getBgPC(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2PC;
+        return gpu.affineBg2.pc;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3PC;
+        return gpu.affineBg3.pc;
     }
 
     return 0;
@@ -1381,11 +1379,11 @@ static inline uint16_t getBgPD(int bgNumber)
 {
     if (bgNumber == 2)
     {
-        return REG_BG2PD;
+        return gpu.affineBg2.pd;
     }
     else if (bgNumber == 3)
     {
-        return REG_BG3PD;
+        return gpu.affineBg3.pd;
     }
 
     return 0;
@@ -1409,21 +1407,21 @@ static void RenderRotScaleBGScanline(int bgNum, struct BgCnt *control, uint16_t 
     int sizeY = 1;
     int yshift = 0;
 
-    switch (control->screenSize)
+    switch (control->screenWidth)
     {
-    case 0:
+    case 128:
         sizeX = sizeY = 128;
         yshift = 4;
         break;
-    case 1:
+    case 256:
         sizeX = sizeY = 256;
         yshift = 5;
         break;
-    case 2:
+    case 512:
         sizeX = sizeY = 512;
         yshift = 6;
         break;
-    case 3:
+    case 1024:
         sizeX = sizeY = 1024;
         yshift = 7;
         break;
@@ -1520,12 +1518,12 @@ const u8 spriteSizes[][2] =
 #define getRedChannel(x) ((x >>  0) & 0x1F)
 #define getGreenChannel(x) ((x >>  5) & 0x1F)
 #define getBlueChannel(x) ((x >>  10) & 0x1F)
-#define isbgEnabled(x) ((REG_DISPCNT >> 8) & 0xF) & (1 << x)
+#define isbgEnabled(x) ((gpu.displayControl >> 8) & 0xF) & (1 << x)
 
 static uint16_t alphaBlendColor(uint16_t targetA, uint16_t targetB)
 {
-    unsigned int eva = REG_BLDALPHA & 0x1F;
-    unsigned int evb = (REG_BLDALPHA >> 8) & 0x1F;
+    unsigned int eva = gpu.blendAlpha & 0x1F;
+    unsigned int evb = (gpu.blendAlpha >> 8) & 0x1F;
     // shift right by 4 = division by 16
     unsigned int r = ((getRedChannel(targetA) * eva) + (getRedChannel(targetB) * evb)) >> 4;
     unsigned int g = ((getGreenChannel(targetA) * eva) + (getGreenChannel(targetB) * evb)) >> 4;
@@ -1543,7 +1541,7 @@ static uint16_t alphaBlendColor(uint16_t targetA, uint16_t targetB)
 
 static uint16_t alphaBrightnessIncrease(uint16_t targetA)
 {
-    unsigned int evy = (REG_BLDY & 0x1F);
+    unsigned int evy = (gpu.blendCoeff & 0x1F);
     unsigned int r = getRedChannel(targetA) + (31 - getRedChannel(targetA)) * evy / 16;
     unsigned int g = getGreenChannel(targetA) + (31 - getGreenChannel(targetA)) * evy / 16;
     unsigned int b = getBlueChannel(targetA) + (31 - getBlueChannel(targetA)) * evy / 16;
@@ -1560,7 +1558,7 @@ static uint16_t alphaBrightnessIncrease(uint16_t targetA)
 
 static uint16_t alphaBrightnessDecrease(uint16_t targetA)
 {
-    unsigned int evy = (REG_BLDY & 0x1F);
+    unsigned int evy = (gpu.blendCoeff & 0x1F);
     unsigned int r = getRedChannel(targetA) - getRedChannel(targetA) * evy / 16;
     unsigned int g = getGreenChannel(targetA) - getGreenChannel(targetA) * evy / 16;
     unsigned int b = getBlueChannel(targetA) - getBlueChannel(targetA) * evy / 16;
@@ -1591,7 +1589,7 @@ static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* col
         for (unsigned int blndprsub = prsub; blndprsub < scanline->prioritySortedBgsCount[blndprnum]; blndprsub++)
         {
             char currLayer = scanline->prioritySortedBgs[blndprnum][blndprsub];
-            if (getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && REG_BLDCNT & ( 1 << (8 + currLayer)) && isbgEnabled(currLayer))
+            if (getAlphaBit( scanline->layers[currLayer][pixelpos] ) == 1 && gpu.blendControl & ( 1 << (8 + currLayer)) && isbgEnabled(currLayer))
             {
                 *colorOutput = scanline->layers[currLayer][pixelpos];
                 return true;
@@ -1605,7 +1603,7 @@ static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* col
         prsub = 0; //start from zero in the next iteration
     }
     //no background got hit, check if backdrop is enabled and return it if enabled otherwise fail
-    if (REG_BLDCNT & BLDCNT_TGT2_BD)
+    if (gpu.blendControl & BLDCNT_TGT2_BD)
     {
         *colorOutput = *(uint16_t*)gpu.palette;
         return true;
@@ -1640,12 +1638,12 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
     unsigned int x;
     unsigned int y;
     void *objtiles = gpu.spriteGfxData;
-    unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
+    unsigned int blendMode = (gpu.blendControl >> 6) & 3;
     bool winShouldBlendPixel = true;
 
     int16_t matrix[2][2] = {};
 
-    if (!(REG_DISPCNT & (1 << 6)))
+    if (!(gpu.displayControl & (1 << 6)))
     {
         puts("2-D OBJ Character mapping not supported.");
     }
@@ -1786,7 +1784,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                 int tile_y = tex_y % 8;
                 int block_x = tex_x / 8;
                 int block_y = tex_y / 8;
-                int block_offset = ((block_y * (REG_DISPCNT & 0x40 ? (width / 8) : 16)) + block_x);
+                int block_offset = ((block_y * (gpu.displayControl & 0x40 ? (width / 8) : 16)) + block_x);
                 uint16_t pixel = 0;
 
                 if (!is8BPP)
@@ -1811,7 +1809,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                     if (isObjWin)
                     {
                         if (scanline->winMask[global_x] & WINMASK_WINOUT)
-                        scanline->winMask[global_x] = (REG_WINOUT >> 8) & 0x3F;
+                        scanline->winMask[global_x] = (gpu.window.out >> 8) & 0x3F;
                         continue;
                     }
                     //this code runs if pixel is to be drawn
@@ -1821,7 +1819,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                         winShouldBlendPixel = (windowsEnabled == false || scanline->winMask[global_x] & WINMASK_CLR);
                         
                         //has to be separated from the blend mode switch statement because of OBJ semi transparancy feature
-                        if ((blendMode == 1 && REG_BLDCNT & BLDCNT_TGT1_OBJ && winShouldBlendPixel) || isSemiTransparent)
+                        if ((blendMode == 1 && gpu.blendControl & BLDCNT_TGT1_OBJ && winShouldBlendPixel) || isSemiTransparent)
                         {
                             uint16_t targetA = color;
                             uint16_t targetB = 0;
@@ -1830,7 +1828,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                                 color = alphaBlendColor(targetA, targetB);
                             }
                         }
-                        else if (REG_BLDCNT & BLDCNT_TGT1_OBJ && winShouldBlendPixel)
+                        else if (gpu.blendControl & BLDCNT_TGT1_OBJ && winShouldBlendPixel)
                         {
                             switch (blendMode)
                             {
@@ -1854,13 +1852,12 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
 
 static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
-    unsigned int mode = REG_DISPCNT & 3;
+    unsigned int mode = gpu.displayControl & 3;
     unsigned char numOfBgs = (mode == 0 ? 4 : 3);
     int bgnum, prnum;
     struct scanlineData scanline;
-    unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
+    unsigned int blendMode = (gpu.blendControl >> 6) & 3;
     unsigned int xpos;
-
 
     //initialize all priority bookkeeping data
     memset(scanline.layers, 0, sizeof(scanline.layers));
@@ -1870,7 +1867,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 
     for (bgnum = 0; bgnum < numOfBgs; bgnum++)
     {
-        struct BgCnt *bgcnt = (struct BgCnt*)(REG_ADDR_BG0CNT + bgnum * 2);
+        struct BgCnt *bgcnt = &gpu.bg[bgnum].control;
         uint16_t priority = bgcnt->priority;
 
         scanline.bgcnts[bgnum] = bgcnt;
@@ -1889,8 +1886,8 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         {
             if (isbgEnabled(bgnum) && layerEnabled[bgnum])
             {
-                uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
-                uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
+                uint16_t bghoffs = gpu.bg[bgnum].x;
+                uint16_t bgvoffs = gpu.bg[bgnum].y;
 
                 RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
@@ -1902,16 +1899,16 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         bgnum = 2;
         if (isbgEnabled(bgnum) && layerEnabled[bgnum])
         {
-            RenderRotScaleBGScanline(bgnum, scanline.bgcnts[bgnum], REG_BG2X, REG_BG2Y, vcount, scanline.layers[bgnum]);
+            RenderRotScaleBGScanline(bgnum, scanline.bgcnts[bgnum], gpu.affineBg2.x, gpu.affineBg2.y, vcount, scanline.layers[bgnum]);
         }
         // BG0 and BG1 are text mode
         for (bgnum = 1; bgnum >= 0; bgnum--)
         {
             if (isbgEnabled(bgnum) && layerEnabled[bgnum])
             {
-                uint16_t bghoffs = *(uint16_t *)(REG_ADDR_BG0HOFS + bgnum * 4);
-                uint16_t bgvoffs = *(uint16_t *)(REG_ADDR_BG0VOFS + bgnum * 4);
-                
+                uint16_t bghoffs = gpu.bg[bgnum].x;
+                uint16_t bgvoffs = gpu.bg[bgnum].y;
+
                 RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
         }
@@ -1929,13 +1926,13 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     WIN1enable = false;
 
     //figure out if WIN0 masks on this scanline
-    if (REG_DISPCNT & DISPCNT_WIN0_ON)
+    if (gpu.displayControl & DISPCNT_WIN0_ON)
     {
         //acquire the window coordinates
-        WIN0bottom = (REG_WIN0V & 0xFF); //y2;
-        WIN0top = (REG_WIN0V & 0xFF00) >> 8; //y1;
-        WIN0right = (REG_WIN0H & 0xFF); //x2
-        WIN0left = (REG_WIN0H & 0xFF00) >> 8; //x1
+        WIN0bottom = (gpu.window.state[0].y & 0xFF); //y2;
+        WIN0top = (gpu.window.state[0].y & 0xFF00) >> 8; //y1;
+        WIN0right = (gpu.window.state[0].x & 0xFF); //x2
+        WIN0left = (gpu.window.state[0].x & 0xFF00) >> 8; //x1
         
         //figure out WIN Y wraparound and check bounds accordingly
         if (WIN0top > WIN0bottom) {
@@ -1949,12 +1946,12 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         windowsEnabled = true;
     }
     //figure out if WIN1 masks on this scanline
-    if (REG_DISPCNT & DISPCNT_WIN1_ON)
+    if (gpu.displayControl & DISPCNT_WIN1_ON)
     {
-        WIN1bottom = (REG_WIN0V & 0xFF); //y2;
-        WIN1top = (REG_WIN0V & 0xFF00) >> 8; //y1;
-        WIN1right = (REG_WIN0H & 0xFF); //x2
-        WIN1left = (REG_WIN0H & 0xFF00) >> 8; //x1
+        WIN1bottom = (gpu.window.state[0].y & 0xFF); //y2;
+        WIN1top = (gpu.window.state[0].y & 0xFF00) >> 8; //y1;
+        WIN1right = (gpu.window.state[1].x & 0xFF); //x2
+        WIN1left = (gpu.window.state[1].x & 0xFF00) >> 8; //x1
         
         if (WIN1top > WIN1bottom) {
             if (vcount >= WIN1top || vcount < WIN1bottom)
@@ -1967,7 +1964,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         windowsEnabled = true;
     }
     //enable windows if OBJwin is enabled
-    if (REG_DISPCNT & DISPCNT_OBJWIN_ON && REG_DISPCNT & DISPCNT_OBJ_ON)
+    if (gpu.displayControl & DISPCNT_OBJWIN_ON && gpu.displayControl & DISPCNT_OBJ_ON)
     {
         windowsEnabled = true;
     }
@@ -1979,16 +1976,16 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         {
             //win0 checks
             if (WIN0enable && winCheckHorizontalBounds(WIN0left, WIN0right, xpos))
-                scanline.winMask[xpos] = REG_WININ & 0x3F;
+                scanline.winMask[xpos] = gpu.window.in & 0x3F;
             //win1 checks
             else if (WIN1enable && winCheckHorizontalBounds(WIN1left, WIN1right, xpos))
-                scanline.winMask[xpos] = (REG_WININ >> 8) & 0x3F;
+                scanline.winMask[xpos] = (gpu.window.in >> 8) & 0x3F;
             else
-                scanline.winMask[xpos] = (REG_WINOUT & 0x3F) | WINMASK_WINOUT;
+                scanline.winMask[xpos] = (gpu.window.out & 0x3F) | WINMASK_WINOUT;
         }
     }
 
-    if (REG_DISPCNT & DISPCNT_OBJ_ON && layerEnabled[4])
+    if (gpu.displayControl & DISPCNT_OBJ_ON && layerEnabled[4])
         DrawSprites(&scanline, vcount, windowsEnabled);
 
     //iterate trough every priority in order
@@ -2019,7 +2016,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                     }
                     
                     //blending code
-                    if (blendMode != 0 && REG_BLDCNT & (1 << bgnum) && winEffectEnable)
+                    if (blendMode != 0 && gpu.blendControl & (1 << bgnum) && winEffectEnable)
                     {
                         uint16_t targetA = color;
                         uint16_t targetB = 0;
@@ -2028,7 +2025,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                         switch (blendMode)
                         {
                         case 1:
-                            isSpriteBlendingEnabled = REG_BLDCNT & BLDCNT_TGT2_OBJ ? 1 : 0;
+                            isSpriteBlendingEnabled = gpu.blendControl & BLDCNT_TGT2_OBJ ? 1 : 0;
                             //find targetB and blend it
                             if (alphaBlendSelectTargetB(&scanline, &targetB, prnum, prsub+1, xpos, isSpriteBlendingEnabled))
                             {
@@ -2069,11 +2066,11 @@ static void DrawFrame(uint16_t *pixels)
     u32 i;
     u32 j;
     static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
-    unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
+    unsigned int blendMode = (gpu.blendControl >> 6) & 3;
     uint16_t backdropColor = *(uint16_t *)gpu.palette;
 
     // backdrop color brightness effects
-    if (REG_BLDCNT & BLDCNT_TGT1_BD)
+    if (gpu.blendControl & BLDCNT_TGT1_BD)
     {
         switch (blendMode)
         {
@@ -2092,29 +2089,29 @@ static void DrawFrame(uint16_t *pixels)
         for (u32 j = 0; j < displayWidth; j++)
             scanlines[i][j] = backdropColor;
 
-        REG_VCOUNT = i;
+        gpu.vCount = i;
 
         // The game doesn't use any VCount callbacks anymore, so this is disabled.
 #if 0
-        if(((REG_DISPSTAT >> 8) & 0xFF) == REG_VCOUNT)
+        if(((gpu.displayStatus >> 8) & 0xFF) == gpu.vCount)
         {
-            REG_DISPSTAT |= INTR_FLAG_VCOUNT;
-            if(REG_DISPSTAT & DISPSTAT_VCOUNT_INTR)
+            gpu.displayStatus |= INTR_FLAG_VCOUNT;
+            if(gpu.displayStatus & DISPSTAT_VCOUNT_INTR)
                 DoVCountUpdate();
         }
 #endif
 
         DrawScanline(scanlines[i], i);
 
-        REG_DISPSTAT |= INTR_FLAG_HBLANK;
+        gpu.displayStatus |= INTR_FLAG_HBLANK;
 
         if (runHBlank)
             RunDMAs(DMA_HBLANK);
 
         DoHBlankUpdate();
 
-        REG_DISPSTAT &= ~INTR_FLAG_HBLANK;
-        REG_DISPSTAT &= ~INTR_FLAG_VCOUNT;
+        gpu.displayStatus &= ~INTR_FLAG_HBLANK;
+        gpu.displayStatus &= ~INTR_FLAG_VCOUNT;
     }
 
     // Copy to screen
@@ -2129,7 +2126,7 @@ static void RunFrame(void)
     GameLoop();
 #endif
 
-    REG_DISPSTAT |= INTR_FLAG_VBLANK;
+    gpu.displayStatus |= INTR_FLAG_VBLANK;
 
     if (runHBlank)
         RunDMAs(DMA_HBLANK);
@@ -2158,7 +2155,7 @@ void RenderFrame(SDL_Texture *texture)
     SDL_UpdateTexture(texture, NULL, image, pitch);
 #endif
 
-    REG_VCOUNT = displayHeight + 1; // prep for being in VBlank period
+    gpu.vCount = displayHeight + 1; // prep for being in VBlank period
 }
 
 #ifdef USE_THREAD

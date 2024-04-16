@@ -33,7 +33,7 @@ void ReshowBattleScreenAfterMenu(void)
     gPaletteFade.bufferTransferDisabled = 1;
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
-    SetGpuReg(REG_OFFSET_MOSAIC, 0);
+    SetGpuState(GPU_STATE_MOSAIC, 0);
     gBattleScripting.reshowMainState = 0;
     gBattleScripting.reshowHelperState = 0;
     SetMainCallback2(CB2_ReshowBattleScreenAfterMenu);
@@ -171,13 +171,8 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
 
 static void ClearBattleBgCntBaseBlocks(void)
 {
-    struct BgCnt *regBgcnt1, *regBgcnt2;
-
-    regBgcnt1 = (struct BgCnt *)(&REG_BG1CNT);
-    regBgcnt1->charBaseBlock = 0;
-
-    regBgcnt2 = (struct BgCnt *)(&REG_BG2CNT);
-    regBgcnt2->charBaseBlock = 0;
+    SetGpuBackgroundCharBaseBlock(1, 0);
+    SetGpuBackgroundCharBaseBlock(2, 0);
 }
 
 static bool8 LoadBattlerSpriteGfx(u8 battler)

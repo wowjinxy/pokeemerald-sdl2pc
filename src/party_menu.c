@@ -718,8 +718,8 @@ static bool8 AllocPartyMenuBg(void)
     SetBgTilemapBuffer(1, sPartyBgTilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_BLDCNT, 0);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);

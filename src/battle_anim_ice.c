@@ -989,18 +989,19 @@ void AnimTask_HazeScrollingFog(u8 taskId)
 {
     struct BattleAnimBgData animBg;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
 
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
 
     GetBattleAnimBg1Data(&animBg);
     LoadBgTiles(animBg.bgId, gWeatherFogHorizontalTiles, 0x800, animBg.tilesOffset);
@@ -1026,7 +1027,7 @@ static void AnimTask_HazeScrollingFog_Step(u8 taskId)
             gTasks[taskId].data[9]++;
             gTasks[taskId].data[11] = sHazeBlendAmounts[gTasks[taskId].data[9]];
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 9)
             {
                 gTasks[taskId].data[12]++;
@@ -1047,7 +1048,7 @@ static void AnimTask_HazeScrollingFog_Step(u8 taskId)
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11]--;
 
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 0)
             {
                 gTasks[taskId].data[12]++;
@@ -1067,8 +1068,8 @@ static void AnimTask_HazeScrollingFog_Step(u8 taskId)
 
         gBattle_BG1_X = 0;
         gBattle_BG1_Y = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 0));
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         DestroyAnimVisualTask(taskId);
         break;
@@ -1094,18 +1095,19 @@ void AnimTask_MistBallFog(u8 taskId)
 {
     struct BattleAnimBgData animBg;
 
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
-    SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 0);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_WIDTH, 256);
+    SetAnimBgAttribute(1, BG_ANIM_SCREEN_HEIGHT, 256);
 
     if (!IsContest())
         SetAnimBgAttribute(1, BG_ANIM_CHAR_BASE_BLOCK, 1);
 
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
-    SetGpuReg(REG_OFFSET_BG1HOFS, gBattle_BG1_X);
-    SetGpuReg(REG_OFFSET_BG1VOFS, gBattle_BG1_Y);
+    SetGpuBackgroundX(1, gBattle_BG1_X);
+    SetGpuBackgroundY(1, gBattle_BG1_Y);
 
     GetBattleAnimBg1Data(&animBg);
     LoadBgTiles(animBg.bgId, gWeatherFogHorizontalTiles, 0x800, animBg.tilesOffset);
@@ -1128,7 +1130,7 @@ static void AnimTask_MistBallFog_Step(u8 taskId)
     case 0:
         gTasks[taskId].data[9] += 1;
         gTasks[taskId].data[11] = sMistBlendAmounts[gTasks[taskId].data[9]];
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 17 - gTasks[taskId].data[11]));
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 17 - gTasks[taskId].data[11]));
         if (gTasks[taskId].data[11] == 5)
         {
             gTasks[taskId].data[12]++;
@@ -1147,7 +1149,7 @@ static void AnimTask_MistBallFog_Step(u8 taskId)
         {
             gTasks[taskId].data[10] = 0;
             gTasks[taskId].data[11] -= 1;
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
+            SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[11], 16 - gTasks[taskId].data[11]));
             if (gTasks[taskId].data[11] == 0)
             {
                 gTasks[taskId].data[12]++;
@@ -1169,8 +1171,8 @@ static void AnimTask_MistBallFog_Step(u8 taskId)
 
         gBattle_BG1_X = 0;
         gBattle_BG1_Y = 0;
-        SetGpuReg(REG_OFFSET_BLDCNT, 0);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
+        SetGpuState(GPU_STATE_BLDCNT, 0);
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 0));
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 1);
         DestroyAnimVisualTask(taskId);
         break;

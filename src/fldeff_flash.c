@@ -124,16 +124,17 @@ void CB2_DoChangeMap(void)
     u16 ime;
 
     SetVBlankCallback(NULL);
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
-    SetGpuReg(REG_OFFSET_BG2CNT, 0);
-    SetGpuReg(REG_OFFSET_BG1CNT, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, 0);
-    SetGpuReg(REG_OFFSET_BG2HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG2VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG1VOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
-    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ClearGpuBackgroundState(2);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(1);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundX(2, 0);
+    SetGpuBackgroundY(2, 0);
+    SetGpuBackgroundX(1, 0);
+    SetGpuBackgroundY(1, 0);
+    SetGpuBackgroundX(0, 0);
+    SetGpuBackgroundY(0, 0);
     GpuClearData();
     GpuClearSprites();
     GpuClearPalette2();
@@ -214,26 +215,24 @@ static void Task_ExitCaveTransition1(u8 taskId)
 
 static void Task_ExitCaveTransition2(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     LZ77UnCompVram(sCaveTransitionTiles, (void *)(gpu.gfxData + (BG_CHAR_SIZE * 3)));
     LZ77UnCompVram(sCaveTransitionTilemap, (void *)(gpu.tileMaps + (BG_SCREEN_SIZE * 0x1F)));
     LoadPalette(sCaveTransitionPalette_White, BG_PLTT_ID(14), PLTT_SIZE_4BPP);
     LoadPalette(sCaveTransitionPalette_Exit, BG_PLTT_ID(14), PLTT_SIZEOF(8));
-    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0
+    SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0
                                 | BLDCNT_EFFECT_BLEND
                                 | BLDCNT_TGT2_BG1
                                 | BLDCNT_TGT2_BG2
                                 | BLDCNT_TGT2_BG3
                                 | BLDCNT_TGT2_OBJ
                                 | BLDCNT_TGT2_BD);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(0)
-                               | BGCNT_CHARBASE(3)
-                               | BGCNT_SCREENBASE(31)
-                               | BGCNT_16COLOR
-                               | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundCharBaseBlock(0, 3);
+    SetGpuBackgroundScreenBaseBlock(0, 31);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG0_ON
                                 | DISPCNT_OBJ_ON);
@@ -247,7 +246,7 @@ static void Task_ExitCaveTransition3(u8 taskId)
     u16 count = gTasks[taskId].data[1];
     u16 blend = count + 0x1000;
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, blend);
+    SetGpuState(GPU_STATE_BLDALPHA, blend);
     if (count <= 0x10)
     {
         gTasks[taskId].data[1]++;
@@ -263,7 +262,7 @@ static void Task_ExitCaveTransition4(u8 taskId)
 {
     u16 count;
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 16));
+    SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 16));
     count = gTasks[taskId].data[2];
 
     if (count < 8)
@@ -299,18 +298,16 @@ static void Task_EnterCaveTransition1(u8 taskId)
 
 static void Task_EnterCaveTransition2(u8 taskId)
 {
-    SetGpuReg(REG_OFFSET_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, 0);
     LZ77UnCompVram(sCaveTransitionTiles, (void *)(gpu.gfxData + (BG_CHAR_SIZE * 3)));
     LZ77UnCompVram(sCaveTransitionTilemap, (void *)(gpu.tileMaps + (BG_SCREEN_SIZE * 0x1F)));
-    SetGpuReg(REG_OFFSET_BLDCNT, 0);
-    SetGpuReg(REG_OFFSET_BLDALPHA, 0);
-    SetGpuReg(REG_OFFSET_BLDY, 0);
-    SetGpuReg(REG_OFFSET_BG0CNT, BGCNT_PRIORITY(0)
-                               | BGCNT_CHARBASE(3)
-                               | BGCNT_SCREENBASE(31)
-                               | BGCNT_16COLOR
-                               | BGCNT_TXT256x256);
-    SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0
+    SetGpuState(GPU_STATE_BLDCNT, 0);
+    SetGpuState(GPU_STATE_BLDALPHA, 0);
+    SetGpuState(GPU_STATE_BLDY, 0);
+    ClearGpuBackgroundState(0);
+    SetGpuBackgroundCharBaseBlock(0, 3);
+    SetGpuBackgroundScreenBaseBlock(0, 31);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG0_ON
                                 | DISPCNT_OBJ_ON);
@@ -347,8 +344,8 @@ static void Task_EnterCaveTransition3(u8 taskId)
     }
     else
     {
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 16));
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0
+        SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(16, 16));
+        SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0
                                     | BLDCNT_EFFECT_BLEND
                                     | BLDCNT_TGT2_BG1
                                     | BLDCNT_TGT2_BG2
@@ -364,7 +361,7 @@ static void Task_EnterCaveTransition4(u8 taskId)
     u16 count = 16 - gTasks[taskId].data[1];
     u16 blend = count + 0x1000;
 
-    SetGpuReg(REG_OFFSET_BLDALPHA, blend);
+    SetGpuState(GPU_STATE_BLDALPHA, blend);
     if (count)
     {
         gTasks[taskId].data[1]++;
