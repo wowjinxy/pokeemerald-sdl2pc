@@ -103,10 +103,10 @@ void ProcessDma3Requests(void)
 #endif
 }
 
-s16 RequestDma3Copy(const void *src, void *dest, u16 size, u8 mode)
+s16 RequestDma3Copy(const void *src, void *dest, size_t size, u8 mode)
 {
 #ifdef DMA3_DEBUG
-    printf("RequestDma3Copy: (src: %p, dest: %p, size: %d)\n", src, dest, size);
+    printf("RequestDma3Copy: (src: %p, dest: %p, size: %u)\n", src, dest, size);
 #endif
 
 #ifndef USE_DMA3_MANAGER
@@ -146,10 +146,10 @@ s16 RequestDma3Copy(const void *src, void *dest, u16 size, u8 mode)
 #endif
 }
 
-s16 RequestDma3Fill(s32 value, void *dest, u16 size, u8 mode)
+s16 RequestDma3Fill(s32 value, void *dest, size_t size, u8 mode)
 {
 #ifdef DMA3_DEBUG
-    printf("RequestDma3Fill: (value: %p, dest: %u, size: %d)\n", value, dest, size);
+    printf("RequestDma3Fill: (value: %p, dest: %u, size: %u)\n", value, dest, size);
 #endif
 
 #ifndef USE_DMA3_MANAGER

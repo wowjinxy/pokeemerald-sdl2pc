@@ -1137,10 +1137,10 @@ static void AllocContestResources(void)
     gContestResources->moveAnim = AllocZeroed(sizeof(struct ContestMoveAnimData));
     gContestResources->tv = AllocZeroed(sizeof(struct ContestTV) * CONTESTANT_COUNT);
     gContestResources->unused = AllocZeroed(sizeof(struct ContestUnused));
-    gContestResources->contestBgTilemaps[0] = AllocZeroed(0x1000);
-    gContestResources->contestBgTilemaps[1] = AllocZeroed(0x1000);
-    gContestResources->contestBgTilemaps[2] = AllocZeroed(0x1000);
-    gContestResources->contestBgTilemaps[3] = AllocZeroed(0x1000);
+    gContestResources->contestBgTilemaps[0] = AllocZeroed(BG_SCREEN_SIZE * 2);
+    gContestResources->contestBgTilemaps[1] = AllocZeroed(BG_SCREEN_SIZE * 2);
+    gContestResources->contestBgTilemaps[2] = AllocZeroed(BG_SCREEN_SIZE * 2);
+    gContestResources->contestBgTilemaps[3] = AllocZeroed(BG_SCREEN_SIZE * 2);
     gContestResources->boxBlinkTiles1 = AllocZeroed(0x800);
     gContestResources->boxBlinkTiles2 = AllocZeroed(0x800);
     gContestResources->animBgTileBuffer = AllocZeroed(0x2000);

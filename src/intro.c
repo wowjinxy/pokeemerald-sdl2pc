@@ -1053,8 +1053,8 @@ static void MainCB2_EndIntro(void)
 
 static void LoadCopyrightGraphics(u16 tilesetAddress, u16 tilemapAddress, u16 paletteOffset)
 {
-    LZ77UnCompVram(gIntroCopyright_Gfx, (void *)(gpu.gfxData + tilesetAddress));
-    LZ77UnCompVram(gIntroCopyright_Tilemap, (void *)(gpu.tileMaps + tilemapAddress));
+    LZ77UnCompVram(gIntroCopyright_Gfx, (void*)(BG_CHAR_ADDR(tilesetAddress)));
+    LZ77UnCompVram(gIntroCopyright_Tilemap, (void *)(BG_SCREEN_ADDR(tilemapAddress)));
     LoadPalette(gIntroCopyright_Pal, paletteOffset, PLTT_SIZE_4BPP);
 }
 
@@ -1080,7 +1080,7 @@ static u8 SetUpCopyrightScreen(void)
         GpuClearSprites();
         GpuClearPalette2();
         ResetPaletteFade();
-        LoadCopyrightGraphics(0, 0x3800, BG_PLTT_ID(0));
+        LoadCopyrightGraphics(0, 0x7, BG_PLTT_ID(0));
         ScanlineEffect_Stop();
         ResetTasks();
         ResetSpriteData();

@@ -297,4 +297,4 @@ $(OBJ_DIR)/ld_script.ld: $(LD_SCRIPT) $(LD_SCRIPT_DEPS)
 #	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 
 $(ROM): $(OBJS)
-	$(CC) $(CFLAGS) -no-pie -Wl,--demangle $^ $(PLATFORM_LIBS) -static-libgcc -o $@
+	$(CC) $(CFLAGS) -fsanitize=address -no-pie -Wl,--demangle $^ $(PLATFORM_LIBS) -static-libgcc -o $@

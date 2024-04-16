@@ -55,7 +55,10 @@ extern void * INTR_VECTOR;
 #endif
 
 #define BG_CHAR_SIZE      0x4000
-#define BG_SCREEN_SIZE    0x800
+#define BG_SCREEN_SIZE    0x10000
+
+#define GBA_BG_SCREEN_SIZE 0x800 // Size of a BG map on the GBA. Don't touch!
+
 #define BG_CHAR_ADDR(n)   (gpu.gfxData + (BG_CHAR_SIZE * (n)))
 #define BG_SCREEN_ADDR(n) (gpu.tileMaps + (BG_SCREEN_SIZE * (n)))
 

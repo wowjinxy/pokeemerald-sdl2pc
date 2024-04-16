@@ -276,7 +276,7 @@ struct BerryCrushGame_Gfx
     u8 unused;
     u8 resultsWindowId;
     u8 nameWindowIds[MAX_RFU_PLAYERS];
-    u16 bgBuffers[4][0x800];
+    u16 bgBuffers[4][BG_SCREEN_SIZE];
 };
 
 struct BerryCrushGame

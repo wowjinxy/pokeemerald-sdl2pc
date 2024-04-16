@@ -5,7 +5,7 @@ struct GpuState gpu;
 
 void GpuInit(void)
 {
-    gpu.gfxDataSize = BG_CHAR_SIZE * 3;
+    gpu.gfxDataSize = BG_CHAR_SIZE * 4;
     gpu.tileMapsSize = BG_SCREEN_SIZE * 32;
     gpu.spriteGfxDataSize = 32000;
 

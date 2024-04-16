@@ -153,9 +153,9 @@ struct NamingScreenTemplate
 
 struct NamingScreenData
 {
-    u8 tilemapBuffer1[0x800];
-    u8 tilemapBuffer2[0x800];
-    u8 tilemapBuffer3[0x800];
+    u8 tilemapBuffer1[BG_SCREEN_SIZE];
+    u8 tilemapBuffer2[BG_SCREEN_SIZE];
+    u8 tilemapBuffer3[BG_SCREEN_SIZE];
     u8 textBuffer[16];
     u8 tileBuffer[0x600];
     u8 state;

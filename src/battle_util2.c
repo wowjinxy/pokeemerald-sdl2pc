@@ -35,7 +35,7 @@ void AllocateBattleResources(void)
     gLinkBattleRecvBuffer = AllocZeroed(BATTLE_BUFFER_LINK_SIZE);
 
     gBattleAnimBgTileBuffer = AllocZeroed(0x2000);
-    gBattleAnimBgTilemapBuffer = AllocZeroed(0x1000);
+    gBattleAnimBgTilemapBuffer = AllocZeroed(BG_SCREEN_SIZE * 2);
 
     if (gBattleTypeFlags & BATTLE_TYPE_SECRET_BASE)
     {

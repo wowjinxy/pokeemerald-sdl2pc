@@ -61,7 +61,7 @@ bool16 InitWindows(const struct WindowTemplate *templates)
         {
             attrib = GetBgAttribute(bgLayer, BG_ATTR_METRIC);
 
-            if (attrib != 0xFFFF)
+            if (attrib != -1)
             {
                 allocatedTilemapBuffer = AllocZeroed(attrib);
 
@@ -139,7 +139,7 @@ u16 AddWindow(const struct WindowTemplate *template)
     {
         attrib = GetBgAttribute(bgLayer, BG_ATTR_METRIC);
 
-        if (attrib != 0xFFFF)
+        if (attrib != -1)
         {
             allocatedTilemapBuffer = AllocZeroed(attrib);
 
@@ -625,15 +625,13 @@ u16 AddWindow8Bit(const struct WindowTemplate *template)
     bgLayer = template->bg;
     if (gWindowBgTilemapBuffers[bgLayer] == NULL)
     {
-        u16 attribute = GetBgAttribute(bgLayer, BG_ATTR_METRIC);
-        if (attribute != 0xFFFF)
+        int attribute = GetBgAttribute(bgLayer, BG_ATTR_METRIC);
+        if (attribute != -1)
         {
             s32 i;
-            memAddress = Alloc(attribute);
+            memAddress = AllocZeroed(attribute);
             if (memAddress == NULL)
                 return WINDOW_NONE;
-            for (i = 0; i < attribute; i++) // if we're going to zero out the memory anyway, why not call AllocZeroed?
-                memAddress[i] = 0;
             gWindowBgTilemapBuffers[bgLayer] = memAddress;
             SetBgTilemapBuffer(bgLayer, memAddress);
         }

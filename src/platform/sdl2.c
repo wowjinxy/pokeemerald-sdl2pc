@@ -88,6 +88,8 @@ SDL_sem *vBlankSemaphore;
 SDL_atomic_t isFrameAvailable;
 #endif
 
+#define ALLOW_ANY_RESOLUTION
+
 static s32 displayWidth = 0;
 static s32 displayHeight = 0;
 
@@ -1391,11 +1393,8 @@ static inline uint16_t getBgPD(int bgNumber)
 
 static void RenderRotScaleBGScanline(int bgNum, struct BgCnt *control, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
 {
-    unsigned int charBaseBlock = control->charBaseBlock;
-    unsigned int screenBaseBlock = control->screenBaseBlock;
-
-    uint8_t *bgtiles = (uint8_t *)(gpu.gfxData + charBaseBlock * BG_CHAR_SIZE);
-    uint8_t *bgmap = (uint8_t *)(gpu.tileMaps + screenBaseBlock * BG_SCREEN_SIZE);
+    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
+    uint8_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
     if (control->mosaic)

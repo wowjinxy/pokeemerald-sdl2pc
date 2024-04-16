@@ -169,10 +169,11 @@ static u16 GetBgControlAttribute(u8 bg, u8 attributeId)
     return 0xFF;
 }
 
-u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode)
+u8 LoadBgVram(u8 bg, const void *src, size_t size, size_t destOffset, u8 mode)
 {
-    u16 offset;
-    s8 cursor;
+    size_t offset;
+    void *ptr;
+    void *start, *end;
 
     if (IsInvalidBg(bg) || !sGpuBgConfigs.configs[bg].visible)
         return -1;
@@ -180,25 +181,29 @@ u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode)
     switch (mode)
     {
     case 0x1:
+        if (size > BG_CHAR_SIZE)
+            abort();
         offset = sGpuBgConfigs.configs[bg].charBaseIndex * BG_CHAR_SIZE;
-        offset = destOffset + offset;
-        cursor = RequestDma3Copy(src, (void *)(offset + gpu.gfxData), size, 0);
-        if (cursor == -1)
-            return -1;
+        start = gpu.gfxData;
+        end = start + gpu.gfxDataSize;
         break;
     case 0x2:
+        if (size > BG_SCREEN_SIZE)
+            abort();
         offset = sGpuBgConfigs.configs[bg].mapBaseIndex * BG_SCREEN_SIZE;
-        offset = destOffset + offset;
-        cursor = RequestDma3Copy(src, (void *)(offset + gpu.tileMaps), size, 0);
-        if (cursor == -1)
-            return -1;
+        start = gpu.tileMaps;
+        end = start + gpu.tileMapsSize;
         break;
     default:
-        cursor = -1;
-        break;
+        return -1;
     }
 
-    return cursor;
+    ptr = start + (offset + destOffset);
+
+    if (ptr >= end || (ptr + size) >= end)
+        abort();
+
+    return RequestDma3Copy(src, ptr, size, 0);
 }
 
 static void ShowBgInternal(u8 bg)
@@ -365,9 +370,9 @@ void SetBgMode(u8 bgMode)
     SetBgModeInternal(bgMode);
 }
 
-u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
+u16 LoadBgTiles(u8 bg, const void *src, size_t size, size_t destOffset)
 {
-    u16 tileOffset;
+    size_t tileOffset;
     u8 cursor;
 
     if (GetBgControlAttribute(bg, BG_CTRL_ATTR_PALETTEMODE) == 0)
@@ -379,7 +384,7 @@ u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
         tileOffset = (sGpuBgConfigs2[bg].baseTile + destOffset) * 0x40;
     }
 
-    cursor = LoadBgVram(bg, src, size, tileOffset, DISPCNT_MODE_1);
+    cursor = LoadBgVram(bg, src, size, tileOffset, 0x1);
 
     if (cursor == 0xFF)
     {
@@ -392,9 +397,9 @@ u16 LoadBgTiles(u8 bg, const void *src, u16 size, u16 destOffset)
     return cursor;
 }
 
-u16 LoadBgTilemap(u8 bg, const void *src, u16 size, u16 destOffset)
+u16 LoadBgTilemap(u8 bg, const void *src, size_t size, size_t destOffset)
 {
-    u8 cursor = LoadBgVram(bg, src, size, destOffset * 2, DISPCNT_MODE_2);
+    u8 cursor = LoadBgVram(bg, src, size, destOffset * 2, 0x2);
 
     if (cursor == 0xFF)
     {
@@ -470,7 +475,7 @@ void SetBgAttribute(u8 bg, u8 attributeId, u8 value)
     }
 }
 
-u16 GetBgAttribute(u8 bg, u8 attributeId)
+int GetBgAttribute(u8 bg, u8 attributeId)
 {
     switch (attributeId)
     {
@@ -492,7 +497,7 @@ u16 GetBgAttribute(u8 bg, u8 attributeId)
         switch (GetBgType(bg))
         {
         case BG_TYPE_NORMAL:
-            return GetBgMetricTextMode(bg, 0) * 0x800;
+            return GetBgMetricTextMode(bg, 0) * GBA_BG_SCREEN_SIZE;
         case BG_TYPE_AFFINE:
             return GetBgMetricAffineMode(bg, 0) * 0x100;
         default:
@@ -853,21 +858,20 @@ void CopyToBgTilemapBuffer(u8 bg, const void *src, u16 mode, u16 destOffset)
 
 void CopyBgTilemapBufferToVram(u8 bg)
 {
-    u16 sizeToLoad;
+    size_t sizeToLoad;
 
     if (!IsInvalidBg32(bg) && !IsTileMapOutsideWram(bg))
     {
         switch (GetBgType(bg))
         {
         case BG_TYPE_NORMAL:
-            sizeToLoad = GetBgMetricTextMode(bg, 0) * 0x800;
+            sizeToLoad = GetBgMetricTextMode(bg, 0) * GBA_BG_SCREEN_SIZE;
             break;
         case BG_TYPE_AFFINE:
             sizeToLoad = GetBgMetricAffineMode(bg, 0) * 0x100;
             break;
         default:
-            sizeToLoad = 0;
-            break;
+            return;
         }
         LoadBgVram(bg, sGpuBgConfigs2[bg].tilemap, sizeToLoad, 0, 2);
     }
