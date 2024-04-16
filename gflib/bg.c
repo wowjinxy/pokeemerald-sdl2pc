@@ -701,39 +701,36 @@ s32 ChangeBgY_ScreenOff(u8 bg, s32 value, u8 op)
     {
     case 0:
         temp1 = sGpuBgConfigs2[0].bg_y >> 0x8;
-        SetGpuReg_ForcedBlank(REG_OFFSET_BG0VOFS, temp1);
+        SetGpuBackgroundY(0, temp1);
         break;
     case 1:
         temp1 = sGpuBgConfigs2[1].bg_y >> 0x8;
-        SetGpuReg_ForcedBlank(REG_OFFSET_BG1VOFS, temp1);
+        SetGpuBackgroundY(1, temp1);
         break;
     case 2:
         if (mode == 0)
         {
             temp1 = sGpuBgConfigs2[2].bg_y >> 0x8;
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG2VOFS, temp1);
-
+            SetGpuBackgroundY(2, temp1);
         }
         else
         {
             temp1 = sGpuBgConfigs2[2].bg_y >> 0x10;
             temp2 = sGpuBgConfigs2[2].bg_y & 0xFFFF;
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG2Y_H, temp1);
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG2Y_L, temp2);
+            SetGpuAffineBgY(2, (temp1 << 16) + temp2);
         }
         break;
     case 3:
         if (mode == 0)
         {
             temp1 = sGpuBgConfigs2[3].bg_y >> 0x8;
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG3VOFS, temp1);
+            SetGpuBackgroundY(3, temp1);
         }
         else if (mode == 2)
         {
             temp1 = sGpuBgConfigs2[3].bg_y >> 0x10;
             temp2 = sGpuBgConfigs2[3].bg_y & 0xFFFF;
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG3Y_H, temp1);
-            SetGpuReg_ForcedBlank(REG_OFFSET_BG3Y_L, temp2);
+            SetGpuAffineBgY(3, (temp1 << 16) + temp2);
         }
         break;
     }
@@ -1051,24 +1048,26 @@ void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 widt
 
 u16 GetBgMetricTextMode(u8 bg, u8 whichMetric)
 {
-#if 1
-    switch (whichMetric)
+    // Emulate GBA screen modes
+    int screenSize = -1;
+    int screenWidth = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH);
+    int screenHeight = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
+    if (screenWidth == 256 && screenHeight == 256)
     {
-    case 0:
+        screenSize = 0;
+    }
+    else if (screenWidth == 512 && screenHeight == 256)
     {
-        int sz = max(GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH), GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT)) / 8;
-        int result = 1;
-        while (result < sz)
-            result <<= 1;
-        return result;
+        screenSize = 1;
     }
-    case 1:
-        return GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH) / 8;
-    case 2:
-        return GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT) / 8;
+    else if (screenWidth == 256 && screenHeight == 512)
+    {
+        screenSize = 2;
     }
-#else
-    u8 screenSize = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENSIZE);
+    else if (screenWidth == 512 && screenHeight == 512)
+    {
+        screenSize = 3;
+    }
 
     switch (whichMetric)
     {
@@ -1076,25 +1075,34 @@ u16 GetBgMetricTextMode(u8 bg, u8 whichMetric)
         switch (screenSize)
         {
         case 0:
-            return 1;
+            return 1 * GBA_BG_SCREEN_SIZE;
         case 1:
         case 2:
-            return 2;
+            return 2 * GBA_BG_SCREEN_SIZE;
         case 3:
-            return 4;
+            return 4 * GBA_BG_SCREEN_SIZE;
+        default: {
+            int sz = max(screenWidth, screenHeight) / 8;
+            int result = 1;
+            while (result < sz)
+                result <<= 1;
+            return result;
+        }
         }
         break;
     case 1:
         switch (screenSize)
         {
         case 0:
-            return 1;
+            return 1 * 0x20;
         case 1:
-            return 2;
+            return 2 * 0x20;
         case 2:
-            return 1;
+            return 1 * 0x20;
         case 3:
-            return 2;
+            return 2 * 0x20;
+        default:
+            return screenWidth / 8;
         }
         break;
     case 2:
@@ -1102,38 +1110,45 @@ u16 GetBgMetricTextMode(u8 bg, u8 whichMetric)
         {
         case 0:
         case 1:
-            return 1;
+            return 1 * 0x20;
         case 2:
         case 3:
-            return 2;
+            return 2 * 0x20;
+        default:
+            return screenHeight / 8;
         }
         break;
     }
-#endif
 
     return 0;
 }
 
 u32 GetBgMetricAffineMode(u8 bg, u8 whichMetric)
 {
-#if 1
-    switch (whichMetric)
+    // Emulate GBA screen modes
+    int screenSize = -1;
+    int screenWidth = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH);
+    int screenHeight = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
+    if (screenWidth == 256 && screenHeight == 256)
     {
-    case 0:
+        screenSize = 0;
+    }
+    else if (screenWidth == 512 && screenHeight == 256)
     {
-        int sz = max(GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH), GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT)) / 8;
-        int result = 1;
-        while (result < sz)
-            result <<= 1;
-        return result;
+        screenSize = 1;
     }
-    case 1:
-        return GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH) / 8;
-    case 2:
-        return GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT) / 8;
+    else if (screenWidth == 256 && screenHeight == 512)
+    {
+        screenSize = 2;
     }
-#else
-    u8 screenSize = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENSIZE);
+    else if (screenWidth == 512 && screenHeight == 512)
+    {
+        screenSize = 3;
+    }
+    else
+    {
+        return GetBgMetricTextMode(bg, whichMetric);
+    }
 
     switch (whichMetric)
     {
@@ -1141,32 +1156,51 @@ u32 GetBgMetricAffineMode(u8 bg, u8 whichMetric)
         switch (screenSize)
         {
         case 0:
-            return 0x1;
+            return 0x1 * 0x100;
         case 1:
-            return 0x4;
+            return 0x4 * 0x100;
         case 2:
-            return 0x10;
+            return 0x10 * 0x100;
         case 3:
-            return 0x40;
+            return 0x40 * 0x100;
         }
         break;
     case 1:
     case 2:
         return 0x10 << screenSize;
     }
-#endif
 
     return 0;
 }
 
 u32 GetTileMapIndexFromCoords(s32 x, s32 y, u32 screenWidth, u32 screenHeight)
 {
-    x %= screenWidth;
-    y %= screenHeight;
+    // Emulate GBA screen modes
+    int screenSize = -1;
+    if (screenWidth * 8 == 256 && screenHeight * 8 == 256)
+    {
+        screenSize = 0;
+    }
+    else if (screenWidth * 8 == 512 && screenHeight * 8 == 256)
+    {
+        screenSize = 1;
+    }
+    else if (screenWidth * 8 == 256 && screenHeight * 8 == 512)
+    {
+        screenSize = 2;
+    }
+    else if (screenWidth * 8 == 512 && screenHeight * 8 == 512)
+    {
+        screenSize = 3;
+    }
+    else
+    {
+        x %= screenWidth;
+        y %= screenHeight;
 
-    return (y * screenWidth) + x;
+        return (y * screenWidth) + x;
+    }
 
-#if 0
     // Old implementation
     x = x & (screenWidth - 1);
     y = y & (screenHeight - 1);
@@ -1187,8 +1221,8 @@ u32 GetTileMapIndexFromCoords(s32 x, s32 y, u32 screenWidth, u32 screenHeight)
         }
         break;
     }
+
     return (y * 0x20) + x;
-#endif
 }
 
 void CopyTileMapEntry(const u16 *src, u16 *dest, s32 palette1, s32 tileOffset, s32 palette2)

@@ -1220,8 +1220,8 @@ void SoftReset(u32 resetFlags)
 static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
     unsigned int bitsPerPixel = control->palettes ? 8 : 4;
-    unsigned int mapWidthInPixels = control->screenWidth * 8;
-    unsigned int mapHeightInPixels = control->screenHeight * 8;
+    unsigned int mapWidthInPixels = control->screenWidth;
+    unsigned int mapHeightInPixels = control->screenHeight;
     unsigned int mapWidth = mapWidthInPixels / 8;
     unsigned int mapHeight = mapHeightInPixels / 8;
 
@@ -1247,7 +1247,13 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
 
         unsigned int yy = lineNum + voffs;
 
-#if 0
+#if 1
+        xx %= mapWidthInPixels;
+        yy %= mapHeightInPixels;
+#else
+        xx &= 0x1FF;
+        yy &= 0x1FF;
+
         //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
         if (xx > 255 && mapWidthInPixels > 256) {
             bgmap += 0x400;
@@ -1263,16 +1269,13 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
         yy &= 0xFF;
 #endif
 
-        xx %= mapWidthInPixels;
-        yy %= mapHeightInPixels;
-
         unsigned int mapX = xx / 8;
         unsigned int mapY = yy / 8;
         uint16_t entry = bgmap[(mapY * mapWidth) + mapX];
 
         unsigned int tileNum = entry & 0x3FF;
         unsigned int paletteNum = (entry >> 12) & 0xF;
-        
+
         unsigned int tileX = xx % 8;
         unsigned int tileY = yy % 8;
 
