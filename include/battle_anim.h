@@ -69,7 +69,7 @@ void RelocateBattleBgPal(u16 paletteNum, u16 *dest, u32 offset, bool8 largeScree
 void ResetBattleAnimBg(bool8);
 
 // battle_intro.c
-void SetAnimBgAttribute(u8 bgId, u8 attributeId, u8 value);
+void SetAnimBgAttribute(u8 bgId, u8 attributeId, u16 value);
 void DrawBattlerOnBg(int bgId, u8 x, u8 y, u8 battlerPosition, u8 paletteId, u8 *tiles, u16 *tilemap, u16 tilesOffset);
 void HandleIntroSlide(u8 terrainId);
 int GetAnimBgAttribute(u8 bgId, u8 attributeId);

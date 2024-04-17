@@ -53,7 +53,6 @@ enum {
 struct scanlineData {
     uint16_t layers[NUM_BACKGROUNDS][DISPLAY_WIDTH];
     uint16_t spriteLayers[4][DISPLAY_WIDTH];
-    struct BgCnt *bgcnts[NUM_BACKGROUNDS];
     uint16_t winMask[DISPLAY_WIDTH];
     //priority bookkeeping
     char bgtoprio[NUM_BACKGROUNDS]; //background to priority
@@ -1217,30 +1216,69 @@ void SoftReset(u32 resetFlags)
 #define applySpriteHorizontalMosaicEffect(x) (x - (x % (mosaicSpriteEffectX+1)))
 #define applySpriteVerticalMosaicEffect(y) (y - (y % (mosaicSpriteEffectY+1)))
 
-static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
+static void GetBGScanlinePos(int bgNum, int *lineStart, int *lineEnd)
 {
+    struct BgCnt *control = &gpu.bg[bgNum].control;
+
+    *lineStart = 0;
+    *lineEnd = displayWidth;
+
+    if (control->gbaMode)
+    {
+        int offsetX = (displayWidth - BASE_DISPLAY_WIDTH) / 2;
+        *lineStart += offsetX;
+        *lineEnd = BASE_DISPLAY_WIDTH + offsetX;
+    }
+}
+
+static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
+{
+    struct BgCnt *control = &gpu.bg[bgNum].control;
     unsigned int bitsPerPixel = control->palettes ? 8 : 4;
     unsigned int mapWidthInPixels = control->screenWidth;
     unsigned int mapHeightInPixels = control->screenHeight;
-    unsigned int mapWidth = mapWidthInPixels / 8;
-    unsigned int mapHeight = mapHeightInPixels / 8;
+    unsigned int mapWidth;
+    // unsigned int mapHeight = mapHeightInPixels / 8;
+
+    int lineStart, lineEnd;
+    GetBGScanlinePos(bgNum, &lineStart, &lineEnd);
 
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
+    if (control->gbaMode)
+    {
+        int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
+
+        lineNum -= offsetY;
+
+        if (lineNum < 0 || lineNum >= BASE_DISPLAY_HEIGHT)
+            return;
+
+        hoffs &= 0x1FF;
+        voffs &= 0x1FF;
+
+        if (mapWidthInPixels > 256)
+            mapWidthInPixels = 512;
+        else
+            mapWidthInPixels = 256;
+
+        if (mapHeightInPixels > 256)
+            mapHeightInPixels = 512;
+        else
+            mapHeightInPixels = 256;
+
+        mapWidth = 0x20;
+    }
+    else
+    {
+        mapWidth = mapWidthInPixels / 8;
+    }
+
     if (control->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
-#if 0
-    hoffs &= 0x1FF;
-    voffs &= 0x1FF;
-#endif
-
-    // GBA compat
-    if (mapWidthInPixels == 256 || mapWidthInPixels == 512)
-        mapWidth = 0x20;
-
-    for (unsigned int x = 0; x < displayWidth; x++)
+    for (unsigned int x = lineStart; x < lineEnd; x++)
     {
         uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
 
@@ -1251,31 +1289,34 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
         else
             xx = x + hoffs;
 
+        xx -= lineStart;
+
         unsigned int yy = lineNum + voffs;
 
-#if 1
-        xx %= mapWidthInPixels;
-        yy %= mapHeightInPixels;
-#else
-        xx &= 0x1FF;
-        yy &= 0x1FF;
-#endif
+        if (control->gbaMode)
+        {
+            xx &= 0x1FF;
+            yy &= 0x1FF;
 
-        //if x or y go above 255 pixels it goes to the next screen base which are (BG_SCREEN_SIZE / 2) WORDs long
-        if (xx > 255 && mapWidthInPixels == 512) {
-            bgmap += BG_SCREEN_SIZE / 2;
+            //if x or y go above 255 pixels it goes to the next screen base which are (BG_SCREEN_SIZE / 2) WORDs long
+            if (xx > 255 && mapWidthInPixels == 512) {
+                bgmap += GBA_BG_SCREEN_SIZE / 2;
+            }
+
+            if (yy > 255 && mapHeightInPixels == 512) {
+                //the width check is for 512x512 mode support, it jumps by two screen bases instead
+                bgmap += (mapWidthInPixels == 512) ? GBA_BG_SCREEN_SIZE : GBA_BG_SCREEN_SIZE / 2;
+            }
+
+            //maximum width for bgtile block is 256
+            xx &= 0xFF;
+            yy &= 0xFF;
         }
-
-        if (yy > 255 && mapHeightInPixels == 512) {
-            //the width check is for 512x512 mode support, it jumps by two screen bases instead
-            bgmap += (mapWidthInPixels == 512) ? BG_SCREEN_SIZE : BG_SCREEN_SIZE / 2;
+        else
+        {
+            xx %= mapWidthInPixels;
+            yy %= mapHeightInPixels;
         }
-
-#if 0
-        //maximum width for bgtile block is 256
-        xx &= 0xFF;
-        yy &= 0xFF;
-#endif
 
         unsigned int mapX = xx / 8;
         unsigned int mapY = yy / 8;
@@ -1400,10 +1441,12 @@ static inline uint16_t getBgPD(int bgNumber)
     return 0;
 }
 
-static void RenderRotScaleBGScanline(int bgNum, struct BgCnt *control, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
+static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
 {
+    struct BgCnt *control = &gpu.bg[bgNum].control;
+
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
-    uint8_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
+    uint8_t *bgmap = (uint8_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
     if (control->mosaic)
@@ -1815,12 +1858,12 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
                 if (pixel != 0)
                 {
                     uint16_t color = palette[pixel];;
-                    
+
                     //if sprite mode is 2 then write to the window mask instead
                     if (isObjWin)
                     {
                         if (scanline->winMask[global_x] & WINMASK_WINOUT)
-                        scanline->winMask[global_x] = (gpu.window.out >> 8) & 0x3F;
+                            scanline->winMask[global_x] = (gpu.window.out >> 8) & 0x3F;
                         continue;
                     }
                     //this code runs if pixel is to be drawn
@@ -1881,7 +1924,6 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         struct BgCnt *bgcnt = &gpu.bg[bgnum].control;
         uint16_t priority = bgcnt->priority;
 
-        scanline.bgcnts[bgnum] = bgcnt;
         scanline.bgtoprio[bgnum] = priority;
         
         char priorityCount = scanline.prioritySortedBgsCount[priority];
@@ -1900,7 +1942,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                 uint16_t bghoffs = gpu.bg[bgnum].x;
                 uint16_t bgvoffs = gpu.bg[bgnum].y;
 
-                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
+                RenderBGScanline(bgnum, bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
         }
         
@@ -1910,7 +1952,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         bgnum = 2;
         if (isbgEnabled(bgnum) && layerEnabled[bgnum])
         {
-            RenderRotScaleBGScanline(bgnum, scanline.bgcnts[bgnum], gpu.affineBg2.x, gpu.affineBg2.y, vcount, scanline.layers[bgnum]);
+            RenderRotScaleBGScanline(bgnum, gpu.affineBg2.x, gpu.affineBg2.y, vcount, scanline.layers[bgnum]);
         }
         // BG0 and BG1 are text mode
         for (bgnum = 1; bgnum >= 0; bgnum--)
@@ -1920,12 +1962,12 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                 uint16_t bghoffs = gpu.bg[bgnum].x;
                 uint16_t bgvoffs = gpu.bg[bgnum].y;
 
-                RenderBGScanline(bgnum, scanline.bgcnts[bgnum], bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
+                RenderBGScanline(bgnum, bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
             }
         }
         break;
     default:
-        printf("Video mode %u is unsupported.\n", mode);
+        // printf("Video mode %u is unsupported.\n", mode);
         break;
     }
     
@@ -2008,21 +2050,24 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             //if background is enabled then draw it
             if (isbgEnabled(bgnum))
             {
+                int lineStart, lineEnd;
+                GetBGScanlinePos(bgnum, &lineStart, &lineEnd);
                 uint16_t *src = scanline.layers[bgnum];
                 //copy all pixels to framebuffer 
-                for (xpos = 0; xpos < displayWidth; xpos++)
+                for (xpos = lineStart; xpos < lineEnd; xpos++)
                 {
                     uint16_t color = src[xpos];
-                    bool winEffectEnable = true;
-                    
                     if (!getAlphaBit(color))
                         continue; //do nothing if alpha bit is not set
-                    
+
+                    bool winEffectEnable = true;
+
                     if (windowsEnabled)
                     {
-                        winEffectEnable = ((scanline.winMask[xpos] & WINMASK_CLR) >> 5);
+                        int mask = scanline.winMask[xpos - lineStart];
+                        winEffectEnable = ((mask & WINMASK_CLR) >> 5);
                         //if bg is disabled inside the window then do not draw the pixel
-                        if ( !(scanline.winMask[xpos] & 1 << bgnum) )
+                        if ( !(mask & 1 << bgnum) )
                             continue;
                     }
                     

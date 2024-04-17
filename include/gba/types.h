@@ -44,6 +44,7 @@ struct BgCnt
     u16 charBaseBlock;
     u16 mosaic:1;
     u16 palettes:1;
+    u16 gbaMode:1;
     u16 screenBaseBlock;
     u16 areaOverflowMode:1;
     u16 screenWidth;

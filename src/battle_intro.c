@@ -31,7 +31,7 @@ static const TaskFunc sBattleIntroSlideFuncs[] =
     [BATTLE_TERRAIN_PLAIN]      = BattleIntroSlide3,
 };
 
-void SetAnimBgAttribute(u8 bgId, u8 attributeId, u8 value)
+void SetAnimBgAttribute(u8 bgId, u8 attributeId, u16 value)
 {
     if (bgId < 4)
     {

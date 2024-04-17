@@ -382,6 +382,15 @@ void SetGpuBackground8bppMode(u8 bgNum, u32 use8bpp)
     control->palettes = use8bpp;
 }
 
+void SetGpuBackgroundGbaMode(u8 bgNum, u32 gbaMode)
+{
+    struct BgCnt *control = GetBgControl(bgNum);
+    if (control == NULL)
+        return;
+
+    control->gbaMode = gbaMode;
+}
+
 void SetGpuBackgroundScreenBaseBlock(u8 bgNum, u32 screenBaseBlock)
 {
     struct BgCnt *control = GetBgControl(bgNum);
@@ -454,6 +463,15 @@ u32 GetGpuBackground8bppMode(u8 bgNum)
     return control->palettes;
 }
 
+u32 GetGpuBackgroundGbaMode(u8 bgNum)
+{
+    struct BgCnt *control = GetBgControl(bgNum);
+    if (control == NULL)
+        return 0;
+
+    return control->gbaMode;
+}
+
 u32 GetGpuBackgroundScreenBaseBlock(u8 bgNum)
 {
     struct BgCnt *control = GetBgControl(bgNum);
@@ -500,4 +518,5 @@ void ClearGpuBackgroundState(u8 bgNum)
 
     SetGpuBackgroundWidth(bgNum, 256);
     SetGpuBackgroundHeight(bgNum, 256);
+    SetGpuBackgroundGbaMode(bgNum, 1);
 }
