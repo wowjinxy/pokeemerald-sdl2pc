@@ -97,16 +97,16 @@ enum
     BG_CTRL_ATTR_WRAPAROUND = 9,
 };
 
-static void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIndex, u16 screenWidth, u16 screenHeight, u8 paletteMode, u8 priority, u8 mosaic, u8 wraparound)
+static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u16 screenWidth, u16 screenHeight, u16 paletteMode, u16 priority, u16 mosaic, u16 wraparound)
 {
     if (!IsInvalidBg(bg))
     {
-        if (charBaseIndex != 0xFF)
+        if (charBaseIndex != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].charBaseIndex = charBaseIndex;
         }
 
-        if (mapBaseIndex != 0xFF)
+        if (mapBaseIndex != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].mapBaseIndex = mapBaseIndex;
         }
@@ -121,22 +121,22 @@ static void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIndex, u16
             sGpuBgConfigs.configs[bg].screenHeight = screenHeight;
         }
 
-        if (paletteMode != 0xFF)
+        if (paletteMode != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].paletteMode = paletteMode;
         }
 
-        if (priority != 0xFF)
+        if (priority != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].priority = priority;
         }
 
-        if (mosaic != 0xFF)
+        if (mosaic != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].mosaic = mosaic;
         }
 
-        if (wraparound != 0xFF)
+        if (wraparound != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].wraparound = wraparound;
         }
@@ -453,33 +453,33 @@ void HideBg(u8 bg)
     SyncBgVisibilityAndMode();
 }
 
-void SetBgAttribute(u8 bg, u8 attributeId, u8 value)
+void SetBgAttribute(u8 bg, u8 attributeId, u16 value)
 {
     switch (attributeId)
     {
     case BG_ATTR_CHARBASEINDEX:
-        SetBgControlAttributes(bg, value, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_MAPBASEINDEX:
-        SetBgControlAttributes(bg, 0xFF, value, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_SCREENWIDTH:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, value, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_SCREENHEIGHT:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, 0xFF, value, 0xFF, 0xFF, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_PALETTEMODE:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, 0xFF, 0xFF, value, 0xFF, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_PRIORITY:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, value, 0xFF, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF);
         break;
     case BG_ATTR_MOSAIC:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, value, 0xFF);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF);
         break;
     case BG_ATTR_WRAPAROUND:
-        SetBgControlAttributes(bg, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, value);
+        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value);
         break;
     }
 }
@@ -945,8 +945,9 @@ void CopyRectToBgTilemapBufferRect(u8 bg, const void *src, u8 srcX, u8 srcY, u8 
             {
                 for (j = destX; j < (destX + rectWidth); j++)
                 {
-                    u16 index = GetTileMapIndexFromCoords(j, i, screenWidth, screenHeight);
-                    CopyTileMapEntry(srcPtr, sGpuBgConfigs2[bg].tilemap + (index * 2), palette1, tileOffset, palette2);
+                    u16 *tilemap = sGpuBgConfigs2[bg].tilemap;
+                    u32 index = GetTileMapIndexFromCoords(j, i, screenWidth, screenHeight);
+                    CopyTileMapEntry(srcPtr, &tilemap[index], palette1, tileOffset, palette2);
                     srcPtr += 2;
                 }
                 srcPtr += (srcWidth - rectWidth) * 2;
@@ -959,7 +960,8 @@ void CopyRectToBgTilemapBufferRect(u8 bg, const void *src, u8 srcX, u8 srcY, u8 
             {
                 for (j = destX; j < (destX + rectWidth); j++)
                 {
-                    *(u8 *)(sGpuBgConfigs2[bg].tilemap + ((var * i) + j)) = *(u8 *)(srcPtr) + tileOffset;
+                    u8 *tilemap = sGpuBgConfigs2[bg].tilemap;
+                    tilemap[(i * var) + j] = *(u8 *)(srcPtr) + tileOffset;
                     srcPtr++;
                 }
                 srcPtr += (srcWidth - rectWidth);
@@ -1009,16 +1011,14 @@ void FillBgTilemapBufferRect(u8 bg, u16 tileNum, u8 x, u8 y, u8 width, u8 height
 
 void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 width, u8 height, u8 paletteSlot, s16 tileNumDelta)
 {
-    u16 mode;
-    u16 mode2;
-    u16 attribute;
-    u16 mode3;
+    u16 screenWidth;
+    u16 screenHeight;
     u16 x16, y16;
 
     if (!IsInvalidBg32(bg) && !IsTileMapOutsideWram(bg))
     {
-        mode = GetBgMetricTextMode(bg, 0x1);
-        mode2 = GetBgMetricTextMode(bg, 0x2);
+        screenWidth = GetBgMetricTextMode(bg, 0x1);
+        screenHeight = GetBgMetricTextMode(bg, 0x2);
         switch (GetBgType(bg))
         {
         case BG_TYPE_NORMAL:
@@ -1026,18 +1026,21 @@ void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 widt
             {
                 for (x16 = x; x16 < (x + width); x16++)
                 {
-                    CopyTileMapEntry(&firstTileNum, &((u16 *)sGpuBgConfigs2[bg].tilemap)[(u16)GetTileMapIndexFromCoords(x16, y16, mode, mode2)], paletteSlot, 0, 0);
+                    u16 *tilemap = sGpuBgConfigs2[bg].tilemap;
+                    u32 index = GetTileMapIndexFromCoords(x16, y16, screenWidth, screenHeight);
+                    CopyTileMapEntry(&firstTileNum, &tilemap[index], paletteSlot, 0, 0);
                     firstTileNum = (firstTileNum & 0xFC00) + ((firstTileNum + tileNumDelta) & 0x3FF);
                 }
             }
             break;
         case BG_TYPE_AFFINE:
-            mode3 = GetBgMetricAffineMode(bg, 0x1);
+            screenWidth = GetBgMetricAffineMode(bg, 0x1);
             for (y16 = y; y16 < (y + height); y16++)
             {
                 for (x16 = x; x16 < (x + width); x16++)
                 {
-                    ((u8 *)sGpuBgConfigs2[bg].tilemap)[(y16 * mode3) + x16] = firstTileNum;
+                    u8 *tilemap = sGpuBgConfigs2[bg].tilemap;
+                    tilemap[(y16 * screenWidth) + x16] = firstTileNum;
                     firstTileNum = (firstTileNum & 0xFC00) + ((firstTileNum + tileNumDelta) & 0x3FF);
                 }
             }
@@ -1046,7 +1049,7 @@ void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 widt
     }
 }
 
-u16 GetBgMetricTextMode(u8 bg, u8 whichMetric)
+u32 GetBgMetricTextMode(u8 bg, u8 whichMetric)
 {
     // Emulate GBA screen modes
     int screenSize = -1;

@@ -1231,8 +1231,14 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
     if (control->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
+#if 0
     hoffs &= 0x1FF;
     voffs &= 0x1FF;
+#endif
+
+    // GBA compat
+    if (mapWidthInPixels == 256 || mapWidthInPixels == 512)
+        mapWidth = 0x20;
 
     for (unsigned int x = 0; x < displayWidth; x++)
     {
@@ -1253,17 +1259,19 @@ static void RenderBGScanline(int bgNum, struct BgCnt *control, uint16_t hoffs, u
 #else
         xx &= 0x1FF;
         yy &= 0x1FF;
+#endif
 
-        //if x or y go above 255 pixels it goes to the next screen base which are 0x400 WORDs long
-        if (xx > 255 && mapWidthInPixels > 256) {
-            bgmap += 0x400;
+        //if x or y go above 255 pixels it goes to the next screen base which are (BG_SCREEN_SIZE / 2) WORDs long
+        if (xx > 255 && mapWidthInPixels == 512) {
+            bgmap += BG_SCREEN_SIZE / 2;
         }
-        
-        if (yy > 255 && mapHeightInPixels > 256) {
+
+        if (yy > 255 && mapHeightInPixels == 512) {
             //the width check is for 512x512 mode support, it jumps by two screen bases instead
-            bgmap += (mapWidthInPixels > 256) ? 0x800 : 0x400;
+            bgmap += (mapWidthInPixels == 512) ? BG_SCREEN_SIZE : BG_SCREEN_SIZE / 2;
         }
 
+#if 0
         //maximum width for bgtile block is 256
         xx &= 0xFF;
         yy &= 0xFF;
