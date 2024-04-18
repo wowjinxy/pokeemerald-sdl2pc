@@ -580,16 +580,20 @@ void ProcessEvents(void)
                 unsigned int w = event.window.data1;
                 unsigned int h = event.window.data2;
 
+                int scaleW, scaleH;
+
                 windowWidth = w;
                 windowHeight = h;
 
-                videoScale = 0;
-                if (w / BASE_DISPLAY_WIDTH > videoScale)
-                    videoScale = w / BASE_DISPLAY_WIDTH;
-                if (h / BASE_DISPLAY_HEIGHT > videoScale)
-                    videoScale = h / BASE_DISPLAY_HEIGHT;
-                if (videoScale < 1)
-                    videoScale = 1;
+                if (w < BASE_DISPLAY_WIDTH)
+                    w = BASE_DISPLAY_WIDTH;
+                if (h < BASE_DISPLAY_HEIGHT)
+                    h = BASE_DISPLAY_HEIGHT;
+
+                scaleW = w / BASE_DISPLAY_WIDTH;
+                scaleH = h / BASE_DISPLAY_HEIGHT;
+
+                videoScale = scaleW < scaleH ? scaleW : scaleH;
 
                 w /= videoScale;
                 h /= videoScale;
