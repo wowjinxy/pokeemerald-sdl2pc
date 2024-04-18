@@ -296,10 +296,8 @@ extern unsigned char REG_BASE[];
 // DISPSTAT
 #define DISPSTAT_VBLANK      0x0001 // in V-Blank
 #define DISPSTAT_HBLANK      0x0002 // in H-Blank
-#define DISPSTAT_VCOUNT      0x0004 // V-Count match
 #define DISPSTAT_VBLANK_INTR 0x0008 // V-Blank interrupt enabled
 #define DISPSTAT_HBLANK_INTR 0x0010 // H-Blank interrupt enabled
-#define DISPSTAT_VCOUNT_INTR 0x0020 // V-Count interrupt enabled
 
 // WININ/OUT
 #define WININ_WIN0_BG0      (1 << 0)
@@ -451,18 +449,12 @@ extern unsigned char REG_BASE[];
 // interrupt flags
 #define INTR_FLAG_VBLANK  (1 <<  0)
 #define INTR_FLAG_HBLANK  (1 <<  1)
-#define INTR_FLAG_VCOUNT  (1 <<  2)
 #define INTR_FLAG_TIMER0  (1 <<  3)
 #define INTR_FLAG_TIMER1  (1 <<  4)
 #define INTR_FLAG_TIMER2  (1 <<  5)
 #define INTR_FLAG_TIMER3  (1 <<  6)
 #define INTR_FLAG_SERIAL  (1 <<  7)
-#define INTR_FLAG_DMA0    (1 <<  8)
-#define INTR_FLAG_DMA1    (1 <<  9)
-#define INTR_FLAG_DMA2    (1 << 10)
-#define INTR_FLAG_DMA3    (1 << 11)
 #define INTR_FLAG_KEYPAD  (1 << 12)
-#define INTR_FLAG_GAMEPAK (1 << 13)
 
 // WAITCNT
 #define WAITCNT_SRAM_4          (0 << 0)

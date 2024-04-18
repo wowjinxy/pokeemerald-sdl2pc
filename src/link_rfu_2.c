@@ -315,15 +315,15 @@ void ResetLinkRfuGFLayer(void)
 
 void InitRFU(void)
 {
-    IntrFunc serialIntr = gIntrTable[1];
-    IntrFunc timerIntr = gIntrTable[2];
+    // IntrFunc serialIntr = gIntrTable[1];
+    // IntrFunc timerIntr = gIntrTable[2];
     InitRFUAPI();
     rfu_REQ_stopMode();
     rfu_waitREQComplete();
-    REG_IME = 0;
-    gIntrTable[1] = serialIntr;
-    gIntrTable[2] = timerIntr;
-    REG_IME = INTR_FLAG_VBLANK;
+    // REG_IME = 0;
+    // gIntrTable[1] = serialIntr;
+    // gIntrTable[2] = timerIntr;
+    // REG_IME = INTR_FLAG_VBLANK;
 }
 
 #ifndef PORTABLE

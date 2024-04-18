@@ -26,37 +26,13 @@
 #include "platform.h"
 #include "constants/rgb.h"
 
-static void VBlankIntr(void);
-static void HBlankIntr(void);
-static void VCountIntr(void);
 static void SerialIntr(void);
-static void IntrDummy(void);
 
 const u8 gGameVersion = GAME_VERSION;
 
 const u8 gGameLanguage = GAME_LANGUAGE; // English
 
 const char BuildDateTime[] = "2005 02 21 11:10";
-
-const IntrFunc gIntrTableTemplate[] =
-{
-    VCountIntr, // V-count interrupt
-    SerialIntr, // Serial interrupt
-    Timer3Intr, // Timer 3 interrupt
-    HBlankIntr, // H-blank interrupt
-    VBlankIntr, // V-blank interrupt
-    IntrDummy,  // Timer 0 interrupt
-    IntrDummy,  // Timer 1 interrupt
-    IntrDummy,  // Timer 2 interrupt
-    IntrDummy,  // DMA 0 interrupt
-    IntrDummy,  // DMA 1 interrupt
-    IntrDummy,  // DMA 2 interrupt
-    IntrDummy,  // DMA 3 interrupt
-    IntrDummy,  // Key interrupt
-    IntrDummy,  // Game Pak interrupt
-};
-
-#define INTR_COUNT ((int)(sizeof(gIntrTableTemplate)/sizeof(IntrFunc)))
 
 #ifndef PORTABLE
 static u16 sUnusedVar; // Never read
@@ -69,7 +45,6 @@ bool8 gLinkTransferringData;
 struct Main gMain;
 u16 gKeyRepeatContinueDelay;
 bool8 gSoftResetDisabled;
-IntrFunc gIntrTable[INTR_COUNT];
 u8 gLinkVSyncDisabled;
 u32 IntrMain_Buffer[0x200];
 s8 gPcmDmaCounter;
@@ -99,7 +74,6 @@ void GameInit(void)
     InitKeys();
     InitIntrHandlers();
     m4aSoundInit();
-    EnableVCountIntrAtLine150();
 #ifndef PORTABLE
     InitRFU();
 #endif
@@ -226,13 +200,6 @@ u16 GetGeneratedTrainerIdLower(void)
     return sTrainerId;
 }
 
-void EnableVCountIntrAtLine150(void)
-{
-    u16 gpuReg = (GetGpuState(GPU_STATE_DISPSTAT) & 0xFF) | (150 << 8);
-    SetGpuState(GPU_STATE_DISPSTAT, gpuReg | DISPSTAT_VCOUNT_INTR);
-    EnableInterrupts(INTR_FLAG_VCOUNT);
-}
-
 // FRLG commented this out to remove RTC, however Emerald didn't undo this!
 #ifdef BUGFIX
 static void SeedRngWithRtc(void)
@@ -321,15 +288,10 @@ void SetHBlankCallback(IntrCallback callback)
     gMain.hblankCallback = callback;
 }
 
-void SetVCountCallback(IntrCallback callback)
-{
-    gMain.vcountCallback = callback;
-}
-
 void RestoreSerialTimer3IntrHandlers(void)
 {
-    gIntrTable[1] = SerialIntr;
-    gIntrTable[2] = Timer3Intr;
+    // gIntrTable[1] = SerialIntr;
+    // gIntrTable[2] = Timer3Intr;
 }
 
 void SetSerialCallback(IntrCallback callback)
@@ -365,42 +327,15 @@ void FrameUpdate(void)
     gMain.intrCheck |= INTR_FLAG_VBLANK;
 }
 
-static void VBlankIntr(void)
-{
-    FrameUpdate();
-}
-
 void InitFlashTimer(void)
 {
-    SetFlashTimerIntr(2, gIntrTable + 0x7);
+    // SetFlashTimerIntr(2, gIntrTable + 0x7);
 }
 
 void DoHBlankUpdate(void)
 {
     if (gMain.hblankCallback)
         gMain.hblankCallback();
-}
-
-static void HBlankIntr(void)
-{
-    DoHBlankUpdate();
-
-    INTR_CHECK |= INTR_FLAG_HBLANK;
-    gMain.intrCheck |= INTR_FLAG_HBLANK;
-}
-
-void DoVCountUpdate(void)
-{
-    if (gMain.vcountCallback)
-        gMain.vcountCallback();
-}
-
-static void VCountIntr(void)
-{
-    DoVCountUpdate();
-
-    INTR_CHECK |= INTR_FLAG_VCOUNT;
-    gMain.intrCheck |= INTR_FLAG_VCOUNT;
 }
 
 static void SerialIntr(void)
@@ -411,9 +346,6 @@ static void SerialIntr(void)
     INTR_CHECK |= INTR_FLAG_SERIAL;
     gMain.intrCheck |= INTR_FLAG_SERIAL;
 }
-
-static void IntrDummy(void)
-{}
 
 void SetTrainerHillVBlankCounter(u32 *counter)
 {

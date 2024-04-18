@@ -1354,7 +1354,7 @@ static uint16_t alphaBlendColor(uint16_t targetA, uint16_t targetB)
     if (b > 31)
         b = 31;
 
-     return r | (g << 5) | (b << 10) | (1 << 15);
+    return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 static uint16_t alphaBrightnessIncrease(uint16_t targetA)
@@ -1371,7 +1371,7 @@ static uint16_t alphaBrightnessIncrease(uint16_t targetA)
     if (b > 31)
         b = 31;
     
-     return r | (g << 5) | (b << 10) | (1 << 15);
+    return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 static uint16_t alphaBrightnessDecrease(uint16_t targetA)
@@ -1388,13 +1388,13 @@ static uint16_t alphaBrightnessDecrease(uint16_t targetA)
     if (b > 31)
         b = 31;
     
-     return r | (g << 5) | (b << 10) | (1 << 15);
+    return r | (g << 5) | (b << 10) | (1 << 15);
 }
 
 //outputs the blended pixel in colorOutput, the prxxx are the bg priority and subpriority, pixelpos is pixel offset in scanline
 static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* colorOutput, char prnum, char prsub, int pixelpos, bool spriteBlendEnabled)
 {   
-    //iterate trough every possible bg to blend with, starting from specified priorities from arguments
+    //iterate through every possible bg to blend with, starting from specified priorities from arguments
     for (unsigned int blndprnum = prnum; blndprnum <= 3; blndprnum++)
     {
         //check if sprite is available to blend with, if sprite blending is enabled
@@ -1438,7 +1438,7 @@ static bool alphaBlendSelectTargetB(struct scanlineData* scanline, uint16_t* col
 #define WINMASK_BG3    (1 << 3)
 #define WINMASK_OBJ    (1 << 4)
 #define WINMASK_CLR    (1 << 5)
-#define WINMASK_WINOUT  (1 << 6)
+#define WINMASK_WINOUT (1 << 6)
 
 //checks if window horizontal is in bounds and takes account WIN wraparound
 static bool winCheckHorizontalBounds(u16 left, u16 right, u16 xpos)
@@ -1841,12 +1841,12 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
                     {
                         uint16_t targetA = color;
                         uint16_t targetB = 0;
-                        char isSpriteBlendingEnabled;
+                        bool isSpriteBlendingEnabled = false;
                         
                         switch (blendMode)
                         {
                         case 1:
-                            isSpriteBlendingEnabled = gpu.blendControl & BLDCNT_TGT2_OBJ ? 1 : 0;
+                            isSpriteBlendingEnabled = gpu.blendControl & BLDCNT_TGT2_OBJ ? true : false;
                             //find targetB and blend it
                             if (alphaBlendSelectTargetB(&scanline, &targetB, prnum, prsub+1, xpos, isSpriteBlendingEnabled))
                             {
@@ -1874,7 +1874,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
             {
                 //check if sprite pixel draws inside window
                 if (windowsEnabled && !(scanline.winMask[xpos] & WINMASK_OBJ))
-                        continue;
+                    continue;
                 //draw the pixel
                 pixels[xpos] = src[xpos];
             }
@@ -1912,16 +1912,6 @@ static void DrawFrame(uint16_t *pixels)
 
         gpu.vCount = i;
 
-#if 0
-        // The game doesn't use any VCount callbacks, so this is disabled.
-        if(((gpu.displayStatus >> 8) & 0xFF) == gpu.vCount)
-        {
-            gpu.displayStatus |= INTR_FLAG_VCOUNT;
-            if(gpu.displayStatus & DISPSTAT_VCOUNT_INTR)
-                DoVCountUpdate();
-        }
-#endif
-
         DrawScanline(scanlines[i], i);
 
         gpu.displayStatus |= INTR_FLAG_HBLANK;
@@ -1933,7 +1923,6 @@ static void DrawFrame(uint16_t *pixels)
             DoHBlankUpdate();
 
         gpu.displayStatus &= ~INTR_FLAG_HBLANK;
-        gpu.displayStatus &= ~INTR_FLAG_VCOUNT;
     }
 
     // Copy to screen
