@@ -1779,7 +1779,7 @@ static bool8 PokeballsTrail_Init(struct Task *task)
     u16 *tilemap, *tileset;
 
     GetBg0TilesDst(&tilemap, &tileset);
-    CpuSet(sPokeballTrail_Tileset, tileset, 0x20);
+    memcpy(tileset, sPokeballTrail_Tileset, 0x20 * sizeof(u16));
     CpuFill32(0, tilemap, BG_SCREEN_SIZE);
     LoadPalette(sFieldEffectPal_Pokeball, BG_PLTT_ID(15), sizeof(sFieldEffectPal_Pokeball));
 
@@ -2332,7 +2332,7 @@ static bool8 Mugshot_SetGfx(struct Task *task)
 
     mugshotsMap = sMugshotsTilemap;
     GetBg0TilesDst(&tilemap, &tileset);
-    CpuSet(sEliteFour_Tileset, tileset, 0xF0);
+    memcpy(tileset, sEliteFour_Tileset, 0xF0 * sizeof(u16));
     LoadPalette(sOpponentMugshotsPals[task->tMugshotId], BG_PLTT_ID(15), PLTT_SIZE_4BPP);
     LoadPalette(sPlayerMugshotsPals[gSaveBlock2Ptr->playerGender], BG_PLTT_ID(15) + 10, PLTT_SIZEOF(6));
 
@@ -3786,7 +3786,7 @@ static bool8 GridSquares_Init(struct Task *task)
     u16 *tilemap, *tileset;
 
     GetBg0TilesDst(&tilemap, &tileset);
-    CpuSet(sShrinkingBoxTileset, tileset, 16);
+    memcpy(tileset, sShrinkingBoxTileset, 16 * sizeof(u16));
     CpuFill16(0xF0 << 8, tilemap, BG_SCREEN_SIZE);
     LoadPalette(sFieldEffectPal_Pokeball, BG_PLTT_ID(15), sizeof(sFieldEffectPal_Pokeball));
 
@@ -3803,7 +3803,7 @@ static bool8 GridSquares_Main(struct Task *task)
         GetBg0TilemapDst(&tileset);
         task->tDelay = 3;
         task->tShrinkStage++;
-        CpuSet(&sShrinkingBoxTileset[task->tShrinkStage * 8], tileset, 16);
+        memcpy(tileset, &sShrinkingBoxTileset[task->tShrinkStage * 8], 16 * sizeof(u16));
         if (task->tShrinkStage > 13)
         {
             task->tState++;
@@ -3855,7 +3855,7 @@ static bool8 AngledWipes_Init(struct Task *task)
     for (i = 0; i < DisplayHeight(); i++)
         gScanlineEffectRegBuffers[0][i] = DisplayWidth();
 
-    CpuSet(gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight());
+    memcpy(gScanlineEffectRegBuffers[1], gScanlineEffectRegBuffers[0], DisplayHeight() * sizeof(u32));
     SetVBlankCallback(VBlankCB_AngledWipes);
 
     task->tState++;

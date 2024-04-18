@@ -46,10 +46,7 @@
 #define Dma3FillLarge16_(value, dest, size) Dma3FillLarge_(value, dest, size, 16)
 #define Dma3FillLarge32_(value, dest, size) Dma3FillLarge_(value, dest, size, 32)
 
-void ClearDma3Requests(void);
-void ProcessDma3Requests(void);
 s16 RequestDma3Copy(const void *src, void *dest, size_t size, u8 mode);
 s16 RequestDma3Fill(s32 value, void *dest, size_t size, u8 mode);
-s16 CheckForSpaceForDma3Request(s16 index);
 
 #endif // GUARD_DMA3_H

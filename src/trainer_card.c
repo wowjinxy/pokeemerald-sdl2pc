@@ -1374,7 +1374,7 @@ static void LoadMonIconGfx(void)
 {
     u8 i;
 
-    CpuSet(gMonIconPalettes, sData->monIconPal, 0x60);
+    memcpy(sData->monIconPal, gMonIconPalettes, 0x60 * sizeof(u16));
     switch (sData->trainerCard.monIconTint)
     {
     case MON_ICON_TINT_NORMAL:

@@ -987,14 +987,14 @@ void WriteFlashScanlineEffectBuffer(u8 flashLevel)
     if (flashLevel)
     {
         SetFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], DisplayWidth() / 2, DisplayHeight() / 2, sFlashLevelToRadius[flashLevel]);
-        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
+        memcpy(&gScanlineEffectRegBuffers[1], &gScanlineEffectRegBuffers[0], 960 * sizeof(u16));
     }
 }
 
 void WriteBattlePyramidViewScanlineEffectBuffer(void)
 {
     SetFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], DisplayWidth() / 2, DisplayHeight() / 2, gSaveBlock2Ptr->frontier.pyramidLightRadius);
-    CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
+    memcpy(&gScanlineEffectRegBuffers[1], &gScanlineEffectRegBuffers[0], 960 * sizeof(u16));
 }
 
 static void Task_SpinEnterWarp(u8 taskId)
@@ -1137,7 +1137,7 @@ static void Task_OrbEffect(u8 taskId)
         SetBgTilemapPalette(0, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT, 0xF);
         ScheduleBgCopyTilemapToVram(0);
         SetOrbFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], tCenterX, tCenterY, 1);
-        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
+        memcpy(&gScanlineEffectRegBuffers[1], &gScanlineEffectRegBuffers[0], 960 * sizeof(u16));
         ScanlineEffect_SetParams(sFlashEffectParams);
         tState = 1;
         break;

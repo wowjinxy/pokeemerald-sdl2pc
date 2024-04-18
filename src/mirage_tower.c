@@ -543,7 +543,7 @@ static void InitMirageTowerShake(u8 taskId)
         gTasks[taskId].tState++;
         break;
     case 2:
-        CpuSet(sBlankTile_Gfx, sMirageTowerGfxBuffer, MIRAGE_TOWER_GFX_LENGTH / 2);
+        memcpy(sMirageTowerGfxBuffer, sBlankTile_Gfx, (MIRAGE_TOWER_GFX_LENGTH / 2) * sizeof(u16));
         LoadBgTiles(0, sMirageTowerGfxBuffer, MIRAGE_TOWER_GFX_LENGTH, 0);
         gTasks[taskId].tState++;
         break;

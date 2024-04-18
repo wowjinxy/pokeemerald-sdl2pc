@@ -1,17 +1,9 @@
 #include <string.h>
 #include "gba/m4a_internal.h"
 
-#ifdef PORTABLE
-    #include "cgb_audio.h"
-#endif
+#include "cgb_audio.h"
 
 extern const u8 gCgb3Vol[];
-
-#ifndef PORTABLE
-#define BSS_CODE __attribute__((section(".bss.code")))
-
-BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
-#endif
 
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
@@ -85,9 +77,6 @@ void MPlayFadeOut(struct MusicPlayerInfo *mplayInfo, u16 speed)
 void m4aSoundInit(void)
 {
     s32 i;
-#ifndef PORTABLE
-    CpuCopy32((void *)((s32)SoundMainRAM & ~1), SoundMainRAM_Buffer, sizeof(SoundMainRAM_Buffer));
-#endif
 
     SoundInit(&gSoundInfo);
     MPlayExtender(gCgbChans);
@@ -119,11 +108,7 @@ void m4aSoundInit(void)
 
 void m4aSoundMain(void)
 {
-#ifndef PORTABLE
-    SoundMain();
-#else
     RunMixerFrame();
-#endif
 }
 
 void m4aSongNumStart(u16 n)
@@ -296,12 +281,11 @@ void MPlayExtender(struct CgbChannel *cgbChans)
     REG_NR30 = 0;
     REG_NR50 = 0x77;
 
-    #ifdef PORTABLE
     for(u8 i = 0; i < 4; i++){
         cgb_set_envelope(i, 8);
         cgb_trigger_note(i);
     }
-    #endif
+
     soundInfo = SOUND_INFO_PTR;
 
     ident = soundInfo->ident;
@@ -341,13 +325,6 @@ void MPlayExtender(struct CgbChannel *cgbChans)
     soundInfo->ident = ident;
 }
 
-#ifndef PORTABLE
-void MusicPlayerJumpTableCopy(void)
-{
-    asm("swi 0x2A");
-}
-#endif
-
 void ClearChain(void *x)
 {
     void (*func)(void *) = *(&gMPlayJumpTable[34]);
@@ -364,14 +341,6 @@ void SoundInit(struct SoundInfo *soundInfo)
 {
     soundInfo->ident = 0;
 
-    if (REG_DMA1CNT & (DMA_REPEAT << 16))
-        REG_DMA1CNT = ((DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16) | 4;
-
-    if (REG_DMA2CNT & (DMA_REPEAT << 16))
-        REG_DMA2CNT = ((DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16) | 4;
-
-    REG_DMA1CNT_H = DMA_32BIT;
-    REG_DMA2CNT_H = DMA_32BIT;
     REG_SOUNDCNT_X = SOUND_MASTER_ENABLE
                    | SOUND_4_ON
                    | SOUND_3_ON
@@ -381,11 +350,6 @@ void SoundInit(struct SoundInfo *soundInfo)
                    | SOUND_A_FIFO_RESET | SOUND_A_TIMER_0 | SOUND_A_RIGHT_OUTPUT
                    | SOUND_ALL_MIX_FULL;
     REG_SOUNDBIAS_H = (REG_SOUNDBIAS_H & 0x3F) | 0x40;
-
-    REG_DMA1SAD = (s32)soundInfo->pcmBuffer;
-    REG_DMA1DAD = (s32)&REG_FIFO_A;
-    REG_DMA2SAD = (s32)soundInfo->pcmBuffer + PCM_DMA_BUF_SIZE;
-    REG_DMA2DAD = (s32)&REG_FIFO_B;
 
     SOUND_INFO_PTR = soundInfo;
     CpuFill32(0, soundInfo, sizeof(struct SoundInfo));
@@ -431,13 +395,7 @@ void SampleFreqSet(u32 freq)
     REG_TM0CNT_L = -(280896 / soundInfo->pcmSamplesPerVBlank);
 
     m4aSoundVSyncOn();
-#ifndef PORTABLE
-    while (*(vu8 *)REG_ADDR_VCOUNT == 159)
-        ;
 
-    while (*(vu8 *)REG_ADDR_VCOUNT != 159)
-        ;
-#endif
     REG_TM0CNT_H = TIMER_ENABLE | TIMER_1CLK;
 }
 
@@ -546,15 +504,6 @@ void m4aSoundVSyncOff(void)
     {
         soundInfo->ident += 10;
 
-        if (REG_DMA1CNT & (DMA_REPEAT << 16))
-            REG_DMA1CNT = ((DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16) | 4;
-
-        if (REG_DMA2CNT & (DMA_REPEAT << 16))
-            REG_DMA2CNT = ((DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16) | 4;
-
-        REG_DMA1CNT_H = DMA_32BIT;
-        REG_DMA2CNT_H = DMA_32BIT;
-
         CpuFill32(0, soundInfo->pcmBuffer, sizeof(soundInfo->pcmBuffer));
     }
 }
@@ -566,9 +515,6 @@ void m4aSoundVSyncOn(void)
 
     if (ident == ID_NUMBER)
         return;
-
-    REG_DMA1CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
-    REG_DMA2CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
 
     soundInfo->pcmDmaCounter = 0;
     soundInfo->ident = ident - 10;
@@ -885,10 +831,9 @@ void CgbOscOff(u8 chanNum)
         REG_NR42 = 8;
         REG_NR44 = 0x80;
     }
-    #ifdef PORTABLE
-        cgb_set_envelope(chanNum - 1, 8);
-        cgb_trigger_note(chanNum - 1);
-    #endif
+
+    cgb_set_envelope(chanNum - 1, 8);
+    cgb_trigger_note(chanNum - 1);
 }
 
 static inline int CgbPan(struct CgbChannel *chan)
@@ -1012,9 +957,7 @@ void CgbSound(void)
                 {
                 case 1:
                     *nrx0ptr = channels->sweep;
-                    #ifdef PORTABLE
-                        cgb_set_sweep(channels->sweep);
-                    #endif
+                    cgb_set_sweep(channels->sweep);
                     // fallthrough
                 case 2:
                     *nrx1ptr = ((u64)channels->wavePointer << 6) + channels->length;
@@ -1028,9 +971,7 @@ void CgbSound(void)
                         REG_WAVE_RAM2 = channels->wavePointer[2];
                         REG_WAVE_RAM3 = channels->wavePointer[3];
                         channels->currentPointer = channels->wavePointer;
-                        #ifdef PORTABLE
-                            cgb_set_wavram();
-                        #endif
+                        cgb_set_wavram();
                     }
                     *nrx0ptr = 0;
                     *nrx1ptr = channels->length;
@@ -1050,9 +991,7 @@ void CgbSound(void)
                         channels->n4 = 0x00;
                     break;
                 }
-                #ifdef PORTABLE
-                    cgb_set_length(ch - 1, channels->length);
-                #endif
+                cgb_set_length(ch - 1, channels->length);
                 channels->envelopeCounter = channels->attack;
                 if ((s8)(channels->attack & mask))
                 {
@@ -1249,11 +1188,10 @@ void CgbSound(void)
                 if (ch == 1 && !(*nrx0ptr & 0x08))
                     *nrx4ptr = channels->n4 | 0x80;
             }
-            #ifdef PORTABLE
-                cgb_set_envelope(ch - 1, *nrx2ptr);
-                cgb_toggle_length(ch - 1, (*nrx4ptr & 0x40));
-                cgb_trigger_note(ch - 1);
-            #endif
+
+            cgb_set_envelope(ch - 1, *nrx2ptr);
+            cgb_toggle_length(ch - 1, (*nrx4ptr & 0x40));
+            cgb_trigger_note(ch - 1);
         }
 
     channel_complete:

@@ -3148,7 +3148,7 @@ static void InitScanlineEffect(void)
     params.initState = 1;
     params.unused9 = 0;
     sDisplay->bg1hofs = 0;
-    CpuFastFill(0, gScanlineEffectRegBuffers, sizeof(gScanlineEffectRegBuffers));
+    memset(gScanlineEffectRegBuffers, 0, sizeof(gScanlineEffectRegBuffers));
     ScanlineEffect_SetParams(params);
 }
 

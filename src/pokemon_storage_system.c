@@ -2055,7 +2055,6 @@ static void ResetForPokeStorage(void)
     ResetSpriteData();
     FreeSpriteTileRanges();
     FreeAllSpritePalettes();
-    ClearDma3Requests();
     gReservedSpriteTileCount = 0x280;
     UnkUtil_Init(&sStorage->unkUtil, sStorage->unkUtilData, ARRAY_COUNT(sStorage->unkUtilData));
     gKeyRepeatStartDelay = 20;
@@ -5233,9 +5232,6 @@ static void Task_InitBox(u8 taskId)
         task->tDmaIdx = RequestDma3Fill(0, sStorage->wallpaperBgTilemapBuffer, sizeof(sStorage->wallpaperBgTilemapBuffer), 1);
         break;
     case 1:
-        if (CheckForSpaceForDma3Request(task->tDmaIdx) == -1)
-            return;
-
         SetBgTilemapBuffer(2, sStorage->wallpaperBgTilemapBuffer);
         ShowBg(2);
         break;
@@ -9126,7 +9122,7 @@ static void LoadItemIconGfx(u8 id, const u32 *itemTiles, const u32 *itemPal)
     if (id >= MAX_ITEM_ICONS)
         return;
 
-    CpuFastFill(0, sStorage->itemIconBuffer, 0x200);
+    memset(sStorage->itemIconBuffer, 0, 0x200);
     LZ77UnCompWram(itemTiles, sStorage->tileBuffer);
     for (i = 0; i < 3; i++)
         CpuFastCopy(&sStorage->tileBuffer[i * 0x60], &sStorage->itemIconBuffer[i * 0x80], 0x60);

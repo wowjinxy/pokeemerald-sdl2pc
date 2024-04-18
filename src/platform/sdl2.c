@@ -26,30 +26,6 @@ unsigned char REG_BASE[0x400] __attribute__ ((aligned (4)));
 unsigned char FLASH_BASE[131072] __attribute__ ((aligned (4)));
 struct SoundInfo *SOUND_INFO_PTR;
 
-#define DMA_COUNT 4
-
-struct DMATransfer {
-    union {
-        const void *src;
-        const u16 *src16;
-        const u32 *src32;
-    };
-    union {
-        void *dst;
-        vu16 *dst16;
-        vu32 *dst32;
-    };
-    u32 size;
-    u16 control;
-} DMAList[DMA_COUNT];
-
-enum {
-    DMA_NOW,
-    DMA_VBLANK,
-    DMA_HBLANK,
-    DMA_SPECIAL
-};
-
 struct scanlineData {
     uint16_t layers[NUM_BACKGROUNDS][DISPLAY_WIDTH];
     uint16_t spriteLayers[4][DISPLAY_WIDTH];
@@ -114,7 +90,6 @@ static void StoreSaveFile(void);
 static void CloseSaveFile(void);
 
 static void UpdateInternalClock(void);
-static void RunDMAs(u32 type);
 
 static void RunFrame(void);
 
@@ -341,7 +316,7 @@ int main(int argc, char **argv)
 #endif
             }
 
-            // Draws each scanline and runs HBlank DMAs
+            // Draws each scanline
             RenderFrame(sdlTexture);
 
             // Calls m4aSoundMain() and m4aSoundVSync()
@@ -473,8 +448,6 @@ void ProcessEvents(void)
                 {
                     speedUp = false;
                     timeScale = 1.0;
-                    SDL_ClearQueuedAudio(1);
-                    SDL_PauseAudio(0);
                 }
                 break;
             }
@@ -521,7 +494,6 @@ void ProcessEvents(void)
                 {
                     speedUp = true;
                     timeScale = 5.0;
-                    SDL_PauseAudio(1);
                 }
                 break;
             case SDLK_v:
@@ -650,19 +622,6 @@ u16 GetXInputKeys()
         // Note: 'speedup' variable is only (un)set on keyboard input
         double oldTimeScale = timeScale;
         timeScale = (state.Gamepad.bRightTrigger > 0x80 || speedUp) ? 5.0 : 1.0;
-
-        if (oldTimeScale != timeScale)
-        {
-            if (timeScale > 1.0)
-            {
-                SDL_PauseAudio(1);
-            }
-            else
-            {
-                SDL_ClearQueuedAudio(1);
-                SDL_PauseAudio(0);
-            }
-        }
     }
 
     return xinputKeys;
@@ -709,206 +668,6 @@ static uint8_t CPUReadByte(const void *src)
 static void CPUWriteByte(void *dest, uint8_t val)
 {
     *(uint8_t *)dest = val;
-}
-
-static void RunDMAs(u32 type)
-{
-    for (int dmaNum = 0; dmaNum < DMA_COUNT; dmaNum++)
-    {
-        struct DMATransfer *dma = &DMAList[dmaNum];
-        u32 dmaCntReg = (&REG_DMA0CNT)[dmaNum * 3];
-        if (!((dmaCntReg >> 16) & DMA_ENABLE))
-        {
-            dma->control &= ~DMA_ENABLE;
-        }
-        
-        if ( (dma->control & DMA_ENABLE) &&
-           (((dma->control & DMA_START_MASK) >> 12) == type))
-        {
-            //printf("DMA%d src=%p, dest=%p, control=%d\n", dmaNum, dma->src, dma->dest, dma->control);
-            for (int i = 0; i < (dma->size); i++)
-            {
-                if ((dma->control) & DMA_32BIT)
-                     *dma->dst32 = *dma->src32;
-                else *dma->dst16 = *dma->src16;
-
-                // process destination pointer changes
-                if (((dma->control) & DMA_DEST_MASK) == DMA_DEST_INC)
-                {
-                    if ((dma->control) & DMA_32BIT)
-                            dma->dst32++;
-                    else    dma->dst16++;
-                }
-                else if (((dma->control) & DMA_DEST_MASK) == DMA_DEST_DEC)
-                {
-                    if ((dma->control) & DMA_32BIT)
-                            dma->dst32--;
-                    else    dma->dst16--;
-                }
-                else if (((dma->control) & DMA_DEST_MASK) == DMA_DEST_RELOAD) // TODO
-                {
-                    if ((dma->control) & DMA_32BIT)
-                            dma->dst32++;
-                    else    dma->dst16++;
-                }
-
-                // process source pointer changes
-                if (((dma->control) & DMA_SRC_MASK) == DMA_SRC_INC)
-                {
-                    if ((dma->control) & DMA_32BIT)
-                            dma->src32++;
-                    else    dma->src16++;
-                }
-                else if (((dma->control) & DMA_SRC_MASK) == DMA_SRC_DEC)
-                {
-                    if ((dma->control) & DMA_32BIT)
-                            dma->src32--;
-                    else    dma->src16--;
-                }
-            }
-
-            if (dma->control & DMA_REPEAT)
-            {
-                dma->size = ((&REG_DMA0CNT)[dmaNum * 3] & 0x1FFFF);
-                if (((dma->control) & DMA_DEST_MASK) == DMA_DEST_RELOAD)
-                {
-                    dma->dst = ((&REG_DMA0DAD)[dmaNum * 3]);
-                }
-            }
-            else
-            {
-                dma->control &= ~DMA_ENABLE;
-            }
-        }
-    }
-}
-
-void DmaSet(int dmaNum, const void *src, void *dest, u32 control)
-{
-    if (dmaNum >= DMA_COUNT)
-    {
-        fprintf(stderr, "DmaSet with invalid DMA number: dmaNum=%d, src=%p, dest=%p, control=%d\n", dmaNum, src, dest, control);
-        return;
-    }
-
-    (&REG_DMA0SAD)[dmaNum * 3] = src;
-    (&REG_DMA0DAD)[dmaNum * 3] = dest;
-    (&REG_DMA0CNT)[dmaNum * 3] = control;
-
-    struct DMATransfer *dma = &DMAList[dmaNum];
-    dma->src = src;
-    dma->dst = dest;
-    dma->size = control & 0x1ffff;
-    dma->control = control >> 16;
-
-    RunDMAs(DMA_NOW);
-}
-
-void CpuSet(const void *src, void *dst, u32 cnt)
-{
-    if(dst == NULL)
-    {
-        puts("Attempted to CpuSet to NULL\n");
-        return;
-    }
-    
-    int count = cnt & 0x1FFFFF;
-
-    const u8 *source = src;
-    u8 *dest = dst;
-
-    // 32-bit ?
-    if ((cnt >> 26) & 1) {
-        
-        //assert(((uintptr_t)src & ~3) == (uintptr_t)src);
-        //assert(((uintptr_t)dst & ~3) == (uintptr_t)dst);
-        
-        // needed for 32-bit mode!
-        //source = (u8 *)((uint32_t )source & ~3);
-        //dest = (u8 *)((uint32_t )dest & ~3);
-
-        // fill ?
-        if ((cnt >> 24) & 1) {
-            uint32_t value = CPUReadMemory(source);
-            while (count) {
-                CPUWriteMemory(dest, value);
-                dest += 4;
-                count--;
-            }
-        } else {
-            // copy
-            while (count) {
-                CPUWriteMemory(dest, CPUReadMemory(source));
-                source += 4;
-                dest += 4;
-                count--;
-            }
-        }
-    } else {
-        // No align on 16-bit fill?
-        //assert(((uintptr_t)src & ~1) == (uintptr_t)src);
-        //assert(((uintptr_t)dst & ~1) == (uintptr_t)dst);
-
-        // 16-bit fill?
-        if ((cnt >> 24) & 1) {
-            uint16_t value = CPUReadHalfWord(source);
-            while (count) {
-                CPUWriteHalfWord(dest, value);
-                dest += 2;
-                count--;
-            }
-        } else {
-            // copy
-            while (count) {
-                CPUWriteHalfWord(dest, CPUReadHalfWord(source));
-                source += 2;
-                dest += 2;
-                count--;
-            }
-        }
-    }
-}
-
-void CpuFastSet(const void *src, void *dst, u32 cnt)
-{
-    if(dst == NULL)
-    {
-        puts("Attempted to CpuFastSet to NULL\n");
-        return;
-    }
-    
-    int count = cnt & 0x1FFFFF;
-
-    const u8 *source = src;
-    u8 *dest = dst;
-    
-    //source = (u8 *)((uint32_t )source & ~3);
-    //dest = (u8 *)((uint32_t )dest & ~3);
-
-    // fill?
-    if((cnt >> 24) & 1) {
-        uint32_t value = CPUReadMemory(source);
-        while(count > 0) {
-            // BIOS always transfers 32 bytes at a time
-            for(int i = 0; i < 8; i++) {
-                CPUWriteMemory(dest, value);
-                dest += 4;
-            }
-            count -= 8;
-        }
-    } else {
-        // copy
-        while(count > 0) {
-            // BIOS always transfers 32 bytes at a time
-            for(int i = 0; i < 8; i++) {
-                uint32_t value = CPUReadMemory(source);
-                CPUWriteMemory(dest, value);
-                source += 4;
-                dest += 4;
-            }
-            count -= 8;
-        }
-    }
 }
 
 void LZ77UnCompVram(const u32 *src_, void *dest_)
@@ -2170,9 +1929,6 @@ static void DrawFrame(uint16_t *pixels)
         if (gpu.scanlineEffect.type != GPU_SCANLINE_EFFECT_OFF)
             RunScanlineEffect();
 
-        if (runHBlank)
-            RunDMAs(DMA_HBLANK);
-
         if (runHBlank && (gpu.displayStatus & DISPSTAT_HBLANK_INTR))
             DoHBlankUpdate();
 
@@ -2185,7 +1941,6 @@ static void DrawFrame(uint16_t *pixels)
         memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
 }
 
-// NOTE: This runs HBlank DMAs once.
 static void RunFrame(void)
 {
 #ifndef USE_THREAD
@@ -2193,9 +1948,6 @@ static void RunFrame(void)
 #endif
 
     gpu.displayStatus |= INTR_FLAG_VBLANK;
-
-    if (runHBlank)
-        RunDMAs(DMA_HBLANK);
 
     if (runVBlank && (gpu.displayStatus & DISPSTAT_VBLANK_INTR))
         FrameUpdate();
@@ -2205,7 +1957,8 @@ static void RunScanlineEffect(void)
 {
     GpuRefreshScanlineEffect();
 
-    gpu.scanlineEffect.position++;
+    if (gpu.scanlineEffect.position < displayHeight - 1)
+        gpu.scanlineEffect.position++;
 }
 
 void RenderFrame(SDL_Texture *texture)

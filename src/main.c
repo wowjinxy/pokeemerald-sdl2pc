@@ -110,7 +110,6 @@ void GameInit(void)
 #ifdef BUGFIX
     SeedRngWithRtc(); // see comment at SeedRngWithRtc definition below
 #endif
-    ClearDma3Requests();
     ResetBgs();
     SetDefaultFontsPointer();
 
@@ -355,8 +354,6 @@ void FrameUpdate(void)
 
     gMain.vblankCounter2++;
 
-    ProcessDma3Requests();
-
     TryReceiveLinkBattleData();
 
     if (!gMain.inBattle || !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED)))
@@ -433,9 +430,6 @@ void DoSoftReset(void)
     REG_IME = 0;
     m4aSoundVSyncOff();
     ScanlineEffect_Stop();
-    DmaStop(1);
-    DmaStop(2);
-    DmaStop(3);
     SiiRtcProtect();
     SoftReset(RESET_ALL);
 }

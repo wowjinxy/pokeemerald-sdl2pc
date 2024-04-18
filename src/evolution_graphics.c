@@ -536,13 +536,13 @@ u8 CycleEvolutionMonSprite(u8 preEvoSpriteId, u8 postEvoSpriteId)
     gSprites[preEvoSpriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[preEvoSpriteId].oam.matrixNum = MATRIX_PRE_EVO;
     gSprites[preEvoSpriteId].invisible = FALSE;
-    CpuSet(monPalette, &gPlttBufferFaded[OBJ_PLTT_ID(gSprites[preEvoSpriteId].oam.paletteNum)], 16);
+    memcpy(&gPlttBufferFaded[OBJ_PLTT_ID(gSprites[preEvoSpriteId].oam.paletteNum)], monPalette, 16 * sizeof(u16));
 
     gSprites[postEvoSpriteId].callback = SpriteCB_EvolutionMonSprite;
     gSprites[postEvoSpriteId].oam.affineMode = ST_OAM_AFFINE_NORMAL;
     gSprites[postEvoSpriteId].oam.matrixNum = MATRIX_POST_EVO;
     gSprites[postEvoSpriteId].invisible = FALSE;
-    CpuSet(monPalette, &gPlttBufferFaded[OBJ_PLTT_ID(gSprites[postEvoSpriteId].oam.paletteNum)], 16);
+    memcpy(&gPlttBufferFaded[OBJ_PLTT_ID(gSprites[postEvoSpriteId].oam.paletteNum)], monPalette, 16 * sizeof(u16));
 
     gTasks[taskId].tEvoStopped = FALSE;
     return taskId;

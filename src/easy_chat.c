@@ -4131,7 +4131,7 @@ static void BufferFrameTilemap(u16 *tilemap)
     int x, y;
 
     frameId = GetEasyChatScreenFrameId();
-    CpuFastFill(0, tilemap, BG_SCREEN_SIZE);
+    memset(tilemap, 0, BG_SCREEN_SIZE);
     if (frameId == FRAMEID_MAIL || frameId == FRAMEID_QUIZ_SET_QUESTION)
     {
         // These frames fill the screen, no need to draw top/bottom edges

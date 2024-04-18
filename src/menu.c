@@ -1824,11 +1824,8 @@ void DecompressAndLoadBgGfxUsingHeap(u8 bgId, const void *src, u32 size, u16 off
 
 void task_free_buf_after_copying_tile_data_to_vram(u8 taskId)
 {
-    if (!CheckForSpaceForDma3Request(gTasks[taskId].data[0]))
-    {
-        Free(gTasks[taskId].genericPtr[0]);
-        DestroyTask(taskId);
-    }
+    Free(gTasks[taskId].genericPtr[0]);
+    DestroyTask(taskId);
 }
 
 void *malloc_and_decompress(const void *src, u32 *size)

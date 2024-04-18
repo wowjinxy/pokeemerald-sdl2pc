@@ -746,7 +746,6 @@ void MP2K_event_mod(struct MP2KPlayerState *unused, struct MP2KTrack *track) {
 void m4aSoundVSync(void)
 {
     struct SoundMixerState *mixer = SOUND_INFO_PTR;
-#ifdef PORTABLE
     if(mixer->lockStatus-PLAYER_UNLOCKED <= 1)
     {
         s32 samplesPerFrame = mixer->samplesPerFrame * 2;
@@ -765,20 +764,6 @@ void m4aSoundVSync(void)
         if((s8)(--mixer->dmaCounter) <= 0)
             mixer->dmaCounter = mixer->framesPerDmaCycle;
     }
-#else
-    if(mixer->lockStatus-PLAYER_UNLOCKED <= 1 && (s8)(--mixer->dmaCounter) <= 0)
-    {
-        mixer->dmaCounter = mixer->framesPerDmaCycle;
-        if(REG_DMA1CNT & (DMA_REPEAT << 16))
-            REG_DMA1CNT = (DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16 | 4;
-        if(REG_DMA2CNT & (DMA_REPEAT << 16))
-            REG_DMA2CNT = (DMA_ENABLE | DMA_START_NOW | DMA_32BIT | DMA_SRC_INC | DMA_DEST_FIXED) << 16 | 4;
-        REG_DMA1CNT_H = DMA_32BIT;
-        REG_DMA2CNT_H = DMA_32BIT;
-        REG_DMA1CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
-        REG_DMA2CNT_H = DMA_ENABLE | DMA_START_SPECIAL | DMA_32BIT | DMA_REPEAT;
-    }
-#endif
 }
 
 #if 0
