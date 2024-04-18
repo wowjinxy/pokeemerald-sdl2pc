@@ -2607,8 +2607,8 @@ static void Task_FieldMoveShowMonOutdoors(u8 taskId)
 
 static void FieldMoveShowMonOutdoorsEffect_Init(struct Task *task)
 {
-    task->data[11] = REG_WININ;
-    task->data[12] = REG_WINOUT;
+    task->data[11] = GetGpuWindowIn();
+    task->data[12] = GetGpuWindowOut();
     task->intrCallbackPtr = gMain.vblankCallback;
     task->tWinHoriz = WIN_RANGE(DisplayWidth(), DisplayWidth() + 1);
     task->tWinVert = WIN_RANGE(DisplayHeight() / 2, DisplayHeight() / 2 + 1);

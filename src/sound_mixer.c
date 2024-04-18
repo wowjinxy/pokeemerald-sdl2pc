@@ -7,12 +7,9 @@
     #include "cgb_audio.h"
 #endif
 
-#define VCOUNT_VBLANK 160
-#define TOTAL_SCANLINES 228
-
 
 static inline void GenerateAudio(struct SoundMixerState *mixer, struct MixerSource *chan, struct WaveData2 *wav, float *outBuffer, u16 samplesPerFrame, float sampleRateReciprocal);
-void SampleMixer(struct SoundMixerState *mixer, u32 scanlineLimit, u16 samplesPerFrame, float *outBuffer, u8 dmaCounter, u16 maxBufSize);
+void SampleMixer(struct SoundMixerState *mixer, u16 samplesPerFrame, float *outBuffer, u8 dmaCounter, u16 maxBufSize);
 static inline bool32 TickEnvelope(struct MixerSource *chan, struct WaveData2 *wav);
 void GeneratePokemonSampleAudio(struct SoundMixerState *mixer, struct MixerSource *chan, s8 *current, float *outBuffer, u16 samplesPerFrame, float sampleRateReciprocal, s32 samplesLeftInWav, signed envR, signed envL, s32 loopLen);
 static s8 sub_82DF758(struct MixerSource *chan, u32 current);
@@ -25,15 +22,6 @@ void RunMixerFrame(void)
         return;
 
     mixer->lockStatus = MIXER_LOCKED;
-    
-    u32 maxScanlines = mixer->maxScanlines;
-    if (mixer->maxScanlines != 0) {
-        u32 vcount = REG_VCOUNT;
-        maxScanlines += vcount;
-        if (vcount < VCOUNT_VBLANK) {
-            maxScanlines += TOTAL_SCANLINES;
-        }
-    }
     
     if (mixer->firstPlayerFunc != NULL) {
         mixer->firstPlayerFunc(mixer->firstPlayer);
@@ -49,8 +37,7 @@ void RunMixerFrame(void)
         outBuffer += samplesPerFrame * (mixer->framesPerDmaCycle - (dmaCounter - 1)) * 2;
     }
     
-    //MixerRamFunc mixerRamFunc = ((MixerRamFunc)MixerCodeBuffer);
-    SampleMixer(mixer, maxScanlines, samplesPerFrame, outBuffer, dmaCounter, MIXED_AUDIO_BUFFER_SIZE);
+    SampleMixer(mixer, samplesPerFrame, outBuffer, dmaCounter, MIXED_AUDIO_BUFFER_SIZE);
     #ifdef PORTABLE
         cgb_audio_generate(samplesPerFrame);
     #endif
@@ -59,7 +46,7 @@ void RunMixerFrame(void)
 
 
 //__attribute__((target("thumb")))
-void SampleMixer(struct SoundMixerState *mixer, u32 scanlineLimit, u16 samplesPerFrame, float *outBuffer, u8 dmaCounter, u16 maxBufSize) {
+void SampleMixer(struct SoundMixerState *mixer, u16 samplesPerFrame, float *outBuffer, u8 dmaCounter, u16 maxBufSize) {
     u32 reverb = mixer->reverb;
     if (reverb) {
         // The vanilla reverb effect outputs a mono sound from four sources:
@@ -97,23 +84,12 @@ void SampleMixer(struct SoundMixerState *mixer, u32 scanlineLimit, u16 samplesPe
     for (int i = 0; i < numChans; i++, chan++) {
         struct WaveData2 *wav = chan->wav;
         
-        if (scanlineLimit != 0) {
-            uf16 vcount = REG_VCOUNT;
-            if (vcount < VCOUNT_VBLANK) {
-                vcount += TOTAL_SCANLINES;
-            }
-            if (vcount >= scanlineLimit) {
-                goto returnEarly;
-            }
-        }
-        
         if (TickEnvelope(chan, wav)) 
         {
-
             GenerateAudio(mixer, chan, wav, outBuffer, samplesPerFrame, sampleRateReciprocal);
         }
     }
-returnEarly:
+
     mixer->lockStatus = MIXER_UNLOCKED;
 }
 

@@ -27,8 +27,6 @@
 
 #define PALTAG_UNUSED_MUGSHOT 0x100A
 
-#define B_TRANS_DMA_FLAGS (1 | ((DMA_SRC_INC | DMA_DEST_FIXED | DMA_REPEAT | DMA_16BIT | DMA_START_HBLANK | DMA_ENABLE) << 16))
-
 // Used by each transition task to determine which of its functions to call
 #define tState          data[0]
 
@@ -54,11 +52,11 @@
 
 struct TransitionData
 {
-    vu8 VBlank_DMA;
-    u16 WININ;
-    u16 WINOUT;
-    u16 WIN0H;
-    u16 WIN0V;
+    u8 VBlank_DMA;
+    u32 WININ;
+    u32 WINOUT;
+    u32 WIN0H;
+    u32 WIN0V;
     u16 unused1;
     u16 unused2;
     u16 BLDCNT;
@@ -267,8 +265,8 @@ static void HBlankCB_Mugshots(void);
 static void InitTransitionData(void);
 static void FadeScreenBlack(void);
 static void CreateIntroTask(s16, s16, s16, s16, s16);
-static void SetCircularMask(u16 *, s16, s16, s16);
-static void SetSinWave(s16 *, s16, s16, s16, s16, s16);
+static void SetCircularMask(u32 *, s16, s16, s16);
+static void SetSinWave(s32 *, s16, s16, s16, s16, s16);
 static void GetBg0TilemapDst(u16 **);
 static void InitBlackWipe(s16 *, s16, s16, s16, s16, s16, s16);
 static bool8 UpdateBlackWipe(s16 *, bool8, bool8);
@@ -1242,10 +1240,10 @@ static void VBlankCB_Swirl(void)
 
 static void HBlankCB_Swirl(void)
 {
-    u16 var = gScanlineEffectRegBuffers[1][REG_VCOUNT];
-    REG_BG1HOFS = var;
-    REG_BG2HOFS = var;
-    REG_BG3HOFS = var;
+    u16 var = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)];
+    SetGpuBackgroundX(1, var);
+    SetGpuBackgroundX(2, var);
+    SetGpuBackgroundX(3, var);
 }
 
 #undef tSinIndex
@@ -1313,10 +1311,10 @@ static void VBlankCB_Shuffle(void)
 
 static void HBlankCB_Shuffle(void)
 {
-    u16 var = gScanlineEffectRegBuffers[1][REG_VCOUNT];
-    REG_BG1VOFS = var;
-    REG_BG2VOFS = var;
-    REG_BG3VOFS = var;
+    u16 var = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)];
+    SetGpuBackgroundY(1, var);
+    SetGpuBackgroundY(2, var);
+    SetGpuBackgroundY(3, var);
 }
 
 #undef tSinVal
@@ -1605,7 +1603,7 @@ static bool8 WeatherDuo_End(struct Task *task)
 {
     if (!gPaletteFade.active)
     {
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         FadeScreenBlack();
         DestroyTask(FindTaskIdByFunc(task->func));
     }
@@ -1714,7 +1712,7 @@ static bool8 PatternWeave_CircularMask(struct Task *task)
     if (task->tRadius == 0)
     {
         SetVBlankCallback(NULL);
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         FadeScreenBlack();
         DestroyTask(FindTaskIdByFunc(task->func));
     }
@@ -1732,27 +1730,27 @@ static bool8 PatternWeave_CircularMask(struct Task *task)
 
 static void VBlankCB_SetWinAndBlend(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    REG_BLDALPHA = sTransitionData->BLDALPHA;
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuState(GPU_STATE_BLDALPHA, sTransitionData->BLDALPHA);
 }
 
 static void VBlankCB_PatternWeave(void)
 {
     VBlankCB_SetWinAndBlend();
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_BG0HOFS, B_TRANS_DMA_FLAGS);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_BGX, 0, gScanlineEffectRegBuffers[1]);
 }
 
 static void VBlankCB_CircularMask(void)
 {
     VBlankCB_SetWinAndBlend();
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, gScanlineEffectRegBuffers[1]);
 }
 
 #undef tAmplitude
@@ -1902,7 +1900,7 @@ static bool8 ClockwiseWipe_Init(struct Task *task)
     sTransitionData->WIN0V = DisplayHeight();
 
     for (i = 0; i < DisplayHeight(); i++)
-        gScanlineEffectRegBuffers[1][i] = ((DisplayWidth() + 3) << 8) | (DisplayWidth() + 4);
+        gScanlineEffectRegBuffers[1][i] = ((DisplayWidth() + 3) << 16) | (DisplayWidth() + 4);
 
     SetVBlankCallback(VBlankCB_ClockwiseWipe);
     sTransitionData->tWipeEndX = DisplayWidth() / 2;
@@ -1918,7 +1916,7 @@ static bool8 ClockwiseWipe_TopRight(struct Task *task)
     InitBlackWipe(sTransitionData->data, DisplayWidth() / 2, DisplayHeight() / 2, sTransitionData->tWipeEndX, -1, 1, 1);
     do
     {
-        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX + 1) | ((DisplayWidth() / 2) << 8);
+        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX + 1) | ((DisplayWidth() / 2) << 16);
     } while (!UpdateBlackWipe(sTransitionData->data, TRUE, TRUE));
 
     sTransitionData->tWipeEndX += 16;
@@ -1946,7 +1944,7 @@ static bool8 ClockwiseWipe_Right(struct Task *task)
         start = DisplayWidth() / 2, end = sTransitionData->tWipeCurrX + 1;
         if (sTransitionData->tWipeEndY >= DisplayHeight() / 2)
             start = sTransitionData->tWipeCurrX, end = DisplayWidth();
-        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = end | (start << 8);
+        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = end | (start << 16);
         if (finished)
             break;
         finished = UpdateBlackWipe(sTransitionData->data, TRUE, TRUE);
@@ -1961,7 +1959,7 @@ static bool8 ClockwiseWipe_Right(struct Task *task)
     else
     {
         while (sTransitionData->tWipeCurrY < sTransitionData->tWipeEndY)
-            gScanlineEffectRegBuffers[0][++sTransitionData->tWipeCurrY] = end | (start << 8);
+            gScanlineEffectRegBuffers[0][++sTransitionData->tWipeCurrY] = end | (start << 16);
     }
 
     sTransitionData->VBlank_DMA++;
@@ -1975,7 +1973,7 @@ static bool8 ClockwiseWipe_Bottom(struct Task *task)
     InitBlackWipe(sTransitionData->data, DisplayWidth() / 2, DisplayHeight() / 2, sTransitionData->tWipeEndX, DisplayHeight(), 1, 1);
     do
     {
-        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX << 8) | DisplayWidth();
+        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX << 16) | DisplayWidth();
     } while (!UpdateBlackWipe(sTransitionData->data, TRUE, TRUE));
 
     sTransitionData->tWipeEndX -= 16;
@@ -2004,7 +2002,7 @@ static bool8 ClockwiseWipe_Left(struct Task *task)
         start = sTransitionData->tWipeCurrX;
         if (sTransitionData->tWipeEndY <= DisplayHeight() / 2)
             start = DisplayWidth() / 2, end = sTransitionData->tWipeCurrX;
-        temp = end | (start << 8);
+        temp = end | (start << 16);
         gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = temp;
         if (finished)
             break;
@@ -2020,7 +2018,7 @@ static bool8 ClockwiseWipe_Left(struct Task *task)
     else
     {
         while (sTransitionData->tWipeCurrY > sTransitionData->tWipeEndY)
-            gScanlineEffectRegBuffers[0][--sTransitionData->tWipeCurrY] = end | (start << 8);
+            gScanlineEffectRegBuffers[0][--sTransitionData->tWipeCurrY] = end | (start << 16);
     }
 
     sTransitionData->VBlank_DMA++;
@@ -2038,7 +2036,7 @@ static bool8 ClockwiseWipe_TopLeft(struct Task *task)
         start = DisplayWidth() / 2, end = sTransitionData->tWipeCurrX;
         if (sTransitionData->tWipeCurrX >= DisplayWidth() / 2)
             start = 0, end = DisplayWidth();
-        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = end | (start << 8);
+        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = end | (start << 16);
     } while (!UpdateBlackWipe(sTransitionData->data, TRUE, TRUE));
 
     sTransitionData->tWipeEndX += 16;
@@ -2051,7 +2049,7 @@ static bool8 ClockwiseWipe_TopLeft(struct Task *task)
 
 static bool8 ClockwiseWipe_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(Task_ClockwiseWipe));
     return FALSE;
@@ -2059,15 +2057,15 @@ static bool8 ClockwiseWipe_End(struct Task *task)
 
 static void VBlankCB_ClockwiseWipe(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA != 0)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
-    REG_WIN0H = gScanlineEffectRegBuffers[1][0];
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
+    SetGpuWindowX(0, gScanlineEffectRegBuffers[1][0]);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, gScanlineEffectRegBuffers[1]);
 }
 
 //---------------------
@@ -2146,10 +2144,10 @@ static void VBlankCB_Ripple(void)
 
 static void HBlankCB_Ripple(void)
 {
-    u16 var = gScanlineEffectRegBuffers[1][REG_VCOUNT];
-    REG_BG1VOFS = var;
-    REG_BG2VOFS = var;
-    REG_BG3VOFS = var;
+    u16 var = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)];
+    SetGpuBackgroundY(1, var);
+    SetGpuBackgroundY(2, var);
+    SetGpuBackgroundY(3, var);
 }
 
 #undef tSinVal
@@ -2193,7 +2191,7 @@ static bool8 Wave_Init(struct Task *task)
 static bool8 Wave_Main(struct Task *task)
 {
     u8 i, sinIndex;
-    u16 *toStore;
+    u32 *toStore;
     bool8 finished;
 
     sTransitionData->VBlank_DMA = FALSE;
@@ -2209,7 +2207,7 @@ static bool8 Wave_Main(struct Task *task)
             x = 0;
         if (x > DisplayWidth())
             x = DisplayWidth();
-        *toStore = (x << 8) | (DisplayWidth() + 1);
+        *toStore = (x << 16) | (DisplayWidth() + 1);
         if (x < DisplayWidth())
             finished = FALSE;
     }
@@ -2222,7 +2220,7 @@ static bool8 Wave_Main(struct Task *task)
 
 static bool8 Wave_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(Task_Wave));
     return FALSE;
@@ -2230,14 +2228,14 @@ static bool8 Wave_End(struct Task *task)
 
 static void VBlankCB_Wave(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA != 0)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, gScanlineEffectRegBuffers[1]);
 }
 
 #undef tX
@@ -2318,7 +2316,7 @@ static bool8 Mugshot_Init(struct Task *task)
     sTransitionData->WIN0V = DisplayHeight();
 
     for (i = 0; i < DisplayHeight(); i++)
-        gScanlineEffectRegBuffers[1][i] = (DisplayWidth() << 8) | (DisplayWidth() + 1);
+        gScanlineEffectRegBuffers[1][i] = (DisplayWidth() << 16) | (DisplayWidth() + 1);
 
     SetVBlankCallback(VBlankCB_Mugshots);
 
@@ -2354,7 +2352,7 @@ static bool8 Mugshot_SetGfx(struct Task *task)
 static bool8 Mugshot_ShowBanner(struct Task *task)
 {
     u8 i, sinIndex;
-    u16 *toStore;
+    u32 *toStore;
     s16 x;
     s32 mergedValue;
 
@@ -2383,7 +2381,7 @@ static bool8 Mugshot_ShowBanner(struct Task *task)
             x = 0;
         if (x > DisplayWidth() - 1)
             x = DisplayWidth() - 1;
-        *toStore = (x << 8) | DisplayWidth();
+        *toStore = (x << 16) | DisplayWidth();
     }
 
     // Slide banners across screen
@@ -2408,7 +2406,7 @@ static bool8 Mugshot_ShowBanner(struct Task *task)
 static bool8 Mugshot_StartOpponentSlide(struct Task *task)
 {
     u8 i;
-    u16 *toStore;
+    u32 *toStore;
 
     sTransitionData->VBlank_DMA = FALSE;
 
@@ -2460,7 +2458,7 @@ static bool8 Mugshot_WaitPlayerSlide(struct Task *task)
     {
         sTransitionData->VBlank_DMA = FALSE;
         SetVBlankCallback(NULL);
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         memset(gScanlineEffectRegBuffers[0], 0, DisplayHeight() * 2);
         memset(gScanlineEffectRegBuffers[1], 0, DisplayHeight() * 2);
         SetGpuWindowX(0, DisplayWidth());
@@ -2545,7 +2543,7 @@ static bool8 Mugshot_FadeToBlack(struct Task *task)
 
 static bool8 Mugshot_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(task->func));
     return FALSE;
@@ -2553,30 +2551,30 @@ static bool8 Mugshot_End(struct Task *task)
 
 static void VBlankCB_Mugshots(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA != 0)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_BG0VOFS = sTransitionData->BG0VOFS;
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+    SetGpuBackgroundY(0, sTransitionData->BG0VOFS);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, gScanlineEffectRegBuffers[1]);
 }
 
 static void VBlankCB_MugshotsFadeOut(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA != 0)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_BLDY, B_TRANS_DMA_FLAGS);
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_BLENDCNT, 0, gScanlineEffectRegBuffers[1]);
 }
 
 static void HBlankCB_Mugshots(void)
 {
-    if (REG_VCOUNT < DisplayHeight() / 2)
+    if (GetGpuState(GPU_STATE_VCOUNT) < DisplayHeight() / 2)
         SetGpuBackgroundX(0, sTransitionData->BG0HOFS_Lower);
     else
         SetGpuBackgroundX(0, sTransitionData->BG0HOFS_Upper);
@@ -2750,7 +2748,7 @@ static bool8 Slice_Init(struct Task *task)
     }
 
     EnableInterrupts(INTR_FLAG_HBLANK);
-    SetGpuRegBits(REG_OFFSET_DISPSTAT, DISPSTAT_HBLANK_INTR);
+    SetGpuStateBits(GPU_STATE_DISPSTAT, DISPSTAT_HBLANK_INTR);
 
     SetVBlankCallback(VBlankCB_Slice);
     SetHBlankCallback(HBlankCB_Slice);
@@ -2775,8 +2773,8 @@ static bool8 Slice_Main(struct Task *task)
 
     for (i = 0; i < DisplayHeight(); i++)
     {
-        u16 *storeLoc1 = &gScanlineEffectRegBuffers[0][i];
-        u16 *storeLoc2 = &gScanlineEffectRegBuffers[0][i + DisplayHeight()];
+        u32 *storeLoc1 = &gScanlineEffectRegBuffers[0][i];
+        u32 *storeLoc2 = &gScanlineEffectRegBuffers[0][i + DisplayHeight()];
 
         // Alternate rows
         if (i % 2)
@@ -2787,7 +2785,7 @@ static bool8 Slice_Main(struct Task *task)
         else
         {
             *storeLoc1 = sTransitionData->cameraX - task->tEffectX;
-            *storeLoc2 = (task->tEffectX << 8) | (DisplayWidth() + 1);
+            *storeLoc2 = (task->tEffectX << 16) | (DisplayWidth() + 1);
         }
     }
 
@@ -2800,7 +2798,7 @@ static bool8 Slice_Main(struct Task *task)
 
 static bool8 Slice_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(Task_Slice));
     return FALSE;
@@ -2808,24 +2806,25 @@ static bool8 Slice_End(struct Task *task)
 
 static void VBlankCB_Slice(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
     if (sTransitionData->VBlank_DMA)
-        DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 4);
-    DmaSet(0, &gScanlineEffectRegBuffers[1][DisplayHeight()], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+        DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 8);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, &gScanlineEffectRegBuffers[1][DisplayHeight()]);
 }
 
 static void HBlankCB_Slice(void)
 {
-    if (REG_VCOUNT < DisplayHeight())
+    u32 vcount = GetGpuState(GPU_STATE_VCOUNT);
+    if (vcount < DisplayHeight())
     {
-        u16 var = gScanlineEffectRegBuffers[1][REG_VCOUNT];
-        REG_BG1HOFS = var;
-        REG_BG2HOFS = var;
-        REG_BG3HOFS = var;
+        u16 var = gScanlineEffectRegBuffers[1][vcount];
+        SetGpuBackgroundX(1, var);
+        SetGpuBackgroundX(2, var);
+        SetGpuBackgroundX(3, var);
     }
 }
 
@@ -2889,7 +2888,7 @@ static bool8 ShredSplit_Main(struct Task *task)
     u8 baseY[ARRAY_COUNT(sShredSplit_SectionYCoords)];
     s16 moveDirs[ARRAY_COUNT(sShredSplit_SectionMoveDirs)];
     u8 linesFinished;
-    u16 *ptr4, *ptr3, *ptr1, *ptr2;
+    u32 *ptr4, *ptr3, *ptr1, *ptr2;
     s16 y;
 
     memcpy(baseY, sShredSplit_SectionYCoords, sizeof(baseY));
@@ -2964,7 +2963,7 @@ static bool8 ShredSplit_Main(struct Task *task)
                     ptr2 = &gScanlineEffectRegBuffers[0][y];
                     ptr3 = &gScanlineEffectRegBuffers[0][y + DisplayHeight()];
                     *ptr2 = sTransitionData->cameraX - *ptr4;
-                    *ptr3 = (*ptr4 << 8) | (DisplayWidth() + 1);
+                    *ptr3 = (*ptr4 << 16) | (DisplayWidth() + 1);
 
                     if (i == 0)
                         break;
@@ -3017,7 +3016,7 @@ static bool8 ShredSplit_BrokenCheck(struct Task *task)
 
 static bool8 ShredSplit_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(Task_ShredSplit));
     return FALSE;
@@ -3078,7 +3077,7 @@ static bool8 Blackhole_GrowEnd(struct Task *task)
 {
     if (task->tFlag == TRUE)
     {
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         SetVBlankCallback(NULL);
         DestroyTask(FindTaskIdByFunc(task->func));
     }
@@ -3147,7 +3146,7 @@ static bool8 BlackholePulsate_Main(struct Task *task)
     SetCircularMask(gScanlineEffectRegBuffers[0], DisplayWidth() / 2, DisplayHeight() / 2, task->tRadius);
     if (task->tRadius == DisplayHeight())
     {
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         FadeScreenBlack();
         DestroyTask(FindTaskIdByFunc(task->func));
     }
@@ -3280,7 +3279,7 @@ static bool8 RectangularSpiral_Main(struct Task *task)
 
 static bool8 RectangularSpiral_End(struct Task *task)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     FadeScreenBlack();
     DestroyTask(FindTaskIdByFunc(task->func));
     return FALSE;
@@ -3556,7 +3555,7 @@ static bool8 Rayquaza_TriRing(struct Task *task)
         task->tState++;
         task->tGrowSpeed = 1 << 8;
         task->tFlag = FALSE;
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG0_ON);
     }
 
     return FALSE;
@@ -3564,9 +3563,9 @@ static bool8 Rayquaza_TriRing(struct Task *task)
 
 static void VBlankCB_Rayquaza(void)
 {
-    void *dmaSrc;
+    u32 *dmaSrc;
 
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
 
     if (sTransitionData->counter == 0)
@@ -3576,7 +3575,7 @@ static void VBlankCB_Rayquaza(void)
     else
         dmaSrc = gScanlineEffectRegBuffers[0];
 
-    DmaSet(0, dmaSrc, &REG_BG0VOFS, B_TRANS_DMA_FLAGS);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_BGY, 0, dmaSrc);
 }
 
 #undef tTimer
@@ -3665,7 +3664,7 @@ static bool8 WhiteBarsFade_BlendToBlack(struct Task *task)
 {
     sTransitionData->VBlank_DMA = 0;
 
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     SetVBlankCallback(0);
     SetHBlankCallback(0);
 
@@ -3692,31 +3691,31 @@ static bool8 WhiteBarsFade_End(struct Task *task)
 
 static void VBlankCB_WhiteBarsFade(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
     if (sTransitionData->VBlank_DMA)
-        DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 4);
-    DmaSet(0, &gScanlineEffectRegBuffers[1][DisplayHeight()], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+        DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 8);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWX, 0, &gScanlineEffectRegBuffers[1][DisplayHeight()]);
 }
 
 static void VBlankCB_WhiteBarsFade_Blend(void)
 {
     VBlankCB_BattleTransition();
-    REG_BLDY = sTransitionData->BLDY;
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0H = sTransitionData->WIN0H;
-    REG_WIN0V = sTransitionData->WIN0V;
+    SetGpuState(GPU_STATE_BLDY, sTransitionData->BLDY);
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowX(0, sTransitionData->WIN0H);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
 }
 
 static void HBlankCB_WhiteBarsFade(void)
 {
-    REG_BLDY = gScanlineEffectRegBuffers[1][REG_VCOUNT];
+    SetGpuState(GPU_STATE_BLDY, gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)]);
 }
 
 static void SpriteCB_WhiteBarFade(struct Sprite *sprite)
@@ -3730,8 +3729,8 @@ static void SpriteCB_WhiteBarFade(struct Sprite *sprite)
     else
     {
         u16 i;
-        u16 *ptr1 = &gScanlineEffectRegBuffers[0][sprite->y];
-        u16 *ptr2 = &gScanlineEffectRegBuffers[0][sprite->y + DisplayHeight()];
+        u32 *ptr1 = &gScanlineEffectRegBuffers[0][sprite->y];
+        u32 *ptr2 = &gScanlineEffectRegBuffers[0][sprite->y + DisplayHeight()];
         for (i = 0; i < DisplayHeight() / NUM_WHITE_BARS; i++)
         {
             ptr1[i] = sprite->sFade >> 8;
@@ -3903,7 +3902,7 @@ static bool8 AngledWipes_DoWipe(struct Task *task)
             if (r4 <= r3)
                 r4 = r3;
         }
-        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (r4) | (r3 << 8);
+        gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (r4) | (r3 << 16);
         if (finished)
         {
             task->tState++;
@@ -3928,7 +3927,7 @@ static bool8 AngledWipes_TryEnd(struct Task *task)
     else
     {
         // End transition
-        DmaStop(0);
+        ClearGpuScanlineEffect();
         FadeScreenBlack();
         DestroyTask(FindTaskIdByFunc(Task_AngledWipes));
         return FALSE;
@@ -3949,15 +3948,15 @@ static bool8 AngledWipes_StartNext(struct Task *task)
 
 static void VBlankCB_AngledWipes(void)
 {
-    DmaStop(0);
+    ClearGpuScanlineEffect();
     VBlankCB_BattleTransition();
     if (sTransitionData->VBlank_DMA)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    REG_WININ = sTransitionData->WININ;
-    REG_WINOUT = sTransitionData->WINOUT;
-    REG_WIN0V = sTransitionData->WIN0V;
-    REG_WIN0H = gScanlineEffectRegBuffers[1][0];
-    DmaSet(0, gScanlineEffectRegBuffers[1], &REG_WIN0H, B_TRANS_DMA_FLAGS);
+    SetGpuWindowIn(sTransitionData->WININ);
+    SetGpuWindowOut(sTransitionData->WINOUT);
+    SetGpuWindowY(0, sTransitionData->WIN0V);
+    SetGpuWindowX(0, gScanlineEffectRegBuffers[1][0]);
+    SetGpuScanlineEffect(GPU_SCANLINE_EFFECT_WINDOWY, 0, gScanlineEffectRegBuffers[1]);
 }
 
 #undef tWipeId
@@ -4087,14 +4086,14 @@ static void FadeScreenBlack(void)
     BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
 }
 
-static void SetSinWave(s16 *array, s16 sinAdd, s16 index, s16 indexIncrementer, s16 amplitude, s16 arrSize)
+static void SetSinWave(s32 *array, s16 sinAdd, s16 index, s16 indexIncrementer, s16 amplitude, s16 arrSize)
 {
     u8 i;
     for (i = 0; arrSize > 0; arrSize--, i++, index += indexIncrementer)
         array[i] = sinAdd + Sin(index & 0xFF, amplitude);
 }
 
-static void SetCircularMask(u16 *buffer, s16 centerX, s16 centerY, s16 radius)
+static void SetCircularMask(u32 *buffer, s16 centerX, s16 centerY, s16 radius)
 {
     s16 i;
 
@@ -4121,7 +4120,7 @@ static void SetCircularMask(u16 *buffer, s16 centerX, s16 centerY, s16 radius)
         if (drawYBott > DisplayHeight() - 1)
             drawYBott = DisplayHeight() - 1;
 
-        drawX |= (drawXLeft << 8);
+        drawX |= (drawXLeft << 16);
         buffer[drawYTop] = drawX;
         buffer[drawYBott] = drawX;
 
@@ -4297,7 +4296,7 @@ static bool8 FrontierLogoWave_Init(struct Task *task)
 
     InitTransitionData();
     ScanlineEffect_Clear();
-    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
+    ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
     task->tAmplitudeVal = 32 << 8;
     task->tSinVal = 0x7FFF;
     task->tBlendTarget2 = 0;
@@ -4305,8 +4304,8 @@ static bool8 FrontierLogoWave_Init(struct Task *task)
     task->tSinDecrement = 2560;
     sTransitionData->BLDCNT = BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL;
     sTransitionData->BLDALPHA = BLDALPHA_BLEND(task->tBlendTarget2, task->tBlendTarget1);
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    REG_BLDALPHA = sTransitionData->BLDALPHA;
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuState(GPU_STATE_BLDALPHA, sTransitionData->BLDALPHA);
     GetBg0TilesDst(&tilemap, &tileset);
     CpuFill16(0, tilemap, BG_SCREEN_SIZE);
     LZ77UnCompVram(sFrontierLogo_Tileset, tileset);
@@ -4401,8 +4400,8 @@ static bool8 FrontierLogoWave_Main(struct Task *task)
 static void VBlankCB_FrontierLogoWave(void)
 {
     VBlankCB_BattleTransition();
-    REG_BLDCNT = sTransitionData->BLDCNT;
-    REG_BLDALPHA = sTransitionData->BLDALPHA;
+    SetGpuState(GPU_STATE_BLDCNT, sTransitionData->BLDCNT);
+    SetGpuState(GPU_STATE_BLDALPHA, sTransitionData->BLDALPHA);
 
     if (sTransitionData->VBlank_DMA)
         DmaCopy16(3, gScanlineEffectRegBuffers[0], gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
@@ -4410,8 +4409,8 @@ static void VBlankCB_FrontierLogoWave(void)
 
 static void HBlankCB_FrontierLogoWave(void)
 {
-    u16 var = gScanlineEffectRegBuffers[1][REG_VCOUNT];
-    REG_BG0VOFS = var;
+    u16 var = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)];
+    SetGpuBackgroundY(0, var);
 }
 
 #undef tSinVal

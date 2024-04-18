@@ -907,8 +907,8 @@ static const struct WindowTemplate sInfoCardWindowTemplates[] =
 
 static const struct ScanlineEffectParams sTourneyTreeScanlineEffectParams =
 {
-    .dmaDest = &REG_BG3CNT,
-    .dmaControl = SCANLINE_EFFECT_DMACNT_16BIT,
+    .effTarget = GPU_SCANLINE_EFFECT_BGPRIO,
+    .effParam = 3,
     .initState = 1,
 };
 
@@ -5552,15 +5552,15 @@ static void Task_ShowTourneyTree(u8 taskId)
         i = 0;
         while (i < 91)
         {
-            gScanlineEffectRegBuffers[0][i] = BGCNT_PRIORITY(2) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(2) | BGCNT_TXT256x256;
-            gScanlineEffectRegBuffers[1][i] = BGCNT_PRIORITY(2) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(2) | BGCNT_TXT256x256;
+            gScanlineEffectRegBuffers[0][i] = 2;
+            gScanlineEffectRegBuffers[1][i] = 2;
             i++;
         }
 
         while (i < 160)
         {
-            gScanlineEffectRegBuffers[0][i] =  BGCNT_PRIORITY(1) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(2) | BGCNT_TXT256x256;
-            gScanlineEffectRegBuffers[1][i] =  BGCNT_PRIORITY(1) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(2) | BGCNT_TXT256x256;
+            gScanlineEffectRegBuffers[0][i] = 1;
+            gScanlineEffectRegBuffers[1][i] = 1;
             i++;
         }
 
@@ -5698,72 +5698,72 @@ static void VblankCb_TourneyInfoCard(void)
 
 static void HblankCb_TourneyTree(void)
 {
-    u16 vCount = REG_VCOUNT;
+    u16 vCount = GetGpuState(GPU_STATE_VCOUNT);
 
     if (vCount < 42)
     {
-        REG_WININ = WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
-                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ;
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
+                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ);
         SET_WIN0H_WIN1H(0, 0);
     }
     else if (vCount < 50)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(152, 155), WIN_RANGE(85, 88));
     }
     else if (vCount < 58)
     {
-        REG_WININ = WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
-                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ;
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
+                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ);
         SET_WIN0H_WIN1H(0, 0);
     }
     else if (vCount < 75)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(144, 152), WIN_RANGE(88, 96));
     }
     else if (vCount < 82)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG3 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG3 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(152, 155), WIN_RANGE(85, 88));
     }
     else if (vCount < 95)
     {
-        REG_WININ = WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
-                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ;
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
+                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ);
         SET_WIN0H_WIN1H(0, 0);
     }
     else if (vCount < 103)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(152, 155), WIN_RANGE(85, 88));
     }
     else if (vCount < 119)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(144, 152), WIN_RANGE(88, 96));
     }
     else if (vCount < 127)
     {
-        REG_WININ = WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
-                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ;
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
+                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ);
         SET_WIN0H_WIN1H(0, 0);
     }
     else if (vCount < 135)
     {
-        REG_WININ = WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
-                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR;
+        SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG1 | WININ_WIN0_BG2 | WININ_WIN0_OBJ | WININ_WIN0_CLR
+                    | WININ_WIN1_BG0 | WININ_WIN1_BG1 | WININ_WIN1_BG2 | WININ_WIN1_OBJ | WININ_WIN1_CLR);
         SET_WIN0H_WIN1H(WIN_RANGE(152, 155), WIN_RANGE(85, 88));
     }
     else
     {
-        REG_WININ = WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
-                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ;
+        SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ
+                | WININ_WIN1_BG_ALL | WININ_WIN1_CLR | WININ_WIN1_OBJ);
         SET_WIN0H_WIN1H(0, 0);
     }
 }

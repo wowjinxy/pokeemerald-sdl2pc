@@ -5192,9 +5192,9 @@ void AnimTask_DoubleTeam(u8 taskId)
 
     task->func = AnimTask_DoubleTeam_Step;
     if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
     else
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
 }
 
 static void AnimTask_DoubleTeam_Step(u8 taskId)
@@ -5203,9 +5203,9 @@ static void AnimTask_DoubleTeam_Step(u8 taskId)
     if (!task->data[3])
     {
         if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
         else
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
 
         FreeSpritePaletteByTag(ANIM_TAG_BENT_SPOON);
         DestroyAnimVisualTask(taskId);

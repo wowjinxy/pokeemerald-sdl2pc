@@ -112,8 +112,4 @@ struct SoundMixerState {
     //s8 outBuffer[MIXED_AUDIO_BUFFER_SIZE * 2];
 };
 
-#ifndef NOT_GBA
-#undef REG_VCOUNT
-#define REG_VCOUNT (*(vu8*)REG_ADDR_VCOUNT)
-#endif
 #endif//SOUND_MIXER_H

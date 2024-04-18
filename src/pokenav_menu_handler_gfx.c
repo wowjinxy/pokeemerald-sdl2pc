@@ -360,8 +360,8 @@ static const struct SpriteTemplate sMatchCallBlueLightSpriteTemplate =
 
 static const struct ScanlineEffectParams sPokenavMainMenuScanlineEffectParams =
 {
-    &REG_WIN0H,
-    ((DMA_ENABLE | DMA_START_HBLANK | DMA_REPEAT | DMA_DEST_RELOAD) << 16) | 1,
+    GPU_SCANLINE_EFFECT_WINDOWX,
+    0,
     1,
     0
 };
@@ -1313,7 +1313,7 @@ static void SetupPokenavMenuScanlineEffects(void)
 {
     SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
     SetGpuState(GPU_STATE_BLDY, 0);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
     SetGpuWindowIn(GetGpuWindowIn() | WININ_WIN0_ALL);
     SetGpuWindowOut(SetGpuWindowOut() | WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ);
     SetGpuWindowY(0, DisplayHeight());
@@ -1327,7 +1327,7 @@ static void SetupPokenavMenuScanlineEffects(void)
 static void DestroyMenuOptionGlowTask(void)
 {
     SetGpuState(GPU_STATE_BLDCNT, 0);
-    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+    ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
     ScanlineEffect_Stop();
     DestroyTask(FindTaskIdByFunc(Task_CurrentMenuOptionGlow));
     SetPokenavVBlankCallback();
@@ -1362,10 +1362,10 @@ static void SetMenuOptionGlow(void)
     int menuType = GetPokenavMenuType();
     int cursorPos = GetPokenavCursorPos();
     int r4 = sPokenavMenuOptionLabelGfx[menuType].deltaY * cursorPos + sPokenavMenuOptionLabelGfx[menuType].yStart - 8;
-    CpuFill16(0, gScanlineEffectRegBuffers[0], DisplayHeight() * 2);
-    CpuFill16(0, gScanlineEffectRegBuffers[1], DisplayHeight() * 2);
-    CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[0][r4], 0x20);
-    CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[1][r4], 0x20);
+    CpuFill16(0, gScanlineEffectRegBuffers[0], DisplayHeight() * 4);
+    CpuFill16(0, gScanlineEffectRegBuffers[1], DisplayHeight() * 4);
+    CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[0][r4], 0x40);
+    CpuFill16(RGB(16, 23, 28), &gScanlineEffectRegBuffers[1][r4], 0x40);
 }
 
 void ResetBldCnt_(void)

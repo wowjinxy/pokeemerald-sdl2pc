@@ -636,7 +636,7 @@ static void AnimTask_SpiteTargetShadow_Step1(u8 taskId)
                     u16 mask = DISPCNT_BG2_ON;
                     mask2 = mask;
                 }
-                ClearGpuRegBits(REG_OFFSET_DISPCNT, mask2);
+                ClearGpuStateBits(GPU_STATE_DISPCNT, mask2);
                 task->data[15]++;
             }
         }
@@ -653,9 +653,9 @@ static void AnimTask_SpiteTargetShadow_Step1(u8 taskId)
             startLine = 0;
 
         if (position == 1)
-            task->data[10] = ScanlineEffect_InitWave(startLine, startLine + 64, 2, 6, 0, SCANLINE_EFFECT_REG_BG1HOFS, TRUE);
+            task->data[10] = ScanlineEffect_InitWave(startLine, startLine + 64, 2, 6, 0, SCANLINE_EFFECT_BG1HOFS, TRUE);
         else
-            task->data[10] = ScanlineEffect_InitWave(startLine, startLine + 64, 2, 6, 0, SCANLINE_EFFECT_REG_BG2HOFS, TRUE);
+            task->data[10] = ScanlineEffect_InitWave(startLine, startLine + 64, 2, 6, 0, SCANLINE_EFFECT_BG2HOFS, TRUE);
 
         task->data[15]++;
         break;
@@ -670,9 +670,9 @@ static void AnimTask_SpiteTargetShadow_Step1(u8 taskId)
         break;
     case 4:
         if (position == 1)
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
         else
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
 
         task->func = AnimTask_SpiteTargetShadow_Step2;
         task->data[15]++;
@@ -714,9 +714,9 @@ static void AnimTask_SpiteTargetShadow_Step3(u8 taskId)
         gScanlineEffect.state = 3;
         task->data[14] = GetAnimBattlerSpriteId(ANIM_TARGET);
         if (rank == 1)
-            ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON);
+            ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
         else
-            ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+            ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         break;
     case 1:
         BlendPalette(task->data[4], 16, 0, RGB(13, 0, 15));
@@ -728,9 +728,9 @@ static void AnimTask_SpiteTargetShadow_Step3(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         if (rank == 1)
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
         else
-            SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
 
         DestroyAnimVisualTask(taskId);
         break;

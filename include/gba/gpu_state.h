@@ -21,6 +21,26 @@ enum
     GPU_STATE_BLDY
 };
 
+enum
+{
+    GPU_SCANLINE_EFFECT_OFF,
+    GPU_SCANLINE_EFFECT_BGX,
+    GPU_SCANLINE_EFFECT_BGY,
+    GPU_SCANLINE_EFFECT_BGPRIO,
+    GPU_SCANLINE_EFFECT_WINDOWX,
+    GPU_SCANLINE_EFFECT_WINDOWY,
+    GPU_SCANLINE_EFFECT_BLENDCNT,
+    GPU_SCANLINE_EFFECT_BLENDALPHA
+};
+
+struct GpuScanlineEffect
+{
+    u8 type;
+    u8 param;
+    u32 *src;
+    u32 position;
+};
+
 struct GpuBgState
 {
     s32 x, y;
@@ -78,6 +98,8 @@ struct GpuState
     u8 blendControl;
     u8 blendAlpha;
     u8 blendCoeff;
+
+    struct GpuScanlineEffect scanlineEffect;
 };
 
 extern struct GpuState gpu;

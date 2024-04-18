@@ -685,7 +685,7 @@ s32 WonderNews_Enter(void)
         SetGpuWindowY(0, WIN_RANGE(26, 152));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ);
         SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WIN01_BG1 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         break;
     case 2:
         FillBgTilemapBufferRect_Palette0(0, 0x000, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT);
@@ -757,7 +757,7 @@ s32 WonderNews_Exit(bool32 useCancel)
         SetGpuWindowY(0, 0);
         SetGpuWindowIn(0);
         SetGpuWindowOut(0);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         break;
     case 2:
         FillBgTilemapBufferRect_Palette0(0, 0x000, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT);

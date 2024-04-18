@@ -416,7 +416,7 @@ static bool32 HandleMysteryGiftOrEReaderSetup(s32 isEReader)
         LoadMysteryGiftTextboxBorder(3);
         InitWindows(sMainWindows);
         DeactivateAllTextPrinters();
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON);
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);

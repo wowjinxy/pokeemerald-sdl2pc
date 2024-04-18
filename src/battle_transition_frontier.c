@@ -366,9 +366,9 @@ static bool8 Circles_Init(struct Task *task)
 {
     if (task->tTimer == 0)
     {
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN1_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG0_ON);
 
         task->tTimer++;
         return FALSE;
@@ -391,7 +391,7 @@ static bool8 Circles_Init(struct Task *task)
 static bool8 FadeInCenterLogoCircle(struct Task *task)
 {
     if (task->tBlend == 0)
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG0_ON);
 
     if (task->tBlend == 16)
     {

@@ -9,52 +9,6 @@ extern unsigned char REG_BASE[];
 
 // I/O register offsets
 
-#define REG_OFFSET_DISPCNT     0x0
-#define REG_OFFSET_DISPSTAT    0x4
-#define REG_OFFSET_VCOUNT      0x6
-#define REG_OFFSET_BG0CNT      0x8
-#define REG_OFFSET_BG1CNT      0xa
-#define REG_OFFSET_BG2CNT      0xc
-#define REG_OFFSET_BG3CNT      0xe
-#define REG_OFFSET_BG0HOFS     0x10
-#define REG_OFFSET_BG0VOFS     0x12
-#define REG_OFFSET_BG1HOFS     0x14
-#define REG_OFFSET_BG1VOFS     0x16
-#define REG_OFFSET_BG2HOFS     0x18
-#define REG_OFFSET_BG2VOFS     0x1a
-#define REG_OFFSET_BG3HOFS     0x1c
-#define REG_OFFSET_BG3VOFS     0x1e
-#define REG_OFFSET_BG2PA       0x20
-#define REG_OFFSET_BG2PB       0x22
-#define REG_OFFSET_BG2PC       0x24
-#define REG_OFFSET_BG2PD       0x26
-#define REG_OFFSET_BG2X        0x28
-#define REG_OFFSET_BG2X_L      0x28
-#define REG_OFFSET_BG2X_H      0x2a
-#define REG_OFFSET_BG2Y        0x2c
-#define REG_OFFSET_BG2Y_L      0x2c
-#define REG_OFFSET_BG2Y_H      0x2e
-#define REG_OFFSET_BG3PA       0x30
-#define REG_OFFSET_BG3PB       0x32
-#define REG_OFFSET_BG3PC       0x34
-#define REG_OFFSET_BG3PD       0x36
-#define REG_OFFSET_BG3X        0x38
-#define REG_OFFSET_BG3X_L      0x38
-#define REG_OFFSET_BG3X_H      0x3a
-#define REG_OFFSET_BG3Y        0x3c
-#define REG_OFFSET_BG3Y_L      0x3c
-#define REG_OFFSET_BG3Y_H      0x3e
-#define REG_OFFSET_WIN0H       0x40
-#define REG_OFFSET_WIN1H       0x42
-#define REG_OFFSET_WIN0V       0x44
-#define REG_OFFSET_WIN1V       0x46
-#define REG_OFFSET_WININ       0x48
-#define REG_OFFSET_WINOUT      0x4a
-#define REG_OFFSET_MOSAIC      0x4c
-#define REG_OFFSET_BLDCNT      0x50
-#define REG_OFFSET_BLDALPHA    0x52
-#define REG_OFFSET_BLDY        0x54
-
 #define REG_OFFSET_SOUND1CNT_L 0x60
 #define REG_OFFSET_NR10        0x60
 #define REG_OFFSET_SOUND1CNT_H 0x62
@@ -188,52 +142,6 @@ extern unsigned char REG_BASE[];
 
 // I/O register addresses
 
-#define REG_ADDR_DISPCNT     (REG_BASE + REG_OFFSET_DISPCNT)
-#define REG_ADDR_DISPSTAT    (REG_BASE + REG_OFFSET_DISPSTAT)
-#define REG_ADDR_VCOUNT      (REG_BASE + REG_OFFSET_VCOUNT)
-#define REG_ADDR_BG0CNT      (REG_BASE + REG_OFFSET_BG0CNT)
-#define REG_ADDR_BG1CNT      (REG_BASE + REG_OFFSET_BG1CNT)
-#define REG_ADDR_BG2CNT      (REG_BASE + REG_OFFSET_BG2CNT)
-#define REG_ADDR_BG3CNT      (REG_BASE + REG_OFFSET_BG3CNT)
-#define REG_ADDR_BG0HOFS     (REG_BASE + REG_OFFSET_BG0HOFS)
-#define REG_ADDR_BG0VOFS     (REG_BASE + REG_OFFSET_BG0VOFS)
-#define REG_ADDR_BG1HOFS     (REG_BASE + REG_OFFSET_BG1HOFS)
-#define REG_ADDR_BG1VOFS     (REG_BASE + REG_OFFSET_BG1VOFS)
-#define REG_ADDR_BG2HOFS     (REG_BASE + REG_OFFSET_BG2HOFS)
-#define REG_ADDR_BG2VOFS     (REG_BASE + REG_OFFSET_BG2VOFS)
-#define REG_ADDR_BG3HOFS     (REG_BASE + REG_OFFSET_BG3HOFS)
-#define REG_ADDR_BG3VOFS     (REG_BASE + REG_OFFSET_BG3VOFS)
-#define REG_ADDR_BG2PA       (REG_BASE + REG_OFFSET_BG2PA)
-#define REG_ADDR_BG2PB       (REG_BASE + REG_OFFSET_BG2PB)
-#define REG_ADDR_BG2PC       (REG_BASE + REG_OFFSET_BG2PC)
-#define REG_ADDR_BG2PD       (REG_BASE + REG_OFFSET_BG2PD)
-#define REG_ADDR_BG2X        (REG_BASE + REG_OFFSET_BG2X)
-#define REG_ADDR_BG2X_L      (REG_BASE + REG_OFFSET_BG2X_L)
-#define REG_ADDR_BG2X_H      (REG_BASE + REG_OFFSET_BG2X_H)
-#define REG_ADDR_BG2Y        (REG_BASE + REG_OFFSET_BG2Y)
-#define REG_ADDR_BG2Y_L      (REG_BASE + REG_OFFSET_BG2Y_L)
-#define REG_ADDR_BG2Y_H      (REG_BASE + REG_OFFSET_BG2Y_H)
-#define REG_ADDR_BG3PA       (REG_BASE + REG_OFFSET_BG3PA)
-#define REG_ADDR_BG3PB       (REG_BASE + REG_OFFSET_BG3PB)
-#define REG_ADDR_BG3PC       (REG_BASE + REG_OFFSET_BG3PC)
-#define REG_ADDR_BG3PD       (REG_BASE + REG_OFFSET_BG3PD)
-#define REG_ADDR_BG3X        (REG_BASE + REG_OFFSET_BG3X)
-#define REG_ADDR_BG3X_L      (REG_BASE + REG_OFFSET_BG3X_L)
-#define REG_ADDR_BG3X_H      (REG_BASE + REG_OFFSET_BG3X_H)
-#define REG_ADDR_BG3Y        (REG_BASE + REG_OFFSET_BG3Y)
-#define REG_ADDR_BG3Y_L      (REG_BASE + REG_OFFSET_BG3Y_L)
-#define REG_ADDR_BG3Y_H      (REG_BASE + REG_OFFSET_BG3Y_H)
-#define REG_ADDR_WIN0H       (REG_BASE + REG_OFFSET_WIN0H)
-#define REG_ADDR_WIN1H       (REG_BASE + REG_OFFSET_WIN1H)
-#define REG_ADDR_WIN0V       (REG_BASE + REG_OFFSET_WIN0V)
-#define REG_ADDR_WIN1V       (REG_BASE + REG_OFFSET_WIN1V)
-#define REG_ADDR_WININ       (REG_BASE + REG_OFFSET_WININ)
-#define REG_ADDR_WINOUT      (REG_BASE + REG_OFFSET_WINOUT)
-#define REG_ADDR_MOSAIC      (REG_BASE + REG_OFFSET_MOSAIC)
-#define REG_ADDR_BLDCNT      (REG_BASE + REG_OFFSET_BLDCNT)
-#define REG_ADDR_BLDALPHA    (REG_BASE + REG_OFFSET_BLDALPHA)
-#define REG_ADDR_BLDY        (REG_BASE + REG_OFFSET_BLDY)
-
 #define REG_ADDR_SOUND1CNT_L (REG_BASE + REG_OFFSET_SOUND1CNT_L)
 #define REG_ADDR_NR10        (REG_BASE + REG_OFFSET_NR10)
 #define REG_ADDR_SOUND1CNT_H (REG_BASE + REG_OFFSET_SOUND1CNT_H)
@@ -350,52 +258,6 @@ extern unsigned char REG_BASE[];
 #define REG_ADDR_WAITCNT     (REG_BASE + REG_OFFSET_WAITCNT)
 
 // I/O registers
-
-#define REG_DISPCNT     (*(vu16 *)REG_ADDR_DISPCNT)
-#define REG_DISPSTAT    (*(vu16 *)REG_ADDR_DISPSTAT)
-#define REG_VCOUNT      (*(vu16 *)REG_ADDR_VCOUNT)
-#define REG_BG0CNT      (*(vu16 *)REG_ADDR_BG0CNT)
-#define REG_BG1CNT      (*(vu16 *)REG_ADDR_BG1CNT)
-#define REG_BG2CNT      (*(vu16 *)REG_ADDR_BG2CNT)
-#define REG_BG3CNT      (*(vu16 *)REG_ADDR_BG3CNT)
-#define REG_BG0HOFS     (*(vu16 *)REG_ADDR_BG0HOFS)
-#define REG_BG0VOFS     (*(vu16 *)REG_ADDR_BG0VOFS)
-#define REG_BG1HOFS     (*(vu16 *)REG_ADDR_BG1HOFS)
-#define REG_BG1VOFS     (*(vu16 *)REG_ADDR_BG1VOFS)
-#define REG_BG2HOFS     (*(vu16 *)REG_ADDR_BG2HOFS)
-#define REG_BG2VOFS     (*(vu16 *)REG_ADDR_BG2VOFS)
-#define REG_BG3HOFS     (*(vu16 *)REG_ADDR_BG3HOFS)
-#define REG_BG3VOFS     (*(vu16 *)REG_ADDR_BG3VOFS)
-#define REG_BG2PA       (*(vu16 *)REG_ADDR_BG2PA)
-#define REG_BG2PB       (*(vu16 *)REG_ADDR_BG2PB)
-#define REG_BG2PC       (*(vu16 *)REG_ADDR_BG2PC)
-#define REG_BG2PD       (*(vu16 *)REG_ADDR_BG2PD)
-#define REG_BG2X        (*(vu32 *)REG_ADDR_BG2X)
-#define REG_BG2X_L      (*(vu16 *)REG_ADDR_BG2X_L)
-#define REG_BG2X_H      (*(vu16 *)REG_ADDR_BG2X_H)
-#define REG_BG2Y        (*(vu32 *)REG_ADDR_BG2Y)
-#define REG_BG2Y_L      (*(vu16 *)REG_ADDR_BG2Y_L)
-#define REG_BG2Y_H      (*(vu16 *)REG_ADDR_BG2Y_H)
-#define REG_BG3PA       (*(vu16 *)REG_ADDR_BG3PA)
-#define REG_BG3PB       (*(vu16 *)REG_ADDR_BG3PB)
-#define REG_BG3PC       (*(vu16 *)REG_ADDR_BG3PC)
-#define REG_BG3PD       (*(vu16 *)REG_ADDR_BG3PD)
-#define REG_BG3X        (*(vu32 *)REG_ADDR_BG3X)
-#define REG_BG3X_L      (*(vu16 *)REG_ADDR_BG3X_L)
-#define REG_BG3X_H      (*(vu16 *)REG_ADDR_BG3X_H)
-#define REG_BG3Y        (*(vu32 *)REG_ADDR_BG3Y)
-#define REG_BG3Y_L      (*(vu16 *)REG_ADDR_BG3Y_L)
-#define REG_BG3Y_H      (*(vu16 *)REG_ADDR_BG3Y_H)
-#define REG_WIN0H       (*(vu16 *)REG_ADDR_WIN0H)
-#define REG_WIN1H       (*(vu16 *)REG_ADDR_WIN1H)
-#define REG_WIN0V       (*(vu16 *)REG_ADDR_WIN0V)
-#define REG_WIN1V       (*(vu16 *)REG_ADDR_WIN1V)
-#define REG_WININ       (*(vu16 *)REG_ADDR_WININ)
-#define REG_WINOUT      (*(vu16 *)REG_ADDR_WINOUT)
-#define REG_MOSAIC      (*(vu16 *)REG_ADDR_MOSAIC)
-#define REG_BLDCNT      (*(vu16 *)REG_ADDR_BLDCNT)
-#define REG_BLDALPHA    (*(vu16 *)REG_ADDR_BLDALPHA)
-#define REG_BLDY        (*(vu16 *)REG_ADDR_BLDY)
 
 #define REG_SOUND1CNT_L (*(vu16 *)REG_ADDR_SOUND1CNT_L)
 #define REG_NR10        (*(vu8  *)REG_ADDR_NR10)

@@ -3568,7 +3568,7 @@ static void ReelTime_Init(struct Task *task)
     gSpriteCoordOffsetY = 0;
     SetGpuBackgroundX(1, 0);
     SetGpuBackgroundY(1, 0);
-    LoadReelTimeWindowTilemap(REG_OFFSET_BG3VOFS, 0);
+    LoadReelTimeWindowTilemap(GetGpuBackgroundY(3), 0);
     CreateReelTimeMachineSprites();
     CreateReelTimePikachuSprite();
     CreateReelTimeNumberSprites();

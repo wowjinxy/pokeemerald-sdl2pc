@@ -80,8 +80,8 @@ static const u8 sEmptyItemName[] = _("");
 
 static const struct ScanlineEffectParams sConditionGraphScanline =
 {
-    .dmaDest = &REG_WIN0H,
-    .dmaControl = SCANLINE_EFFECT_DMACNT_32BIT,
+    .effTarget = GPU_SCANLINE_EFFECT_BGY,
+    .effParam = 0,
     .initState = 1,
 };
 

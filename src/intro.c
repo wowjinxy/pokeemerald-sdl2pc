@@ -1090,7 +1090,7 @@ static u8 SetUpCopyrightScreen(void)
         SetGpuBackgroundScreenBaseBlock(0, 7);
         EnableInterrupts(INTR_FLAG_VBLANK);
         SetVBlankCallback(VBlankCB_Intro);
-        REG_DISPCNT = DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON;
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
         SetSerialCallback(SerialCB_CopyrightScreen);
         GameCubeMultiBoot_Init(&gMultibootProgramStruct);
     default:
@@ -1870,7 +1870,7 @@ static void Task_Scene3_StartGroudon(u8 taskId)
 {
     gTasks[taskId].tState = 0;
     gTasks[taskId].func = Task_Scene3_Groudon;
-    ScanlineEffect_InitWave(0, DisplayHeight(), 4, 4, 1, SCANLINE_EFFECT_REG_BG1HOFS, FALSE);
+    ScanlineEffect_InitWave(0, DISPLAY_HEIGHT, 4, 4, 1, SCANLINE_EFFECT_BG1HOFS, FALSE);
 }
 
 #define tScreenX data[1]
@@ -2080,7 +2080,7 @@ static void Task_Scene3_LoadKyogre(u8 taskId)
     gTasks[taskId].tDelay = 16;
     gTasks[taskId].tZoom = 256;
     PanFadeAndZoomScreen(gTasks[taskId].tScreenX, gTasks[taskId].tScreenY, gTasks[taskId].tZoom, 0);
-    ScanlineEffect_InitWave(0, DisplayHeight(), 4, 4, 1, SCANLINE_EFFECT_REG_BG1VOFS, FALSE);
+    ScanlineEffect_InitWave(0, DISPLAY_HEIGHT, 4, 4, 1, SCANLINE_EFFECT_BG1VOFS, FALSE);
 }
 
 static void Task_Scene3_Kyogre(u8 taskId)

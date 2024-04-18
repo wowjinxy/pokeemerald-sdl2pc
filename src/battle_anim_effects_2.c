@@ -2404,12 +2404,12 @@ void AnimTask_SketchDrawMon(u8 taskId)
     if (GetBattlerSpriteBGPriorityRank(gBattleAnimTarget) == 1)
     {
         task->data[6] = gBattle_BG1_X;
-        params.dmaDest = &REG_BG1HOFS;
+        params.effParam = 1;
     }
     else
     {
         task->data[6] = gBattle_BG2_X;
-        params.dmaDest = &REG_BG2HOFS;
+        params.effParam = 2;
     }
 
     for (i = task->data[0] - 0x40; i <= task->data[0]; i++)
@@ -2421,7 +2421,7 @@ void AnimTask_SketchDrawMon(u8 taskId)
         }
     }
 
-    params.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
+    params.effTarget = GPU_SCANLINE_EFFECT_BGX;
     params.initState = 1;
     params.unused9 = 0;
     ScanlineEffect_SetParams(params);

@@ -338,7 +338,7 @@ static void VblankCb_TrainerCard(void)
     TransferPlttBuffer();
     BlinkTimeColon();
     if (sData->allowDMACopy)
-        DmaCopy16(3, &gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 0x140);
+        DmaCopy16(3, &gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 0x140 * 2);
 }
 
 static void HblankCb_TrainerCard(void)
@@ -346,10 +346,12 @@ static void HblankCb_TrainerCard(void)
     u16 backup;
     u16 bgVOffset;
 
+    int offsetY = (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+
     backup = REG_IME;
     REG_IME = 0;
-    bgVOffset = gScanlineEffectRegBuffers[1][REG_VCOUNT & 0xFF];
-    REG_BG0VOFS = bgVOffset;
+    bgVOffset = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT) - offsetY];
+    SetGpuBackgroundY(0, bgVOffset);
     REG_IME = backup;
 }
 
@@ -864,8 +866,8 @@ static void InitGpuRegs(void)
     SetGpuState(GPU_STATE_BLDY, 0);
     SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
     SetGpuWindowOut(WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
-    SetGpuWindowY(0, DisplayHeight());
-    SetGpuWindowX(0, DisplayWidth());
+    SetGpuWindowY(0, DISPLAY_HEIGHT);
+    SetGpuWindowX(0, DISPLAY_WIDTH);
     if (gReceivedRemoteLinkPlayers)
         EnableInterrupts(INTR_FLAG_VBLANK | INTR_FLAG_HBLANK | INTR_FLAG_VCOUNT | INTR_FLAG_TIMER3 | INTR_FLAG_SERIAL);
     else
@@ -874,13 +876,15 @@ static void InitGpuRegs(void)
 
 static void UpdateCardFlipRegs(u16 cardTop)
 {
+    int offsetY = (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+
     s8 blendY = (cardTop + 40) / 10;
 
     if (blendY <= 4)
         blendY = 0;
     sData->flipBlendY = blendY;
     SetGpuState(GPU_STATE_BLDY, sData->flipBlendY);
-    SetGpuWindowY(0, WIN_RANGE(sData->cardTop, DisplayHeight() - sData->cardTop));
+    SetGpuWindowY(0, WIN_RANGE(offsetY + sData->cardTop, offsetY + (BASE_DISPLAY_HEIGHT - sData->cardTop)));
 }
 
 static void ResetGpuRegs(void)
@@ -1620,14 +1624,14 @@ static bool8 Task_BeginCardFlip(struct Task *task)
     HideBg(3);
     ScanlineEffect_Stop();
     ScanlineEffect_Clear();
-    for (i = 0; i < DisplayHeight(); i++)
+    for (i = 0; i < DISPLAY_HEIGHT; i++)
         gScanlineEffectRegBuffers[1][i] = 0;
     task->tFlipState++;
     return FALSE;
 }
 
-// Note: Cannot be DisplayHeight() / 2, or cardHeight will be 0
-#define CARD_FLIP_Y ((DisplayHeight() / 2) - 3)
+// Note: Cannot be BASE_DISPLAY_HEIGHT / 2, or cardHeight will be 0
+#define CARD_FLIP_Y ((BASE_DISPLAY_HEIGHT / 2) - 3)
 
 static bool8 Task_AnimateCardFlipDown(struct Task *task)
 {
@@ -1644,10 +1648,10 @@ static bool8 Task_AnimateCardFlipDown(struct Task *task)
     UpdateCardFlipRegs(task->tCardTop);
 
     cardTop = task->tCardTop;
-    cardBottom = DisplayHeight() - cardTop;
+    cardBottom = BASE_DISPLAY_HEIGHT - cardTop;
     cardHeight = cardBottom - cardTop;
     r6 = -cardTop << 16;
-    r5 = (DisplayHeight() << 16) / cardHeight;
+    r5 = (BASE_DISPLAY_HEIGHT << 16) / cardHeight;
     r5 -= 1 << 16;
     var_24 = r6;
     var_24 += r5 * cardHeight;
@@ -1664,7 +1668,7 @@ static bool8 Task_AnimateCardFlipDown(struct Task *task)
         gScanlineEffectRegBuffers[0][i] = var;
     }
     var = var_24 >> 16;
-    for (; i < DisplayHeight(); i++)
+    for (; i < DISPLAY_HEIGHT; i++)
         gScanlineEffectRegBuffers[0][i] = var;
 
     sData->allowDMACopy = TRUE;
@@ -1763,10 +1767,10 @@ static bool8 Task_AnimateCardFlipUp(struct Task *task)
     UpdateCardFlipRegs(task->tCardTop);
 
     cardTop = task->tCardTop;
-    cardBottom = DisplayHeight() - cardTop;
+    cardBottom = BASE_DISPLAY_HEIGHT - cardTop;
     cardHeight = cardBottom - cardTop;
     r6 = -cardTop << 16;
-    r5 = (DisplayHeight() << 16) / cardHeight;
+    r5 = (BASE_DISPLAY_HEIGHT << 16) / cardHeight;
     r5 -= 1 << 16;
     var_24 = r6;
     var_24 += r5 * cardHeight;
@@ -1783,7 +1787,7 @@ static bool8 Task_AnimateCardFlipUp(struct Task *task)
         gScanlineEffectRegBuffers[0][i] = var;
     }
     var = var_24 >> 16;
-    for (; i < DisplayHeight(); i++)
+    for (; i < DISPLAY_HEIGHT; i++)
         gScanlineEffectRegBuffers[0][i] = var;
 
     sData->allowDMACopy = TRUE;
@@ -1799,6 +1803,7 @@ static bool8 Task_EndCardFlip(struct Task *task)
     ShowBg(3);
     SetHBlankCallback(NULL);
     DestroyTask(FindTaskIdByFunc(Task_DoCardFlipTask));
+    SetGpuWindowY(0, DISPLAY_HEIGHT);
     return FALSE;
 }
 

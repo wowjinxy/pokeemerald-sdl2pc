@@ -361,7 +361,7 @@ static void Task_ComputerScreenOpenEffect(u8 taskId)
         task->tWinTop = DisplayHeight() / 2;
         task->tWinBottom = DisplayHeight() / 2 + 1;
 
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
@@ -402,7 +402,7 @@ static void Task_ComputerScreenOpenEffect(u8 taskId)
         {
             task->tWinTop = 0;
             task->tWinBottom = DisplayHeight();
-            ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+            ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         }
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
 
@@ -432,7 +432,7 @@ static void Task_ComputerScreenCloseEffect(u8 taskId)
         task->tWinTop = 0;
         task->tWinBottom = DisplayHeight();
 
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
@@ -471,7 +471,7 @@ static void Task_ComputerScreenCloseEffect(u8 taskId)
             return;
         break;
     default:
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuState(GPU_STATE_BLDY, 0);
         SetGpuState(GPU_STATE_BLDCNT, 0);
         DestroyTask(taskId);

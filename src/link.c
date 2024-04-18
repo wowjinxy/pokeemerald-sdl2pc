@@ -1635,7 +1635,7 @@ void CB2_LinkError(void)
         SetGpuBackgroundY(0, 0);
         SetGpuBackgroundX(1, 0);
         SetGpuBackgroundY(1, 0);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
         LoadPalette(gStandardMenuPalette, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
         gSoftResetDisabled = FALSE;
         CreateTask(Task_DestroySelf, 0);

@@ -434,7 +434,7 @@ static void InitContestResultsDisplay(void)
     SetGpuBackgroundY(2, 0);
     SetGpuBackgroundX(3, 0);
     SetGpuBackgroundY(3, 0);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
     gBattle_BG1_X = 0;

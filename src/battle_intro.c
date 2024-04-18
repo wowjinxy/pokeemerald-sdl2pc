@@ -172,8 +172,8 @@ static void BattleIntroSlide1(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFF;
-        if ((gBattle_WIN0V & 0xFF00) == 0x3000)
+        gBattle_WIN0V -= 0xFFFF;
+        if ((gBattle_WIN0V >> 16) == 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -200,8 +200,8 @@ static void BattleIntroSlide1(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFF00)
-            gBattle_WIN0V -= 0x3FC;
+        if (gBattle_WIN0V & 0xFFFF0000)
+            gBattle_WIN0V -= 0x3FC << 16;
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -288,8 +288,8 @@ static void BattleIntroSlide2(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFF;
-        if ((gBattle_WIN0V & 0xFF00) == 0x3000)
+        gBattle_WIN0V -= 0xFFFF;
+        if ((gBattle_WIN0V >> 16) == 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -317,8 +317,8 @@ static void BattleIntroSlide2(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFF00)
-            gBattle_WIN0V -= 0x3FC;
+        if (gBattle_WIN0V & 0xFFFF0000)
+            gBattle_WIN0V -= 0x3FC << 16;
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -389,8 +389,8 @@ static void BattleIntroSlide3(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFF;
-        if ((gBattle_WIN0V & 0xFF00) == 0x3000)
+        gBattle_WIN0V -= 0xFFFF;
+        if ((gBattle_WIN0V >> 16) == 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -413,8 +413,8 @@ static void BattleIntroSlide3(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFF00)
-            gBattle_WIN0V -= 0x3FC;
+        if (gBattle_WIN0V & 0xFFFF0000)
+            gBattle_WIN0V -= 0x3FC << 16;
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -493,8 +493,8 @@ static void BattleIntroSlideLink(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFF;
-        if ((gBattle_WIN0V & 0xFF00) == 0x3000)
+        gBattle_WIN0V -= 0xFFFF;
+        if ((gBattle_WIN0V >> 16) == 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -503,8 +503,8 @@ static void BattleIntroSlideLink(u8 taskId)
         }
         break;
     case 3:
-        if (gBattle_WIN0V & 0xFF00)
-            gBattle_WIN0V -= 0x3FC;
+        if (gBattle_WIN0V & 0xFFFF0000)
+            gBattle_WIN0V -= 0x3FC << 16;
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -577,11 +577,11 @@ static void BattleIntroSlidePartner(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V += 0x100;
-        if ((gBattle_WIN0V & 0xFF00) != 0x100)
+        gBattle_WIN0V += 0x1;
+        if ((gBattle_WIN0V >> 16) != 0x1)
             gBattle_WIN0V--;
 
-        if ((gBattle_WIN0V & 0xFF00) == 0x2000)
+        if ((gBattle_WIN0V >> 16) == 0x20)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -589,8 +589,8 @@ static void BattleIntroSlidePartner(u8 taskId)
         }
         break;
     case 3:
-        if ((gBattle_WIN0V & 0xFF00) != 0x4C00)
-            gBattle_WIN0V += 0x3FC;
+        if ((gBattle_WIN0V >> 16) != 0x4C)
+            gBattle_WIN0V += 0x3FC << 16;
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -603,8 +603,8 @@ static void BattleIntroSlidePartner(u8 taskId)
     case 4:
         gBattle_BG0_Y += 2;
         gBattle_BG2_Y += 2;
-        if ((gBattle_WIN0V & 0xFF00) != 0x5000)
-            gBattle_WIN0V += 0xFF;
+        if ((gBattle_WIN0V >> 16) != 0x50)
+            gBattle_WIN0V += 0xFFFF;
 
         if (!gBattle_BG0_Y)
         {
@@ -637,7 +637,7 @@ void DrawBattlerOnBg(int bgId, u8 x, u8 y, u8 battlerPosition, u8 paletteId, u8 
     int i, j;
     u8 battler = GetBattlerAtPosition(battlerPosition);
     int offset = tilesOffset;
-    CpuCopy16(gMonSpritesGfxPtr->sprites.ptr[battlerPosition] + BG_SCREEN_SIZE * gBattleMonForms[battler], tiles, BG_SCREEN_SIZE);
+    CpuCopy16(gMonSpritesGfxPtr->sprites.ptr[battlerPosition] + 0x800 * gBattleMonForms[battler], tiles, 0x800);
     LoadBgTiles(bgId, tiles, 0x1000, tilesOffset);
     for (i = y; i < y + 8; i++)
     {
@@ -647,14 +647,14 @@ void DrawBattlerOnBg(int bgId, u8 x, u8 y, u8 battlerPosition, u8 paletteId, u8 
             offset++;
         }
     }
-    LoadBgTilemap(bgId, tilemap, BG_SCREEN_SIZE, 0);
+    LoadBgTilemap(bgId, tilemap, 0x800, 0);
 }
 
 static void UNUSED DrawBattlerOnBgDMA(u8 x, u8 y, u8 battlerPosition, u8 arg3, u8 paletteId, u16 arg5, u8 arg6, u8 arg7)
 {
     int i, j, offset;
 
-    DmaCopy16(3, gMonSpritesGfxPtr->sprites.ptr[battlerPosition] + BG_SCREEN_SIZE * arg3, (void *)BG_SCREEN_ADDR(0) + arg5, BG_SCREEN_SIZE);
+    DmaCopy16(3, gMonSpritesGfxPtr->sprites.ptr[battlerPosition] + 0x800 * arg3, (void *)BG_SCREEN_ADDR(0) + arg5, 0x800);
     offset = (arg5 >> 5) - (arg7 << 9);
     for (i = y; i < y + 8; i++)
     {

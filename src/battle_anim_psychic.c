@@ -986,15 +986,17 @@ void AnimTask_ExtrasensoryDistortion(u8 taskId)
     if (task->data[14] < 0)
         task->data[14] = 0;
 
+    scanlineParams.effTarget = GPU_SCANLINE_EFFECT_BGX;
+
     if (GetBattlerSpriteBGPriorityRank(gBattleAnimTarget) == 1)
     {
         task->data[10] = gBattle_BG1_X;
-        scanlineParams.dmaDest = &REG_BG1HOFS;
+        scanlineParams.effParam = 1;
     }
     else
     {
         task->data[10] = gBattle_BG2_X;
-        scanlineParams.dmaDest = &REG_BG2HOFS;
+        scanlineParams.effParam = 2;
     }
 
     for (i = task->data[14]; i <= task->data[14] + 64; i++)
@@ -1003,7 +1005,6 @@ void AnimTask_ExtrasensoryDistortion(u8 taskId)
         gScanlineEffectRegBuffers[1][i] = task->data[10];
     }
 
-    scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
     scanlineParams.initState = 1;
     scanlineParams.unused9 = 0;
     ScanlineEffect_SetParams(scanlineParams);

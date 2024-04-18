@@ -304,7 +304,7 @@ static void UpdateDroughtBlend(u8 taskId)
     case 0:
         task->tBlendY = 0;
         task->tBlendDelay = 0;
-        task->tWinRange = REG_WININ;
+        task->tWinRange = GetGpuWindowIn();
         SetGpuWindowIn(WININ_WIN0_ALL | WININ_WIN1_ALL);
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_LIGHTEN);
         SetGpuState(GPU_STATE_BLDY, 0);

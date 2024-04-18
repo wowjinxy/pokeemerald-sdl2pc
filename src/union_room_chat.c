@@ -3040,10 +3040,10 @@ static void ResetGpuBgState(void)
     ShowBg(1);
     ShowBg(2);
     ShowBg(3);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     SetGpuState(GPU_STATE_BLDCNT, 0);
-    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+    ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
     SetGpuWindowX(0, WIN_RANGE(64, DisplayWidth()));
     SetGpuWindowY(0, WIN_RANGE(0, DisplayHeight() - 16));
     SetGpuWindowIn(WININ_WIN0_BG0 | WININ_WIN0_BG2 | WININ_WIN0_BG3
@@ -3143,8 +3143,8 @@ static void LoadKeyboardSwapWindow(void)
 static void InitScanlineEffect(void)
 {
     struct ScanlineEffectParams params;
-    params.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
-    params.dmaDest = &REG_BG1HOFS;
+    params.effTarget = GPU_SCANLINE_EFFECT_BGX;
+    params.effParam = 1;
     params.initState = 1;
     params.unused9 = 0;
     sDisplay->bg1hofs = 0;

@@ -4452,35 +4452,35 @@ static void ResetOtherVideoRegisters(u16 regBits)
 {
     if (!(regBits & DISPCNT_BG0_ON))
     {
-        ClearGpuRegBits(0, DISPCNT_BG0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG0_ON);
         ClearGpuBackgroundState(0);
         SetGpuBackgroundX(0, 0);
         SetGpuBackgroundY(0, 0);
     }
     if (!(regBits & DISPCNT_BG1_ON))
     {
-        ClearGpuRegBits(0, DISPCNT_BG1_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG1_ON);
         ClearGpuBackgroundState(1);
         SetGpuBackgroundX(1, 0);
         SetGpuBackgroundY(1, 0);
     }
     if (!(regBits & DISPCNT_BG2_ON))
     {
-        ClearGpuRegBits(0, DISPCNT_BG2_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         ClearGpuBackgroundState(2);
         SetGpuBackgroundX(2, 0);
         SetGpuBackgroundY(2, 0);
     }
     if (!(regBits & DISPCNT_BG3_ON))
     {
-        ClearGpuRegBits(0, DISPCNT_BG3_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG3_ON);
         ClearGpuBackgroundState(3);
         SetGpuBackgroundX(3, 0);
         SetGpuBackgroundY(3, 0);
     }
     if (!(regBits & DISPCNT_OBJ_ON))
     {
-        ClearGpuRegBits(0, DISPCNT_OBJ_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON);
         ResetSpriteData();
         FreeAllSpritePalettes();
         gReservedSpritePaletteCount = 8;

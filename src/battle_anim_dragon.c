@@ -332,18 +332,18 @@ void AnimTask_DragonDanceWaver(u8 taskId)
     struct Task *task = &gTasks[taskId];
     u16 i;
     u8 y;
+    scanlineParams.effTarget = GPU_SCANLINE_EFFECT_BGX;
     if (GetBattlerSpriteBGPriorityRank(gBattleAnimAttacker) == 1)
     {
-        scanlineParams.dmaDest = &REG_BG1HOFS;
+        scanlineParams.effParam = 1;
         task->data[2] = gBattle_BG1_X;
     }
     else
     {
-        scanlineParams.dmaDest = &REG_BG2HOFS;
+        scanlineParams.effParam = 2;
         task->data[2] = gBattle_BG2_X;
     }
 
-    scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
     scanlineParams.initState = 1;
     scanlineParams.unused9 = 0;
     y = GetBattlerYCoordWithElevation(gBattleAnimAttacker);

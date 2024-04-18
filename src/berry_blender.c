@@ -1025,7 +1025,7 @@ static void DrawBlenderBg(void)
     CopyBgTilemapBufferToVram(0);
     ShowBg(0);
     ShowBg(1);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
     ChangeBgX(1, 0, BG_COORD_SET);
@@ -1435,7 +1435,7 @@ static void CB2_StartBlenderLink(void)
         }
         break;
     case 14:
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         sBerryBlender->arrowPos += 0x200;
         sBerryBlender->centerScale += 4;
         if (sBerryBlender->centerScale > 255)
@@ -1732,7 +1732,7 @@ static void CB2_StartBlenderLocal(void)
         ShowBg(2);
         break;
     case 14:
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         sBerryBlender->arrowPos += 0x200;
         sBerryBlender->centerScale += 4;
         if (sBerryBlender->centerScale > 255)

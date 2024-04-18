@@ -363,14 +363,14 @@ void FrameUpdate(void)
         Random();
 
     UpdateWirelessStatusIndicatorSprite();
+
+    INTR_CHECK |= INTR_FLAG_VBLANK;
+    gMain.intrCheck |= INTR_FLAG_VBLANK;
 }
 
 static void VBlankIntr(void)
 {
     FrameUpdate();
-
-    INTR_CHECK |= INTR_FLAG_VBLANK;
-    gMain.intrCheck |= INTR_FLAG_VBLANK;
 }
 
 void InitFlashTimer(void)

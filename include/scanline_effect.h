@@ -1,23 +1,19 @@
 #ifndef GUARD_SCANLINE_EFFECT_H
 #define GUARD_SCANLINE_EFFECT_H
 
-// DMA control value to transfer a single 16-bit value at HBlank
-#define SCANLINE_EFFECT_DMACNT_16BIT (((DMA_ENABLE | DMA_START_HBLANK | DMA_REPEAT | DMA_SRC_INC | DMA_DEST_INC | DMA_16BIT | DMA_DEST_RELOAD) << 16) | 1)
-#define SCANLINE_EFFECT_DMACNT_32BIT (((DMA_ENABLE | DMA_START_HBLANK | DMA_REPEAT | DMA_SRC_INC | DMA_DEST_INC | DMA_32BIT | DMA_DEST_RELOAD) << 16) | 1)
-
-#define SCANLINE_EFFECT_REG_BG0HOFS (REG_ADDR_BG0HOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG0VOFS (REG_ADDR_BG0VOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG1HOFS (REG_ADDR_BG1HOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG1VOFS (REG_ADDR_BG1VOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG2HOFS (REG_ADDR_BG2HOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG2VOFS (REG_ADDR_BG2VOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG3HOFS (REG_ADDR_BG3HOFS - REG_ADDR_BG0HOFS)
-#define SCANLINE_EFFECT_REG_BG3VOFS (REG_ADDR_BG3VOFS - REG_ADDR_BG0HOFS)
+#define SCANLINE_EFFECT_BG0HOFS 0
+#define SCANLINE_EFFECT_BG0VOFS 1
+#define SCANLINE_EFFECT_BG1HOFS 2
+#define SCANLINE_EFFECT_BG1VOFS 3
+#define SCANLINE_EFFECT_BG2HOFS 4
+#define SCANLINE_EFFECT_BG2VOFS 5
+#define SCANLINE_EFFECT_BG3HOFS 6
+#define SCANLINE_EFFECT_BG3VOFS 7
 
 struct ScanlineEffectParams
 {
-    volatile void *dmaDest;
-    u32 dmaControl;
+    u8 effTarget;
+    u32 effParam;
     u8 initState;
     u8 unused9;
 };
@@ -25,24 +21,21 @@ struct ScanlineEffectParams
 struct ScanlineEffect
 {
     void *dmaSrcBuffers[2];
-    volatile void *dmaDest;
-    u32 dmaControl;
-    void (*setFirstScanlineReg)(void);
+    u8 effTarget;
+    u32 effParam;
     u8 srcBuffer;
     u8 state;
-    u8 unused16;
-    u8 unused17;
     u8 waveTaskId;
 };
 
 extern struct ScanlineEffect gScanlineEffect;
 
-extern u16 ALIGNED(4) gScanlineEffectRegBuffers[2][DISPLAY_WIDTH * DISPLAY_HEIGHT];
+extern u32 gScanlineEffectRegBuffers[2][DISPLAY_WIDTH * DISPLAY_HEIGHT];
 
 void ScanlineEffect_Stop(void);
 void ScanlineEffect_Clear(void);
 void ScanlineEffect_SetParams(struct ScanlineEffectParams);
 void ScanlineEffect_InitHBlankDmaTransfer(void);
-u8 ScanlineEffect_InitWave(u8 startLine, u8 endLine, u8 frequency, u8 amplitude, u8 delayInterval, u8 regOffset, bool8 applyBattleBgOffsets);
+u8 ScanlineEffect_InitWave(u16 startLine, u16 endLine, u8 frequency, u8 amplitude, u8 delayInterval, u8 regOffset, bool8 applyBattleBgOffsets);
 
 #endif // GUARD_SCANLINE_EFFECT_H

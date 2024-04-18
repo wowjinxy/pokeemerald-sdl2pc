@@ -4942,7 +4942,7 @@ static void Task_OpenCenterWhiteColumn(u8 taskId)
         sTradeAnim->wirelessWinLeft = sTradeAnim->wirelessWinRight = DisplayWidth() / 2;
         sTradeAnim->wirelessWinTop = 0;
         sTradeAnim->wirelessWinBottom = DisplayHeight();
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowOut(WINOUT_WIN01_OBJ);
         SetGpuWindowIn(WININ_WIN0_BG0 |
                                     WININ_WIN0_BG1 |
@@ -4988,7 +4988,7 @@ static void Task_CloseCenterWhiteColumn(u8 taskId)
     }
     else
     {
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         DestroyTask(taskId);
     }
 }

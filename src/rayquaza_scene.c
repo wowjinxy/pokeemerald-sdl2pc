@@ -492,8 +492,8 @@ static const struct SpriteTemplate sSpriteTemplate_DuoFightPre_KyogreDorsalFin =
 
 static const struct ScanlineEffectParams sScanlineParams_DuoFight_Clouds =
 {
-    .dmaDest = &REG_BG1HOFS,
-    .dmaControl = SCANLINE_EFFECT_DMACNT_16BIT,
+    .effTarget = GPU_SCANLINE_EFFECT_BGX,
+    .effParam = 1,
     .initState = 1
 };
 
@@ -2270,9 +2270,9 @@ static void HBlankCB_RayDescends(void)
 {
     u16 vcount = GetGpuState(GPU_STATE_VCOUNT);
     if (vcount >= 24 && vcount <= 135 && vcount - 24 <= sRayScene->revealedLightLine)
-        REG_BLDALPHA = 0xD08; // This line is above where light has been revealed, draw it
+        SetGpuState(GPU_STATE_BLDALPHA, 0xD08); // This line is above where light has been revealed, draw it
     else
-        REG_BLDALPHA = 0x1000; // Below where light has been revealed, hide it
+        SetGpuState(GPU_STATE_BLDALPHA, 0x1000); // Below where light has been revealed, hide it
 
     if (vcount == 0)
     {
@@ -2301,7 +2301,7 @@ static void Task_RayDescendsAnim(u8 taskId)
     s16 *data = gTasks[taskId].data;
     InitDescendsSceneBgs();
     LoadDescendsSceneGfx();
-    SetGpuRegBits(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_EFFECT_BLEND);
+    SetGpuStateBits(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_EFFECT_BLEND);
     SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(0, 16));
     BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
     SetVBlankCallback(VBlankCB_RayquazaScene);
@@ -2713,7 +2713,7 @@ static void Task_RayChasesAwayAnim(u8 taskId)
     InitChasesAwaySceneBgs();
     LoadChasesAwaySceneGfx();
     SetWindowsHideVertBorders();
-    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+    ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
     SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND);
     SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(9, 14));
     BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
@@ -3170,7 +3170,7 @@ static void Task_ChasesAway_AnimateRing(u8 taskId)
     {
     case 0:
         SetBgAffine(2, 0x4000, 0x4000, 120, 64, 256, 256, 0);
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         tScaleSpeed = 16;
         tState++;
         break;
@@ -3201,7 +3201,7 @@ static void Task_ChasesAway_AnimateRing(u8 taskId)
         }
         break;
     case 2:
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG2_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_BG2_ON);
         DestroyTask(taskId);
         break;
     }

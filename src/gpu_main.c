@@ -90,7 +90,8 @@ void SetGpuState(u8 state, u32 val)
         gpu.displayControl = val;
         break;
     case GPU_STATE_DISPSTAT:
-        gpu.displayStatus = val;
+        gpu.displayStatus &= ~(DISPSTAT_HBLANK_INTR | DISPSTAT_VBLANK_INTR);
+        gpu.displayStatus |= val;
         break;
     case GPU_STATE_VCOUNT:
         gpu.vCount = val;
@@ -131,6 +132,18 @@ u32 GetGpuState(u8 state)
     }
 
     return 0;
+}
+
+void SetGpuStateBits(u8 state, u32 mask)
+{
+    u32 bits = GetGpuState(state);
+    SetGpuState(state, bits | mask);
+}
+
+void ClearGpuStateBits(u8 state, u32 mask)
+{
+    u32 bits = GetGpuState(state);
+    SetGpuState(state, bits & ~mask);
 }
 
 void SetGpuBackgroundX(u8 bgNum, u32 x)
@@ -496,4 +509,54 @@ void ClearGpuBackgroundState(u8 bgNum)
     SetGpuBackgroundAreaOverflowMode(bgNum, 0);
     SetGpuBackgroundWidth(bgNum, 256);
     SetGpuBackgroundHeight(bgNum, 256);
+}
+
+void SetGpuScanlineEffect(u8 type, u8 param, u32 *src)
+{
+    ClearGpuScanlineEffect();
+
+    gpu.scanlineEffect.type = type;
+    gpu.scanlineEffect.param = param;
+    gpu.scanlineEffect.src = src;
+}
+
+void ClearGpuScanlineEffect(void)
+{
+    gpu.scanlineEffect.type = GPU_SCANLINE_EFFECT_OFF;
+    gpu.scanlineEffect.param = 0;
+    gpu.scanlineEffect.position = 0;
+}
+
+void GpuRefreshScanlineEffect(void)
+{
+    struct GpuScanlineEffect *eff = &gpu.scanlineEffect;
+    if (eff->src == NULL)
+        return;
+
+    u32 value = eff->src[eff->position];
+
+    switch (eff->type)
+    {
+    case GPU_SCANLINE_EFFECT_BGX:
+        SetGpuBackgroundX(eff->param, value);
+        break;
+    case GPU_SCANLINE_EFFECT_BGY:
+        SetGpuBackgroundY(eff->param, value);
+        break;
+    case GPU_SCANLINE_EFFECT_BGPRIO:
+        SetGpuBackgroundPriority(eff->param, value);
+        break;
+    case GPU_SCANLINE_EFFECT_WINDOWX:
+        SetGpuWindowX(eff->param, value);
+        break;
+    case GPU_SCANLINE_EFFECT_WINDOWY:
+        SetGpuWindowY(eff->param, value);
+        break;
+    case GPU_SCANLINE_EFFECT_BLENDCNT:
+        SetGpuState(GPU_STATE_BLDCNT, value);
+        break;
+    case GPU_SCANLINE_EFFECT_BLENDALPHA:
+        SetGpuState(GPU_STATE_BLDALPHA, value);
+        break;
+    }
 }

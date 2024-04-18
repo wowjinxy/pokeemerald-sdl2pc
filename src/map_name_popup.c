@@ -324,7 +324,7 @@ void HideMapNamePopUpWindow(void)
         ClearStdWindowAndFrame(GetMapNamePopUpWindowId(), TRUE);
 #endif
         RemoveMapNamePopUpWindow();
-        SetGpuReg_ForcedBlank(REG_OFFSET_BG0VOFS, 0);
+        SetGpuBackgroundY(0, 0);
         DestroyTask(sPopupTaskId);
     }
 }

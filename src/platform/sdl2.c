@@ -118,6 +118,8 @@ static void RunDMAs(u32 type);
 
 static void RunFrame(void);
 
+static void RunScanlineEffect(void);
+
 static void AudioUpdate(void);
 
 s32 DisplayWidth(void)
@@ -2151,8 +2153,8 @@ static void DrawFrame(uint16_t *pixels)
 
         gpu.vCount = i;
 
-        // The game doesn't use any VCount callbacks anymore, so this is disabled.
 #if 0
+        // The game doesn't use any VCount callbacks, so this is disabled.
         if(((gpu.displayStatus >> 8) & 0xFF) == gpu.vCount)
         {
             gpu.displayStatus |= INTR_FLAG_VCOUNT;
@@ -2165,10 +2167,14 @@ static void DrawFrame(uint16_t *pixels)
 
         gpu.displayStatus |= INTR_FLAG_HBLANK;
 
+        if (gpu.scanlineEffect.type != GPU_SCANLINE_EFFECT_OFF)
+            RunScanlineEffect();
+
         if (runHBlank)
             RunDMAs(DMA_HBLANK);
 
-        DoHBlankUpdate();
+        if (runHBlank && (gpu.displayStatus & DISPSTAT_HBLANK_INTR))
+            DoHBlankUpdate();
 
         gpu.displayStatus &= ~INTR_FLAG_HBLANK;
         gpu.displayStatus &= ~INTR_FLAG_VCOUNT;
@@ -2191,8 +2197,15 @@ static void RunFrame(void)
     if (runHBlank)
         RunDMAs(DMA_HBLANK);
 
-    if (runVBlank)
+    if (runVBlank && (gpu.displayStatus & DISPSTAT_VBLANK_INTR))
         FrameUpdate();
+}
+
+static void RunScanlineEffect(void)
+{
+    GpuRefreshScanlineEffect();
+
+    gpu.scanlineEffect.position++;
 }
 
 void RenderFrame(SDL_Texture *texture)

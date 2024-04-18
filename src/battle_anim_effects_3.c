@@ -1541,7 +1541,7 @@ void AnimTask_IsHealingMove(u8 taskId)
 static void AnimSpotlight(struct Sprite *sprite)
 {
     SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJWIN_ON);
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
     SetGpuWindowX(0, gBattle_WIN0H);
@@ -1688,7 +1688,7 @@ void AnimTask_CreateSpotlight(u8 taskId)
         gBattle_WIN1V = WIN_RANGE(120, DisplayHeight());
         SetGpuWindowX(1, gBattle_WIN1H);
         SetGpuWindowY(1, gBattle_WIN1V);
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN1_ON);
     }
 
     DestroyAnimVisualTask(taskId);
@@ -1700,7 +1700,7 @@ void AnimTask_RemoveSpotlight(u8 taskId)
     gBattle_WIN1H = 0;
     gBattle_WIN1V = 0;
     if (!IsContest())
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN1_ON);
 
     DestroyAnimVisualTask(taskId);
 }
@@ -1818,11 +1818,11 @@ void AnimTask_RapinSpinMonElevation(u8 taskId)
     }
 
     if (toBG2 == 1)
-        scanlineParams.dmaDest = &REG_BG1HOFS;
+        scanlineParams.effParam = 1;
     else
-        scanlineParams.dmaDest = &REG_BG2HOFS;
+        scanlineParams.effParam = 2;
 
-    scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
+    scanlineParams.effTarget = GPU_SCANLINE_EFFECT_BGX;
     scanlineParams.initState = 1;
     scanlineParams.unused9 = 0;
     ScanlineEffect_SetParams(scanlineParams);
@@ -3092,7 +3092,7 @@ static void AnimFlatterConfetti_Step(struct Sprite *sprite)
 static void AnimFlatterSpotlight(struct Sprite *sprite)
 {
     SetGpuWindowOut(WINOUT_WIN01_BG_ALL | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR | WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ);
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJWIN_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJWIN_ON);
     gBattle_WIN0H = 0;
     gBattle_WIN0V = 0;
     SetGpuWindowX(0, gBattle_WIN0H);
@@ -3329,14 +3329,14 @@ void AnimTask_AcidArmor(u8 taskId)
     task->data[15] = GetAnimBattlerSpriteId(gBattleAnimArgs[0]);
     if (GetBattlerSpriteBGPriorityRank(battler) == 1)
     {
-        scanlineParams.dmaDest = &REG_BG1HOFS;
+        scanlineParams.effParam = 1;
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG1);
         bgX = gBattle_BG1_X;
         bgY = gBattle_BG1_Y;
     }
     else
     {
-        scanlineParams.dmaDest = &REG_BG2HOFS;
+        scanlineParams.effParam = 2;
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2);
         bgX = gBattle_BG2_X;
         bgY = gBattle_BG2_Y;
@@ -3350,7 +3350,7 @@ void AnimTask_AcidArmor(u8 taskId)
         gScanlineEffectRegBuffers[1][i + 1] = bgY;
     }
 
-    scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_32BIT;
+    scanlineParams.effTarget = GPU_SCANLINE_EFFECT_BGX;
     scanlineParams.initState = 1;
     scanlineParams.unused9 = 0;
     ScanlineEffect_SetParams(scanlineParams);

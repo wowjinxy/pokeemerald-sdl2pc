@@ -460,15 +460,17 @@ static void SetDigScanlineEffect(u8 useBG1, s16 y, s16 endY)
     s16 bgX;
     struct ScanlineEffectParams scanlineParams;
 
+    scanlineParams.effTarget = GPU_SCANLINE_EFFECT_BGX;
+
     if (useBG1 == 1)
     {
         bgX = gBattle_BG1_X;
-        scanlineParams.dmaDest = &REG_BG1HOFS;
+        scanlineParams.effParam = 1;
     }
     else
     {
         bgX = gBattle_BG2_X;
-        scanlineParams.dmaDest = &REG_BG2HOFS;
+        scanlineParams.effParam = 2;
     }
 
     if (y < 0)
@@ -488,7 +490,6 @@ static void SetDigScanlineEffect(u8 useBG1, s16 y, s16 endY)
         y++;
     }
 
-    scanlineParams.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
     scanlineParams.initState = 1;
     scanlineParams.unused9 = 0;
     ScanlineEffect_SetParams(scanlineParams);

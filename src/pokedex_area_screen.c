@@ -642,7 +642,7 @@ static void Task_ShowPokedexAreaScreen(u8 taskId)
         StartAreaGlow();
         ShowBg(2);
         ShowBg(3); // TryShowPokedexAreaMap will have done this already
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON);
         break;
     case 11:
         gTasks[taskId].func = Task_HandlePokedexAreaScreenInput;

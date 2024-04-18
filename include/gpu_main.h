@@ -16,6 +16,9 @@ void GpuClearTilemap(u8 bgNum);
 void SetGpuState(u8 state, u32 val);
 u32 GetGpuState(u8 state);
 
+void SetGpuStateBits(u8 state, u32 mask);
+void ClearGpuStateBits(u8 state, u32 mask);
+
 void SetGpuBackgroundX(u8 bgNum, u32 x);
 void SetGpuBackgroundY(u8 bgNum, u32 y);
 
@@ -67,5 +70,9 @@ u32 GetGpuBackgroundWidth(u8 bgNum);
 u32 GetGpuBackgroundHeight(u8 bgNum);
 
 void ClearGpuBackgroundState(u8 bgNum);
+
+void SetGpuScanlineEffect(u8 type, u8 param, u32 *src);
+void ClearGpuScanlineEffect(void);
+void GpuRefreshScanlineEffect(void);
 
 #endif

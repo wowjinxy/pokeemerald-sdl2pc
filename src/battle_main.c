@@ -121,18 +121,18 @@ static void HandleEndTurn_FinishBattle(void);
 static void SpriteCB_UnusedBattleInit(struct Sprite *sprite);
 static void SpriteCB_UnusedBattleInit_Main(struct Sprite *sprite);
 
-EWRAM_DATA u16 gBattle_BG0_X = 0;
-EWRAM_DATA u16 gBattle_BG0_Y = 0;
-EWRAM_DATA u16 gBattle_BG1_X = 0;
-EWRAM_DATA u16 gBattle_BG1_Y = 0;
-EWRAM_DATA u16 gBattle_BG2_X = 0;
-EWRAM_DATA u16 gBattle_BG2_Y = 0;
-EWRAM_DATA u16 gBattle_BG3_X = 0;
-EWRAM_DATA u16 gBattle_BG3_Y = 0;
-EWRAM_DATA u16 gBattle_WIN0H = 0;
-EWRAM_DATA u16 gBattle_WIN0V = 0;
-EWRAM_DATA u16 gBattle_WIN1H = 0;
-EWRAM_DATA u16 gBattle_WIN1V = 0;
+EWRAM_DATA u32 gBattle_BG0_X = 0;
+EWRAM_DATA u32 gBattle_BG0_Y = 0;
+EWRAM_DATA u32 gBattle_BG1_X = 0;
+EWRAM_DATA u32 gBattle_BG1_Y = 0;
+EWRAM_DATA u32 gBattle_BG2_X = 0;
+EWRAM_DATA u32 gBattle_BG2_Y = 0;
+EWRAM_DATA u32 gBattle_BG3_X = 0;
+EWRAM_DATA u32 gBattle_BG3_Y = 0;
+EWRAM_DATA u32 gBattle_WIN0H = 0;
+EWRAM_DATA u32 gBattle_WIN0V = 0;
+EWRAM_DATA u32 gBattle_WIN1H = 0;
+EWRAM_DATA u32 gBattle_WIN1V = 0;
 EWRAM_DATA u8 gDisplayedStringBattle[300] = {0};
 EWRAM_DATA u8 gBattleTextBuff1[TEXT_BUFF_ARRAY_COUNT] = {0};
 EWRAM_DATA u8 gBattleTextBuff2[TEXT_BUFF_ARRAY_COUNT] = {0};
@@ -247,15 +247,9 @@ u8 gMultiUsePlayerCursor;
 u8 gNumberOfMovesToChoose;
 u8 gBattleControllerData[MAX_BATTLERS_COUNT]; // Used by the battle controllers to store misc sprite/task IDs for each battler
 
-static const struct ScanlineEffectParams sIntroScanlineParams16Bit =
+static const struct ScanlineEffectParams sIntroScanlineParams =
 {
-    &REG_BG3HOFS, SCANLINE_EFFECT_DMACNT_16BIT, 1
-};
-
-// unused
-static const struct ScanlineEffectParams sIntroScanlineParams32Bit =
-{
-    &REG_BG3HOFS, SCANLINE_EFFECT_DMACNT_32BIT, 1
+    GPU_SCANLINE_EFFECT_BGX, 3, 1
 };
 
 const struct SpriteTemplate gUnusedBattleInitSprite =
@@ -656,7 +650,7 @@ static void CB2_InitBattleInternal(void)
             gScanlineEffectRegBuffers[1][i] = 0xFF10;
         }
 
-        ScanlineEffect_SetParams(sIntroScanlineParams16Bit);
+        ScanlineEffect_SetParams(sIntroScanlineParams);
     }
 
     ResetPaletteFade();
@@ -2075,8 +2069,8 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
 static void UNUSED HBlankCB_Battle(void)
 {
-#if 0
-    if (REG_VCOUNT < DisplayHeight() && REG_VCOUNT >= 111)
+    u32 vcount = GetGpuState(GPU_STATE_VCOUNT);
+    if (vcount < DisplayHeight() && vcount >= 111)
     {
         ClearGpuBackgroundState(0);
         SetGpuBackgroundCharBaseBlock(0, 0);
@@ -2084,7 +2078,6 @@ static void UNUSED HBlankCB_Battle(void)
         SetGpuBackgroundWidth(0, 256);
         SetGpuBackgroundHeight(0, 512);
     }
-#endif
 }
 
 void VBlankCB_Battle(void)

@@ -2145,7 +2145,7 @@ static void Select_Task_OpenChosenMonPics(u8 taskId)
         task->tWinRight = DisplayWidth() - 16;
         task->tWinTop = 64;
         task->tWinBottom = 65;
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
@@ -2163,7 +2163,7 @@ static void Select_Task_OpenChosenMonPics(u8 taskId)
         {
             task->tWinTop = 32;
             task->tWinBottom = 96;
-            ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+            ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         }
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         if (task->tWinTop != 32)
@@ -2187,7 +2187,7 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
         task->tWinRight = DisplayWidth() - 16;
         task->tWinTop = 32;
         task->tWinBottom = 96;
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
@@ -2217,7 +2217,7 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
         StartSpriteAffineAnim(&gSprites[sFactorySelectScreen->monPics[1].bgSpriteId], 1);
         StartSpriteAffineAnim(&gSprites[sFactorySelectScreen->monPics[0].bgSpriteId], 1);
         StartSpriteAffineAnim(&gSprites[sFactorySelectScreen->monPics[2].bgSpriteId], 1);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         DestroyTask(taskId);
         break;
     }
@@ -2252,7 +2252,7 @@ static void Select_HideChosenMons(void)
 
 static void Select_SetWinRegs(s16 mWin0H, s16 nWin0H, s16 mWin0V, s16 nWin0V)
 {
-    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
     SetGpuWindowX(0, WIN_RANGE(mWin0H, nWin0H));
     SetGpuWindowY(0, WIN_RANGE(mWin0V, nWin0V));
     SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
@@ -4189,7 +4189,7 @@ static void Task_OpenMonPic(u8 taskId)
         task->tWinRight = DisplayWidth() - 88;
         task->tWinTop = 64;
         task->tWinBottom = 65;
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
@@ -4237,7 +4237,7 @@ static void Task_CloseMonPic(u8 taskId)
         task->tWinRight = DisplayWidth() - 88;
         task->tWinTop = 32;
         task->tWinBottom = 96;
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         SetGpuWindowX(0, WIN_RANGE(task->tWinLeft, task->tWinRight));
         SetGpuWindowY(0, WIN_RANGE(task->tWinTop, task->tWinBottom));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_CLR | WININ_WIN0_OBJ);
@@ -4264,7 +4264,7 @@ static void Task_CloseMonPic(u8 taskId)
         gSprites[task->tSpriteId].invisible = FALSE;
         gSprites[task->tSpriteId].callback = SpriteCB_CloseMonPic;
         StartSpriteAffineAnim(&gSprites[task->tSpriteId], 1);
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON);
         DestroyTask(taskId);
         break;
     }

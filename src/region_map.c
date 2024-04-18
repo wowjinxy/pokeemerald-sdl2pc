@@ -1727,7 +1727,7 @@ void CB2_OpenFlyMap(void)
         break;
     case 10:
         SetGpuState(GPU_STATE_BLDCNT, 0);
-        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);

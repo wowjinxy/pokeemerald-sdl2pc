@@ -55,8 +55,8 @@ const s32 gMaxFlashLevel = ARRAY_COUNT(sFlashLevelToRadius) - 1;
 
 static const struct ScanlineEffectParams sFlashEffectParams =
 {
-    &REG_WIN0H,
-    ((DMA_ENABLE | DMA_START_HBLANK | DMA_REPEAT | DMA_DEST_RELOAD) << 16) | 1,
+    GPU_SCANLINE_EFFECT_WINDOWX,
+    0,
     1
 };
 
@@ -816,7 +816,7 @@ static void SetOrbFlashScanlineEffectWindowBoundary(u16 *dest, u32 y, s32 left, 
     }
 }
 
-static void SetOrbFlashScanlineEffectWindowBoundaries(u16 *dest, s32 centerX, s32 centerY, s32 radius)
+static void SetOrbFlashScanlineEffectWindowBoundaries(u32 *dest, s32 centerX, s32 centerY, s32 radius)
 {
     s32 r = radius;
     s32 v2 = radius;
@@ -987,14 +987,14 @@ void WriteFlashScanlineEffectBuffer(u8 flashLevel)
     if (flashLevel)
     {
         SetFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], DisplayWidth() / 2, DisplayHeight() / 2, sFlashLevelToRadius[flashLevel]);
-        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 480);
+        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
     }
 }
 
 void WriteBattlePyramidViewScanlineEffectBuffer(void)
 {
     SetFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], DisplayWidth() / 2, DisplayHeight() / 2, gSaveBlock2Ptr->frontier.pyramidLightRadius);
-    CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 480);
+    CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
 }
 
 static void Task_SpinEnterWarp(u8 taskId)
@@ -1084,8 +1084,8 @@ static void LoadOrbEffectPalette(bool8 blueOrb)
 
 static bool8 UpdateOrbEffectBlend(u16 shakeDir)
 {
-    u8 lo = REG_BLDALPHA & 0xFF;
-    u8 hi = REG_BLDALPHA >> 8;
+    u8 lo = GetGpuState(GPU_STATE_BLDALPHA) & 0xFF;
+    u8 hi = GetGpuState(GPU_STATE_BLDALPHA) >> 8;
 
     if (shakeDir != 0)
     {
@@ -1124,20 +1124,20 @@ static void Task_OrbEffect(u8 taskId)
     switch (tState)
     {
     case 0:
-        tDispCnt = REG_DISPCNT;
-        tBldCnt = REG_BLDCNT;
-        tBldAlpha = REG_BLDALPHA;
-        tWinIn = REG_WININ;
-        tWinOut = REG_WINOUT;
-        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_WIN1_ON);
-        SetGpuRegBits(REG_OFFSET_BLDCNT, gOrbEffectBackgroundLayerFlags[0]);
+        tDispCnt = GetGpuState(GPU_STATE_DISPCNT);
+        tBldCnt = GetGpuState(GPU_STATE_BLDCNT);
+        tBldAlpha = GetGpuState(GPU_STATE_BLDALPHA);
+        tWinIn = GetGpuWindowIn();
+        tWinOut = GetGpuWindowOut();
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_WIN1_ON);
+        SetGpuStateBits(GPU_STATE_BLDCNT, gOrbEffectBackgroundLayerFlags[0]);
         SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 7));
         SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR);
         SetGpuWindowOut(WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ);
         SetBgTilemapPalette(0, 0, 0, DISPLAY_TILE_WIDTH, DISPLAY_TILE_HEIGHT, 0xF);
         ScheduleBgCopyTilemapToVram(0);
         SetOrbFlashScanlineEffectWindowBoundaries(&gScanlineEffectRegBuffers[0][0], tCenterX, tCenterY, 1);
-        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 480);
+        CpuFastSet(&gScanlineEffectRegBuffers[0], &gScanlineEffectRegBuffers[1], 960);
         ScanlineEffect_SetParams(sFlashEffectParams);
         tState = 1;
         break;
