@@ -58,7 +58,7 @@ void *GpuGetGfxPtr(u8 bgNum)
     if (bgNum >= NUM_BACKGROUNDS)
         return NULL;
 
-    offset = gpu.bg[bgNum].control.charBaseBlock % NUM_CHAR_BLOCKS;
+    offset = gpu.bg[bgNum].charBaseBlock % NUM_CHAR_BLOCKS;
 
     return gpu.gfxData + (offset * BG_CHAR_SIZE);
 }
@@ -70,7 +70,7 @@ void *GpuGetTilemapPtr(u8 bgNum)
     if (bgNum >= NUM_BACKGROUNDS)
         return NULL;
 
-    offset = gpu.bg[bgNum].control.screenBaseBlock % NUM_SCREEN_BLOCKS;
+    offset = gpu.bg[bgNum].screenBaseBlock % NUM_SCREEN_BLOCKS;
 
     return gpu.tileMaps + (offset * BG_SCREEN_SIZE);
 }
@@ -338,185 +338,162 @@ u32 GetGpuAffineBgY(u8 bgNum)
     return state->y;
 }
 
-static struct BgCnt *GetBgControl(u8 bgNum)
-{
-    if (bgNum >= NUM_BACKGROUNDS)
-        return NULL;
-
-    return &gpu.bg[bgNum].control;
-}
-
 void SetGpuBackgroundPriority(u8 bgNum, u32 priority)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->priority = priority;
+    gpu.bg[bgNum].priority = priority;
 }
 
 void SetGpuBackgroundCharBaseBlock(u8 bgNum, u32 charBaseBlock)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->charBaseBlock = charBaseBlock;
+    gpu.bg[bgNum].charBaseBlock = charBaseBlock;
 }
 
 void SetGpuBackgroundMosaicEnabled(u8 bgNum, u32 mosaic)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->mosaic = mosaic;
+    gpu.bg[bgNum].mosaic = mosaic;
 }
 
 void SetGpuBackground8bppMode(u8 bgNum, u32 use8bpp)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->palettes = use8bpp;
+    gpu.bg[bgNum].palettes = use8bpp;
 }
 
 void SetGpuBackgroundGbaMode(u8 bgNum, u32 gbaMode)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->gbaMode = gbaMode;
+    gpu.bg[bgNum].gbaMode = gbaMode;
 }
 
 void SetGpuBackgroundScreenBaseBlock(u8 bgNum, u32 screenBaseBlock)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->screenBaseBlock = screenBaseBlock;
+    gpu.bg[bgNum].screenBaseBlock = screenBaseBlock;
 }
 
 void SetGpuBackgroundAreaOverflowMode(u8 bgNum, u32 areaOverflowMode)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->areaOverflowMode = areaOverflowMode;
+    gpu.bg[bgNum].areaOverflowMode = areaOverflowMode;
 }
 
 void SetGpuBackgroundWidth(u8 bgNum, u32 width)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->screenWidth = width;
+    gpu.bg[bgNum].screenWidth = width;
 }
 
 void SetGpuBackgroundHeight(u8 bgNum, u32 height)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    control->screenHeight = height;
+    gpu.bg[bgNum].screenHeight = height;
 }
 
 u32 GetGpuBackgroundPriority(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->priority;
+    return gpu.bg[bgNum].priority;
 }
 
 u32 GetGpuBackgroundCharBaseBlock(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->charBaseBlock;
+    return gpu.bg[bgNum].charBaseBlock;
 }
 
 u32 GetGpuBackgroundMosaicEnabled(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->mosaic;
+    return gpu.bg[bgNum].mosaic;
 }
 
 u32 GetGpuBackground8bppMode(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->palettes;
+    return gpu.bg[bgNum].palettes;
 }
 
 u32 GetGpuBackgroundGbaMode(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->gbaMode;
+    return gpu.bg[bgNum].gbaMode;
 }
 
 u32 GetGpuBackgroundScreenBaseBlock(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->screenBaseBlock;
+    return gpu.bg[bgNum].screenBaseBlock;
 }
 
 u32 GetGpuBackgroundAreaOverflowMode(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->areaOverflowMode;
+    return gpu.bg[bgNum].areaOverflowMode;
 }
 
 u32 GetGpuBackgroundWidth(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->screenWidth;
+    return gpu.bg[bgNum].screenWidth;
 }
 
 u32 GetGpuBackgroundHeight(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return control->screenHeight;
+    return gpu.bg[bgNum].screenHeight;
 }
 
 void ClearGpuBackgroundState(u8 bgNum)
 {
-    struct BgCnt *control = GetBgControl(bgNum);
-    if (control == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    memset(control, 0, sizeof(struct BgCnt));
-
+    SetGpuBackgroundPriority(bgNum, 0);
+    SetGpuBackgroundCharBaseBlock(bgNum, 0);
+    SetGpuBackgroundMosaicEnabled(bgNum, 0);
+    SetGpuBackground8bppMode(bgNum, 0);
+    SetGpuBackgroundGbaMode(bgNum, 1);
+    SetGpuBackgroundScreenBaseBlock(bgNum, 0);
+    SetGpuBackgroundAreaOverflowMode(bgNum, 0);
     SetGpuBackgroundWidth(bgNum, 256);
     SetGpuBackgroundHeight(bgNum, 256);
-    SetGpuBackgroundGbaMode(bgNum, 1);
 }

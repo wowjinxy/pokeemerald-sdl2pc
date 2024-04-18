@@ -1222,12 +1222,12 @@ void SoftReset(u32 resetFlags)
 
 static void GetBGScanlinePos(int bgNum, int *lineStart, int *lineEnd)
 {
-    struct BgCnt *control = &gpu.bg[bgNum].control;
+    struct GpuBgState *bg = &gpu.bg[bgNum];
 
     *lineStart = 0;
     *lineEnd = displayWidth;
 
-    if (control->gbaMode)
+    if (bg->gbaMode)
     {
         int offsetX = (displayWidth - BASE_DISPLAY_WIDTH) / 2;
         *lineStart += offsetX;
@@ -1237,20 +1237,19 @@ static void GetBGScanlinePos(int bgNum, int *lineStart, int *lineEnd)
 
 static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
-    struct BgCnt *control = &gpu.bg[bgNum].control;
-    unsigned int bitsPerPixel = control->palettes ? 8 : 4;
-    unsigned int mapWidthInPixels = control->screenWidth;
-    unsigned int mapHeightInPixels = control->screenHeight;
+    struct GpuBgState *bg = &gpu.bg[bgNum];
+    unsigned int bitsPerPixel = bg->palettes ? 8 : 4;
+    unsigned int mapWidthInPixels = bg->screenWidth;
+    unsigned int mapHeightInPixels = bg->screenHeight;
     unsigned int mapWidth;
-    // unsigned int mapHeight = mapHeightInPixels / 8;
 
     int lineStart, lineEnd;
     GetBGScanlinePos(bgNum, &lineStart, &lineEnd);
 
-    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
+    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
-    if (control->gbaMode)
+    if (bg->gbaMode)
     {
         int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
 
@@ -1279,16 +1278,16 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
         mapWidth = mapWidthInPixels / 8;
     }
 
-    if (control->mosaic)
+    if (bg->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
     for (unsigned int x = lineStart; x < lineEnd; x++)
     {
-        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
+        uint16_t *bgmap = (uint16_t *)BG_SCREEN_ADDR(bg->screenBaseBlock);
 
         // adjust for scroll
         unsigned int xx;
-        if (control->mosaic)
+        if (bg->mosaic)
             xx = applyBGHorizontalMosaicEffect(x) + hoffs;
         else
             xx = x + hoffs;
@@ -1297,7 +1296,7 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
 
         unsigned int yy = lineNum + voffs;
 
-        if (control->gbaMode)
+        if (bg->gbaMode)
         {
             xx &= 0x1FF;
             yy &= 0x1FF;
@@ -1447,13 +1446,13 @@ static inline uint16_t getBgPD(int bgNumber)
 
 static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
 {
-    struct BgCnt *control = &gpu.bg[bgNum].control;
+    struct GpuBgState *bg = &gpu.bg[bgNum];
 
-    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(control->charBaseBlock);
-    uint8_t *bgmap = (uint8_t *)BG_SCREEN_ADDR(control->screenBaseBlock);
+    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
+    uint8_t *bgmap = (uint8_t *)BG_SCREEN_ADDR(bg->screenBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
-    if (control->mosaic)
+    if (bg->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
     s16 pa = getBgPA(bgNum);
@@ -1465,7 +1464,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     int sizeY = 1;
     int yshift = 0;
 
-    switch (control->screenWidth)
+    switch (bg->screenWidth)
     {
     case 128:
         sizeX = sizeY = 128;
@@ -1502,7 +1501,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     int realX = currentX;
     int realY = currentY;
 
-    if (control->areaOverflowMode)
+    if (bg->areaOverflowMode)
     {
         for (int x = 0; x < displayWidth; x++)
         {
@@ -1554,7 +1553,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     }
     //the only way i could figure out how to get accurate mosaic on affine bgs 
     //luckily i dont think pokemon emerald uses mosaic on affine bgs
-    if (control->mosaic && mosaicBGEffectX > 0)
+    if (bg->mosaic && mosaicBGEffectX > 0)
     {
         for (int x = 0; x < displayWidth; x++)
         {
@@ -1933,11 +1932,10 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 
     for (bgnum = 0; bgnum < numOfBgs; bgnum++)
     {
-        struct BgCnt *bgcnt = &gpu.bg[bgnum].control;
-        uint16_t priority = bgcnt->priority;
+        uint16_t priority = gpu.bg[bgnum].priority;
 
         scanline.bgtoprio[bgnum] = priority;
-        
+
         char priorityCount = scanline.prioritySortedBgsCount[priority];
         scanline.prioritySortedBgs[priority][priorityCount] = bgnum;
         scanline.prioritySortedBgsCount[priority]++;

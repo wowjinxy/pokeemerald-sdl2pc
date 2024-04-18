@@ -24,8 +24,15 @@ enum
 struct GpuBgState
 {
     s32 x, y;
-
-    struct BgCnt control;
+    u16 priority:2;
+    u16 charBaseBlock;
+    u16 mosaic:1;
+    u16 palettes:1;
+    u16 gbaMode:1;
+    u16 screenBaseBlock;
+    u16 areaOverflowMode:1;
+    u16 screenWidth;
+    u16 screenHeight;
 };
 
 struct GpuAffineBgState

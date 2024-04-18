@@ -38,19 +38,6 @@ typedef uint_fast16_t uf16;
 typedef int_fast32_t sf32;
 typedef uint_fast32_t uf32;
 
-struct BgCnt
-{
-    u16 priority:2;
-    u16 charBaseBlock;
-    u16 mosaic:1;
-    u16 palettes:1;
-    u16 gbaMode:1;
-    u16 screenBaseBlock;
-    u16 areaOverflowMode:1;
-    u16 screenWidth;
-    u16 screenHeight;
-};
-
 struct PlttData
 {
     u16 r:5; // red
