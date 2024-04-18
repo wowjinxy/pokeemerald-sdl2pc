@@ -5692,7 +5692,8 @@ static void VblankCb_TourneyInfoCard(void)
 
 #define SET_WIN0H_WIN1H(win0H, win1H)                       \
 {                                                           \
-    *(vu32*)(REG_ADDR_WIN0H) = ((win0H << 16) | (win1H));   \
+    SetGpuWindowX(0, win0H);                                \
+    SetGpuWindowX(1, win1H);                                \
 }
 
 static void HblankCb_TourneyTree(void)

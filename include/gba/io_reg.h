@@ -585,8 +585,8 @@ extern unsigned char REG_BASE[];
 #define WINOUT_WINOBJ_CLR   (1 << 13)
 #define WINOUT_WINOBJ_ALL   (WINOUT_WINOBJ_BG_ALL | WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_CLR)
 
-#define WIN_RANGE(a, b) (((a) << 8) | (b))
-#define WIN_RANGE2(a, b) ((b) | ((a) << 8))
+#define WIN_RANGE(a, b) ((((a) & 0xFFFF) << 16) | ((b) & 0xFFFF))
+#define WIN_RANGE2(a, b) (((b) & 0xFFFF) | (((a) & 0xFFFF) << 16))
 
 // BLDCNT
 // Bits 0-5 select layers for the 1st target

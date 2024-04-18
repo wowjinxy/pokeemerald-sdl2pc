@@ -1908,6 +1908,14 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
     }
 }
 
+static void GetWindowCoords(u8 which, uint16_t *bottom, uint16_t *top, uint16_t *right, uint16_t *left)
+{
+    *bottom = (gpu.window.state[which].y & 0xFFFF); //y2;
+    *top = (gpu.window.state[which].y & 0xFFFF0000) >> 16; //y1;
+    *right = (gpu.window.state[which].x & 0xFFFF); //x2
+    *left = (gpu.window.state[which].x & 0xFFFF0000) >> 16; //x1
+}
+
 static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
     unsigned int mode = gpu.displayControl & 3;
@@ -1986,11 +1994,8 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     if (gpu.displayControl & DISPCNT_WIN0_ON)
     {
         //acquire the window coordinates
-        WIN0bottom = (gpu.window.state[0].y & 0xFF); //y2;
-        WIN0top = (gpu.window.state[0].y & 0xFF00) >> 8; //y1;
-        WIN0right = (gpu.window.state[0].x & 0xFF); //x2
-        WIN0left = (gpu.window.state[0].x & 0xFF00) >> 8; //x1
-        
+        GetWindowCoords(0, &WIN0bottom, &WIN0top, &WIN0right, &WIN0left);
+
         //figure out WIN Y wraparound and check bounds accordingly
         if (WIN0top > WIN0bottom) {
             if (vcount >= WIN0top || vcount < WIN0bottom)
@@ -2005,10 +2010,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     //figure out if WIN1 masks on this scanline
     if (gpu.displayControl & DISPCNT_WIN1_ON)
     {
-        WIN1bottom = (gpu.window.state[0].y & 0xFF); //y2;
-        WIN1top = (gpu.window.state[0].y & 0xFF00) >> 8; //y1;
-        WIN1right = (gpu.window.state[1].x & 0xFF); //x2
-        WIN1left = (gpu.window.state[1].x & 0xFF00) >> 8; //x1
+        GetWindowCoords(1, &WIN1bottom, &WIN1top, &WIN1right, &WIN1left);
         
         if (WIN1top > WIN1bottom) {
             if (vcount >= WIN1top || vcount < WIN1bottom)

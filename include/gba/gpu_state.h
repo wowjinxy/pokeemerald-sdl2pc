@@ -23,20 +23,20 @@ enum
 
 struct GpuBgState
 {
-    u16 x, y;
+    s32 x, y;
 
     struct BgCnt control;
 };
 
 struct GpuAffineBgState
 {
-    u8 pa, pb, pc, pd;
-    u16 x, y;
+    s16 pa, pb, pc, pd;
+    s32 x, y;
 };
 
 struct GpuWindowState
 {
-    u8 x, y;
+    u32 x, y;
 };
 
 struct GpuState

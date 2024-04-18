@@ -1811,8 +1811,8 @@ static void Task_Scene3_LoadGroudon(u8 taskId)
 
 static void Task_Scene3_InitGroudonBg(u8 taskId)
 {
-    SetGpuWindowX(0, DisplayWidth());
-    SetGpuWindowY(0, DisplayHeight());
+    SetGpuWindowX(0, DISPLAY_WIDTH);
+    SetGpuWindowY(0, DISPLAY_HEIGHT);
     SetGpuWindowIn(WININ_WIN0_ALL);
     SetGpuWindowOut(0);
     ClearGpuBackgroundState(2);

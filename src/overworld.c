@@ -181,7 +181,6 @@ static bool8 sReceivingFromLink;
 static u8 sRfuKeepAliveTimer;
 
 u16 gOverworldTilemapWidth;
-u16 gOverworldTilemapHeight;
 u16 *gOverworldTilemapBuffer_Bg2;
 u16 *gOverworldTilemapBuffer_Bg1;
 u16 *gOverworldTilemapBuffer_Bg3;
@@ -1417,34 +1416,32 @@ static void InitOverworldBgs(void)
 {
     struct BgTemplate overworldBgTemplates[4];
 
+    size_t screenSize;
+    size_t tilemapWidth = 1, tilemapHeight = 1;
+
     int mapWidth = (gMapHeader.mapLayout->width + MAP_OFFSET_W) * 16;
     int mapHeight = (gMapHeader.mapLayout->height + MAP_OFFSET_H) * 16;
 
-    size_t screenSize;
+    while (tilemapWidth < mapWidth)
+        tilemapWidth <<= 1;
+    while (tilemapHeight < mapHeight)
+        tilemapHeight <<= 1;
 
     memcpy(overworldBgTemplates, sOverworldBgTemplates, sizeof(sOverworldBgTemplates));
 
-    // gOverworldTilemapWidth = mapWidth;
-    gOverworldTilemapWidth = 1;
-    while (gOverworldTilemapWidth < mapWidth)
-        gOverworldTilemapWidth <<= 1;
-    overworldBgTemplates[1].screenWidth =
-    overworldBgTemplates[2].screenWidth =
-    overworldBgTemplates[3].screenWidth = gOverworldTilemapWidth;
+    for (unsigned i = 1; i <= 3; i++)
+    {
+        overworldBgTemplates[i].screenWidth = tilemapWidth;
+        overworldBgTemplates[i].screenHeight = tilemapHeight;
+    }
 
-    // gOverworldTilemapHeight = mapHeight;
-    gOverworldTilemapHeight = 1;
-    while (gOverworldTilemapHeight < mapHeight)
-        gOverworldTilemapHeight <<= 1;
-    overworldBgTemplates[1].screenHeight =
-    overworldBgTemplates[2].screenHeight =
-    overworldBgTemplates[3].screenHeight = gOverworldTilemapHeight;
+    // tilemapWidth /= 8;
+    // tilemapHeight /= 8;
 
-    gOverworldTilemapWidth /= 8;
-    gOverworldTilemapHeight /= 8;
-
-    screenSize = gOverworldTilemapWidth * gOverworldTilemapHeight * 2;
+    // screenSize = tilemapWidth * tilemapHeight * 2;
     screenSize = BG_SCREEN_SIZE;
+
+    gOverworldTilemapWidth = tilemapWidth / 8;
 
     InitBgsFromTemplates(0, overworldBgTemplates, ARRAY_COUNT(overworldBgTemplates));
     SetBgAttribute(1, BG_ATTR_MOSAIC, 1);
@@ -2149,10 +2146,10 @@ static void InitOverworldGraphicsRegisters(void)
     SetGpuState(GPU_STATE_MOSAIC, 0);
     SetGpuWindowIn(WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ);
     SetGpuWindowOut(WINOUT_WIN01_BG0 | WINOUT_WINOBJ_BG0);
-    SetGpuWindowX(0, 0xFF);
-    SetGpuWindowY(0, 0xFF);
-    SetGpuWindowX(1, 0xFFFF);
-    SetGpuWindowY(1, 0xFFFF);
+    SetGpuWindowX(0, WIN_RANGE(0, DISPLAY_WIDTH));
+    SetGpuWindowY(0, WIN_RANGE(0, DISPLAY_HEIGHT));
+    SetGpuWindowX(1, WIN_RANGE(DISPLAY_WIDTH, DISPLAY_WIDTH));
+    SetGpuWindowY(1, WIN_RANGE(DISPLAY_HEIGHT, DISPLAY_HEIGHT));
     SetGpuState(GPU_STATE_BLDCNT, gOverworldBackgroundLayerFlags[1] | gOverworldBackgroundLayerFlags[2] | gOverworldBackgroundLayerFlags[3]
                                | BLDCNT_TGT2_OBJ | BLDCNT_EFFECT_BLEND);
     SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(13, 7));

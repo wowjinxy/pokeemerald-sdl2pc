@@ -1192,7 +1192,7 @@ static void Task_OrbEffect(u8 taskId)
         }
         break;
     case 5:
-        SetGpuWindowX(0, 255);
+        SetGpuWindowX(0, DISPLAY_WIDTH);
         SetGpuState(GPU_STATE_DISPCNT, tDispCnt);
         SetGpuState(GPU_STATE_BLDCNT, tBldCnt);
         SetGpuState(GPU_STATE_BLDALPHA, tBldAlpha);

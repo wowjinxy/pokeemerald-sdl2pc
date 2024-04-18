@@ -2811,8 +2811,8 @@ static void FieldMoveShowMonIndoorsEffect_RestoreBg(struct Task *task)
     AnimateIndoorShowMonBg(task);
     task->tBgOffsetIdx = task->tBgHoriz & 7;
     task->tBgOffset = 0;
-    SetGpuWindowX(1, WIN_RANGE(0xFF, 0xFF));
-    SetGpuWindowY(1, WIN_RANGE(0xFF, 0xFF));
+    SetGpuWindowX(1, WIN_RANGE(DISPLAY_WIDTH, DISPLAY_WIDTH));
+    SetGpuWindowY(1, WIN_RANGE(DISPLAY_HEIGHT, DISPLAY_HEIGHT));
     task->tState++;
 }
 
