@@ -94,10 +94,10 @@ struct GpuState
         u8 in, out;
     } window;
 
-    u8 mosaic;
-    u8 blendControl;
-    u8 blendAlpha;
-    u8 blendCoeff;
+    u16 mosaic;
+    u16 blendControl;
+    u16 blendAlpha;
+    u16 blendCoeff;
 
     struct GpuScanlineEffect scanlineEffect;
 };
