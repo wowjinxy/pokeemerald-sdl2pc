@@ -91,7 +91,7 @@ struct GpuState
 
     struct {
         struct GpuWindowState state[2];
-        u8 in, out;
+        u16 in, out;
     } window;
 
     u16 mosaic;
