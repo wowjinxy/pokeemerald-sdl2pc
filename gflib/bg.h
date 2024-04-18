@@ -8,6 +8,7 @@ enum
     BG_ATTR_SCREENWIDTH,
     BG_ATTR_SCREENHEIGHT,
     BG_ATTR_PALETTEMODE,
+    BG_ATTR_GBAMODE,
     BG_ATTR_MOSAIC,
     BG_ATTR_WRAPAROUND,
     BG_ATTR_PRIORITY,
@@ -92,7 +93,7 @@ void FillBgTilemapBufferRect(u8 bg, u16 tileNum, u8 x, u8 y, u8 width, u8 height
 void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 width, u8 height, u8 paletteSlot, s16 tileNumDelta);
 u32 GetBgMetricTextMode(u8 bg, u8 whichMetric);
 u32 GetBgMetricAffineMode(u8 bg, u8 whichMetric);
-u32 GetTileMapIndexFromCoords(s32 x, s32 y, u32 screenWidth, u32 screenHeight);
+u32 GetTileMapIndexFromCoords(u8 bg, s32 x, s32 y, u32 screenWidth, u32 screenHeight);
 void CopyTileMapEntry(const u16 *src, u16 *dest, s32 palette1, s32 tileOffset, s32 palette2);
 bool32 IsInvalidBg32(u8 bg);
 bool32 IsTileMapOutsideWram(u8 bg);

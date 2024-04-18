@@ -20,9 +20,7 @@ struct BgControl
         u8 charBaseIndex;
         u8 mapBaseIndex;
         u8 paletteMode:1;
-
-        u8 unknown_2; // Assigned to but never read
-        u8 unknown_3; // Assigned to but never read
+        u8 gbaMode:1;
     } configs[NUM_BACKGROUNDS];
 
     u16 bgVisibilityAndMode;
@@ -32,7 +30,6 @@ struct BgConfig2
 {
     u32 baseTile:10;
     u32 basePalette:4;
-    u32 unk_3:18;
 
     void *tilemap;
     s32 bg_x;
@@ -92,12 +89,13 @@ enum
     BG_CTRL_ATTR_SCREENWIDTH = 4,
     BG_CTRL_ATTR_SCREENHEIGHT = 5,
     BG_CTRL_ATTR_PALETTEMODE = 6,
-    BG_CTRL_ATTR_PRIORITY = 7,
-    BG_CTRL_ATTR_MOSAIC = 8,
-    BG_CTRL_ATTR_WRAPAROUND = 9,
+    BG_CTRL_ATTR_GBAMODE = 7,
+    BG_CTRL_ATTR_PRIORITY = 8,
+    BG_CTRL_ATTR_MOSAIC = 9,
+    BG_CTRL_ATTR_WRAPAROUND = 10,
 };
 
-static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u16 screenWidth, u16 screenHeight, u16 paletteMode, u16 priority, u16 mosaic, u16 wraparound)
+static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u16 screenWidth, u16 screenHeight, u16 paletteMode, u16 gbaMode, u16 priority, u16 mosaic, u16 wraparound)
 {
     if (!IsInvalidBg(bg))
     {
@@ -126,6 +124,11 @@ static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u
             sGpuBgConfigs.configs[bg].paletteMode = paletteMode;
         }
 
+        if (gbaMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].gbaMode = gbaMode;
+        }
+
         if (priority != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].priority = priority;
@@ -140,9 +143,6 @@ static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u
         {
             sGpuBgConfigs.configs[bg].wraparound = wraparound;
         }
-
-        sGpuBgConfigs.configs[bg].unknown_2 = 0;
-        sGpuBgConfigs.configs[bg].unknown_3 = 0;
 
         sGpuBgConfigs.configs[bg].visible = 1;
     }
@@ -166,6 +166,8 @@ static u16 GetBgControlAttribute(u8 bg, u8 attributeId)
             return sGpuBgConfigs.configs[bg].screenHeight;
         case BG_CTRL_ATTR_PALETTEMODE:
             return sGpuBgConfigs.configs[bg].paletteMode;
+        case BG_CTRL_ATTR_GBAMODE:
+            return sGpuBgConfigs.configs[bg].gbaMode;
         case BG_CTRL_ATTR_PRIORITY:
             return sGpuBgConfigs.configs[bg].priority;
         case BG_CTRL_ATTR_MOSAIC:
@@ -191,14 +193,16 @@ u8 LoadBgVram(u8 bg, const void *src, size_t size, size_t destOffset, u8 mode)
     {
     case 0x1:
         if (size > BG_CHAR_SIZE)
-            abort();
+            size = BG_CHAR_SIZE;
+            // abort();
         offset = sGpuBgConfigs.configs[bg].charBaseIndex * BG_CHAR_SIZE;
         start = gpu.gfxData;
         end = start + gpu.gfxDataSize;
         break;
     case 0x2:
         if (size > BG_SCREEN_SIZE)
-            abort();
+            size = BG_SCREEN_SIZE;
+            // abort();
         offset = sGpuBgConfigs.configs[bg].mapBaseIndex * BG_SCREEN_SIZE;
         start = gpu.tileMaps;
         end = start + gpu.tileMapsSize;
@@ -223,6 +227,7 @@ static void ShowBgInternal(u8 bg)
         SetGpuBackgroundCharBaseBlock(bg, sGpuBgConfigs.configs[bg].charBaseIndex);
         SetGpuBackgroundMosaicEnabled(bg, sGpuBgConfigs.configs[bg].mosaic);
         SetGpuBackground8bppMode(bg, sGpuBgConfigs.configs[bg].paletteMode);
+        SetGpuBackgroundGbaMode(bg, sGpuBgConfigs.configs[bg].gbaMode);
         SetGpuBackgroundScreenBaseBlock(bg, sGpuBgConfigs.configs[bg].mapBaseIndex);
         SetGpuBackgroundAreaOverflowMode(bg, sGpuBgConfigs.configs[bg].wraparound);
         SetGpuBackgroundWidth(bg, sGpuBgConfigs.configs[bg].screenWidth);
@@ -330,13 +335,13 @@ void InitBgsFromTemplates(u8 bgMode, const struct BgTemplate *templates, u8 numT
                                    templates[i].screenWidth,
                                    templates[i].screenHeight,
                                    templates[i].paletteMode,
+                                   1,
                                    templates[i].priority,
                                    0,
                                    0);
 
             sGpuBgConfigs2[bg].baseTile = templates[i].baseTile;
             sGpuBgConfigs2[bg].basePalette = 0;
-            sGpuBgConfigs2[bg].unk_3 = 0;
 
             sGpuBgConfigs2[bg].tilemap = NULL;
             sGpuBgConfigs2[bg].bg_x = 0;
@@ -357,13 +362,13 @@ void InitBgFromTemplate(const struct BgTemplate *template)
                                template->screenWidth,
                                template->screenHeight,
                                template->paletteMode,
+                               1,
                                template->priority,
                                0,
                                0);
 
         sGpuBgConfigs2[bg].baseTile = template->baseTile;
         sGpuBgConfigs2[bg].basePalette = 0;
-        sGpuBgConfigs2[bg].unk_3 = 0;
 
         sGpuBgConfigs2[bg].tilemap = NULL;
         sGpuBgConfigs2[bg].bg_x = 0;
@@ -455,33 +460,50 @@ void HideBg(u8 bg)
 
 void SetBgAttribute(u8 bg, u8 attributeId, u16 value)
 {
+    if (IsInvalidBg(bg))
+        return;
+
     switch (attributeId)
     {
     case BG_ATTR_CHARBASEINDEX:
-        SetBgControlAttributes(bg, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].charBaseIndex = value;
         break;
     case BG_ATTR_MAPBASEINDEX:
-        SetBgControlAttributes(bg, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].mapBaseIndex = value;
         break;
     case BG_ATTR_SCREENWIDTH:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].screenWidth = value;
         break;
     case BG_ATTR_SCREENHEIGHT:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].screenHeight = value;
         break;
     case BG_ATTR_PALETTEMODE:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].paletteMode = value;
+        break;
+    case BG_ATTR_GBAMODE:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].gbaMode = value;
         break;
     case BG_ATTR_PRIORITY:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].priority = value;
         break;
     case BG_ATTR_MOSAIC:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value, 0xFFFF);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].mosaic = value;
         break;
     case BG_ATTR_WRAPAROUND:
-        SetBgControlAttributes(bg, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, value);
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].wraparound = value;
         break;
     }
+
+    sGpuBgConfigs.configs[bg].visible = 1;
 }
 
 int GetBgAttribute(u8 bg, u8 attributeId)
@@ -498,6 +520,8 @@ int GetBgAttribute(u8 bg, u8 attributeId)
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
     case BG_ATTR_PALETTEMODE:
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_PALETTEMODE);
+    case BG_ATTR_GBAMODE:
+        return GetBgControlAttribute(bg, BG_CTRL_ATTR_GBAMODE);
     case BG_ATTR_PRIORITY:
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_PRIORITY);
     case BG_ATTR_MOSAIC:
@@ -946,7 +970,7 @@ void CopyRectToBgTilemapBufferRect(u8 bg, const void *src, u8 srcX, u8 srcY, u8 
                 for (j = destX; j < (destX + rectWidth); j++)
                 {
                     u16 *tilemap = sGpuBgConfigs2[bg].tilemap;
-                    u32 index = GetTileMapIndexFromCoords(j, i, screenWidth, screenHeight);
+                    u32 index = GetTileMapIndexFromCoords(bg, j, i, screenWidth, screenHeight);
                     CopyTileMapEntry(srcPtr, &tilemap[index], palette1, tileOffset, palette2);
                     srcPtr += 2;
                 }
@@ -1027,7 +1051,7 @@ void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 widt
                 for (x16 = x; x16 < (x + width); x16++)
                 {
                     u16 *tilemap = sGpuBgConfigs2[bg].tilemap;
-                    u32 index = GetTileMapIndexFromCoords(x16, y16, screenWidth, screenHeight);
+                    u32 index = GetTileMapIndexFromCoords(bg, x16, y16, screenWidth, screenHeight);
                     CopyTileMapEntry(&firstTileNum, &tilemap[index], paletteSlot, 0, 0);
                     firstTileNum = (firstTileNum & 0xFC00) + ((firstTileNum + tileNumDelta) & 0x3FF);
                 }
@@ -1051,25 +1075,29 @@ void WriteSequenceToBgTilemapBuffer(u8 bg, u16 firstTileNum, u8 x, u8 y, u8 widt
 
 u32 GetBgMetricTextMode(u8 bg, u8 whichMetric)
 {
-    // Emulate GBA screen modes
     int screenSize = -1;
     int screenWidth = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH);
     int screenHeight = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
-    if (screenWidth == 256 && screenHeight == 256)
+
+    // Emulate GBA screen sizes
+    if (GetBgControlAttribute(bg, BG_CTRL_ATTR_GBAMODE))
     {
-        screenSize = 0;
-    }
-    else if (screenWidth == 512 && screenHeight == 256)
-    {
-        screenSize = 1;
-    }
-    else if (screenWidth == 256 && screenHeight == 512)
-    {
-        screenSize = 2;
-    }
-    else if (screenWidth == 512 && screenHeight == 512)
-    {
-        screenSize = 3;
+        if (screenWidth == 256 && screenHeight == 256)
+        {
+            screenSize = 0;
+        }
+        else if (screenWidth == 512 && screenHeight == 256)
+        {
+            screenSize = 1;
+        }
+        else if (screenWidth == 256 && screenHeight == 512)
+        {
+            screenSize = 2;
+        }
+        else if (screenWidth == 512 && screenHeight == 512)
+        {
+            screenSize = 3;
+        }
     }
 
     switch (whichMetric)
@@ -1084,13 +1112,9 @@ u32 GetBgMetricTextMode(u8 bg, u8 whichMetric)
             return 2 * GBA_BG_SCREEN_SIZE;
         case 3:
             return 4 * GBA_BG_SCREEN_SIZE;
-        default: {
-            int sz = max(screenWidth, screenHeight) / 8;
-            int result = 1;
-            while (result < sz)
-                result <<= 1;
-            return result;
-        }
+        default:
+            return (screenWidth * screenHeight) / 8;
+            // return BG_SCREEN_SIZE;
         }
         break;
     case 1:
@@ -1128,27 +1152,32 @@ u32 GetBgMetricTextMode(u8 bg, u8 whichMetric)
 
 u32 GetBgMetricAffineMode(u8 bg, u8 whichMetric)
 {
-    // Emulate GBA screen modes
     int screenSize = -1;
-    int screenWidth = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH);
-    int screenHeight = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
-    if (screenWidth == 256 && screenHeight == 256)
+
+    // Emulate GBA screen modes
+    if (GetBgControlAttribute(bg, BG_CTRL_ATTR_GBAMODE))
     {
-        screenSize = 0;
+        int screenWidth = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENWIDTH);
+        int screenHeight = GetBgControlAttribute(bg, BG_CTRL_ATTR_SCREENHEIGHT);
+        if (screenWidth == 256 && screenHeight == 256)
+        {
+            screenSize = 0;
+        }
+        else if (screenWidth == 512 && screenHeight == 256)
+        {
+            screenSize = 1;
+        }
+        else if (screenWidth == 256 && screenHeight == 512)
+        {
+            screenSize = 2;
+        }
+        else if (screenWidth == 512 && screenHeight == 512)
+        {
+            screenSize = 3;
+        }
     }
-    else if (screenWidth == 512 && screenHeight == 256)
-    {
-        screenSize = 1;
-    }
-    else if (screenWidth == 256 && screenHeight == 512)
-    {
-        screenSize = 2;
-    }
-    else if (screenWidth == 512 && screenHeight == 512)
-    {
-        screenSize = 3;
-    }
-    else
+
+    if (screenSize == -1)
     {
         return GetBgMetricTextMode(bg, whichMetric);
     }
@@ -1176,56 +1205,57 @@ u32 GetBgMetricAffineMode(u8 bg, u8 whichMetric)
     return 0;
 }
 
-u32 GetTileMapIndexFromCoords(s32 x, s32 y, u32 screenWidth, u32 screenHeight)
+u32 GetTileMapIndexFromCoords(u8 bg, s32 x, s32 y, u32 screenWidth, u32 screenHeight)
 {
     // Emulate GBA screen modes
-    int screenSize = -1;
-    if (screenWidth * 8 == 256 && screenHeight * 8 == 256)
+    if (GetBgControlAttribute(bg, BG_CTRL_ATTR_GBAMODE))
     {
-        screenSize = 0;
-    }
-    else if (screenWidth * 8 == 512 && screenHeight * 8 == 256)
-    {
-        screenSize = 1;
-    }
-    else if (screenWidth * 8 == 256 && screenHeight * 8 == 512)
-    {
-        screenSize = 2;
-    }
-    else if (screenWidth * 8 == 512 && screenHeight * 8 == 512)
-    {
-        screenSize = 3;
-    }
-    else
-    {
-        x %= screenWidth;
-        y %= screenHeight;
+        int screenSize = -1;
 
-        return (y * screenWidth) + x;
-    }
-
-    // Old implementation
-    x = x & (screenWidth - 1);
-    y = y & (screenHeight - 1);
-
-    switch (screenSize)
-    {
-    case 0:
-    case 2:
-        break;
-    case 3:
-        if (y >= 0x20)
-            y += 0x20;
-    case 1:
-        if (x >= 0x20)
+        if (screenWidth * 8 == 256 && screenHeight * 8 == 256)
         {
-            x -= 0x20;
-            y += 0x20;
+            screenSize = 0;
         }
-        break;
+        else if (screenWidth * 8 == 512 && screenHeight * 8 == 256)
+        {
+            screenSize = 1;
+        }
+        else if (screenWidth * 8 == 256 && screenHeight * 8 == 512)
+        {
+            screenSize = 2;
+        }
+        else if (screenWidth * 8 == 512 && screenHeight * 8 == 512)
+        {
+            screenSize = 3;
+        }
+
+        x = x & (screenWidth - 1);
+        y = y & (screenHeight - 1);
+
+        switch (screenSize)
+        {
+        case 0:
+        case 2:
+            break;
+        case 3:
+            if (y >= 0x20)
+                y += 0x20;
+        case 1:
+            if (x >= 0x20)
+            {
+                x -= 0x20;
+                y += 0x20;
+            }
+            break;
+        }
+
+        return (y * 0x20) + x;
     }
 
-    return (y * 0x20) + x;
+    x %= screenWidth;
+    y %= screenHeight;
+
+    return (y * screenWidth) + x;
 }
 
 void CopyTileMapEntry(const u16 *src, u16 *dest, s32 palette1, s32 tileOffset, s32 palette2)

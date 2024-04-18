@@ -668,6 +668,8 @@ bool8 CameraMove(int x, int y)
         gCamera.active = TRUE;
         gCamera.x = old_x - gSaveBlock1Ptr->pos.x;
         gCamera.y = old_y - gSaveBlock1Ptr->pos.y;
+        DrawWholeMapView();
+        ResetFieldCamera();
         gSaveBlock1Ptr->pos.x += x;
         gSaveBlock1Ptr->pos.y += y;
         MoveMapViewToBackup(direction);

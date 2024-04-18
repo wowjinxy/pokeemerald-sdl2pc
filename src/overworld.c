@@ -180,6 +180,8 @@ static u16 (*sPlayerKeyInterceptCallback)(u32);
 static bool8 sReceivingFromLink;
 static u8 sRfuKeepAliveTimer;
 
+u16 gOverworldTilemapWidth;
+u16 gOverworldTilemapHeight;
 u16 *gOverworldTilemapBuffer_Bg2;
 u16 *gOverworldTilemapBuffer_Bg1;
 u16 *gOverworldTilemapBuffer_Bg3;
@@ -1413,13 +1415,47 @@ u8 GetCurrentMapBattleScene(void)
 
 static void InitOverworldBgs(void)
 {
-    InitBgsFromTemplates(0, sOverworldBgTemplates, ARRAY_COUNT(sOverworldBgTemplates));
+    struct BgTemplate overworldBgTemplates[4];
+
+    int mapWidth = (gMapHeader.mapLayout->width + MAP_OFFSET_W) * 16;
+    int mapHeight = (gMapHeader.mapLayout->height + MAP_OFFSET_H) * 16;
+
+    size_t screenSize;
+
+    memcpy(overworldBgTemplates, sOverworldBgTemplates, sizeof(sOverworldBgTemplates));
+
+    // gOverworldTilemapWidth = mapWidth;
+    gOverworldTilemapWidth = 1;
+    while (gOverworldTilemapWidth < mapWidth)
+        gOverworldTilemapWidth <<= 1;
+    overworldBgTemplates[1].screenWidth =
+    overworldBgTemplates[2].screenWidth =
+    overworldBgTemplates[3].screenWidth = gOverworldTilemapWidth;
+
+    // gOverworldTilemapHeight = mapHeight;
+    gOverworldTilemapHeight = 1;
+    while (gOverworldTilemapHeight < mapHeight)
+        gOverworldTilemapHeight <<= 1;
+    overworldBgTemplates[1].screenHeight =
+    overworldBgTemplates[2].screenHeight =
+    overworldBgTemplates[3].screenHeight = gOverworldTilemapHeight;
+
+    gOverworldTilemapWidth /= 8;
+    gOverworldTilemapHeight /= 8;
+
+    screenSize = gOverworldTilemapWidth * gOverworldTilemapHeight * 2;
+    screenSize = BG_SCREEN_SIZE;
+
+    InitBgsFromTemplates(0, overworldBgTemplates, ARRAY_COUNT(overworldBgTemplates));
     SetBgAttribute(1, BG_ATTR_MOSAIC, 1);
     SetBgAttribute(2, BG_ATTR_MOSAIC, 1);
     SetBgAttribute(3, BG_ATTR_MOSAIC, 1);
-    gOverworldTilemapBuffer_Bg1 = AllocZeroed(BG_SCREEN_SIZE);
-    gOverworldTilemapBuffer_Bg2 = AllocZeroed(BG_SCREEN_SIZE);
-    gOverworldTilemapBuffer_Bg3 = AllocZeroed(BG_SCREEN_SIZE);
+    SetBgAttribute(1, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(2, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(3, BG_ATTR_GBAMODE, 0);
+    gOverworldTilemapBuffer_Bg1 = AllocZeroed(screenSize);
+    gOverworldTilemapBuffer_Bg2 = AllocZeroed(screenSize);
+    gOverworldTilemapBuffer_Bg3 = AllocZeroed(screenSize);
     SetBgTilemapBuffer(1, gOverworldTilemapBuffer_Bg1);
     SetBgTilemapBuffer(2, gOverworldTilemapBuffer_Bg2);
     SetBgTilemapBuffer(3, gOverworldTilemapBuffer_Bg3);
