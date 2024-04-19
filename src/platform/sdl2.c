@@ -1121,91 +1121,7 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
     }
 }
 
-static inline uint32_t getAffineBgX(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.x;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.x;
-    }
-
-    return 0;
-}
-
-static inline uint32_t getAffineBgY(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.y;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.y;
-    }
-
-    return 0;
-}
-
-static inline uint16_t getBgPA(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.pa;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.pa;
-    }
-
-    return 0;
-}
-
-static inline uint16_t getBgPB(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.pb;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.pb;
-    }
-
-    return 0;
-}
-
-static inline uint16_t getBgPC(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.pc;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.pc;
-    }
-
-    return 0;
-}
-
-static inline uint16_t getBgPD(int bgNumber)
-{
-    if (bgNumber == 2)
-    {
-        return gpu.affineBg2.pd;
-    }
-    else if (bgNumber == 3)
-    {
-        return gpu.affineBg3.pd;
-    }
-
-    return 0;
-}
-
-static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int lineNum, uint16_t *line)
+static void RenderRotScaleBGScanline(int bgNum, uint32_t bgX, uint32_t bgY, int lineNum, uint16_t *line)
 {
     struct GpuBgState *bg = &gpu.bg[bgNum];
 
@@ -1213,17 +1129,30 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     uint8_t *bgmap = (uint8_t *)BG_SCREEN_ADDR(bg->screenBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
+    int lineStart, lineEnd;
+    GetBGScanlinePos(bgNum, &lineStart, &lineEnd);
+
+    if (bg->gbaMode)
+    {
+        int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
+
+        lineNum -= offsetY;
+
+        if (lineNum < 0 || lineNum >= BASE_DISPLAY_HEIGHT)
+            return;
+    }
+
     if (bg->mosaic)
         lineNum = applyBGVerticalMosaicEffect(lineNum);
 
-    s16 pa = getBgPA(bgNum);
-    s16 pb = getBgPB(bgNum);
-    s16 pc = getBgPC(bgNum);
-    s16 pd = getBgPD(bgNum);
+    s16 pa = bg->affine.pa;
+    s16 pb = bg->affine.pb;
+    s16 pc = bg->affine.pc;
+    s16 pd = bg->affine.pd;
 
-    int sizeX = 1;
-    int sizeY = 1;
-    int yshift = 0;
+    int sizeX;
+    int sizeY;
+    int yshift;
 
     switch (bg->screenWidth)
     {
@@ -1250,9 +1179,10 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     int maskX = sizeX - 1;
     int maskY = sizeY - 1;
 
-    s32 currentX = getAffineBgX(bgNum);
-    s32 currentY = getAffineBgY(bgNum);
-    //sign extend 28 bit number
+    s32 currentX = bgX;
+    s32 currentY = bgY;
+
+    // Sign extend 28 bit number
     currentX = ((currentX & (1 << 27)) ? currentX | 0xF0000000 : currentX);
     currentY = ((currentY & (1 << 27)) ? currentY | 0xF0000000 : currentY);
 
@@ -1264,7 +1194,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
 
     if (bg->areaOverflowMode)
     {
-        for (int x = 0; x < displayWidth; x++)
+        for (unsigned int x = lineStart; x < lineEnd; x++)
         {
             int xxx = (realX >> 8) & maskX;
             int yyy = (realY >> 8) & maskY;
@@ -1286,16 +1216,12 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
     }
     else
     {
-        for (int x = 0; x < displayWidth; x++)
+        for (unsigned int x = lineStart; x < lineEnd; x++)
         {
             int xxx = (realX >> 8);
             int yyy = (realY >> 8);
 
-            if (xxx < 0 || yyy < 0 || xxx >= sizeX || yyy >= sizeY)
-            {
-                //line[x] = 0x80000000;
-            }
-            else
+            if (!(xxx < 0 || yyy < 0 || xxx >= sizeX || yyy >= sizeY))
             {
                 int tile = bgmap[(xxx >> 3) + ((yyy >> 3) << yshift)];
 
@@ -1312,11 +1238,11 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t x, uint16_t y, int line
             realY += pc;
         }
     }
-    //the only way i could figure out how to get accurate mosaic on affine bgs 
-    //luckily i dont think pokemon emerald uses mosaic on affine bgs
+
+    // Apply mosaic effect
     if (bg->mosaic && mosaicBGEffectX > 0)
     {
-        for (int x = 0; x < displayWidth; x++)
+        for (unsigned int x = lineStart; x < lineEnd; x++)
         {
             uint16_t color = line[applyBGHorizontalMosaicEffect(x)];
             line[x] = color;
@@ -1678,8 +1604,6 @@ static void GetWindowCoords(u8 which, uint16_t *bottom, uint16_t *top, uint16_t 
 
 static void DrawScanline(uint16_t *pixels, uint16_t vcount)
 {
-    unsigned int mode = gpu.displayControl & 3;
-    unsigned char numOfBgs = (mode == 0 ? 4 : 3);
     int bgnum, prnum;
     struct scanlineData scanline;
     unsigned int blendMode = (gpu.blendControl >> 6) & 3;
@@ -1691,8 +1615,11 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     memset(scanline.spriteLayers, 0, sizeof(scanline.spriteLayers));
     memset(scanline.prioritySortedBgsCount, 0, sizeof(scanline.prioritySortedBgsCount));
 
-    for (bgnum = 0; bgnum < numOfBgs; bgnum++)
+    for (bgnum = 0; bgnum < NUM_BACKGROUNDS; bgnum++)
     {
+        if (gpu.bg[bgnum].hidden)
+            continue;
+
         uint16_t priority = gpu.bg[bgnum].priority;
 
         scanline.bgtoprio[bgnum] = priority;
@@ -1701,47 +1628,23 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         scanline.prioritySortedBgs[priority][priorityCount] = bgnum;
         scanline.prioritySortedBgsCount[priority]++;
     }
-    
-    switch (mode)
+
+    // Render all visible backgrounds
+    for (bgnum = 3; bgnum >= 0; bgnum--)
     {
-    case 0:
-        // All backgrounds are text mode
-        for (bgnum = 3; bgnum >= 0; bgnum--)
-        {
-            if (isbgEnabled(bgnum) && layerEnabled[bgnum])
-            {
-                uint16_t bghoffs = gpu.bg[bgnum].x;
-                uint16_t bgvoffs = gpu.bg[bgnum].y;
+        uint16_t *line = scanline.layers[bgnum];
 
-                RenderBGScanline(bgnum, bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
-            }
-        }
-        
-        break;
-    case 1:
-        // BG2 is affine
-        bgnum = 2;
-        if (isbgEnabled(bgnum) && layerEnabled[bgnum])
+        if (isbgEnabled(bgnum) && layerEnabled[bgnum] && !gpu.bg[bgnum].hidden)
         {
-            RenderRotScaleBGScanline(bgnum, gpu.affineBg2.x, gpu.affineBg2.y, vcount, scanline.layers[bgnum]);
-        }
-        // BG0 and BG1 are text mode
-        for (bgnum = 1; bgnum >= 0; bgnum--)
-        {
-            if (isbgEnabled(bgnum) && layerEnabled[bgnum])
-            {
-                uint16_t bghoffs = gpu.bg[bgnum].x;
-                uint16_t bgvoffs = gpu.bg[bgnum].y;
+            uint32_t bg_x = gpu.bg[bgnum].x, bg_y = gpu.bg[bgnum].y;
 
-                RenderBGScanline(bgnum, bghoffs, bgvoffs, vcount, scanline.layers[bgnum]);
-            }
+            if (gpu.bg[bgnum].affine.enabled)
+                RenderRotScaleBGScanline(bgnum, bg_x, bg_y, vcount, line);
+            else
+                RenderBGScanline(bgnum, bg_x, bg_y, vcount, line);
         }
-        break;
-    default:
-        // printf("Video mode %u is unsupported.\n", mode);
-        break;
     }
-    
+
     bool windowsEnabled = false;
     uint16_t WIN0bottom, WIN0top, WIN0right, WIN0left;
     uint16_t WIN1bottom, WIN1top, WIN1right, WIN1left;

@@ -2042,7 +2042,7 @@ bool8 UseRegisteredKeyItemOnField(void)
     if (InUnionRoom() == TRUE || InBattlePyramid() || InBattlePike() || InMultiPartnerRoom() == TRUE)
         return FALSE;
     HideMapNamePopUpWindow();
-    ChangeBgY_ScreenOff(0, 0, BG_COORD_SET);
+    ChangeBgY(0, 0, BG_COORD_SET);
     if (gSaveBlock1Ptr->registeredItem != ITEM_NONE)
     {
         if (CheckBagHasItem(gSaveBlock1Ptr->registeredItem, 1) == TRUE)

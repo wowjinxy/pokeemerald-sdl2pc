@@ -2327,8 +2327,8 @@ static void UpdateWheelPosition(void)
                 - sRoulette->wheelRotation.b * (gSpriteCoordOffsetY + 80);
     bg2y = 0x5400 - sRoulette->wheelRotation.c * (gSpriteCoordOffsetX + 116)
                 - sRoulette->wheelRotation.d * (gSpriteCoordOffsetY + 80);
-    SetGpuAffineBgX(2, bg2x);
-    SetGpuAffineBgY(2, bg2y);
+    SetGpuBackgroundX(2, bg2x);
+    SetGpuBackgroundY(2, bg2y);
 }
 
 static const u8 sFiller[3] = {};

@@ -3,23 +3,29 @@
 
 struct GpuState gpu;
 
+static void SetGpuMode(u8 mode);
+
 void GpuInit(void)
 {
     gpu.gfxDataSize = BG_CHAR_SIZE * NUM_CHAR_BLOCKS;
     gpu.tileMapsSize = BG_SCREEN_SIZE * NUM_SCREEN_BLOCKS;
     gpu.spriteGfxDataSize = 32000;
 
-    gpu.gfxData = calloc(1, gpu.gfxDataSize);
+    gpu.gfxData = malloc(gpu.gfxDataSize);
     if (!gpu.gfxData)
         abort();
 
-    gpu.tileMaps = calloc(1, gpu.tileMapsSize);
+    gpu.tileMaps = malloc(gpu.tileMapsSize);
     if (!gpu.tileMaps)
         abort();
 
-    gpu.spriteGfxData = calloc(1, gpu.spriteGfxDataSize);
+    gpu.spriteGfxData = malloc(gpu.spriteGfxDataSize);
     if (!gpu.spriteGfxData)
         abort();
+
+    GpuClearAll();
+
+    SetGpuMode(0);
 }
 
 void GpuClearData(void)
@@ -82,12 +88,40 @@ void GpuClearTilemap(u8 bgNum)
         memset(ptr, 0, BG_SCREEN_SIZE);
 }
 
+static void SetGpuMode(u8 mode)
+{
+    for (unsigned i = 0; i < NUM_BACKGROUNDS; i++)
+    {
+        gpu.bg[i].hidden = FALSE;
+        gpu.bg[i].affine.enabled = FALSE;
+    }
+
+    switch (mode)
+    {
+    case 0:
+        gpu.bg[2].affine.enabled = FALSE;
+        gpu.bg[3].hidden = FALSE;
+        break;
+    case 1:
+        gpu.bg[2].affine.enabled = TRUE;
+        gpu.bg[3].hidden = TRUE;
+        break;
+    case 2:
+        gpu.bg[0].hidden = TRUE;
+        gpu.bg[1].hidden = TRUE;
+        gpu.bg[2].affine.enabled = TRUE;
+        gpu.bg[3].affine.enabled = TRUE;
+        break;
+    }
+}
+
 void SetGpuState(u8 state, u32 val)
 {
     switch (state)
     {
     case GPU_STATE_DISPCNT:
         gpu.displayControl = val;
+        SetGpuMode(gpu.displayControl & 3);
         break;
     case GPU_STATE_DISPSTAT:
         gpu.displayStatus &= ~(DISPSTAT_HBLANK_INTR | DISPSTAT_VBLANK_INTR);
@@ -230,125 +264,68 @@ u32 GetGpuWindowOut(void)
     return gpu.window.out;
 }
 
-static struct GpuAffineBgState *GetAffineBgState(u8 bgNum)
-{
-    switch (bgNum)
-    {
-    case 2:
-        return &gpu.affineBg2;
-    case 3:
-        return &gpu.affineBg3;
-    default:
-        return NULL;
-    }
-}
-
 void SetGpuAffineBgA(u8 bgNum, u32 a)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    state->pa = a;
+    gpu.bg[bgNum].affine.pa = a;
 }
 
 void SetGpuAffineBgB(u8 bgNum, u32 b)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    state->pb = b;
+    gpu.bg[bgNum].affine.pb = b;
 }
 
 void SetGpuAffineBgC(u8 bgNum, u32 c)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    state->pc = c;
+    gpu.bg[bgNum].affine.pc = c;
 }
 
 void SetGpuAffineBgD(u8 bgNum, u32 d)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return;
 
-    state->pd = d;
-}
-
-void SetGpuAffineBgX(u8 bgNum, u32 x)
-{
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
-        return;
-
-    state->x = x;
-}
-
-void SetGpuAffineBgY(u8 bgNum, u32 y)
-{
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
-        return;
-
-    state->y = y;
+    gpu.bg[bgNum].affine.pd = d;
 }
 
 u32 GetGpuAffineBgA(u8 bgNum)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return state->pa;
+    return gpu.bg[bgNum].affine.pa;
 }
 
 u32 GetGpuAffineBgB(u8 bgNum)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return state->pb;
+    return gpu.bg[bgNum].affine.pb;
 }
 
 u32 GetGpuAffineBgC(u8 bgNum)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return state->pc;
+    return gpu.bg[bgNum].affine.pc;
 }
 
 u32 GetGpuAffineBgD(u8 bgNum)
 {
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
+    if (bgNum >= NUM_BACKGROUNDS)
         return 0;
 
-    return state->pd;
-}
-
-u32 GetGpuAffineBgX(u8 bgNum)
-{
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
-        return 0;
-
-    return state->x;
-}
-
-u32 GetGpuAffineBgY(u8 bgNum)
-{
-    struct GpuAffineBgState *state = GetAffineBgState(bgNum);
-    if (state == NULL)
-        return 0;
-
-    return state->y;
+    return gpu.bg[bgNum].affine.pd;
 }
 
 void SetGpuBackgroundPriority(u8 bgNum, u32 priority)
@@ -389,6 +366,14 @@ void SetGpuBackgroundGbaMode(u8 bgNum, u32 gbaMode)
         return;
 
     gpu.bg[bgNum].gbaMode = gbaMode;
+}
+
+void SetGpuBackgroundAffine(u8 bgNum, u32 isAffine)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].affine.enabled = isAffine;
 }
 
 void SetGpuBackgroundScreenBaseBlock(u8 bgNum, u32 screenBaseBlock)
@@ -461,6 +446,14 @@ u32 GetGpuBackgroundGbaMode(u8 bgNum)
         return 0;
 
     return gpu.bg[bgNum].gbaMode;
+}
+
+u32 GetGpuBackgroundAffine(u8 bgNum)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return 0;
+
+    return gpu.bg[bgNum].affine.enabled;
 }
 
 u32 GetGpuBackgroundScreenBaseBlock(u8 bgNum)

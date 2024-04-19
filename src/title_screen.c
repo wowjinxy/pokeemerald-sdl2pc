@@ -635,8 +635,8 @@ void CB2_InitTitleScreen(void)
         break;
     case 4:
         PanFadeAndZoomScreen(DisplayWidth() / 2, DisplayHeight() / 2, 0x100, 0);
-        SetGpuAffineBgX(2, (-1 << 16) + (-29 * 256));
-        SetGpuAffineBgY(2, (-1 << 16) + (-32 * 256));
+        SetGpuBackgroundX(2, -29 * 256);
+        SetGpuBackgroundY(2, -32 * 256);
         SetGpuWindowX(0, 0);
         SetGpuWindowY(0, 0);
         SetGpuWindowX(1, 0);
@@ -651,16 +651,23 @@ void CB2_InitTitleScreen(void)
         SetGpuBackgroundPriority(0, 3);
         SetGpuBackgroundCharBaseBlock(0, 2);
         SetGpuBackgroundScreenBaseBlock(0, 26);
+        SetGpuBackgroundWidth(0, 256);
+        SetGpuBackgroundHeight(0, 256);
 
         ClearGpuBackgroundState(1);
         SetGpuBackgroundPriority(1, 2);
         SetGpuBackgroundCharBaseBlock(1, 3);
         SetGpuBackgroundScreenBaseBlock(1, 27);
+        SetGpuBackgroundWidth(1, 256);
+        SetGpuBackgroundHeight(1, 256);
 
         ClearGpuBackgroundState(2);
         SetGpuBackgroundPriority(2, 1);
         SetGpuBackgroundCharBaseBlock(2, 0);
         SetGpuBackgroundScreenBaseBlock(2, 9);
+        SetGpuBackgroundWidth(2, 256);
+        SetGpuBackgroundHeight(2, 256);
+        SetGpuBackground8bppMode(2, 1);
 
         EnableInterrupts(INTR_FLAG_VBLANK);
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1
@@ -767,10 +774,13 @@ static void Task_TitleScreenPhase2(u8 taskId)
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
                                     | DISPCNT_OBJ_ON);
+        SetGpuBackgroundY(2, 0);
         CreatePressStartBanner(START_BANNER_X, 108);
         CreateCopyrightBanner(START_BANNER_X, 148);
         gTasks[taskId].tBg1Y = 0;
+        gTasks[taskId].tBg2Y = 0;
         gTasks[taskId].func = Task_TitleScreenPhase3;
+        return;
     }
 
     if (!(gTasks[taskId].tCounter & 3) && gTasks[taskId].tPointless != 0)
@@ -780,7 +790,7 @@ static void Task_TitleScreenPhase2(u8 taskId)
 
     // Slide Pokémon logo up
     yPos = gTasks[taskId].tBg2Y * 256;
-    SetGpuAffineBgY(2, yPos);
+    SetGpuBackgroundY(2, yPos);
 
     gTasks[taskId].data[5] = 15; // Unused
     gTasks[taskId].data[6] = 6;  // Unused
@@ -814,7 +824,7 @@ static void Task_TitleScreenPhase3(u8 taskId)
     }
     else
     {
-        SetGpuAffineBgY(2, 0);
+        SetGpuBackgroundY(2, 0);
         if (++gTasks[taskId].tCounter & 1)
         {
             gTasks[taskId].tBg1Y++;

@@ -291,8 +291,8 @@ static void SetBgAffineInternal(u8 bg, s32 srcCenterX, s32 srcCenterY, s16 dispC
     SetGpuAffineBgB(2, dest.pb);
     SetGpuAffineBgC(2, dest.pc);
     SetGpuAffineBgD(2, dest.pd);
-    SetGpuAffineBgX(2, dest.dx);
-    SetGpuAffineBgY(2, dest.dy);
+    SetGpuBackgroundX(2, dest.dx);
+    SetGpuBackgroundY(2, dest.dy);
 }
 
 bool8 IsInvalidBg(u8 bg)
@@ -549,10 +549,6 @@ int GetBgAttribute(u8 bg, u8 attributeId)
 
 s32 ChangeBgX(u8 bg, s32 value, u8 op)
 {
-    u8 mode;
-    u16 temp1;
-    u16 temp2;
-
     if (IsInvalidBg32(bg) || !GetBgControlAttribute(bg, BG_CTRL_ATTR_VISIBLE))
     {
         return -1;
@@ -572,45 +568,16 @@ s32 ChangeBgX(u8 bg, s32 value, u8 op)
         break;
     }
 
-    mode = GetBgMode();
-
-    switch (bg)
+    u8 isAffine = GetGpuBackgroundAffine(bg);
+    if (isAffine)
     {
-    case 0:
-        temp1 = sGpuBgConfigs2[0].bg_x >> 0x8;
-        SetGpuBackgroundX(0, temp1);
-        break;
-    case 1:
-        temp1 = sGpuBgConfigs2[1].bg_x >> 0x8;
-        SetGpuBackgroundX(1, temp1);
-        break;
-    case 2:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[2].bg_x >> 0x8;
-            SetGpuBackgroundX(2, temp1);
-        }
-        else
-        {
-            temp1 = sGpuBgConfigs2[2].bg_x >> 0x10;
-            temp2 = sGpuBgConfigs2[2].bg_x & 0xFFFF;
-            SetGpuAffineBgX(2, sGpuBgConfigs2[2].bg_x);
-            SetGpuAffineBgX(2, (temp1 << 16) + temp2);
-        }
-        break;
-    case 3:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_x >> 0x8;
-            SetGpuBackgroundX(3, temp1);
-        }
-        else if (mode == 2)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_x >> 0x10;
-            temp2 = sGpuBgConfigs2[3].bg_x & 0xFFFF;
-            SetGpuAffineBgX(3, (temp1 << 16) + temp2);
-        }
-        break;
+        u32 frac = sGpuBgConfigs2[2].bg_x & 0xFF;
+        u32 whole = (sGpuBgConfigs2[2].bg_x & 0xFFFFF00) >> 4;
+        SetGpuBackgroundX(bg, frac | whole);
+    }
+    else
+    {
+        SetGpuBackgroundX(bg, sGpuBgConfigs2[bg].bg_x >> 0x8);
     }
 
     return sGpuBgConfigs2[bg].bg_x;
@@ -651,112 +618,16 @@ s32 ChangeBgY(u8 bg, s32 value, u8 op)
         break;
     }
 
-    mode = GetBgMode();
-
-    switch (bg)
+    u8 isAffine = GetGpuBackgroundAffine(bg);
+    if (isAffine)
     {
-    case 0:
-        temp1 = sGpuBgConfigs2[0].bg_y >> 0x8;
-        SetGpuBackgroundY(0, temp1);
-        break;
-    case 1:
-        temp1 = sGpuBgConfigs2[1].bg_y >> 0x8;
-        SetGpuBackgroundY(1, temp1);
-        break;
-    case 2:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[2].bg_y >> 0x8;
-            SetGpuBackgroundY(2, temp1);
-        }
-        else
-        {
-            temp1 = sGpuBgConfigs2[2].bg_y >> 0x10;
-            temp2 = sGpuBgConfigs2[2].bg_y & 0xFFFF;
-            SetGpuAffineBgY(2, (temp1 << 16) + temp2);
-        }
-        break;
-    case 3:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_y >> 0x8;
-            SetGpuBackgroundY(3, temp1);
-        }
-        else if (mode == 2)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_y >> 0x10;
-            temp2 = sGpuBgConfigs2[3].bg_y & 0xFFFF;
-            SetGpuAffineBgY(3, (temp1 << 16) + temp2);
-        }
-        break;
+        u32 frac = sGpuBgConfigs2[2].bg_y & 0xFF;
+        u32 whole = (sGpuBgConfigs2[2].bg_y & 0xFFFFF00) >> 4;
+        SetGpuBackgroundY(bg, frac | whole);
     }
-
-    return sGpuBgConfigs2[bg].bg_y;
-}
-
-s32 ChangeBgY_ScreenOff(u8 bg, s32 value, u8 op)
-{
-    u8 mode;
-    u16 temp1;
-    u16 temp2;
-
-    if (IsInvalidBg32(bg) || !GetBgControlAttribute(bg, BG_CTRL_ATTR_VISIBLE))
+    else
     {
-        return -1;
-    }
-
-    switch (op)
-    {
-    case BG_COORD_SET:
-    default:
-        sGpuBgConfigs2[bg].bg_y = value;
-        break;
-    case BG_COORD_ADD:
-        sGpuBgConfigs2[bg].bg_y += value;
-        break;
-    case BG_COORD_SUB:
-        sGpuBgConfigs2[bg].bg_y -= value;
-        break;
-    }
-
-    mode = GetBgMode();
-
-    switch (bg)
-    {
-    case 0:
-        temp1 = sGpuBgConfigs2[0].bg_y >> 0x8;
-        SetGpuBackgroundY(0, temp1);
-        break;
-    case 1:
-        temp1 = sGpuBgConfigs2[1].bg_y >> 0x8;
-        SetGpuBackgroundY(1, temp1);
-        break;
-    case 2:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[2].bg_y >> 0x8;
-            SetGpuBackgroundY(2, temp1);
-        }
-        else
-        {
-            temp1 = sGpuBgConfigs2[2].bg_y >> 0x10;
-            temp2 = sGpuBgConfigs2[2].bg_y & 0xFFFF;
-            SetGpuAffineBgY(2, (temp1 << 16) + temp2);
-        }
-        break;
-    case 3:
-        if (mode == 0)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_y >> 0x8;
-            SetGpuBackgroundY(3, temp1);
-        }
-        else if (mode == 2)
-        {
-            temp1 = sGpuBgConfigs2[3].bg_y >> 0x10;
-            temp2 = sGpuBgConfigs2[3].bg_y & 0xFFFF;
-            SetGpuAffineBgY(3, (temp1 << 16) + temp2);
-        }
-        break;
+        SetGpuBackgroundY(bg, sGpuBgConfigs2[bg].bg_y >> 0x8);
     }
 
     return sGpuBgConfigs2[bg].bg_y;
@@ -1283,41 +1154,14 @@ void CopyTileMapEntry(const u16 *src, u16 *dest, s32 palette1, s32 tileOffset, s
 
 static u32 GetBgType(u8 bg)
 {
-    u8 mode = GetBgMode();
+    if (bg >= NUM_BACKGROUNDS)
+        return BG_TYPE_NONE;
 
-    switch (bg)
-    {
-    case 0:
-    case 1:
-        switch (mode)
-        {
-        case 0:
-        case 1:
-            return BG_TYPE_NORMAL;
-        }
-        break;
-    case 2:
-        switch (mode)
-        {
-        case 0:
-            return BG_TYPE_NORMAL;
-        case 1:
-        case 2:
-            return BG_TYPE_AFFINE;
-        }
-        break;
-    case 3:
-        switch (mode)
-        {
-        case 0:
-            return BG_TYPE_NORMAL;
-        case 2:
-            return BG_TYPE_AFFINE;
-        }
-        break;
-    }
+    u8 isAffine = GetGpuBackgroundAffine(bg);
+    if (isAffine)
+        return BG_TYPE_AFFINE;
 
-    return BG_TYPE_NONE;
+    return BG_TYPE_NORMAL;
 }
 
 bool32 IsInvalidBg32(u8 bg)
@@ -1330,9 +1174,5 @@ bool32 IsInvalidBg32(u8 bg)
 
 bool32 IsTileMapOutsideWram(u8 bg)
 {
-#ifndef PORTABLE
-    if (sGpuBgConfigs2[bg].tilemap > (void *)IWRAM_END)
-        return TRUE;
-#endif
     return sGpuBgConfigs2[bg].tilemap == NULL;
 }

@@ -2715,8 +2715,8 @@ static void SetTradeBGAffine(void)
     SetGpuAffineBgB(2, affine.pb);
     SetGpuAffineBgC(2, affine.pc);
     SetGpuAffineBgD(2, affine.pd);
-    SetGpuAffineBgX(2, affine.dx);
-    SetGpuAffineBgY(2, affine.dy);
+    SetGpuBackgroundX(2, affine.dx);
+    SetGpuBackgroundY(2, affine.dy);
 }
 
 static void SetTradeGpuRegs(void)

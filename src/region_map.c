@@ -939,8 +939,8 @@ void UpdateRegionMapVideoRegs(void)
         SetGpuAffineBgB(2, sRegionMap->bg2pb);
         SetGpuAffineBgC(2, sRegionMap->bg2pc);
         SetGpuAffineBgD(2, sRegionMap->bg2pd);
-        SetGpuAffineBgX(2, sRegionMap->bg2x);
-        SetGpuAffineBgY(2, sRegionMap->bg2y);
+        SetGpuBackgroundX(2, sRegionMap->bg2x);
+        SetGpuBackgroundY(2, sRegionMap->bg2y);
         sRegionMap->needUpdateVideoRegs = FALSE;
     }
 }

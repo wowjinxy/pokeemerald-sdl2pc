@@ -2847,8 +2847,8 @@ void PanFadeAndZoomScreen(u16 screenX, u16 screenY, u16 zoom, u16 alpha)
     SetGpuAffineBgB(2, dest.pb);
     SetGpuAffineBgC(2, dest.pc);
     SetGpuAffineBgD(2, dest.pd);
-    SetGpuAffineBgX(2, dest.dx);
-    SetGpuAffineBgY(2, dest.dy);
+    SetGpuBackgroundX(2, dest.dx);
+    SetGpuBackgroundY(2, dest.dy);
 }
 
 static void SpriteCB_WaterDrop_Ripple(struct Sprite *sprite)

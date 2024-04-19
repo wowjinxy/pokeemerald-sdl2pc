@@ -41,24 +41,26 @@ struct GpuScanlineEffect
     u32 position;
 };
 
+struct GpuAffineBgState
+{
+    u8 enabled:1;
+    s16 pa, pb, pc, pd;
+};
+
 struct GpuBgState
 {
     s32 x, y;
     u16 priority:2;
     u16 charBaseBlock;
-    u16 mosaic:1;
-    u16 palettes:1;
-    u16 gbaMode:1;
     u16 screenBaseBlock;
-    u16 areaOverflowMode:1;
     u16 screenWidth;
     u16 screenHeight;
-};
-
-struct GpuAffineBgState
-{
-    s16 pa, pb, pc, pd;
-    s32 x, y;
+    u8 mosaic:1;
+    u8 palettes:1;
+    u8 gbaMode:1;
+    u8 hidden:1;
+    u8 areaOverflowMode:1;
+    struct GpuAffineBgState affine;
 };
 
 struct GpuWindowState
@@ -85,9 +87,6 @@ struct GpuState
     u32 vCount;
 
     struct GpuBgState bg[NUM_BACKGROUNDS];
-
-    struct GpuAffineBgState affineBg2;
-    struct GpuAffineBgState affineBg3;
 
     struct {
         struct GpuWindowState state[2];
