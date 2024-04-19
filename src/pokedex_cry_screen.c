@@ -398,7 +398,7 @@ static void DrawWaveformSegment(u8 position, float amplitude)
     u8 nybble;
     u16 offset;
     u16 temp;
-    float y;
+    u8 y;
 
     temp = (amplitude + 127) * 256;
     y = temp / 1152.0;
