@@ -297,12 +297,12 @@ int main(int argc, char **argv)
 
         if (!paused)
         {
-            double dt = fixedTimestep / timeScale; // TODO: Fix speedup
+            double dt = fixedTimestep;
 
             curGameTime = SDL_GetPerformanceCounter();
+
             double deltaTime = (double)((curGameTime - lastGameTime) / (double)SDL_GetPerformanceFrequency());
-            if (deltaTime > (dt * 5))
-                deltaTime = dt;
+            deltaTime *= timeScale;
             lastGameTime = curGameTime;
 
             accumulator += deltaTime;
