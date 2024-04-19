@@ -617,6 +617,7 @@ static void CB2_InitBattleInternal(void)
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
 
+    ResetGpuDisplayControl();
     GpuClearData();
 
     SetGpuState(GPU_STATE_MOSAIC, 0);

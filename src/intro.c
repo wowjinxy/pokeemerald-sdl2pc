@@ -2730,7 +2730,7 @@ static void Task_RayquazaAttack(u8 taskId)
 
 static void IntroResetGpuRegs(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
+    ResetGpuDisplayControl();
     SetGpuBackgroundX(3, 0);
     SetGpuBackgroundY(3, 0);
     SetGpuBackgroundX(2, 0);

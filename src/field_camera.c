@@ -52,14 +52,25 @@ void ResetFieldCamera(void)
     ResetCameraOffset(&sFieldCameraOffset);
 }
 
+static bool8 UseFullScreen(void)
+{
+    if (GetGpuState(GPU_STATE_DISPCNT) & DISPCNT_GBA_MODE)
+        return FALSE;
+
+    return TRUE;
+}
+
 void FieldUpdateBgTilemapScroll(void)
 {
     u32 r4, r5;
     r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan;
     r4 = sVerticalCameraPan + sFieldCameraOffset.yPixelOffset + 8;
 
-    r5 -= (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
-    r4 -= (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+    if (UseFullScreen())
+    {
+        r5 -= (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
+        r4 -= (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+    }
 
     SetGpuBackgroundX(1, r5);
     SetGpuBackgroundY(1, r4);
@@ -336,8 +347,11 @@ void UpdateCameraPanning(void)
     gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan;
     gSpriteCoordOffsetY = gTotalCameraPixelOffsetY - sVerticalCameraPan - 8;
 
-    gSpriteCoordOffsetX += (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
-    gSpriteCoordOffsetY += (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+    if (UseFullScreen())
+    {
+        gSpriteCoordOffsetX += (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
+        gSpriteCoordOffsetY += (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
+    }
 }
 
 static void CameraPanningCB_PanAhead(void)

@@ -1068,6 +1068,9 @@ static void Task_BattleTransition(u8 taskId)
 
 static bool8 Transition_StartIntro(struct Task *task)
 {
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
+    FieldUpdateBgTilemapScroll();
+    UpdateCameraPanning();
     SetWeatherScreenFadeOut();
     CpuCopy32(gPlttBufferFaded, gPlttBufferUnfaded, PLTT_SIZE);
     if (sTasks_Intro[task->tTransitionId] != NULL)

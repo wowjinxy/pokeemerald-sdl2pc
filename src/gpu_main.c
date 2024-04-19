@@ -182,7 +182,7 @@ void ClearGpuStateBits(u8 state, u32 mask)
 
 void ResetGpuDisplayControl(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
 }
 
 void SetGpuBackgroundX(u8 bgNum, u32 x)

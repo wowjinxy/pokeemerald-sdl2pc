@@ -84,7 +84,7 @@ struct GpuState
 
     u32 displayControl;
     u32 displayStatus;
-    u32 vCount;
+    s16 vCount;
 
     struct GpuBgState bg[NUM_BACKGROUNDS];
 
