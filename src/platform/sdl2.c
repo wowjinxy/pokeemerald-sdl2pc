@@ -1550,10 +1550,8 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
 
                 unsigned int global_x = local_x + x;
 
-                if (global_x < lineStart)
+                if (global_x < lineStart || global_x >= lineEnd)
                     continue;
-                else if (global_x >= lineEnd)
-                    break;
 
                 if (oam->mosaic == 1)
                 {
