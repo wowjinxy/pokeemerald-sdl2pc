@@ -183,7 +183,7 @@ static void CB2_SaveFailedScreen(void)
     case 0:
     default:
         SetVBlankCallback(NULL);
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ClearGpuBackgroundState(3);
         ClearGpuBackgroundState(2);
         ClearGpuBackgroundState(1);
@@ -229,7 +229,7 @@ static void CB2_SaveFailedScreen(void)
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         EnableInterrupts(1);
         SetVBlankCallback(VBlankCB);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(2);
         ShowBg(3);

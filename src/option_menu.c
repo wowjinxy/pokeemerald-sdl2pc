@@ -162,7 +162,7 @@ void CB2_InitOptionMenu(void)
         break;
     case 1:
         GpuClearAll();
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ResetBgsAndClearDma3BusyFlags(0);
         InitBgsFromTemplates(0, sOptionMenuBgTemplates, ARRAY_COUNT(sOptionMenuBgTemplates));
         ChangeBgX(0, 0, BG_COORD_SET);
@@ -182,7 +182,7 @@ void CB2_InitOptionMenu(void)
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_EFFECT_DARKEN);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 4);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         gMain.state++;

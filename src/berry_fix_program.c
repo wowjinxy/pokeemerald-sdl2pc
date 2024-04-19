@@ -202,7 +202,7 @@ void CB2_InitBerryFixProgram(void)
     ResetSpriteData();
     ResetTasks();
     ScanlineEffect_Stop();
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     sBerryFix = AllocZeroed(sizeof(*sBerryFix));
     sBerryFix->state = MAINSTATE_INIT;
     sBerryFix->curScene = SCENE_NONE;
@@ -299,7 +299,7 @@ static void BerryFix_GpuSet(void)
     DeactivateAllTextPrinters();
 
     DmaCopy32(3, sText_Pal, BG_PLTT + PLTT_OFFSET_4BPP(15), sizeof(sText_Pal));
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     FillWindowPixelBuffer(WIN_GAME_NAMES, PIXEL_FILL(0));
     FillWindowPixelBuffer(WIN_TURN_OFF_TITLE, PIXEL_FILL(0));
     FillWindowPixelBuffer(WIN_TITLE, PIXEL_FILL(10));

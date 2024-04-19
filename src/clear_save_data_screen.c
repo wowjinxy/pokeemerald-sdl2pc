@@ -166,7 +166,7 @@ static bool8 SetupClearSaveDataScreen(void)
         ResetSpriteData();
         ResetBgsAndClearDma3BusyFlags(0);
         InitBgsFromTemplates(0, sClearSaveBgTemplates, ARRAY_COUNT(sClearSaveBgTemplates));
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(3);
         SetGpuState(GPU_STATE_BLDCNT, 0);

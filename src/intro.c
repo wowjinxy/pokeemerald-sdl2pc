@@ -1073,7 +1073,7 @@ static u8 SetUpCopyrightScreen(void)
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
         *(u16 *)PLTT = RGB_WHITE;
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_GBA_MODE);
         SetGpuBackgroundX(0, 0);
         SetGpuBackgroundY(0, 0);
         GpuClearData();
@@ -1090,7 +1090,6 @@ static u8 SetUpCopyrightScreen(void)
         SetGpuBackgroundScreenBaseBlock(0, 7);
         EnableInterrupts(INTR_FLAG_VBLANK);
         SetVBlankCallback(VBlankCB_Intro);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
         SetSerialCallback(SerialCB_CopyrightScreen);
         GameCubeMultiBoot_Init(&gMultibootProgramStruct);
     default:
@@ -1224,7 +1223,7 @@ static void Task_Scene1_FadeIn(u8 taskId)
 {
     BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
     SetVBlankCallback(VBlankCB_Intro);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_Scene1_WaterDrops;
     gIntroFrameCounter = 0;
     m4aSongNumStart(MUS_INTRO);
@@ -1750,7 +1749,7 @@ static void Task_Scene3_Load(u8 taskId)
     SetGpuBackgroundPriority(2, 3);
     SetGpuBackgroundScreenBaseBlock(2, 8);
     SetGpuBackground8bppMode(2, 1);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG2_ON | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG2_ON | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_Scene3_SpinPokeball;
     gIntroFrameCounter = 0;
     m4aSongNumStart(MUS_INTRO_BATTLE);
@@ -1830,7 +1829,8 @@ static void Task_Scene3_InitGroudonBg(u8 taskId)
                                 | DISPCNT_BG1_ON
                                 | DISPCNT_BG2_ON
                                 | DISPCNT_OBJ_ON
-                                | DISPCNT_WIN0_ON);
+                                | DISPCNT_WIN0_ON
+                                | DISPCNT_GBA_MODE);
     BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_WHITEALPHA);
     gTasks[taskId].tWinPos = 0;
     gTasks[taskId].tScreenX = 0xFFA0;
@@ -2344,7 +2344,8 @@ static void Task_Scene3_LoadClouds1(u8 taskId)
     SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG0
                                | BLDCNT_TGT1_BG1
                                | BLDCNT_TGT1_BG2
-                               | BLDCNT_EFFECT_LIGHTEN);
+                               | BLDCNT_EFFECT_LIGHTEN
+                               | DISPCNT_GBA_MODE);
     SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(31, 31));
     SetGpuState(GPU_STATE_BLDY, 31);
 
@@ -2378,16 +2379,20 @@ static void Task_Scene3_LoadClouds1(u8 taskId)
                                 | DISPCNT_BG1_ON
                                 | DISPCNT_BG2_ON
                                 | DISPCNT_OBJ_ON
-                                | DISPCNT_WIN0_ON);
+                                | DISPCNT_WIN0_ON
+                                | DISPCNT_GBA_MODE);
+
     SetGpuBackgroundX(0, 80);
     SetGpuBackgroundY(0, 0);
     SetGpuBackgroundX(1, -80);
     SetGpuBackgroundY(1, 0);
     SetGpuBackgroundX(2, 0);
     SetGpuBackgroundY(2, 0);
+
     LZDecompressVram(gIntroClouds_Gfx, gpu.gfxData);
     LZDecompressVram(gIntroClouds_Gfx, (void *)(BG_CHAR_ADDR(1)));
     LZDecompressVram(gIntroCloudsSun_Tilemap, (void *)(BG_SCREEN_ADDR(28)));
+
     gTasks[taskId].func = Task_Scene3_LoadClouds2;
 }
 
@@ -2461,7 +2466,8 @@ static void Task_Scene3_LoadLightning(u8 taskId)
                                 | DISPCNT_BG0_ON
                                 | DISPCNT_BG2_ON
                                 | DISPCNT_OBJ_ON
-                                | DISPCNT_WIN0_ON);
+                                | DISPCNT_WIN0_ON
+                                | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_Scene3_Lightning;
     gTasks[taskId].tState = 0;
     gTasks[taskId].tDelay = 1;
@@ -2560,7 +2566,8 @@ static void Task_Scene3_LoadRayquazaAttack(u8 taskId)
                                 | DISPCNT_BG0_ON
                                 | DISPCNT_BG2_ON
                                 | DISPCNT_OBJ_ON
-                                | DISPCNT_WIN0_ON);
+                                | DISPCNT_WIN0_ON
+                                | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_Scene3_Rayquaza;
     BeginNormalPaletteFade(PALETTES_BG & ~(0x21), 0, 16, 0, RGB(9, 10, 10));
     gTasks[taskId].tState = 0;
@@ -2723,7 +2730,7 @@ static void Task_RayquazaAttack(u8 taskId)
 
 static void IntroResetGpuRegs(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
     SetGpuBackgroundX(3, 0);
     SetGpuBackgroundY(3, 0);
     SetGpuBackgroundX(2, 0);

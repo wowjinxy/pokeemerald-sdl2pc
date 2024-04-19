@@ -180,6 +180,11 @@ void ClearGpuStateBits(u8 state, u32 mask)
     SetGpuState(state, bits & ~mask);
 }
 
+void ResetGpuDisplayControl(void)
+{
+    SetGpuState(GPU_STATE_DISPCNT, 0);
+}
+
 void SetGpuBackgroundX(u8 bgNum, u32 x)
 {
     if (bgNum >= NUM_BACKGROUNDS)

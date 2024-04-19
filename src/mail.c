@@ -508,7 +508,7 @@ static bool8 MailReadBuildGraphics(void)
         case 0:
             SetVBlankCallback(NULL);
             ScanlineEffect_Stop();
-            SetGpuState(GPU_STATE_DISPCNT, 0);
+            ResetGpuDisplayControl();
             break;
         case 1:
             GpuClearSprites();
@@ -610,7 +610,7 @@ static bool8 MailReadBuildGraphics(void)
             }
             break;
         case 18:
-            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
             ShowBg(0);
             ShowBg(1);
             ShowBg(2);

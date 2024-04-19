@@ -3145,7 +3145,7 @@ static void Task_ShowTourneyInfoCard(u8 taskId)
         {
             DisplayTrainerInfoOnCard(0, tournamentId);
         }
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         if (mode != INFOCARD_NEXT_OPPONENT)
         {
             // Scroll up arrow
@@ -5415,7 +5415,7 @@ static void Task_ShowTourneyTree(u8 taskId)
                 CreateSprite(&sCancelButtonSpriteTemplate, 218, 12, 0);
         }
 
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         gTasks[taskId].tState++;
         break;
     case 4:

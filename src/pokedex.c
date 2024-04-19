@@ -2138,7 +2138,7 @@ static bool8 LoadPokedexListPage(u8 page)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_OBJWIN_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_OBJWIN_ON | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -3314,7 +3314,7 @@ static void Task_LoadInfoScreen(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -3631,7 +3631,7 @@ static void Task_LoadCryScreen(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -3815,7 +3815,7 @@ static void Task_LoadSizeScreen(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -4022,7 +4022,7 @@ static void Task_DisplayCaughtMonDexPage(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         ShowBg(2);
         ShowBg(3);
         gTasks[taskId].tState++;
@@ -4068,7 +4068,7 @@ static void Task_ExitCaughtMonPage(u8 taskId)
         const u32 *lzPaletteData;
         void *buffer;
 
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         FreeAllWindowBuffers();
         buffer = GetBgTilemapBuffer(2);
         if (buffer)
@@ -4894,7 +4894,7 @@ static void Task_LoadSearchMenu(u8 taskId)
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         HideBg(0);
         ShowBg(1);
         ShowBg(2);

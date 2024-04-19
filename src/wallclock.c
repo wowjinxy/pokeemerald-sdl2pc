@@ -628,7 +628,7 @@ static void VBlankCB_WallClock(void)
 static void LoadWallClockGraphics(void)
 {
     SetVBlankCallback(NULL);
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(3);
     ClearGpuBackgroundState(2);
     ClearGpuBackgroundState(1);
@@ -675,7 +675,7 @@ static void WallClockInit(void)
     SetGpuState(GPU_STATE_BLDCNT, 0);
     SetGpuState(GPU_STATE_BLDALPHA, 0);
     SetGpuState(GPU_STATE_BLDY, 0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     ShowBg(0);
     ShowBg(2);
     ShowBg(3);

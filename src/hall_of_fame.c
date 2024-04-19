@@ -697,7 +697,7 @@ static void Task_Hof_WaitToDisplayPlayer(u8 taskId)
 
 static void Task_Hof_DisplayPlayer(u8 taskId)
 {
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ShowBg(0);
     ShowBg(1);
     ShowBg(3);
@@ -1305,7 +1305,7 @@ static bool8 LoadHofBgs(void)
         InitTextBoxGfxAndPrinters();
         break;
     case 4:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(3);

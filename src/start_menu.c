@@ -1211,7 +1211,7 @@ static bool32 InitSaveWindowAfterLinkBattle(u8 *state)
     switch (*state)
     {
     case 0:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_GBA_MODE);
         SetVBlankCallback(NULL);
         ScanlineEffect_Stop();
         GpuClearPalette();

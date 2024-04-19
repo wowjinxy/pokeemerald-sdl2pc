@@ -2122,7 +2122,7 @@ static void ResetMirageTowerAndSaveBlockPtrs(void)
 
 static void ResetScreenForMapLoad(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ScanlineEffect_Stop();
 
     GpuClearPalette2();

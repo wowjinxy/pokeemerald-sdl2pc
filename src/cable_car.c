@@ -724,7 +724,7 @@ static void SetBgRegs(bool8 active)
         SetGpuWindowX(1, 0);
         SetGpuWindowY(0, 0);
         SetGpuWindowY(1, 0);
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ClearGpuBackgroundState(3);
         ClearGpuBackgroundState(2);
         ClearGpuBackgroundState(1);
@@ -773,7 +773,7 @@ static void SetBgRegs(bool8 active)
         SetGpuBackgroundY(1, sCableCar->bg1VerticalOffset);
         SetGpuBackgroundX(0, sCableCar->bg0HorizontalOffset);
         SetGpuBackgroundY(0, sCableCar->bg0VerticalOffset);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         CopyBgTilemapBufferToVram(1);
         CopyBgTilemapBufferToVram(2);
         ShowBg(0);

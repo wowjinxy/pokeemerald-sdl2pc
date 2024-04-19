@@ -857,7 +857,7 @@ static void SetDataFromTrainerCard(void)
 
 static void InitGpuRegs(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
@@ -891,7 +891,7 @@ static void ResetGpuRegs(void)
 {
     SetVBlankCallback(NULL);
     SetHBlankCallback(NULL);
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(0);
     ClearGpuBackgroundState(1);
     ClearGpuBackgroundState(2);

@@ -561,7 +561,7 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
 {
     SetVBlankCallback(NULL);
 
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(2);
     ClearGpuBackgroundState(1);
     ClearGpuBackgroundState(0);
@@ -608,7 +608,7 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
     EnableInterrupts(1);
     SetVBlankCallback(VBlankCB_MainMenu);
     SetMainCallback2(CB2_MainMenu);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ShowBg(0);
     HideBg(1);
     CreateTask(Task_MainMenuCheckSaveFile, 0);
@@ -1267,8 +1267,7 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
 
 static void Task_NewGameBirchSpeech_Init(u8 taskId)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     InitBgFromTemplate(&sBirchBgTemplate);
     SetGpuWindowX(0, 0);
     SetGpuWindowY(0, 0);
@@ -1770,7 +1769,7 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
     {
         spriteId = gTasks[taskId].tPlayerSpriteId;
         gSprites[spriteId].callback = SpriteCB_Null;
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
         gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
     }
@@ -1795,8 +1794,7 @@ static void CB2_NewGameBirchSpeech_ReturnFromNamingScreen(void)
     u16 savedIme;
 
     ResetBgsAndClearDma3BusyFlags(0);
-    SetGpuState(GPU_STATE_DISPCNT, 0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     InitBgsFromTemplates(0, sMainMenuBgTemplates, ARRAY_COUNT(sMainMenuBgTemplates));
     InitBgFromTemplate(&sBirchBgTemplate);
     SetVBlankCallback(NULL);

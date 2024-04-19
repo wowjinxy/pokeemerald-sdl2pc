@@ -556,7 +556,7 @@ static void CB2_CreateTradeMenu(void)
         break;
     case 7:
         CalculateEnemyPartyCount();
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         SetGpuState(GPU_STATE_BLDCNT, 0);
         sTradeMenu->partyCounts[TRADE_PLAYER] = gPlayerPartyCount;
         sTradeMenu->partyCounts[TRADE_PARTNER] = gEnemyPartyCount;
@@ -677,7 +677,7 @@ static void CB2_CreateTradeMenu(void)
         gMain.state++;
         break;
     case 19:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         LoadTradeBgGfx(2);
         gMain.state++;
         break;
@@ -864,7 +864,7 @@ static void CB2_ReturnToTradeMenu(void)
         gMain.state++;
         break;
     case 19:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         LoadTradeBgGfx(2);
         gMain.state++;
         break;
@@ -2969,7 +2969,7 @@ void LinkTradeDrawWindow(void)
 
 static void TradeAnimInit_LoadGfx(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sTradeSequenceBgTemplates, ARRAY_COUNT(sTradeSequenceBgTemplates));
     ChangeBgX(0, 0, BG_COORD_SET);
@@ -3165,7 +3165,8 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         ClearGpuBackgroundState(2);
         SetGpuBackgroundPriority(2, 1);
         SetGpuBackgroundCharBaseBlock(2, 1);
@@ -3205,7 +3206,8 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         break;
     case 2:
         sTradeAnim->bg1vofs = 0;
@@ -3215,7 +3217,8 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
             SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                           DISPCNT_OBJ_1D_MAP |
                                           DISPCNT_BG1_ON |
-                                          DISPCNT_OBJ_ON);
+                                          DISPCNT_OBJ_ON |
+                                          DISPCNT_GBA_MODE);
             LZ77UnCompVram(sWirelessCloseup_Map, (void *) BG_SCREEN_ADDR(5));
             BlendPalettes(0x8, 16, RGB_BLACK);
         }
@@ -3224,7 +3227,8 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
             SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                           DISPCNT_OBJ_1D_MAP |
                                           DISPCNT_BG1_ON |
-                                          DISPCNT_OBJ_ON);
+                                          DISPCNT_OBJ_ON |
+                                          DISPCNT_GBA_MODE);
             DmaCopy16Defvars(3, sCableCloseup_Map, (void *) BG_SCREEN_ADDR(5), 0x800);
             BlendPalettes(0x1, 16, RGB_BLACK);
         }
@@ -3238,13 +3242,15 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         break;
     case 4:
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         ClearGpuBackgroundState(2);
         SetGpuBackgroundPriority(2, 3);
         SetGpuBackgroundCharBaseBlock(2, 1);
@@ -3277,7 +3283,8 @@ static void SetTradeSequenceBgGpuRegs(u8 state)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         ClearGpuBackgroundState(2);
         SetGpuBackgroundPriority(2, 3);
         SetGpuBackgroundCharBaseBlock(2, 1);
@@ -3574,7 +3581,8 @@ static bool8 DoTradeAnim_Cable(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         break;
     case STATE_LINK_MON_TRAVEL_OFFSCREEN:
         gSprites[sTradeAnim->connectionSpriteId1].y -= 2;
@@ -3701,7 +3709,8 @@ static bool8 DoTradeAnim_Cable(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         if (!gPaletteFade.active)
             sTradeAnim->state++;
         break;
@@ -3788,7 +3797,8 @@ static bool8 DoTradeAnim_Cable(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         if (!gPaletteFade.active)
             sTradeAnim->state++;
         break;
@@ -3832,7 +3842,8 @@ static bool8 DoTradeAnim_Cable(void)
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         StringExpandPlaceholders(gStringVar4, gText_XSentOverY);
         DrawTextOnTradeWindow(0, gStringVar4, 0);
         sTradeAnim->state = STATE_DELAY_FOR_MON_ANIM;
@@ -4051,7 +4062,8 @@ static bool8 DoTradeAnim_Wireless(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         break;
     case STATE_LINK_MON_TRAVEL_OFFSCREEN:
         gSprites[sTradeAnim->connectionSpriteId1].y -= 2;
@@ -4182,7 +4194,8 @@ static bool8 DoTradeAnim_Wireless(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         if (!gPaletteFade.active)
             sTradeAnim->state++;
         break;
@@ -4200,7 +4213,8 @@ static bool8 DoTradeAnim_Wireless(void)
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG1_ON |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         sTradeAnim->bg1vofs += 3;
         sTradeAnim->bg2vofs += 3;
         if (++sTradeAnim->timer == 10)
@@ -4285,7 +4299,8 @@ static bool8 DoTradeAnim_Wireless(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         if (!gPaletteFade.active)
             sTradeAnim->state++;
         break;
@@ -4329,7 +4344,8 @@ static bool8 DoTradeAnim_Wireless(void)
                                       DISPCNT_OBJ_1D_MAP |
                                       DISPCNT_BG0_ON |
                                       DISPCNT_BG2_ON |
-                                      DISPCNT_OBJ_ON);
+                                      DISPCNT_OBJ_ON |
+                                      DISPCNT_GBA_MODE);
         StringExpandPlaceholders(gStringVar4, gText_XSentOverY);
         DrawTextOnTradeWindow(0, gStringVar4, 0);
         sTradeAnim->state = STATE_DELAY_FOR_MON_ANIM;

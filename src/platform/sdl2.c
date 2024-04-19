@@ -97,13 +97,24 @@ static void RunScanlineEffect(void);
 
 static void AudioUpdate(void);
 
+static bool UseGbaMode(void)
+{
+    return gpu.displayControl & DISPCNT_GBA_MODE;
+}
+
 s32 DisplayWidth(void)
 {
+    if (UseGbaMode())
+        return BASE_DISPLAY_WIDTH;
+
     return displayWidth;
 }
 
 s32 DisplayHeight(void)
 {
+    if (UseGbaMode())
+        return BASE_DISPLAY_HEIGHT;
+
     return displayHeight;
 }
 
@@ -988,7 +999,7 @@ static void GetBGScanlinePos(int bgNum, int *lineStart, int *lineEnd)
     *lineStart = 0;
     *lineEnd = displayWidth;
 
-    if (bg->gbaMode)
+    if (UseGbaMode() || bg->gbaMode)
     {
         int offsetX = (displayWidth - BASE_DISPLAY_WIDTH) / 2;
         *lineStart += offsetX;
@@ -1010,7 +1021,7 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
     uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
     uint16_t *pal = (uint16_t *)gpu.palette;
 
-    if (bg->gbaMode)
+    if (UseGbaMode() || bg->gbaMode)
     {
         int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
 
@@ -1057,7 +1068,7 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
 
         unsigned int yy = lineNum + voffs;
 
-        if (bg->gbaMode)
+        if (UseGbaMode() || bg->gbaMode)
         {
             xx &= 0x1FF;
             yy &= 0x1FF;
@@ -1132,7 +1143,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint32_t bgX, uint32_t bgY, int 
     int lineStart, lineEnd;
     GetBGScanlinePos(bgNum, &lineStart, &lineEnd);
 
-    if (bg->gbaMode)
+    if (UseGbaMode() || bg->gbaMode)
     {
         int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
 
@@ -1399,7 +1410,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
         unsigned int height;
         uint16_t *pixels;
 
-        bool isAffine  = oam->affineMode & 1;
+        bool isAffine = oam->affineMode & 1;
         bool doubleSizeOrDisabled = (oam->affineMode >> 1) & 1;
         bool isSemiTransparent = (oam->objMode == 1);
         bool isObjWin = (oam->objMode == 2);
@@ -1481,6 +1492,20 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
         y += half_height;
 
         // Does this sprite actually draw on this scanline?
+        int lineStart = 0, lineEnd = displayWidth;
+
+        if (UseGbaMode())
+        {
+            int offsetX = (displayWidth - BASE_DISPLAY_WIDTH) / 2;
+            int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
+
+            x += offsetX;
+            y += offsetY;
+
+            lineStart += offsetX;
+            lineEnd = BASE_DISPLAY_WIDTH + offsetX;
+        }
+
         if (vcount >= (y - half_height) && vcount < (y + half_height))
         {
             int local_y = (oam->mosaic == 1) ? applySpriteVerticalMosaicEffect(vcount) - y : vcount - y;
@@ -1500,8 +1525,10 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
 
                 unsigned int global_x = local_x + x;
 
-                if (global_x < 0 || global_x >= displayWidth)
+                if (global_x < lineStart)
                     continue;
+                else if (global_x >= lineEnd)
+                    break;
 
                 if (oam->mosaic == 1)
                 {

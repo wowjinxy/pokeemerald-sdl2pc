@@ -314,7 +314,7 @@ static void UNUSED LinkTestScreen(void)
         gSaveBlock2Ptr->playerTrainerId[i] = Random() % 256;
 
     InitLinkTestBG(0, 2, 4, 0, 0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG2_ON | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     CreateTask(Task_DestroySelf, 0);
     RunTasks();
     AnimateSprites();
@@ -1593,7 +1593,7 @@ void CB2_LinkError(void)
 {
     u8 *tilemapBuffer;
 
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
     m4aMPlayStop(&gMPlayInfo_SE1);
     m4aMPlayStop(&gMPlayInfo_SE2);
     m4aMPlayStop(&gMPlayInfo_SE3);

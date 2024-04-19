@@ -1025,7 +1025,7 @@ static void DrawBlenderBg(void)
     CopyBgTilemapBufferToVram(0);
     ShowBg(0);
     ShowBg(1);
-    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ChangeBgX(0, 0, BG_COORD_SET);
     ChangeBgY(0, 0, BG_COORD_SET);
     ChangeBgX(1, 0, BG_COORD_SET);
@@ -1071,7 +1071,7 @@ static void CB2_LoadBerryBlender(void)
     switch (sBerryBlender->mainState)
     {
     case 0:
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
         ResetSpriteData();
         FreeAllSpritePalettes();
         SetVBlankCallback(NULL);
@@ -1278,7 +1278,7 @@ static void StartBlender(void)
 {
     s32 i;
 
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
     if (sBerryBlender == NULL)
         sBerryBlender = AllocZeroed(sizeof(*sBerryBlender));
 
@@ -1503,7 +1503,7 @@ static void CB2_StartBlenderLink(void)
 
 static void InitBlenderBgs(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
 
     ResetSpriteData();
     FreeAllSpritePalettes();

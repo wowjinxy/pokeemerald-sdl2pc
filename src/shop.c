@@ -727,7 +727,7 @@ static void BuyMenuInitBgs(void)
     SetGpuBackgroundX(3, 0);
     SetGpuBackgroundY(3, 0);
     SetGpuState(GPU_STATE_BLDCNT, 0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);

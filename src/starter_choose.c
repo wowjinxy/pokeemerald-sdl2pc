@@ -381,7 +381,7 @@ void CB2_ChooseStarter(void)
 
     SetVBlankCallback(NULL);
 
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(3);
     ClearGpuBackgroundState(2);
     ClearGpuBackgroundState(1);
@@ -434,7 +434,7 @@ void CB2_ChooseStarter(void)
     SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN);
     SetGpuState(GPU_STATE_BLDALPHA, 0);
     SetGpuState(GPU_STATE_BLDY, 7);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
 
     ShowBg(0);
     ShowBg(2);

@@ -709,7 +709,7 @@ static void HandleInitBackgrounds(void)
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
 
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
 
     ShowBg(0);
     ShowBg(1);

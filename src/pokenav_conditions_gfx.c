@@ -209,7 +209,7 @@ static u32 LoopedTask_OpenConditionGraphMenu(s32 state)
         ChangeBgY(2, 0, BG_COORD_SET);
         ChangeBgX(3, 0, BG_COORD_SET);
         ChangeBgY(3, 0, BG_COORD_SET);
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG3_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG3_ON | DISPCNT_GBA_MODE);
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT1_BG2 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG3);
         SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(11, 4));
         DecompressAndCopyTileDataToVram(3, gPokenavCondition_Gfx, 0, 0, 0);
@@ -792,7 +792,7 @@ void FreeConditionGraphMenuSubstruct2(void)
         SetLeftHeaderSpritesInvisibility();
     }
 
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     FreeConditionMenuGfx(menu);
     SetExitVBlank();
     FreePokenavSubstruct(POKENAV_SUBSTRUCT_CONDITION_GRAPH_MENU_GFX);

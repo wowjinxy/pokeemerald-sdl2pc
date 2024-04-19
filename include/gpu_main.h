@@ -19,6 +19,8 @@ u32 GetGpuState(u8 state);
 void SetGpuStateBits(u8 state, u32 mask);
 void ClearGpuStateBits(u8 state, u32 mask);
 
+void ResetGpuDisplayControl(void);
+
 void SetGpuBackgroundX(u8 bgNum, u32 x);
 void SetGpuBackgroundY(u8 bgNum, u32 y);
 

@@ -102,7 +102,7 @@ void FieldInitRegionMap(MainCallback callback)
 
 static void MCB2_InitRegionMapRegisters(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     SetGpuBackgroundX(0, 0);
     SetGpuBackgroundY(0, 0);
     SetGpuBackgroundX(1, 0);
@@ -162,7 +162,7 @@ static void FieldUpdateRegionMap(void)
             sFieldRegionMapHandler->state++;
             break;
         case 2:
-            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+            SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
             ShowBg(0);
             ShowBg(2);
             sFieldRegionMapHandler->state++;

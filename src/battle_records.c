@@ -392,7 +392,7 @@ static void ClearVramOamPlttRegs(void)
 {
     GpuClearAll();
 
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(0);
     SetGpuBackgroundX(0, 0);
     SetGpuBackgroundY(0, 0);
@@ -437,7 +437,7 @@ static void ResetBgCoordinates(void)
 
 static void SetDispcntReg(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG0_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG0_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
 }
 
 static void LoadTrainerHillRecordsWindowGfx(u8 bgId)

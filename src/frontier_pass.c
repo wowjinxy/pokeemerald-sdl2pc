@@ -572,7 +572,7 @@ struct
 
 static void ResetGpuRegsAndBgs(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(3);
     ClearGpuBackgroundState(2);
     ClearGpuBackgroundState(1);
@@ -797,7 +797,7 @@ static bool32 InitFrontierPass(void)
         }
         break;
     case 9:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -840,7 +840,7 @@ static bool32 HideFrontierPass(void)
             return FALSE;
         break;
     case 2:
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         HideBg(0);
         HideBg(1);
         HideBg(2);
@@ -1095,7 +1095,7 @@ static void Task_PassAreaZoom(u8 taskId)
             tScaleY = Q_8_8(1.984375);
             tScaleSpeedX = -0x15;
             tScaleSpeedY = -0x15;
-            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+            SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
             ShowBg(0);
             ShowBg(1);
             ShowBg(2);
@@ -1435,7 +1435,7 @@ static bool32 InitFrontierMap(void)
         CopyBgTilemapBufferToVram(2);
         break;
     case 6:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);
@@ -1465,7 +1465,7 @@ static bool32 ExitFrontierMap(void)
     case 1:
         if (UpdatePaletteFade())
             return FALSE;
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         HideBg(0);
         HideBg(1);
         HideBg(2);

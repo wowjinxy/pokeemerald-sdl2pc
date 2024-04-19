@@ -1153,7 +1153,7 @@ static void SlotMachineSetup_InitVBlank(void)
 {
     SetVBlankCallback(SlotMachine_VBlankCB);
     EnableInterrupts(INTR_FLAG_VBLANK);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_GBA_MODE);
 }
 
 static void SlotMachineSetup_InitVRAM(void)

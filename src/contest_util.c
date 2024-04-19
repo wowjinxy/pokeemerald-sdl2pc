@@ -408,7 +408,7 @@ static void InitContestResultsDisplay(void)
 {
     int i;
 
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     for (i = 0; i < (int)ARRAY_COUNT(sContestResults->tilemapBuffers); i++)

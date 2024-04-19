@@ -282,7 +282,7 @@ extern unsigned char REG_BASE[];
 #define DISPCNT_MODE_5          0x0005 // Bitmap mode, 160x128, BGR555 color
 #define DISPCNT_HBLANK_INTERVAL 0x0020 // Allow access to OAM during H-Blank
 #define DISPCNT_OBJ_1D_MAP      0x0040
-#define DISPCNT_FORCED_BLANK    0x0080
+#define DISPCNT_GBA_MODE        0x0080
 #define DISPCNT_BG0_ON          0x0100
 #define DISPCNT_BG1_ON          0x0200
 #define DISPCNT_BG2_ON          0x0400

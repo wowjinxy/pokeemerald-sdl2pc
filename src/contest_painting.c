@@ -229,7 +229,7 @@ static void ShowContestPainting(void)
         BeginFastPaletteFade(2);
         SetVBlankCallback(VBlankCB_ContestPainting);
         sHoldState = 0;
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_ON);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         SetMainCallback2(CB2_HoldContestPainting);
         break;
     }
@@ -314,7 +314,7 @@ static void PrintContestPaintingCaption(u8 contestType, bool8 isForArtist)
 
 static void InitContestPaintingBg(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     REG_IE |= INTR_FLAG_VBLANK;
     ClearGpuBackgroundState(0);
     SetGpuBackgroundPriority(0, 2);

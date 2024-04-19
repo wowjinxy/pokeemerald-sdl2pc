@@ -578,7 +578,7 @@ void CB2_InitTitleScreen(void)
         SetGpuState(GPU_STATE_BLDALPHA, 0);
         SetGpuState(GPU_STATE_BLDY, 0);
         *((u16 *)PLTT) = RGB_WHITE;
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ClearGpuBackgroundState(2);
         ClearGpuBackgroundState(1);
         ClearGpuBackgroundState(0);
@@ -675,7 +675,8 @@ void CB2_InitTitleScreen(void)
                                     | DISPCNT_BG2_ON
                                     | DISPCNT_OBJ_ON
                                     | DISPCNT_WIN0_ON
-                                    | DISPCNT_OBJWIN_ON);
+                                    | DISPCNT_OBJWIN_ON
+                                    | DISPCNT_GBA_MODE);
         m4aSongNumStart(MUS_TITLE);
         gMain.state = 5;
         break;
@@ -773,7 +774,8 @@ static void Task_TitleScreenPhase2(u8 taskId)
                                     | DISPCNT_BG0_ON
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
-                                    | DISPCNT_OBJ_ON);
+                                    | DISPCNT_OBJ_ON
+                                    | DISPCNT_GBA_MODE);
         SetGpuBackgroundY(2, 0);
         CreatePressStartBanner(START_BANNER_X, 108);
         CreateCopyrightBanner(START_BANNER_X, 148);

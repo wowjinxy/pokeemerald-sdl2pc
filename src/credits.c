@@ -505,7 +505,7 @@ static void Task_ReadyBikeScene(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ResetCreditsTasks(taskId);
         gTasks[taskId].func = Task_SetBikeScene;
     }
@@ -528,7 +528,7 @@ static void Task_ReadyShowMons(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ResetCreditsTasks(taskId);
         gTasks[taskId].func = Task_LoadShowMons;
     }
@@ -588,7 +588,8 @@ static void Task_LoadShowMons(u8 taskId)
                                     | DISPCNT_OBJ_1D_MAP
                                     | DISPCNT_BG0_ON
                                     | DISPCNT_BG3_ON
-                                    | DISPCNT_OBJ_ON);
+                                    | DISPCNT_OBJ_ON
+                                    | DISPCNT_GBA_MODE);
 
         gMain.state = 0;
         gIntroCredits_MovingSceneryState = INTROCRED_SCENERY_NORMAL;
@@ -635,7 +636,8 @@ static void Task_CreditsTheEnd3(u8 taskId)
     EnableInterrupts(INTR_FLAG_VBLANK);
     SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
-                                | DISPCNT_BG0_ON);
+                                | DISPCNT_BG0_ON
+                                | DISPCNT_GBA_MODE);
 
     gTasks[taskId].tDelay = 235; //set this to 215 to actually show "THE END" in time to the last song beat
     gTasks[taskId].func = Task_CreditsTheEnd4;
@@ -697,7 +699,7 @@ static void Task_CreditsSoftReset(u8 taskId)
 
 static void ResetGpuAndVram(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
 
     SetGpuBackgroundX(3, 0);
     SetGpuBackgroundY(3, 0);
@@ -1185,7 +1187,7 @@ static bool8 LoadBikeScene(u8 scene, u8 taskId)
     {
     default:
     case 0:
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         SetGpuBackgroundX(3, 8);
         SetGpuBackgroundY(3, 0);
         SetGpuBackgroundX(2, 0);

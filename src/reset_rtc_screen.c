@@ -520,7 +520,7 @@ static void Task_ResetRtc_Init(u8 taskId)
 
 void CB2_InitResetRtcScreen(void)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     SetVBlankCallback(NULL);
     GpuClearPalette();
     GpuClearData();
@@ -543,7 +543,7 @@ static void InitResetRtcScreenBgAndWindows(void)
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     ScheduleBgCopyTilemapToVram(0);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     ShowBg(0);
     InitWindows(sWindowTemplates);
     DeactivateAllTextPrinters();

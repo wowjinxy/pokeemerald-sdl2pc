@@ -1186,7 +1186,7 @@ static s32 ShowGameDisplay(void)
     case 0:
         SetVBlankCallback(NULL);
         SetHBlankCallback(NULL);
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         ScanlineEffect_Stop();
         ResetTempTileDataBuffers();
         break;
@@ -1263,7 +1263,7 @@ static s32 ShowGameDisplay(void)
         ShowBg(1);
         ShowBg(2);
         ShowBg(3);
-        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         BerryCrush_SetVBlankCB();
         game->cmdState = 0;
         return 1;
@@ -1320,7 +1320,7 @@ static s32 HideGameDisplay(void)
         UnsetBgTilemapBuffer(2);
         HideBg(3);
         UnsetBgTilemapBuffer(3);
-        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        ClearGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         break;
     case 6:
         DestroyWirelessStatusIndicatorSprite();

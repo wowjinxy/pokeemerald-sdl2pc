@@ -784,7 +784,8 @@ void SetIntroPart2BgCnt(u8 scenery)
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
                                     | DISPCNT_BG3_ON
-                                    | DISPCNT_OBJ_ON);
+                                    | DISPCNT_OBJ_ON
+                                    | DISPCNT_GBA_MODE);
         break;
     case 1:
         ClearGpuBackgroundState(3);
@@ -807,7 +808,8 @@ void SetIntroPart2BgCnt(u8 scenery)
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
                                     | DISPCNT_BG3_ON
-                                    | DISPCNT_OBJ_ON);
+                                    | DISPCNT_OBJ_ON
+                                    | DISPCNT_GBA_MODE);
         break;
     case 2:
         ClearGpuBackgroundState(3);
@@ -830,7 +832,8 @@ void SetIntroPart2BgCnt(u8 scenery)
                                     | DISPCNT_BG1_ON
                                     | DISPCNT_BG2_ON
                                     | DISPCNT_BG3_ON
-                                    | DISPCNT_OBJ_ON);
+                                    | DISPCNT_OBJ_ON
+                                    | DISPCNT_GBA_MODE);
         break;
     }
 }
@@ -906,7 +909,8 @@ void SetCreditsSceneBgCnt(u8 scene)
     SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG_ALL_ON
-                                | DISPCNT_OBJ_ON);
+                                | DISPCNT_OBJ_ON
+                                | DISPCNT_GBA_MODE);
 }
 
 #define tMode     data[0] // Can be 0-2, but only != 0 matters. Determines vertical movement for bg2

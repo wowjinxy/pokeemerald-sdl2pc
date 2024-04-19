@@ -124,7 +124,7 @@ void CB2_DoChangeMap(void)
     u16 ime;
 
     SetVBlankCallback(NULL);
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ClearGpuBackgroundState(2);
     ClearGpuBackgroundState(1);
     ClearGpuBackgroundState(1);
@@ -215,7 +215,7 @@ static void Task_ExitCaveTransition1(u8 taskId)
 
 static void Task_ExitCaveTransition2(u8 taskId)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     LZ77UnCompVram(sCaveTransitionTiles, (void *)(gpu.gfxData + (BG_CHAR_SIZE * 3)));
     LZ77UnCompVram(sCaveTransitionTilemap, (void *)(gpu.tileMaps + (BG_SCREEN_SIZE * 0x1F)));
     LoadPalette(sCaveTransitionPalette_White, BG_PLTT_ID(14), PLTT_SIZE_4BPP);
@@ -235,7 +235,8 @@ static void Task_ExitCaveTransition2(u8 taskId)
     SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG0_ON
-                                | DISPCNT_OBJ_ON);
+                                | DISPCNT_OBJ_ON
+                                | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_ExitCaveTransition3;
     gTasks[taskId].data[0] = 16;
     gTasks[taskId].data[1] = 0;
@@ -298,7 +299,7 @@ static void Task_EnterCaveTransition1(u8 taskId)
 
 static void Task_EnterCaveTransition2(u8 taskId)
 {
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     LZ77UnCompVram(sCaveTransitionTiles, (void *)(gpu.gfxData + (BG_CHAR_SIZE * 3)));
     LZ77UnCompVram(sCaveTransitionTilemap, (void *)(gpu.tileMaps + (BG_SCREEN_SIZE * 0x1F)));
     SetGpuState(GPU_STATE_BLDCNT, 0);
@@ -310,7 +311,8 @@ static void Task_EnterCaveTransition2(u8 taskId)
     SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0
                                 | DISPCNT_OBJ_1D_MAP
                                 | DISPCNT_BG0_ON
-                                | DISPCNT_OBJ_ON);
+                                | DISPCNT_OBJ_ON
+                                | DISPCNT_GBA_MODE);
     LoadPalette(sCaveTransitionPalette_White, BG_PLTT_ID(14), PLTT_SIZE_4BPP);
     LoadPalette(sCaveTransitionPalette_Black, BG_PLTT_ID(0), PLTT_SIZE_4BPP);
     gTasks[taskId].func = Task_EnterCaveTransition3;

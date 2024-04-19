@@ -5168,7 +5168,7 @@ static u8 GetPlayAgainState(void)
 static void InitBgs(void)
 {
     GpuClearAll();
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
     ChangeBgX(0, 0, BG_COORD_SET);
@@ -5181,7 +5181,7 @@ static void InitBgs(void)
     ChangeBgY(3, 0, BG_COORD_SET);
     InitStandardTextBoxWindows();
     InitTextBoxGfxAndPrinters();
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
     SetBgTilemapBuffer(BG_SCENERY, sGfx->tilemapBuffers[0]);
     SetBgTilemapBuffer(BG_TREE_LEFT, sGfx->tilemapBuffers[1]);
     SetBgTilemapBuffer(BG_TREE_RIGHT, sGfx->tilemapBuffers[2]);

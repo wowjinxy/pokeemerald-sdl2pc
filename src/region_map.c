@@ -1652,7 +1652,7 @@ void CB2_OpenFlyMap(void)
     {
     case 0:
         SetVBlankCallback(NULL);
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
         SetGpuBackgroundX(0, 0);
         SetGpuBackgroundY(0, 0);
         SetGpuBackgroundX(1, 0);
@@ -1727,7 +1727,7 @@ void CB2_OpenFlyMap(void)
         break;
     case 10:
         SetGpuState(GPU_STATE_BLDCNT, 0);
-        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+        SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
         ShowBg(2);

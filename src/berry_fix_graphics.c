@@ -37,9 +37,8 @@ static const struct {
 // See berry_fix_program.c
 static void UNUSED LoadBerryFixGraphics(u32 idx)
 {
-#if 0
     ClearGpuBackgroundState(0);
-    SetGpuState(GPU_STATE_DISPCNT, 0);
+    ResetGpuDisplayControl();
     SetGpuBackgroundX(0, 0);
     SetGpuBackgroundY(0, 0);
     SetGpuState(GPU_STATE_BLDCNT, 0);
@@ -47,6 +46,5 @@ static void UNUSED LoadBerryFixGraphics(u32 idx)
     LZ77UnCompVram(sBerryFixGraphics[idx].tilemap, (void *)BG_SCREEN_ADDR(31));
     CpuCopy16(sBerryFixGraphics[idx].pltt, (void *)BG_PLTT, BG_PLTT_SIZE);
     SetGpuBackgroundScreenBaseBlock(0, 31);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG0_ON);
-#endif
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_BG0_ON | DISPCNT_GBA_MODE);
 }

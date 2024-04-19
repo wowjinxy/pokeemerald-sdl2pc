@@ -494,7 +494,7 @@ static void CB2_LoadEggHatch(void)
     switch (gMain.state)
     {
     case 0:
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        ResetGpuDisplayControl();
 
         sEggHatchData = Alloc(sizeof(*sEggHatchData));
         AllocateMonSpritesGfx();
@@ -557,7 +557,7 @@ static void CB2_LoadEggHatch(void)
         gMain.state++;
         break;
     case 7:
-        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         LoadPalette(gTradeGba2_Pal, BG_PLTT_ID(1), 5 * PLTT_SIZE_4BPP);
         LoadBgTiles(1, gTradeGba_Gfx, 0x1420, 0);
         CopyToBgTilemapBuffer(1, gTradePlatform_Tilemap, 0x1000, 0);

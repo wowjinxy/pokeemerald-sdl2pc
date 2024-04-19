@@ -557,7 +557,8 @@ static void InitPyramidBagBgs(void)
     ScheduleBgCopyTilemapToVram(2);
     SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 |
                                   DISPCNT_OBJ_1D_MAP |
-                                  DISPCNT_OBJ_ON);
+                                  DISPCNT_OBJ_ON |
+                                  DISPCNT_GBA_MODE);
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);

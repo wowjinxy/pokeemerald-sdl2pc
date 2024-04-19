@@ -2079,7 +2079,7 @@ static void SetMonIconTransparency(void)
         SetGpuState(GPU_STATE_BLDCNT, BLDCNT_TGT2_ALL);
         SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(7, 11));
     }
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
 }
 
 static void SetPokeStorageTask(TaskFunc newFunc)
@@ -2094,7 +2094,7 @@ static void Task_InitPokeStorage(u8 taskId)
     {
     case 0:
         SetVBlankCallback(NULL);
-        SetGpuState(GPU_STATE_DISPCNT, 0);
+        SetGpuState(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
         ResetForPokeStorage();
         if (sStorage->isReopening)
         {

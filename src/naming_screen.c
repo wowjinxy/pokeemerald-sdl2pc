@@ -500,7 +500,7 @@ static void NamingScreen_InitBGs(void)
 
     GpuClearAll();
 
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_0 | DISPCNT_GBA_MODE);
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
 
@@ -519,7 +519,7 @@ static void NamingScreen_InitBGs(void)
     for (i = 0; i < WIN_COUNT; i++)
         sNamingScreen->windows[i] = AddWindow(&sWindowTemplates[i]);
 
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON);
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     SetGpuState(GPU_STATE_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2);
     SetGpuState(GPU_STATE_BLDALPHA, BLDALPHA_BLEND(12, 8));
 
