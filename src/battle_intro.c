@@ -129,6 +129,7 @@ void HandleIntroSlide(u8 terrain)
     gTasks[taskId].data[4] = 0;
     gTasks[taskId].data[5] = 0;
     gTasks[taskId].data[6] = 0;
+    gTasks[taskId].data[7] = 0;
 }
 
 static void BattleIntroSlideEnd(u8 taskId)
@@ -138,6 +139,7 @@ static void BattleIntroSlideEnd(u8 taskId)
     gBattle_BG1_Y = 0;
     gBattle_BG2_X = 0;
     gBattle_BG2_Y = 0;
+    gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
     SetGpuState(GPU_STATE_BLDCNT, 0);
     SetGpuState(GPU_STATE_BLDALPHA, 0);
     SetGpuState(GPU_STATE_BLDY, 0);
@@ -172,8 +174,9 @@ static void BattleIntroSlide1(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFFFF;
-        if ((gBattle_WIN0V >> 16) == 0x30)
+        gTasks[taskId].data[7] += 1;
+        gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        if (gTasks[taskId].data[7] >= 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -200,8 +203,15 @@ static void BattleIntroSlide1(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFFFF0000)
-            gBattle_WIN0V -= 0x3FC << 16;
+        if (gTasks[taskId].data[7] < DisplayHeight() / 2)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
+        else
+        {
+            gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
+        }
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -288,8 +298,9 @@ static void BattleIntroSlide2(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFFFF;
-        if ((gBattle_WIN0V >> 16) == 0x30)
+        gTasks[taskId].data[7] += 1;
+        gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        if (gTasks[taskId].data[7] >= 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -317,8 +328,15 @@ static void BattleIntroSlide2(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFFFF0000)
-            gBattle_WIN0V -= 0x3FC << 16;
+        if (gTasks[taskId].data[7] < DisplayHeight() / 2)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
+        else
+        {
+            gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
+        }
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -389,8 +407,9 @@ static void BattleIntroSlide3(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFFFF;
-        if ((gBattle_WIN0V >> 16) == 0x30)
+        gTasks[taskId].data[7] += 1;
+        gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        if (gTasks[taskId].data[7] >= 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -413,8 +432,15 @@ static void BattleIntroSlide3(u8 taskId)
             }
         }
 
-        if (gBattle_WIN0V & 0xFFFF0000)
-            gBattle_WIN0V -= 0x3FC << 16;
+        if (gTasks[taskId].data[7] < DisplayHeight() / 2)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
+        else
+        {
+            gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
+        }
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -493,8 +519,9 @@ static void BattleIntroSlideLink(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V -= 0xFFFF;
-        if ((gBattle_WIN0V >> 16) == 0x30)
+        gTasks[taskId].data[7] += 1;
+        gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        if (gTasks[taskId].data[7] >= 0x30)
         {
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
@@ -503,8 +530,15 @@ static void BattleIntroSlideLink(u8 taskId)
         }
         break;
     case 3:
-        if (gBattle_WIN0V & 0xFFFF0000)
-            gBattle_WIN0V -= 0x3FC << 16;
+        if (gTasks[taskId].data[7] < DisplayHeight() / 2)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
+        else
+        {
+            gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
+        }
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -577,20 +611,24 @@ static void BattleIntroSlidePartner(u8 taskId)
         }
         break;
     case 2:
-        gBattle_WIN0V += 0x1;
+        gBattle_WIN0V += 0x1 << 16;
         if ((gBattle_WIN0V >> 16) != 0x1)
             gBattle_WIN0V--;
 
         if ((gBattle_WIN0V >> 16) == 0x20)
         {
+            gTasks[taskId].data[7] = 0x20;
             gTasks[taskId].tState++;
             gTasks[taskId].data[2] = DisplayWidth();
             gIntroSlideFlags &= ~1;
         }
         break;
     case 3:
-        if ((gBattle_WIN0V >> 16) != 0x4C)
-            gBattle_WIN0V += 0x3FC << 16;
+        if (gTasks[taskId].data[7] < (DisplayHeight() / 2) - 4)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
 
         if (gTasks[taskId].data[2])
             gTasks[taskId].data[2] -= 2;
@@ -603,8 +641,15 @@ static void BattleIntroSlidePartner(u8 taskId)
     case 4:
         gBattle_BG0_Y += 2;
         gBattle_BG2_Y += 2;
-        if ((gBattle_WIN0V >> 16) != 0x50)
-            gBattle_WIN0V += 0xFFFF;
+        if (gTasks[taskId].data[7] < DisplayHeight() / 2)
+        {
+            gTasks[taskId].data[7] += 4;
+            gBattle_WIN0V = WIN_RANGE((DisplayHeight() / 2) - gTasks[taskId].data[7], ((DisplayHeight() / 2) + 1) + gTasks[taskId].data[7]);
+        }
+        else
+        {
+            gBattle_WIN0V = WIN_RANGE(0, DisplayHeight() + 1);
+        }
 
         if (!gBattle_BG0_Y)
         {
