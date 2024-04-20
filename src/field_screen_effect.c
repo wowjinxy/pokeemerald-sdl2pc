@@ -63,12 +63,14 @@ static const struct ScanlineEffectParams sFlashEffectParams =
 // code
 static void FillPalBufferWhite(void)
 {
-    CpuFastFill16(RGB_WHITE, gPlttBufferFaded, PLTT_SIZE);
+    for (size_t i = 0; i < PLTT_SIZE / 2; i++)
+        gPlttBufferFaded[i] = RGB_WHITE;
 }
 
 static void FillPalBufferBlack(void)
 {
-    CpuFastFill16(RGB_BLACK, gPlttBufferFaded, PLTT_SIZE);
+    for (size_t i = 0; i < PLTT_SIZE / 2; i++)
+        gPlttBufferFaded[i] = RGB_BLACK;
 }
 
 void WarpFadeInScreen(void)
