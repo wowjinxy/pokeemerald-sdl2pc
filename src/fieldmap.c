@@ -85,15 +85,21 @@ void InitMapFromSavedGame(void)
     UpdateTVScreensOnMap(gBackupMapLayout.width, gBackupMapLayout.height);
 }
 
+static void ClearMapGrid(void)
+{
+    for (size_t i = 0; i < ARRAY_COUNT(sBackupMapData); i++)
+        sBackupMapData[i] = MAPGRID_UNDEFINED;
+}
+
 void InitBattlePyramidMap(bool8 setPlayerPosition)
 {
-    CpuFastFill16(MAPGRID_UNDEFINED, sBackupMapData, sizeof(sBackupMapData));
+    ClearMapGrid();
     GenerateBattlePyramidFloorLayout(sBackupMapData, setPlayerPosition);
 }
 
 void InitTrainerHillMap(void)
 {
-    CpuFastFill16(MAPGRID_UNDEFINED, sBackupMapData, sizeof(sBackupMapData));
+    ClearMapGrid();
     GenerateTrainerHillFloorLayout(sBackupMapData);
 }
 
@@ -103,7 +109,7 @@ static void InitMapLayoutData(struct MapHeader *mapHeader)
     int width;
     int height;
     mapLayout = mapHeader->mapLayout;
-    CpuFastFill16(MAPGRID_UNDEFINED, sBackupMapData, sizeof(sBackupMapData));
+    ClearMapGrid();
     gBackupMapLayout.map = sBackupMapData;
     width = mapLayout->width + MAP_OFFSET_W;
     gBackupMapLayout.width = width;
