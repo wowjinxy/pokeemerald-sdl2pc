@@ -509,6 +509,9 @@ static void CB2_InitBuyMenu(void)
         FreeAllSpritePalettes();
         ResetPaletteFade();
         ResetSpriteData();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
+        EnableBorder();
         ResetTasks();
         ClearScheduledBgCopiesToVram();
         sShopData = AllocZeroed(sizeof(struct ShopData));

@@ -664,6 +664,10 @@ static void LoadWallClockGraphics(void)
     FreeAllSpritePalettes();
     LoadCompressedSpriteSheet(&sSpriteSheet_ClockHand);
     LoadSpritePalettes(sSpritePalettes_Clock);
+
+    SetBorder(GAME_BORDER_EMERALD_MENU);
+    SetBorderFade(0, 0);
+    EnableBorder();
 }
 
 static void WallClockInit(void)

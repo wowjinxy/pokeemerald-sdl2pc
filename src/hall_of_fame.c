@@ -1306,6 +1306,9 @@ static bool8 LoadHofBgs(void)
         break;
     case 4:
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
+        EnableBorder();
         ShowBg(0);
         ShowBg(1);
         ShowBg(3);

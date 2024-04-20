@@ -18,7 +18,29 @@
 #include "gpu_main.h"
 #include "m4a.h"
 #include "main.h"
+#include "palette.h"
 #include "cgb_audio.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_NO_GIF
+#define STBI_ONLY_PNG
+
+#include "stb_image.h"
+
+struct DisplayBorder {
+    int width, height;
+    u8 *data;
+    unsigned char *palette;
+    unsigned paletteLength;
+    unsigned paletteIndex;
+    u8 repeatFlags;
+};
+
+static struct DisplayBorder gameBorders[NUM_GAME_BORDERS];
+static unsigned currentBorder = 0xFF;
+static unsigned lastBorder = 0xFF;
+
+static struct DisplayBorder *GetBorder(unsigned which);
 
 u16 INTR_CHECK;
 void *INTR_VECTOR;
@@ -71,6 +93,20 @@ static s32 displayHeight = 0;
 static s32 windowWidth = 0;
 static s32 windowHeight = 0;
 
+static bool8 borderEnabled = FALSE;
+
+static s32 curBorderFade = 32 << 8;
+static u16 curBorderFadeColor = 0;
+
+static bool8 doingBorderFade = FALSE;
+static bool8 shouldRedrawBorder = FALSE;
+
+static s32 borderFadeSpeed = 1 << 8;
+
+static bool8 doingBorderChange = FALSE;
+static s32 curBorderChange = 32 << 8;
+static s32 borderChangeSpeed = 1 << 8;
+
 static bool8 runVCount = TRUE;
 static bool8 runVBlank = TRUE;
 static bool8 runHBlank = TRUE;
@@ -84,6 +120,7 @@ static int DoMain(void *param);
 
 static void ProcessEvents(void);
 static void RenderFrame(SDL_Texture *texture);
+static void DrawBorder(uint16_t *image);
 
 static void ReadSaveFile(char *path);
 static void StoreSaveFile(void);
@@ -92,7 +129,6 @@ static void CloseSaveFile(void);
 static void UpdateInternalClock(void);
 
 static void RunFrame(void);
-
 static void RunScanlineEffect(void);
 
 static void AudioUpdate(void);
@@ -126,6 +162,45 @@ s32 DisplayHeight(void)
         return BASE_DISPLAY_HEIGHT;
 
     return RealDisplayHeight();
+}
+
+void EnableBorder(void)
+{
+    if (borderEnabled == TRUE)
+        return;
+
+    borderEnabled = TRUE;
+
+    shouldRedrawBorder = TRUE;
+}
+
+void DisableBorder(void)
+{
+    borderEnabled = FALSE;
+}
+
+void SetBorder(u8 border)
+{
+    if (border >= NUM_GAME_BORDERS)
+        return;
+
+    if (border != currentBorder)
+    {
+        currentBorder = border;
+        shouldRedrawBorder = TRUE;
+    }
+}
+
+static bool UsingBorder(void)
+{
+    if (!borderEnabled || !InGbaRenderMode())
+        return false;
+
+    struct DisplayBorder *border = GetBorder(currentBorder);
+    if (!border)
+        return false;
+
+    return true;
 }
 
 static bool8 SetResolution(s32 width, s32 height)
@@ -165,6 +240,8 @@ static bool8 SetResolution(s32 width, s32 height)
     }
 
     printf("Set resolution to %dx%d (scale %d)\n", width, height, videoScale);
+
+    shouldRedrawBorder = TRUE;
 
     return TRUE;
 }
@@ -245,6 +322,78 @@ static void InitTime(void)
     UpdateInternalClock();
 }
 
+static void FreeBorders(void)
+{
+    for (unsigned i = 0; i < NUM_GAME_BORDERS; i++)
+    {
+        struct DisplayBorder *border = &gameBorders[i];
+
+        border->width = 0;
+        border->height = 0;
+        border->paletteIndex = 0;
+        border->paletteLength = 0;
+        border->repeatFlags = 0;
+
+        if (border->data)
+        {
+            stbi_image_free(border->data);
+            border->data = NULL;
+        }
+
+        if (border->palette)
+        {
+            free(border->palette);
+            border->palette = NULL;
+        }
+    }
+}
+
+static void LoadBorders(void)
+{
+    // Free any borders that are loaded
+    FreeBorders();
+
+    // Load all borders
+    for (unsigned i = 0; i < ARRAY_COUNT(borderList); i++)
+    {
+        if (i >= NUM_GAME_BORDERS)
+            break;
+
+        struct GameBorder *src = &borderList[i];
+        struct DisplayBorder *border = &gameBorders[i];
+
+        char path[22 + 256];
+        snprintf(path, sizeof path, "./assets/borders/%s.png", src->name);
+
+        int width, height, components_per_pixel;
+
+        u8 *data;
+
+        unsigned char **palette = NULL;
+        unsigned int *paletteLength = NULL;
+
+        if (src->paletteIndex != -1)
+        {
+            data = stbi_load(path, &width, &height, &components_per_pixel, 4, &border->palette, &border->paletteLength);
+            if (!data)
+                continue;
+            border->paletteIndex = border->palette ? src->paletteIndex : 0;
+        }
+        else
+        {
+            data = stbi_load(path, &width, &height, &components_per_pixel, 4, NULL, NULL);
+            if (!data)
+                continue;
+            border->paletteIndex = 0;
+        }
+
+        border->width = width;
+        border->height = height;
+        border->data = data;
+        border->repeatFlags = src->repeatFlags;
+    }
+}
+
 int main(int argc, char **argv)
 {
     // Open an output console on Windows
@@ -272,6 +421,8 @@ int main(int argc, char **argv)
     InitAudio();
 
     InitTime();
+
+    LoadBorders();
 
     GameInit();
 
@@ -305,15 +456,13 @@ int main(int argc, char **argv)
             videoScaleChanged = false;
         }
 
+        curGameTime = SDL_GetPerformanceCounter();
+
         if (!paused)
         {
             double dt = fixedTimestep;
-
-            curGameTime = SDL_GetPerformanceCounter();
-
             double deltaTime = (double)((curGameTime - lastGameTime) / (double)SDL_GetPerformanceFrequency());
             deltaTime *= timeScale;
-            lastGameTime = curGameTime;
 
             accumulator += deltaTime;
 
@@ -336,25 +485,31 @@ int main(int argc, char **argv)
                 accumulator -= dt;
 #endif
             }
+        }
 
-            // Draws each scanline
-            RenderFrame(sdlTexture);
+        // Draws each scanline
+        RenderFrame(sdlTexture);
 
+        if (!paused)
+        {
             // Calls m4aSoundMain() and m4aSoundVSync()
             AudioUpdate();
         }
 
+        lastGameTime = curGameTime;
+
         // Display the frame
-        SDL_RenderClear(sdlRenderer);
         SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
         SDL_RenderPresent(sdlRenderer);
     }
 
-    //StoreSaveFile();
+    FreeBorders();
+
     CloseSaveFile();
 
     SDL_DestroyWindow(sdlWindow);
     SDL_Quit();
+
     return 0;
 }
 
@@ -1851,17 +2006,14 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
     }
 }
 
-static void DrawFrame(uint16_t *pixels)
+static uint16_t GetBackdropColor(void)
 {
-    u32 i;
-    u32 j;
-    static uint16_t scanlines[DISPLAY_HEIGHT][DISPLAY_WIDTH];
-    unsigned int blendMode = (gpu.blendControl >> 6) & 3;
     uint16_t backdropColor = *(uint16_t *)gpu.palette;
 
     // backdrop color brightness effects
     if (gpu.blendControl & BLDCNT_TGT1_BD)
     {
+        unsigned int blendMode = (gpu.blendControl >> 6) & 3;
         switch (blendMode)
         {
         case 2:
@@ -1873,60 +2025,98 @@ static void DrawFrame(uint16_t *pixels)
         }
     }
 
-    for (i = 0; i < displayHeight; i++)
+    return backdropColor;
+}
+
+static void DrawFrame(uint16_t *pixels)
+{
+    u32 i;
+    u32 j;
+    static uint16_t scanline[DISPLAY_WIDTH];
+    uint16_t backdropColor = GetBackdropColor();
+
+    if (UsingBorder())
+        DrawBorder(pixels);
+
+    // Only draw the rectangular region that contributes to the app's window
+    unsigned lineStart = 0;
+    unsigned lineEnd = displayWidth;
+    unsigned scanlineStart = 0;
+    unsigned scanlineEnd = displayHeight;
+
+    if (InGbaRenderMode())
     {
-        bool doHBlank = true;
-        bool doScanlineEffects = true;
+        int offsetX = (displayWidth - BASE_DISPLAY_WIDTH) / 2;
+        int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
 
-        // Clear this scanline
-        for (u32 j = 0; j < displayWidth; j++)
-            scanlines[i][j] = backdropColor;
+        lineStart = offsetX;
+        lineEnd = lineStart + BASE_DISPLAY_WIDTH;
 
-        int vcount = (signed)i;
+        scanlineStart = offsetY;
+        scanlineEnd = scanlineStart + BASE_DISPLAY_HEIGHT;
+    }
 
-        if (InGbaRenderMode())
-        {
-            int offsetY = (displayHeight - BASE_DISPLAY_HEIGHT) / 2;
+    for (i = scanlineStart; i < scanlineEnd; i++)
+    {
+        // Fill this scanline with the backdrop color
+        for (unsigned j = lineStart; j < lineEnd; j++)
+            scanline[j] = backdropColor;
 
-            vcount -= offsetY;
+        gpu.vCount = i - scanlineStart;
 
-            if (vcount < 0)
-                gpu.vCount = 0;
-            else
-                gpu.vCount = vcount;
-
-            doHBlank = vcount >= 0 && vcount < BASE_DISPLAY_HEIGHT;
-            doScanlineEffects = doHBlank;
-        }
-        else
-            gpu.vCount = vcount;
-
-        DrawScanline(scanlines[i], i);
+        DrawScanline(scanline, i);
 
         if (gpu.scanlineEffect.type != GPU_SCANLINE_EFFECT_OFF)
+            RunScanlineEffect();
+
+        gpu.displayStatus |= INTR_FLAG_HBLANK;
+
+        if (runHBlank && (gpu.displayStatus & DISPSTAT_HBLANK_INTR))
+            DoHBlankUpdate();
+
+        gpu.displayStatus &= ~INTR_FLAG_HBLANK;
+
+        // Copy to screen
+        memcpy(&pixels[(i * displayWidth) + lineStart], &scanline[lineStart], (lineEnd - lineStart) * sizeof(u16));
+    }
+}
+
+static void UpdateBorder(void)
+{
+    if (doingBorderFade)
+    {
+        curBorderFade += borderFadeSpeed;
+        shouldRedrawBorder = TRUE;
+
+        if (borderFadeSpeed > 0 && curBorderFade >= 32 << 8)
         {
-            if (doScanlineEffects)
-                RunScanlineEffect();
+            curBorderFade = 32 << 8;
+            doingBorderFade = false;
         }
-
-        if (doHBlank)
+        else if (borderFadeSpeed < 0 && curBorderFade < 0)
         {
-            gpu.displayStatus |= INTR_FLAG_HBLANK;
-
-            if (runHBlank && (gpu.displayStatus & DISPSTAT_HBLANK_INTR))
-                DoHBlankUpdate();
-
-            gpu.displayStatus &= ~INTR_FLAG_HBLANK;
+            curBorderFade = 0;
+            doingBorderFade = false;
         }
     }
 
-    // Copy to screen
-    for (i = 0; i < displayHeight; i++)
-        memcpy(&pixels[i * displayWidth], scanlines[i], displayWidth * sizeof(u16));
+    if (doingBorderChange)
+    {
+        curBorderChange += borderChangeSpeed;
+        shouldRedrawBorder = TRUE;
+
+        if (curBorderChange >= 32 << 8)
+        {
+            curBorderChange = 32 << 8;
+            doingBorderChange = false;
+        }
+    }
 }
 
 static void RunFrame(void)
 {
+    UpdateBorder();
+
 #ifndef USE_THREAD
     GameLoop();
 #endif
@@ -1945,20 +2135,348 @@ static void RunScanlineEffect(void)
         gpu.scanlineEffect.position++;
 }
 
+void SetBorderFade(u8 fade, u16 color)
+{
+    if (fade > 32)
+        fade = 32;
+
+    if (fade != curBorderFade >> 8)
+        shouldRedrawBorder = TRUE;
+    if (color != curBorderFadeColor)
+        shouldRedrawBorder = TRUE;
+
+    curBorderFade = fade << 8;
+    curBorderFadeColor = color;
+}
+
+void DoBorderFadeIn(u32 speed, u16 color)
+{
+    SetBorderFade(0, color);
+
+    if (speed == 0)
+        borderFadeSpeed = 2 << 8;
+    else
+        borderFadeSpeed = speed;
+
+    doingBorderFade = TRUE;
+}
+
+void DoBorderFadeOut(u32 speed, u16 color)
+{
+    SetBorderFade(32, color);
+
+    if (speed == 0)
+        borderFadeSpeed = -(2 << 8);
+    else
+        borderFadeSpeed = -speed;
+
+    doingBorderFade = TRUE;
+}
+
+void DoBorderChange(u8 border, u32 speed)
+{
+    lastBorder = currentBorder;
+
+    SetBorder(border);
+
+    if (speed == 0)
+        borderChangeSpeed = 2 << 8;
+    else
+        borderChangeSpeed = speed;
+
+    curBorderChange = 0;
+    doingBorderChange = TRUE;
+}
+
+static struct DisplayBorder *GetBorder(unsigned which)
+{
+    if (which >= NUM_GAME_BORDERS)
+        which = GAME_BORDER_EMERALD;
+
+    struct DisplayBorder *border = &gameBorders[which];
+    if (!border->data)
+        border = &gameBorders[GAME_BORDER_EMERALD];
+
+    if (!border->data)
+        return NULL;
+
+    return border;
+}
+
+static uint16_t *borderImageBuffer = NULL;
+static size_t borderImageSize = 0;
+
+static void DrawBorderPixels(uint16_t *image, struct DisplayBorder *border, SDL_Rect rect, int repeatXY, bool doTransparency, float opacity)
+{
+    int alpha = (opacity * 255) + 1;
+    int invAlpha = 256 - (opacity * 255);
+
+    bool repeatX = repeatXY & BORDER_REPEAT_X;
+    bool repeatY = repeatXY & BORDER_REPEAT_Y;
+
+    for (int y = 0; y < rect.h; y++)
+    {
+        int destY = y;
+        if (!repeatY)
+            destY = rect.y + destY;
+        if (destY < 0 || destY >= displayHeight)
+            continue;
+
+        int localY = y;
+        if (repeatY)
+        {
+            localY -= rect.y;
+            if (repeatXY & BORDER_CLAMP_Y)
+            {
+                if (localY < 0)
+                    localY = 0;
+                else if (localY >= border->height)
+                    localY = border->height - 1;
+            }
+            else
+            {
+                do {
+                    localY += border->height;
+                } while (localY < 0);
+                localY %= border->height;
+            }
+        }
+        else if (localY < 0 || localY >= border->width)
+            continue;
+
+        for (int x = 0; x < rect.w; x++)
+        {
+            int destX = x;
+            if (!repeatX)
+                destX = rect.x + destX;
+            if (destX < 0 || destX >= displayWidth)
+                continue;
+
+            int localX = x;
+            if (repeatX)
+            {
+                localX -= rect.x;
+                if (repeatXY & BORDER_CLAMP_X)
+                {
+                    if (localX < 0)
+                        localX = 0;
+                    else if (localX >= border->width)
+                        localX = border->width - 1;
+                }
+                else
+                {
+                    do {
+                        localX += border->width;
+                    } while (localX < 0);
+                    localX %= border->width;
+                }
+            }
+            else if (localX < 0 || localX >= border->width)
+                continue;
+
+            uint16_t *dest = &borderImageBuffer[(destY * displayWidth) + destX];
+
+            size_t srcptr = (localY * border->width) + localX;
+
+            int red, green, blue;
+
+            if (!border->palette)
+            {
+                u8 *src = &border->data[srcptr * 4];
+                if (src[3] < 128)
+                    continue;
+
+                red = src[0];
+                green = src[1];
+                blue = src[2];
+            }
+            else
+            {
+                u8 *src = &border->data[srcptr];
+
+                u8 idx = (*src) & 0xF;
+
+                uint16_t *pal = (uint16_t *)gpu.palette + (border->paletteIndex * 16);
+
+                if (!doTransparency)
+                {
+                    *dest = 0x8000 | pal[idx];
+                    continue;
+                }
+
+                red = getRedChannel(pal[idx]) << 3;
+                green = getGreenChannel(pal[idx]) << 3;
+                blue = getBlueChannel(pal[idx]) << 3;
+            }
+
+            if (doTransparency)
+            {
+                int bgR = getRedChannel(*dest) << 3;
+                int bgG = getGreenChannel(*dest) << 3;
+                int bgB = getBlueChannel(*dest) << 3;
+
+                red = ((alpha * red) + (invAlpha * bgR)) >> 8;
+                green = ((alpha * green) + (invAlpha * bgG)) >> 8;
+                blue = ((alpha * blue) + (invAlpha * bgB)) >> 8;
+            }
+
+            red = (red >> 3) & 0x1F;
+            green = (green >> 3) & 0x1F;
+            blue = (blue >> 3) & 0x1F;
+
+            *dest = 0x8000 | red | (green << 5) | (blue << 10);
+        }
+    }
+}
+
+static void GetBorderPos(struct DisplayBorder *border, SDL_Rect *rect, int repeatXY)
+{
+    rect->x = (displayWidth - border->width) / 2;
+    rect->y = (displayHeight - border->height) / 2;
+
+    if (repeatXY & BORDER_REPEAT_X)
+    {
+        rect->w = displayWidth;
+    }
+    else
+    {
+        rect->w = border->width;
+    }
+
+    if (repeatXY & BORDER_REPEAT_Y)
+    {
+        rect->h = displayHeight;
+    }
+    else
+    {
+        rect->h = border->height;
+    }
+}
+
+static void DrawBorder(uint16_t *image)
+{
+    struct DisplayBorder *border = GetBorder(currentBorder);
+    if (!border)
+        return NULL;
+
+    if (shouldRedrawBorder == FALSE)
+    {
+        if (borderImageBuffer)
+            memcpy(image, borderImageBuffer, borderImageSize);
+        return;
+    }
+    else
+    {
+        size_t newSize = displayWidth * displayHeight * sizeof(uint16_t);
+        if (newSize != borderImageSize)
+        {
+            borderImageBuffer = realloc(borderImageBuffer, newSize);
+            borderImageSize = newSize;
+
+            if (!borderImageBuffer)
+                return;
+        }
+    }
+
+    for (size_t i = 0; i < borderImageSize / 2; i++)
+        borderImageBuffer[i] = curBorderFadeColor;
+
+    // Draw current border
+    SDL_Rect rect;
+
+    int repeatXY = border->repeatFlags;
+
+    GetBorderPos(border, &rect, repeatXY);
+
+    DrawBorderPixels(image, border, rect, repeatXY, false, 0.0);
+
+    // Draw last border
+    if (doingBorderChange)
+    {
+        border = GetBorder(lastBorder);
+        if (border)
+        {
+            float opacity = 1.0 - (curBorderChange / 8192.0);
+
+            GetBorderPos(border, &rect, repeatXY);
+
+            DrawBorderPixels(image, border, rect, repeatXY, true, opacity);
+        }
+    }
+
+    // Draw overlay
+    border = GetBorder(GAME_BORDER_OVERLAY);
+    if (border)
+    {
+        GetBorderPos(border, &rect, 0);
+        DrawBorderPixels(image, border, rect, 0, true, 0.75);
+    }
+
+    // Draw fade
+    int curFade = curBorderFade >> 8;
+    if (curFade != 32)
+    {
+        int alpha = 33 - curFade;
+        int invAlpha = curFade + 1;
+
+        int fgR = getRedChannel(curBorderFadeColor);
+        int fgG = getGreenChannel(curBorderFadeColor);
+        int fgB = getBlueChannel(curBorderFadeColor);
+
+        for (size_t i = 0; i < borderImageSize / 2; i++)
+        {
+            int bgR = getRedChannel(borderImageBuffer[i]);
+            int bgG = getGreenChannel(borderImageBuffer[i]);
+            int bgB = getBlueChannel(borderImageBuffer[i]);
+
+            int red   = max(0, min(((alpha * fgR) + (invAlpha * bgR)) >> 5, 31));
+            int green = max(0, min(((alpha * fgG) + (invAlpha * bgG)) >> 5, 31));
+            int blue  = max(0, min(((alpha * fgB) + (invAlpha * bgB)) >> 5, 31));
+
+            borderImageBuffer[i] = 0x8000 | red | (green << 5) | (blue << 10);
+        }
+    }
+
+    memcpy(image, borderImageBuffer, borderImageSize);
+
+    shouldRedrawBorder = FALSE;
+}
+
+static void ClearImage(uint16_t *image, size_t size)
+{
+    uint16_t backdropColor = GetBackdropColor();
+
+    for (size_t i = 0; i < size; i++)
+        image[i] = backdropColor;
+}
+
 void RenderFrame(SDL_Texture *texture)
 {
     int pitch = displayWidth * sizeof (Uint16);
+
+    SDL_RenderClear(sdlRenderer);
 
 #ifdef USE_TEXTURE_LOCK
     int *pixels = NULL;
 
     SDL_LockTexture(texture, NULL, (void **)&pixels, &pitch);
 
+    if (!UsingBorder())
+    {
+        uint16_t *fill = (uint16_t*)pixels;
+        ClearImage(fill, displayWidth * displayHeight);
+    }
+
     DrawFrame((uint16_t *)pixels);
 
     SDL_UnlockTexture(texture);
 #else
     static uint16_t image[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+
+    if (!UsingBorder())
+    {
+        ClearImage(image, displayWidth * displayHeight);
+    }
 
     DrawFrame(image);
 

@@ -1611,6 +1611,9 @@ void CB2_OpenPokedex(void)
         SetVBlankCallback(NULL);
         ResetOtherVideoRegisters(0);
         GpuClearAll();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
+        EnableBorder();
         gMain.state = 1;
         break;
     case 1:

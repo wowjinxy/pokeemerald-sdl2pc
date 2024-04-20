@@ -613,6 +613,8 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
     HideBg(1);
     CreateTask(Task_MainMenuCheckSaveFile, 0);
 
+    DisableBorder();
+
     return 0;
 }
 
@@ -1056,6 +1058,8 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
         }
         ChangeBgY(0, 0, BG_COORD_SET);
         ChangeBgY(1, 0, BG_COORD_SET);
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
         switch (action)
         {
             case ACTION_NEW_GAME:
@@ -1063,6 +1067,7 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
                 gPlttBufferUnfaded[0] = RGB_BLACK;
                 gPlttBufferFaded[0] = RGB_BLACK;
                 gTasks[taskId].func = Task_NewGameBirchSpeech_Init;
+                EnableBorder();
                 break;
             case ACTION_CONTINUE:
                 gPlttBufferUnfaded[0] = RGB_BLACK;
@@ -1078,14 +1083,17 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
             case ACTION_MYSTERY_GIFT:
                 SetMainCallback2(CB2_InitMysteryGift);
                 DestroyTask(taskId);
+                EnableBorder();
                 break;
             case ACTION_MYSTERY_EVENTS:
                 SetMainCallback2(CB2_InitMysteryEventMenu);
                 DestroyTask(taskId);
+                EnableBorder();
                 break;
             case ACTION_EREADER:
                 SetMainCallback2(CB2_InitEReader);
                 DestroyTask(taskId);
+                EnableBorder();
                 break;
             case ACTION_INVALID:
                 gTasks[taskId].tCurrItem = 0;

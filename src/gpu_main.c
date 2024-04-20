@@ -402,6 +402,9 @@ void SetGpuBackgroundWidth(u8 bgNum, u32 width)
     if (bgNum >= NUM_BACKGROUNDS)
         return;
 
+    if (!width)
+        width = 256;
+
     gpu.bg[bgNum].screenWidth = width;
 }
 
@@ -409,6 +412,9 @@ void SetGpuBackgroundHeight(u8 bgNum, u32 height)
 {
     if (bgNum >= NUM_BACKGROUNDS)
         return;
+
+    if (!height)
+        height = 256;
 
     gpu.bg[bgNum].screenHeight = height;
 }

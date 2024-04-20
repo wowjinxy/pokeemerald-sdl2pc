@@ -1070,6 +1070,9 @@ static bool8 Transition_StartIntro(struct Task *task)
 {
     SetGpuStateBits(GPU_STATE_DISPCNT, DISPCNT_GBA_MODE);
     FieldUpdateBgTilemapScroll();
+    SetBorder(GAME_BORDER_EMERALD_MENU);
+    DoBorderFadeIn(0x200, RGB_WHITE);
+    EnableBorder();
     UpdateCameraPanning();
     SetWeatherScreenFadeOut();
     CpuCopy32(gPlttBufferFaded, gPlttBufferUnfaded, PLTT_SIZE);
@@ -1101,6 +1104,7 @@ static bool8 Transition_WaitForIntro(struct Task *task)
 
 static bool8 Transition_StartMain(struct Task *task)
 {
+    DoBorderFadeOut(0x200, RGB_BLACK);
     CreateTask(sTasks_Main[task->tTransitionId], 0);
     task->tState++;
     return FALSE;

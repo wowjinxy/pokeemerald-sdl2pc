@@ -2171,6 +2171,9 @@ static void InitOverworldGraphicsRegisters(void)
     ShowBg(1);
     ShowBg(2);
     ShowBg(3);
+    DisableBorder();
+    SetBorder(GAME_BORDER_EMERALD);
+    SetBorderFade(0, 0);
     InitFieldMessageBox();
 }
 

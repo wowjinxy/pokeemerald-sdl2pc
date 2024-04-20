@@ -185,6 +185,7 @@ void CB2_InitOptionMenu(void)
         SetGpuState(GPU_STATE_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_GBA_MODE);
         ShowBg(0);
         ShowBg(1);
+        DisableBorder();
         gMain.state++;
         break;
     case 2:

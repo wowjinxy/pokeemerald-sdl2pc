@@ -54,6 +54,33 @@ extern u8 gLinkVSyncDisabled;
 extern u32 IntrMain_Buffer[];
 extern s8 gPcmDmaCounter;
 
+enum
+{
+    GAME_BORDER_EMERALD,
+    GAME_BORDER_EMERALD_MENU,
+    GAME_BORDER_BATTLE,
+    GAME_BORDER_INTRO_1,
+    GAME_BORDER_INTRO_2,
+    GAME_BORDER_INTRO_3,
+    GAME_BORDER_INTRO_4,
+    GAME_BORDER_INTRO_5,
+    GAME_BORDER_OVERLAY,
+    NUM_GAME_BORDERS
+};
+
+#define BORDER_REPEAT_X 1
+#define BORDER_REPEAT_Y 2
+#define BORDER_CLAMP_X  4
+#define BORDER_CLAMP_Y  8
+
+struct GameBorder {
+    const char *name;
+    int paletteIndex;
+    u8 repeatFlags;
+};
+
+extern struct GameBorder borderList[NUM_GAME_BORDERS];
+
 void AgbMain(void);
 void FrameUpdate(void);
 void DoHBlankUpdate(void);

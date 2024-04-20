@@ -15,6 +15,15 @@
 s32 DisplayWidth(void);
 s32 DisplayHeight(void);
 
+void EnableBorder(void);
+void DisableBorder(void);
+void SetBorder(u8 border);
+
+void SetBorderFade(u8 fade, u16 color);
+void DoBorderFadeIn(u32 speed, u16 color);
+void DoBorderFadeOut(u32 speed, u16 color);
+void DoBorderChange(u8 border, u32 speed);
+
 #include "constants/global.h"
 #include "constants/flags.h"
 #include "constants/vars.h"

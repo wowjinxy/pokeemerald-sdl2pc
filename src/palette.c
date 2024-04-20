@@ -457,6 +457,11 @@ static u8 UpdateNormalPaletteFade(void)
 
         if (!gPaletteFade.objPaletteToggle)
         {
+            if (gPaletteFade_selectedPalettes == PALETTES_ALL)
+            {
+                SetBorderFade(32 - (gPaletteFade.y) * 2, gPaletteFade.blendColor);
+            }
+
             if (gPaletteFade.y == gPaletteFade.targetY)
             {
                 gPaletteFade_selectedPalettes = 0;
@@ -587,7 +592,6 @@ static u8 UpdateFastPaletteFade(void)
     if (IsSoftwarePaletteFadeFinishing())
         return gPaletteFade.active ? PALETTE_FADE_STATUS_ACTIVE : PALETTE_FADE_STATUS_DONE;
 
-
     if (gPaletteFade.objPaletteToggle)
     {
         paletteOffsetStart = OBJ_PLTT_OFFSET;
@@ -702,6 +706,15 @@ static u8 UpdateFastPaletteFade(void)
     else
         gPaletteFade.y -= gPaletteFade.deltaY;
 
+    if (gPaletteFade_submode == FAST_FADE_OUT_TO_BLACK || gPaletteFade_submode == FAST_FADE_OUT_TO_WHITE)
+    {
+        SetBorderFade(gPaletteFade.y, gPaletteFade_submode == FAST_FADE_OUT_TO_WHITE ? RGB_WHITE : RGB_BLACK);
+    }
+    else if (gPaletteFade_submode == FAST_FADE_IN_FROM_BLACK || gPaletteFade_submode == FAST_FADE_IN_FROM_WHITE)
+    {
+        SetBorderFade(32 - gPaletteFade.y, gPaletteFade_submode == FAST_FADE_IN_FROM_WHITE ? RGB_WHITE : RGB_BLACK);
+    }
+
     if (gPaletteFade.y == 0)
     {
         switch (gPaletteFade_submode)
@@ -776,6 +789,8 @@ static u8 UpdateHardwarePaletteFade(void)
             gPaletteFade.y++;
         }
     }
+
+    SetBorderFade(32 - (gPaletteFade.y * 2), RGB_BLACK);
 
     if (gPaletteFade.hardwareFadeFinishing)
     {

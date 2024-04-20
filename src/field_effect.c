@@ -2637,9 +2637,9 @@ static void FieldMoveShowMonOutdoorsEffect_CreateBanner(struct Task *task)
     s16 vertHi;
     s16 vertLo;
     task->tBgHoriz -= 16;
-    horiz = ((u16)task->tWinHoriz >> 8);
-    vertHi = ((u16)task->tWinVert >> 8);
-    vertLo = ((u16)task->tWinVert & 0xff);
+    horiz = ((u16)task->tWinHoriz >> 16);
+    vertHi = ((u16)task->tWinVert >> 16);
+    vertLo = ((u16)task->tWinVert & 0xffff);
     horiz -= 16;
     vertHi -= 2;
     vertLo += 2;
@@ -2653,8 +2653,8 @@ static void FieldMoveShowMonOutdoorsEffect_CreateBanner(struct Task *task)
     if (vertLo > DisplayWidth() / 2)
         vertLo = DisplayWidth() / 2;
 
-    task->tWinHoriz = (horiz << 8) | (task->tWinHoriz & 0xff);
-    task->tWinVert = (vertHi << 8) | vertLo;
+    task->tWinHoriz = (horiz << 16) | (task->tWinHoriz & 0xffff);
+    task->tWinVert = (vertHi << 16) | vertLo;
     if (horiz == 0 && vertHi == DisplayHeight() / 4 && vertLo == DisplayWidth() / 2)
     {
         gSprites[task->tMonSpriteId].callback = SpriteCB_FieldMoveMonSlideOnscreen;

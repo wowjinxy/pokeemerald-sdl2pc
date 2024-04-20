@@ -61,6 +61,9 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
         gBattle_BG2_Y = 0;
         gBattle_BG3_X = 0;
         gBattle_BG3_Y = 0;
+        EnableBorder();
+        SetBorder(GAME_BORDER_BATTLE);
+        SetBorderFade(0, 0);
         break;
     case 1:
         GpuClearData();

@@ -1106,6 +1106,8 @@ static void ItemStorage_DrawItemIcon(u16 itemId)
             gSprites[spriteId].oam.priority = 0;
             gSprites[spriteId].x2 = 24;
             gSprites[spriteId].y2 = 80;
+            gSprites[spriteId].x2 += (DisplayWidth() - BASE_DISPLAY_WIDTH) / 2;
+            gSprites[spriteId].y2 += (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
         }
     }
 }

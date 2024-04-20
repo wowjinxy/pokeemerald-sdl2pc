@@ -1092,6 +1092,8 @@ static u8 SetUpCopyrightScreen(void)
         SetVBlankCallback(VBlankCB_Intro);
         SetSerialCallback(SerialCB_CopyrightScreen);
         GameCubeMultiBoot_Init(&gMultibootProgramStruct);
+        SetBorder(GAME_BORDER_EMERALD);
+        DisableBorder();
     default:
         UpdatePaletteFade();
         gMain.state++;
@@ -1228,6 +1230,9 @@ static void Task_Scene1_FadeIn(u8 taskId)
     gIntroFrameCounter = 0;
     m4aSongNumStart(MUS_INTRO);
     ResetSerial();
+    EnableBorder();
+    SetBorder(GAME_BORDER_INTRO_1);
+    SetBorderFade(0, 0);
 }
 
 // Task data for Task_Scene1_PanUp
@@ -1428,6 +1433,10 @@ static void Task_Scene2_CreateSprites(u8 taskId)
     gTasks[taskId].tBgAnimTaskId = CreateBicycleBgAnimationTask(1, 0x4000, 0x400, 0x10);
     SetIntroPart2BgCnt(1);
     gTasks[taskId].func = Task_Scene2_BikeRide;
+
+    // Change border
+    SetBorder(GAME_BORDER_INTRO_2);
+    SetBorderFade(32, 0);
 }
 
 static void Task_Scene2_BikeRide(u8 taskId)
@@ -1734,6 +1743,7 @@ static void SpriteCB_Manectric(struct Sprite *sprite)
 static void Task_Scene3_Load(u8 taskId)
 {
     IntroResetGpuRegs();
+    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG2_ON | DISPCNT_OBJ_ON);
     LZ77UnCompVram(sIntroPokeball_Gfx, gpu.gfxData);
     LZ77UnCompVram(sIntroPokeball_Tilemap, (void *)(BG_CHAR_ADDR(1)));
     LoadPalette(sIntroPokeball_Pal, BG_PLTT_ID(0), sizeof(sIntroPokeball_Pal));
@@ -1749,11 +1759,12 @@ static void Task_Scene3_Load(u8 taskId)
     SetGpuBackgroundPriority(2, 3);
     SetGpuBackgroundScreenBaseBlock(2, 8);
     SetGpuBackground8bppMode(2, 1);
-    SetGpuState(GPU_STATE_DISPCNT, DISPCNT_MODE_1 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG2_ON | DISPCNT_OBJ_ON | DISPCNT_GBA_MODE);
     gTasks[taskId].func = Task_Scene3_SpinPokeball;
     gIntroFrameCounter = 0;
     m4aSongNumStart(MUS_INTRO_BATTLE);
+    SetBorder(GAME_BORDER_INTRO_3);
 }
+
 static void Task_Scene3_SpinPokeball(u8 taskId)
 {
     gTasks[taskId].tAlpha += 0x400;
@@ -2081,6 +2092,7 @@ static void Task_Scene3_LoadKyogre(u8 taskId)
     gTasks[taskId].tZoom = 256;
     PanFadeAndZoomScreen(gTasks[taskId].tScreenX, gTasks[taskId].tScreenY, gTasks[taskId].tZoom, 0);
     ScanlineEffect_InitWave(0, DISPLAY_HEIGHT, 4, 4, 1, SCANLINE_EFFECT_BG1VOFS, FALSE);
+    DoBorderChange(GAME_BORDER_INTRO_4, 0);
 }
 
 static void Task_Scene3_Kyogre(u8 taskId)
@@ -2394,6 +2406,8 @@ static void Task_Scene3_LoadClouds1(u8 taskId)
     LZDecompressVram(gIntroCloudsSun_Tilemap, (void *)(BG_SCREEN_ADDR(28)));
 
     gTasks[taskId].func = Task_Scene3_LoadClouds2;
+
+    DoBorderChange(GAME_BORDER_INTRO_5, 0);
 }
 
 static void Task_Scene3_LoadClouds2(u8 taskId)

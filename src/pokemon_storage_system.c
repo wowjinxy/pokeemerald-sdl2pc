@@ -2055,6 +2055,9 @@ static void ResetForPokeStorage(void)
     ResetSpriteData();
     FreeSpriteTileRanges();
     FreeAllSpritePalettes();
+    SetBorder(GAME_BORDER_EMERALD_MENU);
+    SetBorderFade(32, 0);
+    EnableBorder();
     gReservedSpriteTileCount = 0x280;
     UnkUtil_Init(&sStorage->unkUtil, sStorage->unkUtilData, ARRAY_COUNT(sStorage->unkUtilData));
     gKeyRepeatStartDelay = 20;

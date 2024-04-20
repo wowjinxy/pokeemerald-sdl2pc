@@ -130,6 +130,10 @@ void HandleIntroSlide(u8 terrain)
     gTasks[taskId].data[5] = 0;
     gTasks[taskId].data[6] = 0;
     gTasks[taskId].data[7] = 0;
+
+    EnableBorder();
+    SetBorder(GAME_BORDER_BATTLE);
+    DoBorderFadeIn(0x100, 0);
 }
 
 static void BattleIntroSlideEnd(u8 taskId)

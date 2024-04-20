@@ -329,11 +329,19 @@ void InitBgsFromTemplates(u8 bgMode, const struct BgTemplate *templates, u8 numT
         bg = templates[i].bg;
         if (bg < NUM_BACKGROUNDS)
         {
+            u16 screenWidth = templates[i].screenWidth;
+            u16 screenHeight = templates[i].screenHeight;
+
+            if (screenWidth == 0)
+                screenWidth = 256;
+            if (screenHeight == 0)
+                screenHeight = 256;
+
             SetBgControlAttributes(bg,
                                    templates[i].charBaseIndex,
                                    templates[i].mapBaseIndex,
-                                   templates[i].screenWidth,
-                                   templates[i].screenHeight,
+                                   screenWidth,
+                                   screenHeight,
                                    templates[i].paletteMode,
                                    1,
                                    templates[i].priority,
@@ -356,11 +364,19 @@ void InitBgFromTemplate(const struct BgTemplate *template)
 
     if (bg < NUM_BACKGROUNDS)
     {
+        u16 screenWidth = template->screenWidth;
+        u16 screenHeight = template->screenHeight;
+
+        if (screenWidth == 0)
+            screenWidth = 256;
+        if (screenHeight == 0)
+            screenHeight = 256;
+
         SetBgControlAttributes(bg,
                                template->charBaseIndex,
                                template->mapBaseIndex,
-                               template->screenWidth,
-                               template->screenHeight,
+                               screenWidth,
+                               screenHeight,
                                template->paletteMode,
                                1,
                                template->priority,

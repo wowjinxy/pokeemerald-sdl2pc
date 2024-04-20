@@ -678,6 +678,7 @@ void CB2_InitTitleScreen(void)
                                     | DISPCNT_OBJWIN_ON
                                     | DISPCNT_GBA_MODE);
         m4aSongNumStart(MUS_TITLE);
+        DisableBorder();
         gMain.state = 5;
         break;
     case 5:
@@ -779,6 +780,8 @@ static void Task_TitleScreenPhase2(u8 taskId)
         SetGpuBackgroundY(2, 0);
         CreatePressStartBanner(START_BANNER_X, 108);
         CreateCopyrightBanner(START_BANNER_X, 148);
+        EnableBorder();
+        SetBorder(GAME_BORDER_EMERALD);
         gTasks[taskId].tBg1Y = 0;
         gTasks[taskId].tBg2Y = 0;
         gTasks[taskId].func = Task_TitleScreenPhase3;
@@ -833,14 +836,16 @@ static void Task_TitleScreenPhase3(u8 taskId)
             gBattle_BG1_Y = gTasks[taskId].tBg1Y / 2;
             gBattle_BG1_X = 0;
         }
+
         UpdateLegendaryMarkingColor(gTasks[taskId].tCounter);
-#ifndef PORTABLE
-        if ((gMPlayInfo_BGM.status & 0xFFFF) == 0)
+        EnableBorder();
+        SetBorder(GAME_BORDER_EMERALD);
+
+        if (gMPlayInfo_BGM.status & MUSICPLAYER_STATUS_PAUSE)
         {
             BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_WHITEALPHA);
             SetMainCallback2(CB2_GoToCopyrightScreen);
         }
-#endif
     }
 }
 

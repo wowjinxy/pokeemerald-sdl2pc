@@ -346,11 +346,9 @@ static void HblankCb_TrainerCard(void)
     u16 backup;
     u16 bgVOffset;
 
-    int offsetY = (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
-
     backup = REG_IME;
     REG_IME = 0;
-    bgVOffset = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT) - offsetY];
+    bgVOffset = gScanlineEffectRegBuffers[1][GetGpuState(GPU_STATE_VCOUNT)];
     SetGpuBackgroundY(0, bgVOffset);
     REG_IME = backup;
 }
@@ -601,6 +599,9 @@ static void CB2_InitTrainerCard(void)
     case 0:
         ResetGpuRegs();
         SetUpTrainerCardTask();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
+        EnableBorder();
         gMain.state++;
         break;
     case 1:
@@ -876,15 +877,13 @@ static void InitGpuRegs(void)
 
 static void UpdateCardFlipRegs(u16 cardTop)
 {
-    int offsetY = (DisplayHeight() - BASE_DISPLAY_HEIGHT) / 2;
-
     s8 blendY = (cardTop + 40) / 10;
 
     if (blendY <= 4)
         blendY = 0;
     sData->flipBlendY = blendY;
     SetGpuState(GPU_STATE_BLDY, sData->flipBlendY);
-    SetGpuWindowY(0, WIN_RANGE(offsetY + sData->cardTop, offsetY + (BASE_DISPLAY_HEIGHT - sData->cardTop)));
+    SetGpuWindowY(0, WIN_RANGE(sData->cardTop, BASE_DISPLAY_HEIGHT - sData->cardTop));
 }
 
 static void ResetGpuRegs(void)

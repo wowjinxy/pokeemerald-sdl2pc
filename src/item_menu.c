@@ -685,6 +685,8 @@ static bool8 SetupBagMenu(void)
     case 0:
         SetVBlankHBlankCallbacksToNull();
         ClearScheduledBgCopiesToVram();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        EnableBorder();
         gMain.state++;
         break;
     case 1:

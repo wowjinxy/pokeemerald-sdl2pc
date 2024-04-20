@@ -344,6 +344,9 @@ static u32 LoopedTask_InitPokenavMenu(s32 state)
         InitBgsFromTemplates(0, gPokenavMainMenuBgTemplates, ARRAY_COUNT(gPokenavMainMenuBgTemplates));
         ResetBgPositions();
         ResetTempTileDataBuffers();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        SetBorderFade(0, 0);
+        EnableBorder();
         return LT_INC_AND_CONTINUE;
     case 1:
         menu = GetSubstructPtr(POKENAV_SUBSTRUCT_MAIN_MENU);

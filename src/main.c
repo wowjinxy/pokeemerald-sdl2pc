@@ -61,7 +61,18 @@ static void SeedRngWithRtc(void);
 #endif
 static void ReadKeys(void);
 void InitIntrHandlers(void);
-void EnableVCountIntrAtLine150(void);
+
+struct GameBorder borderList[NUM_GAME_BORDERS] = {
+    { "emerald",      -1, BORDER_REPEAT_X | BORDER_REPEAT_Y | BORDER_CLAMP_Y },
+    { "emerald-menu", -1, BORDER_REPEAT_X | BORDER_REPEAT_Y },
+    { "battle",        2, BORDER_REPEAT_X | BORDER_REPEAT_Y | BORDER_CLAMP_Y },
+    { "intro1",       -1, BORDER_REPEAT_X | BORDER_REPEAT_Y | BORDER_CLAMP_Y },
+    { "intro2",       -1, BORDER_REPEAT_X | BORDER_REPEAT_Y | BORDER_CLAMP_Y },
+    { "intro3",       -1, BORDER_REPEAT_X | BORDER_REPEAT_Y },
+    { "intro4",       -1, BORDER_REPEAT_X | BORDER_REPEAT_Y },
+    { "intro5",       -1, BORDER_REPEAT_X | BORDER_REPEAT_Y | BORDER_CLAMP_X | BORDER_CLAMP_Y },
+    { "overlay",      -1, 0 },
+};
 
 #define B_START_SELECT (B_BUTTON | START_BUTTON | SELECT_BUTTON)
 

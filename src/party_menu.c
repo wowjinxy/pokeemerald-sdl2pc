@@ -565,6 +565,8 @@ static bool8 ShowPartyMenu(void)
         SetVBlankHBlankCallbacksToNull();
         ResetVramOamAndBgCntRegs();
         ClearScheduledBgCopiesToVram();
+        SetBorder(GAME_BORDER_EMERALD_MENU);
+        EnableBorder();
         gMain.state++;
         break;
     case 1:

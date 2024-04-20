@@ -121,6 +121,9 @@ static void MCB2_InitRegionMapRegisters(void)
     ClearScheduledBgCopiesToVram();
     SetMainCallback2(MCB2_FieldUpdateRegionMap);
     SetVBlankCallback(VBCB_FieldUpdateRegionMap);
+    SetBorder(GAME_BORDER_EMERALD_MENU);
+    SetBorderFade(0, 0);
+    EnableBorder();
 }
 
 static void VBCB_FieldUpdateRegionMap(void)
