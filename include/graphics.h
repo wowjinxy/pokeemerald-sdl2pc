@@ -4113,10 +4113,10 @@ extern const u16 gStandardMenuPalette[];
 
 extern const u32 gTitleScreenEmeraldVersionGfx[];
 extern const u32 gTitleScreenPressStartGfx[];
-extern const u32 gTitleScreenPokemonLogoGfx[];
-extern const u32 gTitleScreenPokemonLogoTilemap[];
+extern struct GraphicsSource gTitleScreenPokemonLogoGfx;
+extern struct DataSource gTitleScreenPokemonLogoTilemap;
 extern const u32 gTitleScreenCloudsTilemap[];
-extern const u16 gTitleScreenBgPalettes[];
+extern struct DataSource gTitleScreenBgPalette;
 extern const u16 gTitleScreenPressStartPal[];
 extern const u16 gTitleScreenEmeraldVersionPal[];
 

@@ -20,6 +20,7 @@
 #include "gpu_regs.h"
 #include "trig.h"
 #include "graphics.h"
+#include "resource_loader.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
 
@@ -573,6 +574,7 @@ void CB2_InitTitleScreen(void)
     {
     default:
     case 0:
+        FreeLoadedAssets();
         SetVBlankCallback(NULL);
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);
@@ -596,9 +598,9 @@ void CB2_InitTitleScreen(void)
         break;
     case 1:
         // bg2
-        LZ77UnCompVram(gTitleScreenPokemonLogoGfx, (void *)(BG_CHAR_ADDR(0)));
-        LZ77UnCompVram(gTitleScreenPokemonLogoTilemap, (void *)(BG_SCREEN_ADDR(9)));
-        LoadPalette(gTitleScreenBgPalettes, BG_PLTT_ID(0), 15 * PLTT_SIZE_4BPP);
+        LoadImageAndPalette8bpp(&gTitleScreenPokemonLogoGfx, (void *)(BG_CHAR_ADDR(0)), BG_PLTT_ID(0));
+        LoadDataFromFile(&gTitleScreenPokemonLogoTilemap, (void *)(BG_SCREEN_ADDR(9)));
+        LoadPaletteFromFile(&gTitleScreenBgPalette, BG_PLTT_ID(14), PLTT_ROW_SIZE);
         // bg3
         LZ77UnCompVram(sTitleScreenRayquazaGfx, (void *)(BG_CHAR_ADDR(2)));
         LZ77UnCompVram(sTitleScreenRayquazaTilemap, (void *)(BG_SCREEN_ADDR(26)));

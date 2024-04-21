@@ -1,3 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <errno.h>
+#include <limits.h>
+
 #include "global.h"
 #include "util.h"
 #include "sprite.h"
@@ -276,4 +283,100 @@ void BlendPalette(u16 palOffset, u16 numEntries, u8 coeff, u16 blendColor)
                                       g + (((data2->g - g) * coeff) >> 4),
                                       b + (((data2->b - b) * coeff) >> 4));
     }
+}
+
+bool8 ParseNumber(char *s, char **end, int radix, int *intValue)
+{
+    char *localEnd;
+
+    if (end == NULL)
+        end = &localEnd;
+
+    errno = 0;
+
+    const long longValue = strtol(s, end, radix);
+
+    if (*end == s)
+        return FALSE; // not a number
+
+    if ((longValue == LONG_MIN || longValue == LONG_MAX) && errno == ERANGE)
+        return FALSE;
+
+    if (longValue > INT_MAX)
+        return FALSE;
+
+    if (longValue < INT_MIN)
+        return FALSE;
+
+    *intValue = (int)longValue;
+
+    return TRUE;
+}
+
+unsigned char *ReadWholeFile(const char *path, int *size)
+{
+    FILE *fp = fopen(path, "rb");
+
+    if (fp == NULL) {
+        fprintf(stderr, "Failed to open \"%s\" for reading.\n", path);
+        return NULL;
+    }
+
+    fseek(fp, 0, SEEK_END);
+
+    *size = ftell(fp);
+
+    unsigned char *buffer = malloc(*size);
+
+    if (buffer == NULL) {
+        fprintf(stderr, "Failed to allocate memory for reading \"%s\".\n", path);
+        fclose(fp);
+        return NULL;
+    }
+
+    rewind(fp);
+
+    if (fread(buffer, *size, 1, fp) != 1) {
+        fprintf(stderr, "Failed to read \"%s\".\n", path);
+        free(buffer);
+        buffer = NULL;
+    }
+
+    fclose(fp);
+
+    return buffer;
+}
+
+unsigned char *ReadWholeFileZeroPadded(const char *path, int *size, int padAmount)
+{
+    FILE *fp = fopen(path, "rb");
+
+    if (fp == NULL) {
+        fprintf(stderr, "Failed to open \"%s\" for reading.\n", path);
+        return NULL;
+    }
+
+    fseek(fp, 0, SEEK_END);
+
+    *size = ftell(fp);
+
+    unsigned char *buffer = calloc(*size + padAmount, 1);
+
+    if (buffer == NULL) {
+        fprintf(stderr, "Failed to allocate memory for reading \"%s\".\n", path);
+        fclose(fp);
+        return NULL;
+    }
+
+    rewind(fp);
+
+    if (fread(buffer, *size, 1, fp) != 1) {
+        fprintf(stderr, "Failed to read \"%s\".\n", path);
+        free(buffer);
+        buffer = NULL;
+    }
+
+    fclose(fp);
+
+    return buffer;
 }
