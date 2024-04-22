@@ -53,6 +53,8 @@
 #define Platform_GetTime _Platform_GetTime
 #define Platform_SetTime _Platform_SetTime
 #define Platform_SetAlarm _Platform_SetAlarm
+#define getScreenBase _getScreenBase
+#define setScreenBase _setScreenBase
 #endif
 
 #include "config.h" // we need to define config before gba headers as print stuff needs the functions nulled before defines.

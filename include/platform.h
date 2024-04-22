@@ -12,5 +12,7 @@ void Platform_SetDateTime(struct SiiRtcInfo *rtc);
 void Platform_GetTime(struct SiiRtcInfo *rtc);
 void Platform_SetTime(struct SiiRtcInfo *rtc);
 void Platform_SetAlarm(u8 *alarmData);
+int getScreenBase(int bg);
+void setScreenBase(int bg, int charBase);
 
 #endif  // GUARD_PLATFORM_H

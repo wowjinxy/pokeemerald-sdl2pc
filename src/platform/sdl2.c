@@ -1006,6 +1006,18 @@ static const uint16_t bgMapSizes[][2] =
     {64, 64},
 };
 
+int bgScreenBaseArr[4] = {0};
+
+int getScreenBase(int bg)
+{
+    return bgScreenBaseArr[bg];
+}
+
+void setScreenBase(int bg, int charBase)
+{
+    bgScreenBaseArr[bg] = charBase;
+}
+
 #define mosaicBGEffectX (REG_MOSAIC & 0xF)
 #define mosaicBGEffectY ((REG_MOSAIC >> 4) & 0xF)
 #define mosaicSpriteEffectX ((REG_MOSAIC >> 8) & 0xF)
@@ -1018,7 +1030,7 @@ static const uint16_t bgMapSizes[][2] =
 static void RenderBGScanline(int bgNum, uint16_t control, uint16_t hoffs, uint16_t voffs, int lineNum, uint16_t *line)
 {
     unsigned int charBaseBlock = (control >> 2) & 3;
-    unsigned int screenBaseBlock = (control >> 8) & 0x1F;
+    unsigned int screenBaseBlock = getScreenBase(bgNum);
     unsigned int bitsPerPixel = ((control >> 7) & 1) ? 8 : 4;
     unsigned int mapWidth = bgMapSizes[control >> 14][0];
     unsigned int mapHeight = bgMapSizes[control >> 14][1];
@@ -1175,7 +1187,7 @@ static void RenderRotScaleBGScanline(int bgNum, uint16_t control, uint16_t x, ui
 {
     vBgCnt *bgcnt = (vBgCnt *)&control;
     unsigned int charBaseBlock = bgcnt->charBaseBlock;
-    unsigned int screenBaseBlock = bgcnt->screenBaseBlock;
+    unsigned int screenBaseBlock = getScreenBase(bgNum);
     unsigned int mapWidth = 1 << (4 + (bgcnt->screenSize)); // number of tiles
 
     uint8_t *bgtiles = (uint8_t *)(VRAM_ + charBaseBlock * 0x4000);
@@ -1433,7 +1445,7 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
     int i;
     unsigned int x;
     unsigned int y;
-    void *objtiles = VRAM_ + 0x10000;
+    void *objtiles = VRAM_ + BG_VRAM_SIZE;
     unsigned int blendMode = (REG_BLDCNT >> 6) & 3;
     bool winShouldBlendPixel = true;
 
@@ -1771,10 +1783,10 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         for (xpos = 0; xpos < DISPLAY_WIDTH; xpos++)
         {
             //win0 checks
-            if (WIN0enable && winCheckHorizontalBounds(WIN0left, WIN0right, xpos))
+            if (WIN0enable /*&& winCheckHorizontalBounds(WIN0left, WIN0right, xpos)*/)
                 scanline.winMask[xpos] = REG_WININ & 0x3F;
             //win1 checks
-            else if (WIN1enable && winCheckHorizontalBounds(WIN1left, WIN1right, xpos))
+            else if (WIN1enable /*&& winCheckHorizontalBounds(WIN1left, WIN1right, xpos)*/)
                 scanline.winMask[xpos] = (REG_WININ >> 8) & 0x3F;
             else
                 scanline.winMask[xpos] = (REG_WINOUT & 0x3F) | WINMASK_WINOUT;

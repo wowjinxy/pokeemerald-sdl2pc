@@ -201,7 +201,7 @@ endif
 ifeq ($(DINFO),1)
 override CFLAGS += -g -O0
 else
-override CFLAGS += -O3
+override CFLAGS += -g -O0
 endif
 
 $(C_BUILDDIR)/%.o : $(C_SUBDIR)/%.c $$(c_dep)
