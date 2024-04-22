@@ -43,7 +43,7 @@ struct BgTemplate
 {
     u16 bg:2;                   // 0x1, 0x2 -> 0x3
     u16 charBaseIndex:2;        // 0x4, 0x8 -> 0xC
-    u16 mapBaseIndex:5;         // 0x10, 0x20, 0x40, 0x80, 0x100 -> 0x1F0
+    u32 mapBaseIndex;         // 0x10, 0x20, 0x40, 0x80, 0x100 -> 0x1F0
     u16 screenSize:2;           // 0x200, 0x400 -> 0x600
     u16 paletteMode:1;          // 0x800
     u16 priority:2;             // 0x1000, 0x2000 > 0x3000
@@ -68,8 +68,8 @@ u16 Unused_LoadBgPalette(u8 bg, const void *src, u16 size, u16 destOffset);
 bool8 IsDma3ManagerBusyWithBgCopy(void);
 void ShowBg(u8 bg);
 void HideBg(u8 bg);
-void SetBgAttribute(u8 bg, u8 attributeId, u8 value);
-u16 GetBgAttribute(u8 bg, u8 attributeId);
+void SetBgAttribute(u8 bg, u8 attributeId, u32 value);
+u32 GetBgAttribute(u8 bg, u8 attributeId);
 s32 ChangeBgX(u8 bg, s32 value, u8 op);
 s32 GetBgX(u8 bg);
 s32 ChangeBgY(u8 bg, s32 value, u8 op);

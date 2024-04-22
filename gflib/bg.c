@@ -17,7 +17,7 @@ struct BgControl
         u8 wraparound:1;
 
         u8 charBaseIndex:2;
-        u8 mapBaseIndex:5;
+        u32 mapBaseIndex;
         u8 paletteMode:1;
 
         u8 unknown_2; // Assigned to but never read
@@ -96,7 +96,7 @@ enum
     BG_CTRL_ATTR_WRAPAROUND = 8,
 };
 
-static void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u8 mapBaseIndex, u8 screenSize, u8 paletteMode, u8 priority, u8 mosaic, u8 wraparound)
+static void SetBgControlAttributes(u8 bg, u8 charBaseIndex, u32 mapBaseIndex, u8 screenSize, u8 paletteMode, u8 priority, u8 mosaic, u8 wraparound)
 {
     if (!IsInvalidBg(bg))
     {
@@ -172,7 +172,7 @@ static u16 GetBgControlAttribute(u8 bg, u8 attributeId)
 
 u8 LoadBgVram(u8 bg, const void *src, u16 size, u16 destOffset, u8 mode)
 {
-    u16 offset;
+    u32 offset;
     s8 cursor;
 
     if (IsInvalidBg(bg) || !sGpuBgConfigs.configs[bg].visible)
@@ -211,11 +211,13 @@ static void ShowBgInternal(u8 bg)
                 (sGpuBgConfigs.configs[bg].charBaseIndex << 2) |
                 (sGpuBgConfigs.configs[bg].mosaic << 6) |
                 (sGpuBgConfigs.configs[bg].paletteMode << 7) |
-                (sGpuBgConfigs.configs[bg].mapBaseIndex << 8) |
+                //(sGpuBgConfigs.configs[bg].mapBaseIndex << 8) |
                 (sGpuBgConfigs.configs[bg].wraparound << 13) |
                 (sGpuBgConfigs.configs[bg].screenSize << 14);
 
         SetGpuReg((bg << 1) + REG_OFFSET_BG0CNT, value);
+        printf("setting screenbase %u\n", sGpuBgConfigs.configs[bg].mapBaseIndex);
+        setScreenBase(bg, sGpuBgConfigs.configs[bg].mapBaseIndex);
 
         sGpuBgConfigs.bgVisibilityAndMode |= 1 << (bg + 8);
         sGpuBgConfigs.bgVisibilityAndMode &= DISPCNT_ALL_BG_AND_MODE_BITS;
@@ -477,7 +479,7 @@ void HideBg(u8 bg)
     SyncBgVisibilityAndMode();
 }
 
-void SetBgAttribute(u8 bg, u8 attributeId, u8 value)
+void SetBgAttribute(u8 bg, u8 attributeId, u32 value)
 {
     switch (attributeId)
     {
@@ -505,7 +507,7 @@ void SetBgAttribute(u8 bg, u8 attributeId, u8 value)
     }
 }
 
-u16 GetBgAttribute(u8 bg, u8 attributeId)
+u32 GetBgAttribute(u8 bg, u8 attributeId)
 {
     switch (attributeId)
     {
