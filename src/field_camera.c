@@ -16,10 +16,10 @@ EWRAM_DATA bool8 gUnusedBikeCameraAheadPanback = FALSE;
 
 struct FieldCameraOffset
 {
-    u32 xPixelOffset;
-    u32 yPixelOffset;
-    u32 xTileOffset;
-    u32 yTileOffset;
+    u16 xPixelOffset;
+    u16 yPixelOffset;
+    u8 xTileOffset;
+    u8 yTileOffset;
     bool8 copyBGToVRAM;
 };
 
@@ -57,7 +57,7 @@ static void AddCameraTileOffset(struct FieldCameraOffset *cameraOffset, u32 xOff
     cameraOffset->xTileOffset += xOffset;
     cameraOffset->xTileOffset %= 64;
     cameraOffset->yTileOffset += yOffset;
-    cameraOffset->yTileOffset %= 64;
+    cameraOffset->yTileOffset %= 32;
 }
 
 static void AddCameraPixelOffset(struct FieldCameraOffset *cameraOffset, u32 xOffset, u32 yOffset)
@@ -148,10 +148,9 @@ static void RedrawMapSliceNorth(struct FieldCameraOffset *cameraOffset, const st
     if (temp >= 32)
         temp -= 32;
     r7 = temp * 32;
-    for (i = 0; i < 32; i += 2)
+    for (i = 0; i < 64; i += 2)
     {
         temp = (cameraOffset->xTileOffset + i) & 63;
-        printf("north = %u\n", cameraOffset->xTileOffset);
         if (temp >= 32) {
             temp -= 32;
             DrawMetatileAt(mapLayout, r7 + temp + 0x400, gSaveBlock1Ptr->pos.x + i / 2, gSaveBlock1Ptr->pos.y + 14);
@@ -166,12 +165,11 @@ static void RedrawMapSliceSouth(struct FieldCameraOffset *cameraOffset, const st
     u32 temp;
     u32 r7 = cameraOffset->yTileOffset * 32;
 
-    for (i = 0; i < 32; i += 2)
+    for (i = 0; i < 64; i += 2)
     {
         temp = (cameraOffset->xTileOffset + i) & 63;
         //if (temp >= 32)
         //    temp -= 32;
-        printf("south = %u\n", temp);
         if (temp >= 32){
             temp -= 32;
             DrawMetatileAt(mapLayout, r7 + temp + 0x400, gSaveBlock1Ptr->pos.x + i / 2, gSaveBlock1Ptr->pos.y);
@@ -193,7 +191,6 @@ static void RedrawMapSliceEast(struct FieldCameraOffset *cameraOffset, const str
     for (i = 0; i < 32; i += 2)
     {
         temp = cameraOffset->yTileOffset + i;
-        printf("east = %u\n", temp);
         if (temp >= 32)
             temp -= 32;
         DrawMetatileAt(mapLayout, temp * 32 + r6, gSaveBlock1Ptr->pos.x, gSaveBlock1Ptr->pos.y + i / 2);
