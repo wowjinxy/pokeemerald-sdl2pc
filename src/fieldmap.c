@@ -198,7 +198,7 @@ static void FillSouthConnection(struct MapHeader const *mapHeader, struct MapHea
     {
         cWidth = connectedMapHeader->mapLayout->width;
         x = offset + MAP_OFFSET;
-        y = mapHeader->mapLayout->height + MAP_OFFSET;
+        y = mapHeader->mapLayout->height + MAP_OFFSET_Y;
         if (x < 0)
         {
             x2 = -x;
@@ -222,7 +222,7 @@ static void FillSouthConnection(struct MapHeader const *mapHeader, struct MapHea
             x, y,
             connectedMapHeader,
             x2, /*y2*/ 0,
-            width, /*height*/ MAP_OFFSET);
+            width, /*height*/ MAP_OFFSET_Y);
     }
 }
 
@@ -238,7 +238,7 @@ static void FillNorthConnection(struct MapHeader const *mapHeader, struct MapHea
         cWidth = connectedMapHeader->mapLayout->width;
         cHeight = connectedMapHeader->mapLayout->height;
         x = offset + MAP_OFFSET;
-        y2 = cHeight - MAP_OFFSET;
+        y2 = cHeight - MAP_OFFSET_Y;
         if (x < 0)
         {
             x2 = -x;
@@ -262,7 +262,7 @@ static void FillNorthConnection(struct MapHeader const *mapHeader, struct MapHea
             x, /*y*/ 0,
             connectedMapHeader,
             x2, y2,
-            width, /*height*/ MAP_OFFSET);
+            width, /*height*/ MAP_OFFSET_Y);
 
     }
 }
@@ -277,7 +277,7 @@ static void FillWestConnection(struct MapHeader const *mapHeader, struct MapHead
     {
         cWidth = connectedMapHeader->mapLayout->width;
         cHeight = connectedMapHeader->mapLayout->height;
-        y = offset + MAP_OFFSET;
+        y = offset + MAP_OFFSET_Y;
         x2 = cWidth - MAP_OFFSET;
         if (y < 0)
         {
@@ -315,7 +315,7 @@ static void FillEastConnection(struct MapHeader const *mapHeader, struct MapHead
     {
         cHeight = connectedMapHeader->mapLayout->height;
         x = mapHeader->mapLayout->width + MAP_OFFSET;
-        y = offset + MAP_OFFSET;
+        y = offset + MAP_OFFSET_Y;
         if (y < 0)
         {
             y2 = -y;
@@ -582,14 +582,14 @@ int GetMapBorderIdAt(int x, int y)
 
         return CONNECTION_WEST;
     }
-    else if (y >= (gBackupMapLayout.height - MAP_OFFSET))
+    else if (y >= (gBackupMapLayout.height - MAP_OFFSET_Y))
     {
         if (!sMapConnectionFlags.south)
             return CONNECTION_INVALID;
 
         return CONNECTION_SOUTH;
     }
-    else if (y < MAP_OFFSET)
+    else if (y < MAP_OFFSET_Y)
     {
         if (!sMapConnectionFlags.north)
             return CONNECTION_INVALID;
@@ -604,14 +604,14 @@ int GetMapBorderIdAt(int x, int y)
 
 int GetPostCameraMoveMapBorderId(int x, int y)
 {
-    return GetMapBorderIdAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET + x, gSaveBlock1Ptr->pos.y + MAP_OFFSET + y);
+    return GetMapBorderIdAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET + x, gSaveBlock1Ptr->pos.y + MAP_OFFSET_Y + y);
 }
 
 bool32 CanCameraMoveInDirection(int direction)
 {
     int x, y;
     x = gSaveBlock1Ptr->pos.x + MAP_OFFSET + gDirectionToVectors[direction].x;
-    y = gSaveBlock1Ptr->pos.y + MAP_OFFSET + gDirectionToVectors[direction].y;
+    y = gSaveBlock1Ptr->pos.y + MAP_OFFSET_Y + gDirectionToVectors[direction].y;
 
     if (GetMapBorderIdAt(x, y) == CONNECTION_INVALID)
         return FALSE;
@@ -771,14 +771,14 @@ const struct MapConnection *GetMapConnectionAtPos(s16 x, s16 y)
         {
             direction = connection->direction;
             if ((direction == CONNECTION_DIVE || direction == CONNECTION_EMERGE)
-             || (direction == CONNECTION_NORTH && y > MAP_OFFSET - 1)
-             || (direction == CONNECTION_SOUTH && y < gMapHeader.mapLayout->height + MAP_OFFSET)
+             || (direction == CONNECTION_NORTH && y > MAP_OFFSET_Y - 1)
+             || (direction == CONNECTION_SOUTH && y < gMapHeader.mapLayout->height + MAP_OFFSET_Y)
              || (direction == CONNECTION_WEST && x > MAP_OFFSET - 1)
              || (direction == CONNECTION_EAST && x < gMapHeader.mapLayout->width + MAP_OFFSET))
             {
                 continue;
             }
-            if (IsPosInConnectingMap(connection, x - MAP_OFFSET, y - MAP_OFFSET) == TRUE)
+            if (IsPosInConnectingMap(connection, x - MAP_OFFSET, y - MAP_OFFSET_Y) == TRUE)
             {
                 return connection;
             }

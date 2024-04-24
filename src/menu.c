@@ -85,7 +85,7 @@ static const struct WindowTemplate sStandardTextBox_WindowTemplates[] =
 {
     {
         .bg = 0,
-        .tilemapLeft = 2,
+        .tilemapLeft = 5,
         .tilemapTop = 15,
         .width = 27,
         .height = 4,

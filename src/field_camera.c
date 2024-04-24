@@ -62,6 +62,7 @@ static void AddCameraTileOffset(struct FieldCameraOffset *cameraOffset, u32 xOff
 
 static void AddCameraPixelOffset(struct FieldCameraOffset *cameraOffset, u32 xOffset, u32 yOffset)
 {
+
     cameraOffset->xPixelOffset += xOffset;
     cameraOffset->yPixelOffset += yOffset;
 }
@@ -74,7 +75,7 @@ void ResetFieldCamera(void)
 void FieldUpdateBgTilemapScroll(void)
 {
     u32 r4, r5;
-    r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan;
+    r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan + 8;
     r4 = sVerticalCameraPan + sFieldCameraOffset.yPixelOffset + 8;
 
     SetGpuReg(REG_OFFSET_BG1HOFS, r5);
@@ -113,6 +114,7 @@ static void DrawWholeMapViewInternal(int x, int y, const struct MapLayout *mapLa
         for (j = 0; j < 64; j += 2)
         {
             yOff = sFieldCameraOffset.xTileOffset + j;
+          
             if (yOff >= 32)
                 yOff -= 32;
             if (j >= 32)
@@ -187,7 +189,6 @@ static void RedrawMapSliceEast(struct FieldCameraOffset *cameraOffset, const str
     if (r6 >= 32) {
         r6 += 0x400 - 32;
     }
-
     for (i = 0; i < 32; i += 2)
     {
         temp = cameraOffset->yTileOffset + i;
@@ -201,7 +202,7 @@ static void RedrawMapSliceWest(struct FieldCameraOffset *cameraOffset, const str
 {
     u32 i;
     u32 temp;
-    u32 r5 = (cameraOffset->xTileOffset + 34) & 63 ;
+    u32 r5 = (cameraOffset->xTileOffset + 36) & 63 ;
 
     if (r5 >= 32) {
         r5 += 0x400 - 32;
@@ -213,7 +214,7 @@ static void RedrawMapSliceWest(struct FieldCameraOffset *cameraOffset, const str
         if (temp >= 32)
             temp -= 32;
         
-        DrawMetatileAt(mapLayout, (temp * 32) + r5, gSaveBlock1Ptr->pos.x + 17, gSaveBlock1Ptr->pos.y + i / 2);
+        DrawMetatileAt(mapLayout, (temp * 32) + r5, gSaveBlock1Ptr->pos.x + 18, gSaveBlock1Ptr->pos.y + i / 2);
     }
 }
 
