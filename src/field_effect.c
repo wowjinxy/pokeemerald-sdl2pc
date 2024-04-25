@@ -166,7 +166,7 @@ static void FieldMoveShowMonOutdoorsEffect_ShrinkBanner(struct Task *);
 static void FieldMoveShowMonOutdoorsEffect_RestoreBg(struct Task *);
 static void FieldMoveShowMonOutdoorsEffect_End(struct Task *);
 static void VBlankCB_FieldMoveShowMonOutdoors(void);
-static void LoadFieldMoveOutdoorStreaksTilemap(u16);
+static void LoadFieldMoveOutdoorStreaksTilemap(u32);
 
 static void Task_FieldMoveShowMonIndoors(u8);
 static void FieldMoveShowMonIndoorsEffect_Init(struct Task *);
@@ -2625,7 +2625,7 @@ static void FieldMoveShowMonOutdoorsEffect_Init(struct Task *task)
 static void FieldMoveShowMonOutdoorsEffect_LoadGfx(struct Task *task)
 {
     u16 offset = ((REG_BG0CNT >> 2) << 14);
-    u16 delta = ((REG_BG0CNT >> 8) << 11);
+    u32 delta = BG_SCREEN_SIZE * getScreenBase(0);
     CpuCopy16(sFieldMoveStreaksOutdoors_Gfx, (void *)(VRAM + offset), 0x200);
     CpuFill32(0, (void *)(VRAM + delta), 0x800);
     LoadPalette(sFieldMoveStreaksOutdoors_Pal, BG_PLTT_ID(15), sizeof(sFieldMoveStreaksOutdoors_Pal));
@@ -2696,7 +2696,7 @@ static void FieldMoveShowMonOutdoorsEffect_ShrinkBanner(struct Task *task)
 
 static void FieldMoveShowMonOutdoorsEffect_RestoreBg(struct Task *task)
 {
-    u16 bg0cnt = (REG_BG0CNT >> 8) << 11;
+    u32 bg0cnt = BG_SCREEN_SIZE * getScreenBase(0);
     CpuFill32(0, (void *)VRAM + bg0cnt, 0x800);
     task->tWinHoriz = DISPLAY_WIDTH + 1;
     task->tWinVert = DISPLAY_HEIGHT + 1;
@@ -2730,7 +2730,7 @@ static void VBlankCB_FieldMoveShowMonOutdoors(void)
     SetGpuReg(REG_OFFSET_BG0VOFS, task->tBgVert);
 }
 
-static void LoadFieldMoveOutdoorStreaksTilemap(u16 offs)
+static void LoadFieldMoveOutdoorStreaksTilemap(u32 offs)
 {
     u16 i;
     u16 *dest;
@@ -2785,9 +2785,9 @@ static void FieldMoveShowMonIndoorsEffect_Init(struct Task *task)
 static void FieldMoveShowMonIndoorsEffect_LoadGfx(struct Task *task)
 {
     u16 offset;
-    u16 delta;
+    u32 delta;
     offset = ((REG_BG0CNT >> 2) << 14);
-    delta = ((REG_BG0CNT >> 8) << 11);
+    delta = BG_SCREEN_SIZE * getScreenBase(0);
     task->data[12] = delta;
     CpuCopy16(sFieldMoveStreaksIndoors_Gfx, (void *)(VRAM + offset), 0x80);
     CpuFill32(0, (void *)(VRAM + delta), 0x800);
@@ -2834,8 +2834,8 @@ static void FieldMoveShowMonIndoorsEffect_SlideBannerOff(struct Task *task)
 static void FieldMoveShowMonIndoorsEffect_End(struct Task *task)
 {
     IntrCallback intrCallback;
-    u16 bg0cnt;
-    bg0cnt = (REG_BG0CNT >> 8) << 11;
+    u32 bg0cnt;
+    bg0cnt = BG_SCREEN_SIZE * getScreenBase(0);
     CpuFill32(0, (void *)VRAM + bg0cnt, 0x800);
     LoadWordFromTwoHalfwords((u16 *)&task->data[13], (u32 *)&intrCallback);
     SetVBlankCallback(intrCallback);
