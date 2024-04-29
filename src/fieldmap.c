@@ -790,13 +790,13 @@ const struct MapConnection *GetMapConnectionAtPos(s16 x, s16 y)
 void SetCameraFocusCoords(u16 x, u16 y)
 {
     gSaveBlock1Ptr->pos.x = x - MAP_OFFSET;
-    gSaveBlock1Ptr->pos.y = y - MAP_OFFSET;
+    gSaveBlock1Ptr->pos.y = y - MAP_OFFSET_Y;
 }
 
 void GetCameraFocusCoords(u16 *x, u16 *y)
 {
     *x = gSaveBlock1Ptr->pos.x + MAP_OFFSET;
-    *y = gSaveBlock1Ptr->pos.y + MAP_OFFSET;
+    *y = gSaveBlock1Ptr->pos.y + MAP_OFFSET_Y;
 }
 
 static void UNUSED SetCameraCoords(u16 x, u16 y)
