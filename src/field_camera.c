@@ -94,6 +94,8 @@ void DrawWholeMapView(void)
 static void DrawWholeMapViewInternal(const struct MapLayout *mapLayout)
 {
     u32 x, y;
+    
+    ReInitOverworldBgs();
 
     for (y = 0; y < mapLayout->height + MAP_OFFSET_H; y++)
     {

@@ -1459,6 +1459,48 @@ static void InitOverworldBgs(void)
     InitStandardTextBoxWindows();
 }
 
+void ReInitOverworldBgs(void)
+{
+    struct BgTemplate overworldBgTemplates[4];
+
+    size_t screenSize;
+    size_t tilemapWidth = 1, tilemapHeight = 1;
+
+    int mapWidth = (gMapHeader.mapLayout->width + MAP_OFFSET_W) * 16;
+    int mapHeight = (gMapHeader.mapLayout->height + MAP_OFFSET_H) * 16;
+
+    while (tilemapWidth < mapWidth)
+        tilemapWidth <<= 1;
+    while (tilemapHeight < mapHeight)
+        tilemapHeight <<= 1;
+
+    memcpy(overworldBgTemplates, sOverworldBgTemplates, sizeof(sOverworldBgTemplates));
+
+    for (unsigned i = 1; i <= 3; i++)
+    {
+        overworldBgTemplates[i].screenWidth = tilemapWidth;
+        overworldBgTemplates[i].screenHeight = tilemapHeight;
+    }
+
+    screenSize = BG_SCREEN_SIZE;
+    gOverworldTilemapWidth = tilemapWidth / 8;
+    InitBgsFromTemplates(0, overworldBgTemplates, ARRAY_COUNT(overworldBgTemplates));
+    SetBgAttribute(1, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(2, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(3, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(1, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(2, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(3, BG_ATTR_GBAMODE, 0);
+    SetBgTilemapBuffer(1, gOverworldTilemapBuffer_Bg1);
+    SetBgTilemapBuffer(2, gOverworldTilemapBuffer_Bg2);
+    SetBgTilemapBuffer(3, gOverworldTilemapBuffer_Bg3);
+    InitStandardTextBoxWindows();
+    //ShowBg(0);
+    ShowBg(1);
+    ShowBg(2);
+    ShowBg(3);
+}
+
 void CleanupOverworldWindowsAndTilemaps(void)
 {
     ClearMirageTowerPulseBlendEffect();
