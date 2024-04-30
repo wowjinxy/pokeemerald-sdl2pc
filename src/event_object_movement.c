@@ -4783,13 +4783,13 @@ void GetMapCoordsFromSpritePos(s16 x, s16 y, s16 *destX, s16 *destY)
 {
     *destX = (x - gSaveBlock1Ptr->pos.x) << 4;
     *destY = (y - gSaveBlock1Ptr->pos.y) << 4;
-    *destX -= gTotalCameraPixelOffsetX + 8;
+    *destX -= gTotalCameraPixelOffsetX;
     *destY -= gTotalCameraPixelOffsetY;
 }
 
 void SetSpritePosToMapCoords(s16 mapX, s16 mapY, s16 *destX, s16 *destY)
 {
-    s16 dx = -gTotalCameraPixelOffsetX - gFieldCamera.x - 8;
+    s16 dx = -gTotalCameraPixelOffsetX - gFieldCamera.x;
     s16 dy = -gTotalCameraPixelOffsetY - gFieldCamera.y;
     if (gFieldCamera.x > 0)
         dx += 16;

@@ -473,7 +473,7 @@ void UpdateCameraPanning(void)
     if (sFieldCameraPanningCallback != NULL)
         sFieldCameraPanningCallback();
     //Update sprite offset of overworld objects
-    gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan;
+    gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan - 8;
     gSpriteCoordOffsetY = gTotalCameraPixelOffsetY - sVerticalCameraPan - 8;
 }
 
