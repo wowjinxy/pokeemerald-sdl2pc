@@ -9,6 +9,7 @@
 #include "field_effect.h"
 #include "field_weather.h"
 #include "gpu_regs.h"
+#include "gpu_main.h"
 #include "main.h"
 #include "malloc.h"
 #include "overworld.h"
