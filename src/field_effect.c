@@ -11,6 +11,7 @@
 #include "fieldmap.h"
 #include "fldeff.h"
 #include "gpu_regs.h"
+#include "gpu_main.h"
 #include "main.h"
 #include "mirage_tower.h"
 #include "menu.h"
