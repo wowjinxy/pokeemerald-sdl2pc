@@ -63,7 +63,7 @@ static bool8 UseFullScreen(void)
 void FieldUpdateBgTilemapScroll(void)
 {
     u32 r4, r5;
-    r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan;
+    r5 = sFieldCameraOffset.xPixelOffset + sHorizontalCameraPan + 128;
     r4 = sVerticalCameraPan + sFieldCameraOffset.yPixelOffset + 8;
 
     if (UseFullScreen())
@@ -94,6 +94,8 @@ void DrawWholeMapView(void)
 static void DrawWholeMapViewInternal(const struct MapLayout *mapLayout)
 {
     u32 x, y;
+    
+    ReInitOverworldBgs();
 
     for (y = 0; y < mapLayout->height + MAP_OFFSET_H; y++)
     {
@@ -344,7 +346,7 @@ void UpdateCameraPanning(void)
     if (sFieldCameraPanningCallback != NULL)
         sFieldCameraPanningCallback();
     //Update sprite offset of overworld objects
-    gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan;
+    gSpriteCoordOffsetX = gTotalCameraPixelOffsetX - sHorizontalCameraPan - 128;
     gSpriteCoordOffsetY = gTotalCameraPixelOffsetY - sVerticalCameraPan - 8;
 
     if (UseFullScreen())

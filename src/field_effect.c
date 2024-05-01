@@ -11,6 +11,7 @@
 #include "fieldmap.h"
 #include "fldeff.h"
 #include "gpu_regs.h"
+#include "gpu_main.h"
 #include "main.h"
 #include "mirage_tower.h"
 #include "menu.h"
@@ -3838,10 +3839,10 @@ bool8 FldEff_MoveDeoxysRock(struct Sprite *sprite)
         u8 taskId;
         object = &gObjectEvents[objectEventId];
         xPos = object->currentCoords.x - MAP_OFFSET;
-        yPos = object->currentCoords.y - MAP_OFFSET;
+        yPos = object->currentCoords.y - MAP_OFFSET_Y;
         xPos = (gFieldEffectArguments[3] - xPos) * 16;
         yPos = (gFieldEffectArguments[4] - yPos) * 16;
-        ShiftObjectEventCoords(object, gFieldEffectArguments[3] + MAP_OFFSET, gFieldEffectArguments[4] + MAP_OFFSET);
+        ShiftObjectEventCoords(object, gFieldEffectArguments[3] + MAP_OFFSET, gFieldEffectArguments[4] + MAP_OFFSET_Y);
         taskId = CreateTask(Task_MoveDeoxysRock, 80);
         gTasks[taskId].tSpriteId = object->spriteId;
         gTasks[taskId].tTargetX = gSprites[object->spriteId].x + xPos;

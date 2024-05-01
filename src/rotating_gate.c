@@ -714,7 +714,7 @@ static void RotatingGate_CreateGatesWithinViewport(s16 deltaX, s16 deltaY)
     for (i = 0; i < sRotatingGate_PuzzleCount; i++)
     {
         s16 x3 = sRotatingGate_PuzzleConfig[i].x + MAP_OFFSET;
-        s16 y3 = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET;
+        s16 y3 = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET_Y;
 
         if (y <= y3 && y2 >= y3 && x <= x3 && x2 >= x3 &&
             sRotatingGate_GateSpriteIds[i] == MAX_SPRITES)
@@ -745,7 +745,7 @@ static u8 RotatingGate_CreateGate(u8 gateId, s16 deltaX, s16 deltaY)
         return MAX_SPRITES;
 
     x = gate->x + MAP_OFFSET;
-    y = gate->y + MAP_OFFSET;
+    y = gate->y + MAP_OFFSET_Y;
 
     sprite = &gSprites[spriteId];
     sprite->data[0] = gateId;
@@ -831,7 +831,7 @@ static void RotatingGate_DestroyGatesOutsideViewport(void)
     for (i = 0; i < sRotatingGate_PuzzleCount; i++)
     {
         s16 xGate = sRotatingGate_PuzzleConfig[i].x + MAP_OFFSET;
-        s16 yGate = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET;
+        s16 yGate = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET_Y;
 
         if (sRotatingGate_GateSpriteIds[i] == MAX_SPRITES)
             continue;
@@ -865,7 +865,7 @@ static s32 RotatingGate_CanRotate(u8 gateId, s32 rotationDirection)
 
     shape = sRotatingGate_PuzzleConfig[gateId].shape;
     x = sRotatingGate_PuzzleConfig[gateId].x + MAP_OFFSET;
-    y = sRotatingGate_PuzzleConfig[gateId].y + MAP_OFFSET;
+    y = sRotatingGate_PuzzleConfig[gateId].y + MAP_OFFSET_Y;
 
     // Loop through the gate's "arms" clockwise (north, south, east, west)
     for (i = GATE_ARM_NORTH; i <= GATE_ARM_WEST; i++)
@@ -966,7 +966,7 @@ bool8 CheckForRotatingGatePuzzleCollision(u8 direction, s16 x, s16 y)
     for (i = 0; i < sRotatingGate_PuzzleCount; i++)
     {
         s16 gateX = sRotatingGate_PuzzleConfig[i].x + MAP_OFFSET;
-        s16 gateY = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET;
+        s16 gateY = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET_Y;
 
         if (gateX - 2 <= x && x <= gateX + 1 && gateY - 2 <= y && y <= gateY + 1)
         {
@@ -1004,7 +1004,7 @@ bool8 CheckForRotatingGatePuzzleCollisionWithoutAnimation(u8 direction, s16 x, s
     for (i = 0; i < sRotatingGate_PuzzleCount; i++)
     {
         s16 gateX = sRotatingGate_PuzzleConfig[i].x + MAP_OFFSET;
-        s16 gateY = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET;
+        s16 gateY = sRotatingGate_PuzzleConfig[i].y + MAP_OFFSET_Y;
 
         if (gateX - 2 <= x && x <= gateX + 1 && gateY - 2 <= y && y <= gateY + 1)
         {

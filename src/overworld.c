@@ -690,7 +690,7 @@ void UpdateEscapeWarp(s16 x, s16 y)
     u8 currMapType = GetCurrentMapType();
     u8 destMapType = GetMapTypeByGroupAndId(sWarpDestination.mapGroup, sWarpDestination.mapNum);
     if (IsMapTypeOutdoors(currMapType) && IsMapTypeOutdoors(destMapType) != TRUE)
-        SetEscapeWarp(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET + 1);
+        SetEscapeWarp(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET_Y + 1);
 }
 
 void SetEscapeWarp(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
@@ -967,7 +967,7 @@ static u8 GetAdjustedInitialDirection(struct InitialPlayerAvatarState *playerStr
 
 static u16 GetCenterScreenMetatileBehavior(void)
 {
-    return MapGridGetMetatileBehaviorAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET, gSaveBlock1Ptr->pos.y + MAP_OFFSET);
+    return MapGridGetMetatileBehaviorAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET, gSaveBlock1Ptr->pos.y + MAP_OFFSET_Y);
 }
 
 bool32 Overworld_IsBikingAllowed(void)
@@ -1457,6 +1457,48 @@ static void InitOverworldBgs(void)
     SetBgTilemapBuffer(2, gOverworldTilemapBuffer_Bg2);
     SetBgTilemapBuffer(3, gOverworldTilemapBuffer_Bg3);
     InitStandardTextBoxWindows();
+}
+
+void ReInitOverworldBgs(void)
+{
+    struct BgTemplate overworldBgTemplates[4];
+
+    size_t screenSize;
+    size_t tilemapWidth = 1, tilemapHeight = 1;
+
+    int mapWidth = (gMapHeader.mapLayout->width + MAP_OFFSET_W) * 16;
+    int mapHeight = (gMapHeader.mapLayout->height + MAP_OFFSET_H) * 16;
+
+    while (tilemapWidth < mapWidth)
+        tilemapWidth <<= 1;
+    while (tilemapHeight < mapHeight)
+        tilemapHeight <<= 1;
+
+    memcpy(overworldBgTemplates, sOverworldBgTemplates, sizeof(sOverworldBgTemplates));
+
+    for (unsigned i = 1; i <= 3; i++)
+    {
+        overworldBgTemplates[i].screenWidth = tilemapWidth;
+        overworldBgTemplates[i].screenHeight = tilemapHeight;
+    }
+
+    screenSize = BG_SCREEN_SIZE;
+    gOverworldTilemapWidth = tilemapWidth / 8;
+    InitBgsFromTemplates(0, overworldBgTemplates, ARRAY_COUNT(overworldBgTemplates));
+    SetBgAttribute(1, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(2, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(3, BG_ATTR_MOSAIC, 1);
+    SetBgAttribute(1, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(2, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(3, BG_ATTR_GBAMODE, 0);
+    SetBgTilemapBuffer(1, gOverworldTilemapBuffer_Bg1);
+    SetBgTilemapBuffer(2, gOverworldTilemapBuffer_Bg2);
+    SetBgTilemapBuffer(3, gOverworldTilemapBuffer_Bg3);
+    InitStandardTextBoxWindows();
+    //ShowBg(0);
+    ShowBg(1);
+    ShowBg(2);
+    ShowBg(3);
 }
 
 void CleanupOverworldWindowsAndTilemaps(void)
