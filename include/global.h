@@ -1111,26 +1111,4 @@ struct MapPosition
     s8 elevation;
 };
 
-struct DataSource
-{
-    const char *path;
-    void *data;
-    size_t size;
-    bool8 loaded;
-};
-
-struct GraphicsSource
-{
-    const char *path;
-    void *image;
-    void *palette;
-    size_t size;
-    size_t paletteSize;
-    bool8 loaded;
-};
-
-#define DATA_SOURCE(where) { where, NULL, 0, FALSE }
-
-#define GFX_SOURCE(where) { where, NULL, NULL, 0, 0, FALSE }
-
 #endif // GUARD_GLOBAL_H

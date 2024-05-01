@@ -559,8 +559,6 @@ void CB2_ReinitMainMenu(void)
 
 static u32 InitMainMenu(bool8 returningFromOptionsMenu)
 {
-    FreeLoadedAssets();
-
     SetVBlankCallback(NULL);
 
     ResetGpuDisplayControl();

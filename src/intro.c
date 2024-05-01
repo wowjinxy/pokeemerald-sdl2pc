@@ -1068,7 +1068,6 @@ static u8 SetUpCopyrightScreen(void)
     switch (gMain.state)
     {
     case 0:
-        FreeLoadedAssets();
         SetVBlankCallback(NULL);
         SetGpuState(GPU_STATE_BLDCNT, 0);
         SetGpuState(GPU_STATE_BLDALPHA, 0);

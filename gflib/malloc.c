@@ -7,7 +7,7 @@
 EWRAM_DATA u8 gHeap[HEAP_SIZE] = {0};
 #endif
 
-// #define MEMDEBUG
+#define MEMDEBUG
 
 #define MALLOC_SYSTEM_ID 0xA3A3
 
