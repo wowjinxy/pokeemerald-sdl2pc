@@ -1628,28 +1628,28 @@ static void DrawSprites(struct scanlineData* scanline, uint16_t vcount, bool win
 
         pixels = scanline->spriteLayers[oam->priority];
 
-        int32_t x = oam->x;
-        int32_t y = oam->y;
+        s16 x = oam->x;
+        s16 y = oam->y;
 
-        if (x >= displayWidth)
-            x -= 512;
-        if (y >= displayHeight)
-            y -= 256;
+        if (InGbaRenderMode())
+        {
+            if (x >= BASE_DISPLAY_WIDTH)
+                x -= 512;
+            if (y >= BASE_DISPLAY_HEIGHT)
+                y -= 256;
+        }
 
         if (isAffine)
         {
-            //TODO: there is probably a better way to do this
-            u8 matrixNum = oam->matrixNum * 4;
+            u8 matrixNum = oam->matrixNum;
 
-            struct OamData *oam1 = &(gpu.spriteList[matrixNum]);
-            struct OamData *oam2 = &(gpu.spriteList[matrixNum + 1]);
-            struct OamData *oam3 = &(gpu.spriteList[matrixNum + 2]);
-            struct OamData *oam4 = &(gpu.spriteList[matrixNum + 3]);
-
-            matrix[0][0] = oam1->affineParam;
-            matrix[0][1] = oam2->affineParam;
-            matrix[1][0] = oam3->affineParam;
-            matrix[1][1] = oam4->affineParam;
+            if (matrixNum < MAX_OAM_MATRICES)
+            {
+                matrix[0][0] = gpu.spriteMatrices[matrixNum].a;
+                matrix[0][1] = gpu.spriteMatrices[matrixNum].b;
+                matrix[1][0] = gpu.spriteMatrices[matrixNum].c;
+                matrix[1][1] = gpu.spriteMatrices[matrixNum].d;
+            }
 
             if (doubleSizeOrDisabled) // double size for affine
             {
