@@ -3,6 +3,7 @@
 
 LilycoveCity_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, LilycoveCity_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, LilycoveCity_OnSetupObjects
 	map_script MAP_SCRIPT_ON_LOAD, LilycoveCity_OnLoad
 	.byte 0
 
@@ -11,6 +12,9 @@ LilycoveCity_OnTransition:
 	setvar VAR_CONTEST_HALL_STATE, 0
 	setflag FLAG_HIDE_LILYCOVE_CONTEST_HALL_REPORTER
 	call_if_set FLAG_SYS_WEATHER_CTRL, Common_EventScript_SetAbnormalWeather
+	end
+
+LilycoveCity_OnSetupObjects:
 	call Common_EventScript_SetupRivalGfxId
 	end
 

@@ -23,12 +23,17 @@
 
 SlateportCity_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, SlateportCity_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, SlateportCity_OnSetupObjects
 	map_script MAP_SCRIPT_ON_FRAME_TABLE, SlateportCity_OnFrame
 	.byte 0
 
 SlateportCity_OnTransition:
 	setvar VAR_SLATEPORT_MUSEUM_1F_STATE, 0
 	call SlateportCity_EventScript_EnterSlateport
+	end
+
+SlateportCity_OnSetupObjects:
+	setflag FLAG_HIDE_SLATEPORT_CITY_CONTEST_REPORTER
 	call_if_eq VAR_SLATEPORT_CITY_STATE, 1, SlateportCity_EventScript_MovePeopleForSternInterview
 	call_if_eq VAR_SLATEPORT_OUTSIDE_MUSEUM_STATE, 1, SlateportCity_EventScript_SetReadyForScottScene
 	end
@@ -36,7 +41,6 @@ SlateportCity_OnTransition:
 SlateportCity_EventScript_EnterSlateport::
 	setflag FLAG_VISITED_SLATEPORT_CITY
 	setvar VAR_CONTEST_HALL_STATE, 0
-	setflag FLAG_HIDE_SLATEPORT_CITY_CONTEST_REPORTER
 	return
 
 SlateportCity_EventScript_MovePeopleForSternInterview::

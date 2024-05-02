@@ -1219,6 +1219,7 @@ u8 GetObjectEventIdByLocalIdAndMap(u8 localId, u8 mapNum, u8 mapGroupId)
     if (localId < OBJ_EVENT_ID_PLAYER)
         return GetObjectEventIdByLocalIdAndMapInternal(localId, mapNum, mapGroupId);
 
+    // We always move object events that match the player's local ID
     return GetObjectEventIdByLocalId(localId);
 }
 
@@ -1644,6 +1645,7 @@ void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
     }
 
     // Load object events from connections as well
+    // (I feel like this can be optimized, but I'm unsure how right now.)
     if (gMapHeader.connections != NULL)
     {
         int count = gMapHeader.connections->count;
@@ -1687,9 +1689,17 @@ void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
                 offsetX = connection->offset;
                 offsetY = -mapHeader->mapLayout->height;
                 break;
+            default:
+                // Not a connection we should load events from (dive, emerge)
+                continue;
             }
 
-            TrySpawnObjectEventsFromTemplates(events->objectEvents, events->objectEventCount, connection->mapNum, connection->mapGroup, offsetX, offsetY, cameraX, cameraY);
+            u8 objectCount = gSaveBlock1Ptr->connectionObjectEventCount[connection->direction - 1];
+            if (objectCount > 0)
+            {
+                struct ObjectEventTemplate const *templates = gSaveBlock1Ptr->connectionObjectEventTemplates[connection->direction - 1];
+                TrySpawnObjectEventsFromTemplates(templates, objectCount, connection->mapNum, connection->mapGroup, offsetX, offsetY, cameraX, cameraY);
+            }
         }
     }
 }
