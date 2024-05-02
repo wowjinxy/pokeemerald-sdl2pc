@@ -6,6 +6,8 @@
 
 #define MAX_OAM_SPRITES 128
 
+#define MAX_OAM_MATRICES 32
+
 #define NUM_CHAR_BLOCKS 4
 
 #define NUM_SCREEN_BLOCKS 32
@@ -68,6 +70,14 @@ struct GpuWindowState
     u32 x, y;
 };
 
+struct GpuMatrix
+{
+    s16 a;
+    s16 b;
+    s16 c;
+    s16 d;
+};
+
 struct GpuState
 {
     u8 *gfxData;
@@ -75,6 +85,7 @@ struct GpuState
     u8 *spriteGfxData;
 
     struct OamData spriteList[MAX_OAM_SPRITES];
+    struct GpuMatrix spriteMatrices[MAX_OAM_SPRITES];
 
     unsigned char palette[PLTT_SIZE];
 

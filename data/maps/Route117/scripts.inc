@@ -1,10 +1,10 @@
 .set LOCALID_DAYCARE_MAN, 3
 
 Route117_MapScripts::
-	map_script MAP_SCRIPT_ON_TRANSITION, Route117_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, Route117_OnSetupObjects
 	.byte 0
 
-Route117_OnTransition:
+Route117_OnSetupObjects:
 	call Route117_EventScript_TryMoveDayCareMan
 	end
 

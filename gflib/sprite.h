@@ -157,8 +157,8 @@ enum
 
 struct Subsprite
 {
-    s8 x; // was u16 in R/S
-    s8 y; // was u16 in R/S
+    s16 x; // was u16 in R/S
+    s16 y; // was u16 in R/S
     u16 shape:2;
     u16 size:2;
     u16 tileOffset:10;
@@ -327,7 +327,6 @@ bool8 AddSubspritesToOamBuffer(struct Sprite *sprite, struct OamData *destOam, u
 void CopyToSprites(u8 *src);
 void CopyFromSprites(u8 *dest);
 u8 SpriteTileAllocBitmapOp(u16 bit, u8 op);
-void ClearSpriteCopyRequests(void);
 void ResetAffineAnimData(void);
 
 #endif //GUARD_SPRITE_H

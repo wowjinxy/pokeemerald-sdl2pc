@@ -7,15 +7,19 @@
 
 RustboroCity_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, RustboroCity_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, RustboroCity_OnSetupObjects
 	map_script MAP_SCRIPT_ON_FRAME_TABLE, RustboroCity_OnFrame
 	.byte 0
 
 RustboroCity_OnTransition:
 	setflag FLAG_VISITED_RUSTBORO_CITY
-	call Common_EventScript_SetupRivalGfxId
 	call_if_eq VAR_RUSTBORO_CITY_STATE, 6, RustboroCity_EventScript_HideMapNamePopup
 	getplayerxy VAR_TEMP_0, VAR_TEMP_1
 	goto_if_eq VAR_RUSTBORO_CITY_STATE, 6, RustboroCity_EventScript_PositionScientistForExit
+	end
+
+RustboroCity_OnSetupObjects:
+	call Common_EventScript_SetupRivalGfxId
 	end
 
 RustboroCity_EventScript_PositionScientistForExit::

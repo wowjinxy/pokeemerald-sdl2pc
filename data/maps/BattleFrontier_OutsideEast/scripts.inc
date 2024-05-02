@@ -3,6 +3,7 @@
 BattleFrontier_OutsideEast_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, BattleFrontier_OutsideEast_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, BattleFrontier_OutsideEast_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, BattleFrontier_OutsideEast_OnSetupObjects
 	.byte 0
 
 BattleFrontier_OutsideEast_OnResume:
@@ -18,6 +19,9 @@ BattleFrontier_OutsideEast_EventScript_TryRemoveSudowoodo::
 BattleFrontier_OutsideEast_OnTransition:
 	setvar VAR_BRAVO_TRAINER_BATTLE_TOWER_ON, 0
 	setflag FLAG_HIDE_BATTLE_TOWER_REPORTER
+	end
+
+BattleFrontier_OutsideEast_OnSetupObjects:
 	call_if_unset FLAG_DEFEATED_SUDOWOODO, BattleFrontier_OutsideEast_EventScript_ShowSudowoodo
 	end
 
