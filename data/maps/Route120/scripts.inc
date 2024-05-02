@@ -5,6 +5,7 @@
 Route120_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, Route120_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, Route120_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, Route120_OnSetupObjects
 	map_script MAP_SCRIPT_ON_LOAD, Route120_OnLoad
 	.byte 0
 
@@ -57,8 +58,11 @@ Route120_EventScript_SetBridgeKecleonMovement::
 	return
 
 Route120_OnTransition:
-	call GabbyAndTy_EventScript_UpdateLocation
 	call Route120_EventScript_SetWeather
+	end
+
+Route120_OnSetupObjects:
+	call GabbyAndTy_EventScript_UpdateLocation
 	end
 
 Route120_EventScript_SetWeather::

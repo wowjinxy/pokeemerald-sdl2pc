@@ -1219,6 +1219,7 @@ u8 GetObjectEventIdByLocalIdAndMap(u8 localId, u8 mapNum, u8 mapGroupId)
     if (localId < OBJ_EVENT_ID_PLAYER)
         return GetObjectEventIdByLocalIdAndMapInternal(localId, mapNum, mapGroupId);
 
+    // We always move object events that match the player's local ID
     return GetObjectEventIdByLocalId(localId);
 }
 
@@ -1267,19 +1268,15 @@ static u8 GetObjectEventIdByLocalId(u8 localId)
     return OBJECT_EVENTS_COUNT;
 }
 
-static u8 InitObjectEventStateFromTemplate(const struct ObjectEventTemplate *template, u8 mapNum, u8 mapGroup)
+static u8 InitObjectEventStateFromTemplate(const struct ObjectEventTemplate *template, s16 x, s16 y, u8 mapNum, u8 mapGroup)
 {
     struct ObjectEvent *objectEvent;
     u8 objectEventId;
-    s16 x;
-    s16 y;
 
     if (GetAvailableObjectEventId(template->localId, mapNum, mapGroup, &objectEventId))
         return OBJECT_EVENTS_COUNT;
     objectEvent = &gObjectEvents[objectEventId];
     ClearObjectEvent(objectEvent);
-    x = template->x + MAP_OFFSET;
-    y = template->y + MAP_OFFSET;
     objectEvent->active = TRUE;
     objectEvent->triggerGroundEffectsOnMove = TRUE;
     objectEvent->graphicsId = template->graphicsId;
@@ -1311,31 +1308,6 @@ static u8 InitObjectEventStateFromTemplate(const struct ObjectEventTemplate *tem
             objectEvent->rangeY++;
     }
     return objectEventId;
-}
-
-u8 Unref_TryInitLocalObjectEvent(u8 localId)
-{
-    u8 i;
-    u8 objectEventCount;
-    struct ObjectEventTemplate *template;
-
-    if (gMapHeader.events != NULL)
-    {
-        if (InBattlePyramid())
-            objectEventCount = GetNumBattlePyramidObjectEvents();
-        else if (InTrainerHill())
-            objectEventCount = HILL_TRAINERS_PER_FLOOR;
-        else
-            objectEventCount = gMapHeader.events->objectEventCount;
-
-        for (i = 0; i < objectEventCount; i++)
-        {
-            template = &gSaveBlock1Ptr->objectEventTemplates[i];
-            if (template->localId == localId && !FlagGet(template->flagId))
-                return InitObjectEventStateFromTemplate(template, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
-        }
-    }
-    return OBJECT_EVENTS_COUNT;
 }
 
 static bool8 GetAvailableObjectEventId(u16 localId, u8 mapNum, u8 mapGroup, u8 *objectEventId)
@@ -1398,7 +1370,7 @@ void RemoveAllObjectEventsExceptPlayer(void)
     }
 }
 
-static u8 TrySetupObjectEventSprite(const struct ObjectEventTemplate *objectEventTemplate, struct SpriteTemplate *spriteTemplate, u8 mapNum, u8 mapGroup, s16 cameraX, s16 cameraY)
+static u8 TrySetupObjectEventSprite(const struct ObjectEventTemplate *objectEventTemplate, struct SpriteTemplate *spriteTemplate, u8 mapNum, u8 mapGroup, s16 offsetX, s16 offsetY, s16 cameraX, s16 cameraY)
 {
     u8 spriteId;
     u8 paletteSlot;
@@ -1407,7 +1379,10 @@ static u8 TrySetupObjectEventSprite(const struct ObjectEventTemplate *objectEven
     struct ObjectEvent *objectEvent;
     const struct ObjectEventGraphicsInfo *graphicsInfo;
 
-    objectEventId = InitObjectEventStateFromTemplate(objectEventTemplate, mapNum, mapGroup);
+    s16 x = objectEventTemplate->x + MAP_OFFSET + offsetX;
+    s16 y = objectEventTemplate->y + MAP_OFFSET_Y + offsetY;
+
+    objectEventId = InitObjectEventStateFromTemplate(objectEventTemplate, x, y, mapNum, mapGroup);
     if (objectEventId == OBJECT_EVENTS_COUNT)
         return OBJECT_EVENTS_COUNT;
 
@@ -1458,7 +1433,7 @@ static u8 TrySetupObjectEventSprite(const struct ObjectEventTemplate *objectEven
     return objectEventId;
 }
 
-static u8 TrySpawnObjectEventTemplate(const struct ObjectEventTemplate *objectEventTemplate, u8 mapNum, u8 mapGroup, s16 cameraX, s16 cameraY)
+static u8 TrySpawnObjectEventTemplate(const struct ObjectEventTemplate *objectEventTemplate, u8 mapNum, u8 mapGroup, s16 offsetX, s16 offsetY, s16 cameraX, s16 cameraY)
 {
     u8 objectEventId;
     struct SpriteTemplate spriteTemplate;
@@ -1470,7 +1445,7 @@ static u8 TrySpawnObjectEventTemplate(const struct ObjectEventTemplate *objectEv
     MakeSpriteTemplateFromObjectEventTemplate(objectEventTemplate, &spriteTemplate, &subspriteTables);
     spriteFrameImage.size = graphicsInfo->size;
     spriteTemplate.images = &spriteFrameImage;
-    objectEventId = TrySetupObjectEventSprite(objectEventTemplate, &spriteTemplate, mapNum, mapGroup, cameraX, cameraY);
+    objectEventId = TrySetupObjectEventSprite(objectEventTemplate, &spriteTemplate, mapNum, mapGroup, offsetX, offsetY, cameraX, cameraY);
     if (objectEventId == OBJECT_EVENTS_COUNT)
         return OBJECT_EVENTS_COUNT;
 
@@ -1487,7 +1462,7 @@ u8 SpawnSpecialObjectEvent(struct ObjectEventTemplate *objectEventTemplate)
     s16 cameraY;
 
     GetObjectEventMovingCameraOffset(&cameraX, &cameraY);
-    return TrySpawnObjectEventTemplate(objectEventTemplate, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, cameraX, cameraY);
+    return TrySpawnObjectEventTemplate(objectEventTemplate, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, 0, 0, cameraX, cameraY);
 }
 
 u8 SpawnSpecialObjectEventParameterized(u8 graphicsId, u8 movementBehavior, u8 localId, s16 x, s16 y, u8 elevation)
@@ -1495,7 +1470,7 @@ u8 SpawnSpecialObjectEventParameterized(u8 graphicsId, u8 movementBehavior, u8 l
     struct ObjectEventTemplate objectEventTemplate;
 
     x -= MAP_OFFSET;
-    y -= MAP_OFFSET;
+    y -= MAP_OFFSET_Y;
     objectEventTemplate.localId = localId;
     objectEventTemplate.graphicsId = graphicsId;
     objectEventTemplate.kind = OBJ_KIND_NORMAL;
@@ -1520,7 +1495,7 @@ u8 TrySpawnObjectEvent(u8 localId, u8 mapNum, u8 mapGroup)
         return OBJECT_EVENTS_COUNT;
 
     GetObjectEventMovingCameraOffset(&cameraX, &cameraY);
-    return TrySpawnObjectEventTemplate(objectEventTemplate, mapNum, mapGroup, cameraX, cameraY);
+    return TrySpawnObjectEventTemplate(objectEventTemplate, mapNum, mapGroup, 0, 0, cameraX, cameraY);
 }
 
 static void CopyObjectGraphicsInfoToSpriteTemplate(u16 graphicsId, void (*callback)(struct Sprite *), struct SpriteTemplate *spriteTemplate, const struct SubspriteTable **subspriteTables)
@@ -1592,7 +1567,7 @@ u8 CreateVirtualObject(u8 graphicsId, u8 virtualObjId, s16 x, s16 y, u8 elevatio
     CopyObjectGraphicsInfoToSpriteTemplate(graphicsId, SpriteCB_VirtualObject, &spriteTemplate, &subspriteTables);
     *(u16 *)&spriteTemplate.paletteTag = TAG_NONE;
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     SetSpritePosToOffsetMapCoords(&x, &y, 8, 16);
     spriteId = CreateSpriteAtEnd(&spriteTemplate, x, y, 0);
     if (spriteId != MAX_SPRITES)
@@ -1625,18 +1600,40 @@ u8 CreateVirtualObject(u8 graphicsId, u8 virtualObjId, s16 x, s16 y, u8 elevatio
     return spriteId;
 }
 
-void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
+static void GetVisibleObjectEventRegion(s16 *left, s16 *right, s16 *top, s16 *bottom)
+{
+    *left   = gSaveBlock1Ptr->pos.x - 16;
+    *right  = gSaveBlock1Ptr->pos.x + MAP_OFFSET_W + 16;
+    *top    = gSaveBlock1Ptr->pos.y - 16;
+    *bottom = gSaveBlock1Ptr->pos.y + MAP_OFFSET_H + 16;
+}
+
+static void TrySpawnObjectEventsFromTemplates(struct ObjectEventTemplate const *templates, u8 objectCount, u8 mapNum, u8 mapGroup, s16 offsetX, s16 offsetY, s16 cameraX, s16 cameraY)
 {
     u8 i;
+
+    s16 left, right, top, bottom;
+
+    GetVisibleObjectEventRegion(&left, &right, &top, &bottom);
+
+    for (i = 0; i < objectCount; i++)
+    {
+        struct ObjectEventTemplate const *template = &templates[i];
+        s16 npcX = template->x + offsetX + MAP_OFFSET;
+        s16 npcY = template->y + offsetY + MAP_OFFSET_Y;
+
+        if (top <= npcY && bottom >= npcY && left <= npcX && right >= npcX && !FlagGet(template->flagId))
+            TrySpawnObjectEventTemplate(template, mapNum, mapGroup, offsetX, offsetY, cameraX, cameraY);
+    }
+}
+
+void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
+{
     u8 objectCount;
 
+    // Load object events from this map
     if (gMapHeader.events != NULL)
     {
-        s16 left = gSaveBlock1Ptr->pos.x - 2;
-        s16 right = gSaveBlock1Ptr->pos.x + MAP_OFFSET_W + 2;
-        s16 top = gSaveBlock1Ptr->pos.y;
-        s16 bottom = gSaveBlock1Ptr->pos.y + MAP_OFFSET_H + 2;
-
         if (InBattlePyramid())
             objectCount = GetNumBattlePyramidObjectEvents();
         else if (InTrainerHill())
@@ -1644,15 +1641,65 @@ void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
         else
             objectCount = gMapHeader.events->objectEventCount;
 
-        for (i = 0; i < objectCount; i++)
-        {
-            struct ObjectEventTemplate *template = &gSaveBlock1Ptr->objectEventTemplates[i];
-            s16 npcX = template->x + MAP_OFFSET;
-            s16 npcY = template->y + MAP_OFFSET;
+        TrySpawnObjectEventsFromTemplates(gSaveBlock1Ptr->objectEventTemplates, objectCount, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, 0, 0, cameraX, cameraY);
+    }
 
-            if (top <= npcY && bottom >= npcY && left <= npcX && right >= npcX
-                && !FlagGet(template->flagId))
-                TrySpawnObjectEventTemplate(template, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, cameraX, cameraY);
+    // Load object events from connections as well
+    // (I feel like this can be optimized, but I'm unsure how right now.)
+    if (gMapHeader.connections != NULL)
+    {
+        int count = gMapHeader.connections->count;
+        const struct MapConnection *connection = gMapHeader.connections->connections;
+
+        for (int i = 0; i < count; i++, connection++)
+        {
+            s16 offsetX = 0;
+            s16 offsetY = 0;
+
+            struct MapHeader const *mapHeader = GetMapHeaderFromConnection(connection);
+            if (mapHeader == NULL)
+            {
+                // Not a valid connection
+                continue;
+            }
+
+            struct MapEvents const *events = mapHeader->events;
+            if (events == NULL)
+            {
+                // No events in that map, so skip this connection
+                continue;
+            }
+
+            // Get correct spawn offsets
+            switch (connection->direction)
+            {
+            case CONNECTION_EAST:
+                offsetX = gMapHeader.mapLayout->width;
+                offsetY = connection->offset;
+                break;
+            case CONNECTION_WEST:
+                offsetX = -mapHeader->mapLayout->width;
+                offsetY = connection->offset;
+                break;
+            case CONNECTION_SOUTH:
+                offsetX = connection->offset;
+                offsetY = gMapHeader.mapLayout->height;
+                break;
+            case CONNECTION_NORTH:
+                offsetX = connection->offset;
+                offsetY = -mapHeader->mapLayout->height;
+                break;
+            default:
+                // Not a connection we should load events from (dive, emerge)
+                continue;
+            }
+
+            u8 objectCount = gSaveBlock1Ptr->connectionObjectEventCount[connection->direction - 1];
+            if (objectCount > 0)
+            {
+                struct ObjectEventTemplate const *templates = gSaveBlock1Ptr->connectionObjectEventTemplates[connection->direction - 1];
+                TrySpawnObjectEventsFromTemplates(templates, objectCount, connection->mapNum, connection->mapGroup, offsetX, offsetY, cameraX, cameraY);
+            }
         }
     }
 }
@@ -1681,10 +1728,9 @@ void RemoveObjectEventsOutsideView(void)
 
 static void RemoveObjectEventIfOutsideView(struct ObjectEvent *objectEvent)
 {
-    s16 left =   gSaveBlock1Ptr->pos.x - 2;
-    s16 right =  gSaveBlock1Ptr->pos.x + 17;
-    s16 top =    gSaveBlock1Ptr->pos.y;
-    s16 bottom = gSaveBlock1Ptr->pos.y + 16;
+    s16 left, right, top, bottom;
+
+    GetVisibleObjectEventRegion(&left, &right, &top, &bottom);
 
     if (objectEvent->currentCoords.x >= left && objectEvent->currentCoords.x <= right
      && objectEvent->currentCoords.y >= top && objectEvent->currentCoords.y <= bottom)
@@ -1708,6 +1754,7 @@ void SpawnObjectEventsOnReturnToField(s16 x, s16 y)
     CreateReflectionEffectSprites();
 }
 
+// The name is misleading; all this does is recreate sprites.
 static void SpawnObjectEventOnReturnToField(u8 objectEventId, s16 x, s16 y)
 {
     u8 i;
@@ -2137,7 +2184,7 @@ void TryMoveObjectEventToMapCoords(u8 localId, u8 mapNum, u8 mapGroup, s16 x, s1
     if (!TryGetObjectEventIdByLocalIdAndMap(localId, mapNum, mapGroup, &objectEventId))
     {
         x += MAP_OFFSET;
-        y += MAP_OFFSET;
+        y += MAP_OFFSET_Y;
         MoveObjectEventToMapCoords(&gObjectEvents[objectEventId], x, y);
     }
 }
@@ -2472,7 +2519,7 @@ void OverrideTemplateCoordsForObjectEvent(const struct ObjectEvent *objectEvent)
     if (objectEventTemplate != NULL)
     {
         objectEventTemplate->x = objectEvent->currentCoords.x - MAP_OFFSET;
-        objectEventTemplate->y = objectEvent->currentCoords.y - MAP_OFFSET;
+        objectEventTemplate->y = objectEvent->currentCoords.y - MAP_OFFSET_Y;
     }
 }
 

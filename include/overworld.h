@@ -43,6 +43,8 @@ struct LinkPlayerObjectEvent
 extern struct WarpData gLastUsedWarp;
 extern struct LinkPlayerObjectEvent gLinkPlayerObjectEvents[4];
 
+extern struct WarpData gScriptLocation;
+
 extern u16 gOverworldTilemapWidth;
 extern u16 *gOverworldTilemapBuffer_Bg2;
 extern u16 *gOverworldTilemapBuffer_Bg1;
@@ -66,8 +68,8 @@ void SetGameStat(u8 index, u32 value);
 void ApplyNewEncryptionKeyToGameStats(u32 newKey);
 void LoadObjEventTemplatesFromHeader(void);
 void LoadSaveblockObjEventScripts(void);
-void SetObjEventTemplateCoords(u8 localId, s16 x, s16 y);
-void SetObjEventTemplateMovementType(u8 localId, u8 movementType);
+bool8 SetObjEventTemplateCoords(struct ObjectEventTemplate *savObjTemplates, u8 localId, s16 x, s16 y);
+bool8 SetObjEventTemplateMovementType(struct ObjectEventTemplate *savObjTemplates, u8 localId, u8 movementType);
 const struct MapLayout *GetMapLayout(void);
 void ApplyCurrentWarp(void);
 struct MapHeader const *const Overworld_GetMapHeaderByGroupAndId(u16 mapGroup, u16 mapNum);

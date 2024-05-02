@@ -2,12 +2,16 @@
 
 Route103_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, Route103_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, Route103_OnSetupObjects
 	map_script MAP_SCRIPT_ON_LOAD, Route103_OnLoad
 	.byte 0
 
 Route103_OnTransition:
-	call Common_EventScript_SetupRivalGfxId
 	call ProfBirch_EventScript_UpdateLocation
+	end
+
+Route103_OnSetupObjects:
+	call Common_EventScript_SetupRivalGfxId
 	end
 
 Route103_OnLoad:

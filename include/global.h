@@ -1019,7 +1019,7 @@ struct SaveBlock1
     /*0x30*/ u8 flashLevel;
     /*0x31*/ //u8 padding1;
     /*0x32*/ u16 mapLayoutId;
-    /*0x34*/ u16 mapView[0x100];
+    /*0x34*/ u16 mapView[0x400];
     /*0x234*/ u8 playerPartyCount;
     /*0x235*/ //u8 padding2[3];
     /*0x238*/ struct Pokemon playerParty[PARTY_SIZE];
@@ -1041,6 +1041,8 @@ struct SaveBlock1
     /*0xA2E*/ //u8 padding3[2];
     /*0xA30*/ struct ObjectEvent objectEvents[OBJECT_EVENTS_COUNT];
     /*0xC70*/ struct ObjectEventTemplate objectEventTemplates[OBJECT_EVENT_TEMPLATES_COUNT];
+              struct ObjectEventTemplate connectionObjectEventTemplates[4][OBJECT_EVENT_TEMPLATES_COUNT];
+              u8 connectionObjectEventCount[4];
     /*0x1270*/ u8 flags[NUM_FLAG_BYTES];
     /*0x139C*/ u16 vars[VARS_COUNT];
     /*0x159C*/ u32 gameStats[NUM_GAME_STATS];

@@ -6,6 +6,7 @@
 Route110_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, Route110_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, Route110_OnTransition
+	map_script MAP_SCRIPT_ON_SETUP_OBJECTS, Route110_OnSetupObjects
 	map_script MAP_SCRIPT_ON_FRAME_TABLE, Route110_OnFrame
 	.byte 0
 
@@ -14,9 +15,12 @@ Route110_OnResume:
 	end
 
 Route110_OnTransition:
+	call_if_eq VAR_CYCLING_CHALLENGE_STATE, 1, Route110_EventScript_SaveCyclingMusic
+	end
+
+Route110_OnSetupObjects:
 	call Common_EventScript_SetupRivalGfxId
 	call Common_EventScript_SetupRivalOnBikeGfxId
-	call_if_eq VAR_CYCLING_CHALLENGE_STATE, 1, Route110_EventScript_SaveCyclingMusic
 	end
 
 Route110_EventScript_SaveCyclingMusic::

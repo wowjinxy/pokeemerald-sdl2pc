@@ -280,10 +280,8 @@ void RunScriptImmediately(const u8 *ptr)
     while (RunScriptCommand(&sImmediateScriptContext) == TRUE);
 }
 
-u8 *MapHeaderGetScriptTable(u8 tag)
+u8 *MapHeaderGetScriptTable(const u8 *mapScripts, u8 tag)
 {
-    const u8 *mapScripts = gMapHeader.mapScripts;
-
     if (!mapScripts)
         return NULL;
 
@@ -302,14 +300,19 @@ u8 *MapHeaderGetScriptTable(u8 tag)
 
 void MapHeaderRunScriptType(u8 tag)
 {
-    u8 *ptr = MapHeaderGetScriptTable(tag);
+    RunScriptTypeForMapHeader(&gMapHeader, tag);
+}
+
+void RunScriptTypeForMapHeader(struct MapHeader const *mapHeader, u8 tag)
+{
+    u8 *ptr = MapHeaderGetScriptTable(mapHeader->mapScripts, tag);
     if (ptr)
         RunScriptImmediately(ptr);
 }
 
 u8 *MapHeaderCheckScriptTable(u8 tag)
 {
-    u8 *ptr = MapHeaderGetScriptTable(tag);
+    u8 *ptr = MapHeaderGetScriptTable(gMapHeader.mapScripts, tag);
 
     if (!ptr)
         return NULL;
@@ -344,6 +347,11 @@ void RunOnLoadMapScript(void)
 void RunOnTransitionMapScript(void)
 {
     MapHeaderRunScriptType(MAP_SCRIPT_ON_TRANSITION);
+}
+
+void RunSetupObjectsMapScript(struct MapHeader const *mapHeader)
+{
+    RunScriptTypeForMapHeader(mapHeader, MAP_SCRIPT_ON_SETUP_OBJECTS);
 }
 
 void RunOnResumeMapScript(void)

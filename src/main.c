@@ -149,7 +149,6 @@ void GameLoop(void)
         if (Overworld_RecvKeysFromLinkIsRunning() == TRUE)
         {
             gMain.newKeys = 0;
-            ClearSpriteCopyRequests();
             gLinkTransferringData = TRUE;
             UpdateLinkAndCallCallbacks();
             gLinkTransferringData = FALSE;

@@ -192,6 +192,7 @@ u8 gFieldLinkPlayerCount;
 
 EWRAM_DATA static u8 sObjectEventLoadFlag = 0;
 EWRAM_DATA struct WarpData gLastUsedWarp = {0};
+EWRAM_DATA struct WarpData gScriptLocation = {0};
 EWRAM_DATA static struct WarpData sWarpDestination = {0};  // new warp position
 EWRAM_DATA static struct WarpData sFixedDiveWarp = {0};
 EWRAM_DATA static struct WarpData sFixedHoleWarp = {0};
@@ -475,11 +476,45 @@ void LoadObjEventTemplatesFromHeader(void)
 {
     // Clear map object templates
     CpuFill32(0, gSaveBlock1Ptr->objectEventTemplates, sizeof(gSaveBlock1Ptr->objectEventTemplates));
+    CpuFill32(0, gSaveBlock1Ptr->connectionObjectEventTemplates, sizeof(gSaveBlock1Ptr->connectionObjectEventTemplates));
+    CpuFill32(0, gSaveBlock1Ptr->connectionObjectEventCount, sizeof(gSaveBlock1Ptr->connectionObjectEventCount));
 
     // Copy map header events to save block
     CpuCopy32(gMapHeader.events->objectEvents,
               gSaveBlock1Ptr->objectEventTemplates,
               gMapHeader.events->objectEventCount * sizeof(struct ObjectEventTemplate));
+
+    // Load object templates from connections
+    for (u8 dir = CONNECTION_SOUTH, i = 0; dir <= CONNECTION_EAST; dir++, i++)
+    {
+        const struct MapConnection *connection = GetMapConnection(dir);
+        if (connection == NULL)
+        {
+            // Not a valid connection
+            continue;
+        }
+
+        struct MapHeader const *mapHeader = GetMapHeaderFromConnection(connection);
+        if (mapHeader == NULL)
+        {
+            // No map header?
+            continue;
+        }
+
+        struct MapEvents const *events = mapHeader->events;
+        if (events == NULL)
+        {
+            // No events in that map, so skip this connection
+            continue;
+        }
+
+        // Copy connection events to save block
+        CpuCopy32(events->objectEvents,
+              gSaveBlock1Ptr->connectionObjectEventTemplates[i],
+              events->objectEventCount * sizeof(struct ObjectEventTemplate));
+
+        gSaveBlock1Ptr->connectionObjectEventCount[i] = events->objectEventCount;
+    }
 }
 
 void LoadSaveblockObjEventScripts(void)
@@ -498,10 +533,12 @@ void LoadSaveblockObjEventScripts(void)
     }
 }
 
-void SetObjEventTemplateCoords(u8 localId, s16 x, s16 y)
+bool8 SetObjEventTemplateCoords(struct ObjectEventTemplate *savObjTemplates, u8 localId, s16 x, s16 y)
 {
     s32 i;
-    struct ObjectEventTemplate *savObjTemplates = gSaveBlock1Ptr->objectEventTemplates;
+
+    if (savObjTemplates == NULL)
+        return FALSE;
 
     for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
     {
@@ -510,25 +547,31 @@ void SetObjEventTemplateCoords(u8 localId, s16 x, s16 y)
         {
             objectEventTemplate->x = x;
             objectEventTemplate->y = y;
-            return;
+            return TRUE;
         }
     }
+
+    return FALSE;
 }
 
-void SetObjEventTemplateMovementType(u8 localId, u8 movementType)
+bool8 SetObjEventTemplateMovementType(struct ObjectEventTemplate *savObjTemplates, u8 localId, u8 movementType)
 {
     s32 i;
 
-    struct ObjectEventTemplate *savObjTemplates = gSaveBlock1Ptr->objectEventTemplates;
+    if (savObjTemplates == NULL)
+        return FALSE;
+
     for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
     {
         struct ObjectEventTemplate *objectEventTemplate = &savObjTemplates[i];
         if (objectEventTemplate->localId == localId)
         {
             objectEventTemplate->movementType = movementType;
-            return;
+            return TRUE;
         }
     }
+
+    return FALSE;
 }
 
 static void InitMapView(void)
@@ -552,6 +595,7 @@ void ApplyCurrentWarp(void)
 {
     gLastUsedWarp = gSaveBlock1Ptr->location;
     gSaveBlock1Ptr->location = sWarpDestination;
+    gScriptLocation = sWarpDestination;
     sFixedDiveWarp = sDummyWarpData;
     sFixedHoleWarp = sDummyWarpData;
 }
@@ -690,7 +734,7 @@ void UpdateEscapeWarp(s16 x, s16 y)
     u8 currMapType = GetCurrentMapType();
     u8 destMapType = GetMapTypeByGroupAndId(sWarpDestination.mapGroup, sWarpDestination.mapNum);
     if (IsMapTypeOutdoors(currMapType) && IsMapTypeOutdoors(destMapType) != TRUE)
-        SetEscapeWarp(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET + 1);
+        SetEscapeWarp(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET_Y + 1);
 }
 
 void SetEscapeWarp(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
@@ -767,6 +811,24 @@ const struct MapConnection *GetMapConnection(u8 dir)
     return NULL;
 }
 
+const struct ObjectEventTemplate *GetObjectEventTemplatesForLocation(struct WarpData *location)
+{
+    if (location->mapNum == gSaveBlock1Ptr->location.mapNum
+    && location->mapGroup == gSaveBlock1Ptr->location.mapGroup)
+        return gSaveBlock1Ptr->objectEventTemplates;
+
+    for (u8 dir = CONNECTION_SOUTH, i = 0; dir <= CONNECTION_EAST; dir++, i++)
+    {
+        const struct MapConnection *connection = GetMapConnection(dir);
+        if (connection != NULL
+        && location->mapNum == connection->mapNum
+        && location->mapGroup == connection->mapGroup)
+            return gSaveBlock1Ptr->connectionObjectEventTemplates[i];
+    }
+
+    return NULL;
+}
+
 static bool8 SetDiveWarp(u8 dir, u16 x, u16 y)
 {
     const struct MapConnection *connection = GetMapConnection(dir);
@@ -795,6 +857,37 @@ bool8 SetDiveWarpDive(u16 x, u16 y)
     return SetDiveWarp(CONNECTION_DIVE, x, y);
 }
 
+static void RunSetupObjectsMapScripts(void)
+{
+    RunSetupObjectsMapScript(&gMapHeader);
+
+    // Run ON_SETUP_OBJECTS for the connections as well
+    // Only south, north, west, and east are considered.
+    for (u8 dir = CONNECTION_SOUTH; dir <= CONNECTION_EAST; dir++)
+    {
+        const struct MapConnection *connection = GetMapConnection(dir);
+        if (connection == NULL)
+        {
+            // Not a valid connection
+            continue;
+        }
+
+        struct MapHeader const *mapHeader = GetMapHeaderFromConnection(connection);
+        if (mapHeader != NULL)
+        {
+            // Change gScriptLocation to match this connection's map
+            gScriptLocation.mapGroup = connection->mapGroup;
+            gScriptLocation.mapNum = connection->mapNum;
+
+            // Run ON_SETUP_OBJECTS script
+            RunSetupObjectsMapScript(mapHeader);
+        }
+    }
+
+    // Restore gScriptLocation
+    gScriptLocation = gSaveBlock1Ptr->location;
+}
+
 void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
 {
     s32 paletteIndex;
@@ -819,6 +912,7 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
     SetDefaultFlashLevel();
     Overworld_ClearSavedMusic();
     RunOnTransitionMapScript();
+    RunSetupObjectsMapScripts();
     InitMap();
     CopySecondaryTilesetToVramUsingHeap(gMapHeader.mapLayout);
     LoadSecondaryTilesetPalette(gMapHeader.mapLayout);
@@ -872,6 +966,7 @@ static void LoadMapFromWarp(bool32 a1)
     SetDefaultFlashLevel();
     Overworld_ClearSavedMusic();
     RunOnTransitionMapScript();
+    RunSetupObjectsMapScripts();
     UpdateLocationHistoryForRoamer();
     RoamerMoveToOtherLocationSet();
     if (gMapHeader.mapLayoutId == LAYOUT_BATTLE_FRONTIER_BATTLE_PYRAMID_FLOOR)
@@ -967,7 +1062,7 @@ static u8 GetAdjustedInitialDirection(struct InitialPlayerAvatarState *playerStr
 
 static u16 GetCenterScreenMetatileBehavior(void)
 {
-    return MapGridGetMetatileBehaviorAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET, gSaveBlock1Ptr->pos.y + MAP_OFFSET);
+    return MapGridGetMetatileBehaviorAt(gSaveBlock1Ptr->pos.x + MAP_OFFSET, gSaveBlock1Ptr->pos.y + MAP_OFFSET_Y);
 }
 
 bool32 Overworld_IsBikingAllowed(void)

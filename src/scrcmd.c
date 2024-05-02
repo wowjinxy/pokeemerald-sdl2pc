@@ -791,9 +791,9 @@ bool8 ScrCmd_warphole(struct ScriptContext *ctx)
 
     PlayerGetDestCoords(&x, &y);
     if (mapGroup == MAP_GROUP(UNDEFINED) && mapNum == MAP_NUM(UNDEFINED))
-        SetWarpDestinationToFixedHoleWarp(x - MAP_OFFSET, y - MAP_OFFSET);
+        SetWarpDestinationToFixedHoleWarp(x - MAP_OFFSET, y - MAP_OFFSET_Y);
     else
-        SetWarpDestination(mapGroup, mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET);
+        SetWarpDestination(mapGroup, mapNum, WARP_ID_NONE, x - MAP_OFFSET, y - MAP_OFFSET_Y);
     DoFallWarp();
     ResetInitialPlayerAvatarState();
     return TRUE;
@@ -998,7 +998,7 @@ bool8 ScrCmd_applymovement(struct ScriptContext *ctx)
     u16 localId = VarGet(ScriptReadHalfword(ctx));
     const void *movementScript = (const void *)ScriptReadQuadWord(ctx);
 
-    ScriptMovement_StartObjectMovementScript(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, movementScript);
+    ScriptMovement_StartObjectMovementScript(localId, gScriptLocation.mapNum, gScriptLocation.mapGroup, movementScript);
     sMovingNpcId = localId;
     return FALSE;
 }
@@ -1026,8 +1026,8 @@ bool8 ScrCmd_waitmovement(struct ScriptContext *ctx)
 
     if (localId != 0)
         sMovingNpcId = localId;
-    sMovingNpcMapGroup = gSaveBlock1Ptr->location.mapGroup;
-    sMovingNpcMapNum = gSaveBlock1Ptr->location.mapNum;
+    sMovingNpcMapGroup = gScriptLocation.mapGroup;
+    sMovingNpcMapNum = gScriptLocation.mapNum;
     SetupNativeScript(ctx, WaitForMovementFinish);
     return TRUE;
 }
@@ -1052,7 +1052,7 @@ bool8 ScrCmd_removeobject(struct ScriptContext *ctx)
 {
     u16 localId = VarGet(ScriptReadHalfword(ctx));
 
-    RemoveObjectEventByLocalIdAndMap(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+    RemoveObjectEventByLocalIdAndMap(localId, gScriptLocation.mapNum, gScriptLocation.mapGroup);
     return FALSE;
 }
 
@@ -1070,7 +1070,7 @@ bool8 ScrCmd_addobject(struct ScriptContext *ctx)
 {
     u16 objectId = VarGet(ScriptReadHalfword(ctx));
 
-    TrySpawnObjectEvent(objectId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+    TrySpawnObjectEvent(objectId, gScriptLocation.mapNum, gScriptLocation.mapGroup);
     return FALSE;
 }
 
@@ -1090,7 +1090,7 @@ bool8 ScrCmd_setobjectxy(struct ScriptContext *ctx)
     u16 x = VarGet(ScriptReadHalfword(ctx));
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
-    TryMoveObjectEventToMapCoords(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, x, y);
+    TryMoveObjectEventToMapCoords(localId, gScriptLocation.mapNum, gScriptLocation.mapGroup, x, y);
     return FALSE;
 }
 
@@ -1100,7 +1100,7 @@ bool8 ScrCmd_setobjectxyperm(struct ScriptContext *ctx)
     u16 x = VarGet(ScriptReadHalfword(ctx));
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
-    SetObjEventTemplateCoords(localId, x, y);
+    SetObjEventTemplateCoords(GetObjectEventTemplatesForLocation(&gScriptLocation), localId, x, y);
     return FALSE;
 }
 
@@ -1108,7 +1108,7 @@ bool8 ScrCmd_copyobjectxytoperm(struct ScriptContext *ctx)
 {
     u16 localId = VarGet(ScriptReadHalfword(ctx));
 
-    TryOverrideObjectEventTemplateCoords(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+    TryOverrideObjectEventTemplateCoords(localId, gScriptLocation.mapNum, gScriptLocation.mapGroup);
     return FALSE;
 }
 
@@ -1165,7 +1165,7 @@ bool8 ScrCmd_turnobject(struct ScriptContext *ctx)
     u16 localId = VarGet(ScriptReadHalfword(ctx));
     u8 direction = ScriptReadByte(ctx);
 
-    ObjectEventTurnByLocalIdAndMap(localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, direction);
+    ObjectEventTurnByLocalIdAndMap(localId, gScriptLocation.mapNum, gScriptLocation.mapGroup, direction);
     return FALSE;
 }
 
@@ -1174,7 +1174,7 @@ bool8 ScrCmd_setobjectmovementtype(struct ScriptContext *ctx)
     u16 localId = VarGet(ScriptReadHalfword(ctx));
     u8 movementType = ScriptReadByte(ctx);
 
-    SetObjEventTemplateMovementType(localId, movementType);
+    SetObjEventTemplateMovementType(GetObjectEventTemplatesForLocation(&gScriptLocation), localId, movementType);
     return FALSE;
 }
 
@@ -2043,7 +2043,7 @@ bool8 ScrCmd_setmetatile(struct ScriptContext *ctx)
     bool16 isImpassable = VarGet(ScriptReadHalfword(ctx));
 
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     if (!isImpassable)
         MapGridSetMetatileIdAt(x, y, metatileId);
     else
@@ -2057,7 +2057,7 @@ bool8 ScrCmd_opendoor(struct ScriptContext *ctx)
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     PlaySE(GetDoorSoundEffect(x, y));
     FieldAnimateDoorOpen(x, y);
     return FALSE;
@@ -2069,7 +2069,7 @@ bool8 ScrCmd_closedoor(struct ScriptContext *ctx)
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     FieldAnimateDoorClose(x, y);
     return FALSE;
 }
@@ -2094,7 +2094,7 @@ bool8 ScrCmd_setdooropen(struct ScriptContext *ctx)
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     FieldSetDoorOpened(x, y);
     return FALSE;
 }
@@ -2105,7 +2105,7 @@ bool8 ScrCmd_setdoorclosed(struct ScriptContext *ctx)
     u16 y = VarGet(ScriptReadHalfword(ctx));
 
     x += MAP_OFFSET;
-    y += MAP_OFFSET;
+    y += MAP_OFFSET_Y;
     FieldSetDoorClosed(x, y);
     return FALSE;
 }

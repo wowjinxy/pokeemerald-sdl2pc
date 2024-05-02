@@ -640,6 +640,8 @@ void LoadTrainerHillObjectEventTemplates(void)
     for (i = 0; i < HILL_TRAINERS_PER_FLOOR; i++)
         gSaveBlock2Ptr->frontier.trainerIds[i] = 0xFFFF;
     CpuFill32(0, gSaveBlock1Ptr->objectEventTemplates, sizeof(gSaveBlock1Ptr->objectEventTemplates));
+    CpuFill32(0, gSaveBlock1Ptr->connectionObjectEventTemplates, sizeof(gSaveBlock1Ptr->connectionObjectEventTemplates));
+    CpuFill32(0, gSaveBlock1Ptr->connectionObjectEventCount, sizeof(gSaveBlock1Ptr->connectionObjectEventCount));
 
     floorId = GetFloorId();
     for (i = 0; i < HILL_TRAINERS_PER_FLOOR; i++)

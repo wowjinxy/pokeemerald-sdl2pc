@@ -9,17 +9,20 @@
     They are numbered in the order that they will be called when entering a map (from a warp or camera transition).
     NOTE: These descriptions are just of what they generally do, not what they always or have to do
 
-    3. ON_LOAD: Run after the layout is loaded (but not drawn yet).
+    4. ON_LOAD: Run after the layout is loaded (but not drawn yet).
                 Almost exclusively used to set metatiles on the map before it's first drawn
 
-    6. ON_FRAME_TABLE: Run every frame after the map has faded in, before player input is processed.
+    7. ON_FRAME_TABLE: Run every frame after the map has faded in, before player input is processed.
                        This is a table of scripts; only the first script whose condition is satisfied is run.
                        Used to trigger an event, such as the player exiting the cable car or the SS Tidal sailor announcing progress
 
     2. ON_TRANSITION: Run during the transition to the map
                       Used to set map-specific flags/vars, update object positions/movement types, set weather, etc
 
-    5. ON_WARP_INTO_MAP_TABLE: Run after the map's objects are loaded.
+    3. ON_SETUP_OBJECTS: Runs if the map is another map's north/south/east/west connection, and after ON_TRANSITION.
+                         Used to update object positions/movement types.
+
+    6. ON_WARP_INTO_MAP_TABLE: Run after the map's objects are loaded.
                                This is a table of scripts; only the first script whose condition is satisfied is run.
                                Used to add objects to the scene or update something about the player as they warp in (e.g. their facing dir or visibility)
                                Note that ON_TRANSITION may also handle object visibility, but would do so by modifying a flag or var
@@ -31,7 +34,7 @@
     1. ON_DIVE_WARP: Run after the player chooses to dive/emerge.
                      Only used once, to determine whether or not the player should emerge in the Sealed Chamber
 
-    x. ON_RETURN_TO_FIELD: Run exlusively upon returning to the field, shortly after ON_RESUME (as opposed to ON_RESUME, which also runs once on entering the map)
+    x. ON_RETURN_TO_FIELD: Run exclusively upon returning to the field, shortly after ON_RESUME (as opposed to ON_RESUME, which also runs once on entering the map)
                            Used rarely, when something must only happen on reload (e.g. making sure Mew is above the grass after battling it on Faraway Island)
 
 */
@@ -43,5 +46,6 @@
 #define MAP_SCRIPT_ON_RESUME 5
 #define MAP_SCRIPT_ON_DIVE_WARP 6
 #define MAP_SCRIPT_ON_RETURN_TO_FIELD 7
+#define MAP_SCRIPT_ON_SETUP_OBJECTS 8
 
 #endif // GUARD_CONSTANTS_MAP_SCRIPTS_H

@@ -355,7 +355,7 @@ static bool8 ItemfinderCheckForHiddenItems(const struct MapEvents *events, u8 ta
         {
             itemX = (u16)events->bgEvents[i].x + MAP_OFFSET;
             distanceX = itemX - playerX;
-            itemY = (u16)events->bgEvents[i].y + MAP_OFFSET;
+            itemY = (u16)events->bgEvents[i].y + MAP_OFFSET_Y;
             distanceY = itemY - playerY;
 
             // Player can see 7 metatiles on either side horizontally
@@ -406,25 +406,25 @@ static bool8 IsHiddenItemPresentInConnection(const struct MapConnection *connect
     case CONNECTION_NORTH:
         localOffset = connection->offset + MAP_OFFSET;
         localX = x - localOffset;
-        localLength = mapHeader->mapLayout->height - MAP_OFFSET;
+        localLength = mapHeader->mapLayout->height - MAP_OFFSET_Y;
         localY = localLength + y; // additions are reversed for some reason
         break;
     case CONNECTION_SOUTH:
         localOffset = connection->offset + MAP_OFFSET;
         localX = x - localOffset;
-        localLength = gMapHeader.mapLayout->height + MAP_OFFSET;
+        localLength = gMapHeader.mapLayout->height + MAP_OFFSET_Y;
         localY = y - localLength;
         break;
     case CONNECTION_WEST:
         localLength = mapHeader->mapLayout->width - MAP_OFFSET;
         localX = localLength + x; // additions are reversed for some reason
-        localOffset = connection->offset + MAP_OFFSET;
+        localOffset = connection->offset + MAP_OFFSET_Y;
         localY = y - localOffset;
         break;
     case CONNECTION_EAST:
         localLength = gMapHeader.mapLayout->width + MAP_OFFSET;
         localX = x - localLength;
-        localOffset = connection->offset + MAP_OFFSET;
+        localOffset = connection->offset + MAP_OFFSET_Y;
         localY = y - localOffset;
         break;
     default:
@@ -438,10 +438,10 @@ static void CheckForHiddenItemsInMapConnection(u8 taskId)
     s16 playerX, playerY;
     s16 x, y;
     s16 width = gMapHeader.mapLayout->width + MAP_OFFSET;
-    s16 height = gMapHeader.mapLayout->height + MAP_OFFSET;
+    s16 height = gMapHeader.mapLayout->height + MAP_OFFSET_Y;
 
     s16 var1 = MAP_OFFSET;
-    s16 var2 = MAP_OFFSET;
+    s16 var2 = MAP_OFFSET_Y;
 
     PlayerGetDestCoords(&playerX, &playerY);
 
