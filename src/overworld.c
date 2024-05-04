@@ -1545,6 +1545,17 @@ static void InitOverworldBgs(void)
     SetBgAttribute(1, BG_ATTR_GBAMODE, 0);
     SetBgAttribute(2, BG_ATTR_GBAMODE, 0);
     SetBgAttribute(3, BG_ATTR_GBAMODE, 0);
+    SetBgAttribute(1, BG_ATTR_BANKMODE, 1);
+    SetBgAttribute(2, BG_ATTR_BANKMODE, 1);
+    SetBgAttribute(3, BG_ATTR_BANKMODE, 1);
+    //bank set
+    SetBgAttribute(1, BG_ATTR_BANKLEFT, 15*16);
+    SetBgAttribute(2, BG_ATTR_BANKLEFT, 15*16);
+    SetBgAttribute(3, BG_ATTR_BANKLEFT, 15*16);
+    //SetBgAttribute(1, BG_ATTR_BANKRIGHT, mapWidth);
+    //SetBgAttribute(2, BG_ATTR_BANKRIGHT, mapWidth);
+    //SetBgAttribute(3, BG_ATTR_BANKRIGHT, mapWidth);
+    
     gOverworldTilemapBuffer_Bg1 = AllocZeroed(screenSize);
     gOverworldTilemapBuffer_Bg2 = AllocZeroed(screenSize);
     gOverworldTilemapBuffer_Bg3 = AllocZeroed(screenSize);
@@ -1586,6 +1597,19 @@ void ReInitOverworldBgs(void)
     SetBgAttribute(1, BG_ATTR_GBAMODE, 0);
     SetBgAttribute(2, BG_ATTR_GBAMODE, 0);
     SetBgAttribute(3, BG_ATTR_GBAMODE, 0);
+    //bank enable
+    SetBgAttribute(1, BG_ATTR_BANKMODE, 1);
+    SetBgAttribute(2, BG_ATTR_BANKMODE, 1);
+    SetBgAttribute(3, BG_ATTR_BANKMODE, 1);
+    //bank set
+    SetBgAttribute(1, BG_ATTR_BANKLEFT, MAP_OFFSET*16);
+    SetBgAttribute(2, BG_ATTR_BANKLEFT, MAP_OFFSET*16);
+    SetBgAttribute(3, BG_ATTR_BANKLEFT, MAP_OFFSET*16);
+    printf("gMapHeader.mapLayout->width = %u\n", gMapHeader.mapLayout->width);
+    SetBgAttribute(1, BG_ATTR_BANKRIGHT, (MAP_OFFSET+gMapHeader.mapLayout->width)*16);
+    SetBgAttribute(2, BG_ATTR_BANKRIGHT, (MAP_OFFSET+gMapHeader.mapLayout->width)*16);
+    SetBgAttribute(3, BG_ATTR_BANKRIGHT, (MAP_OFFSET+gMapHeader.mapLayout->width)*16);
+    //bgtilemapbuffer
     SetBgTilemapBuffer(1, gOverworldTilemapBuffer_Bg1);
     SetBgTilemapBuffer(2, gOverworldTilemapBuffer_Bg2);
     SetBgTilemapBuffer(3, gOverworldTilemapBuffer_Bg3);

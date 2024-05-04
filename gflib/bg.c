@@ -21,6 +21,11 @@ struct BgControl
         u8 mapBaseIndex;
         u8 paletteMode:1;
         u8 gbaMode:1;
+        u8 bankMode:1;
+        u16 bankLeft;
+        u16 bankRight;
+        u16 bankUp;
+        u16 bankDown;
     } configs[NUM_BACKGROUNDS];
 
     u16 bgVisibilityAndMode;
@@ -93,9 +98,14 @@ enum
     BG_CTRL_ATTR_PRIORITY = 8,
     BG_CTRL_ATTR_MOSAIC = 9,
     BG_CTRL_ATTR_WRAPAROUND = 10,
+    BG_CTRL_ATTR_BANKMODE = 11,
+    BG_CTRL_ATTR_BANKLEFT = 12,
+    BG_CTRL_ATTR_BANKRIGHT = 13,
+    BG_CTRL_ATTR_BANKUP = 14,
+    BG_CTRL_ATTR_BANKDOWN = 15,
 };
 
-static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u16 screenWidth, u16 screenHeight, u16 paletteMode, u16 gbaMode, u16 priority, u16 mosaic, u16 wraparound)
+static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u16 screenWidth, u16 screenHeight, u16 paletteMode, u16 gbaMode, u16 bankMode, u16 bankLeft, u16 bankRight, u16 bankUp, u16 bankDown, u16 priority, u16 mosaic, u16 wraparound)
 {
     if (!IsInvalidBg(bg))
     {
@@ -127,6 +137,31 @@ static void SetBgControlAttributes(u8 bg, u16 charBaseIndex, u16 mapBaseIndex, u
         if (gbaMode != 0xFFFF)
         {
             sGpuBgConfigs.configs[bg].gbaMode = gbaMode;
+        }
+        
+        if (bankMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].bankMode = bankMode;
+        }
+        
+        if (bankMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].bankLeft = bankLeft;
+        }
+        
+        if (bankMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].bankRight = bankRight;
+        }
+        
+        if (bankMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].bankUp = bankUp;
+        }
+        
+        if (bankMode != 0xFFFF)
+        {
+            sGpuBgConfigs.configs[bg].bankDown = bankDown;
         }
 
         if (priority != 0xFFFF)
@@ -168,6 +203,16 @@ static u16 GetBgControlAttribute(u8 bg, u8 attributeId)
             return sGpuBgConfigs.configs[bg].paletteMode;
         case BG_CTRL_ATTR_GBAMODE:
             return sGpuBgConfigs.configs[bg].gbaMode;
+        case BG_CTRL_ATTR_BANKMODE:
+            return sGpuBgConfigs.configs[bg].bankMode;
+        case BG_CTRL_ATTR_BANKLEFT:
+            return sGpuBgConfigs.configs[bg].bankLeft;
+        case BG_CTRL_ATTR_BANKRIGHT:
+            return sGpuBgConfigs.configs[bg].bankRight;
+        case BG_CTRL_ATTR_BANKUP:
+            return sGpuBgConfigs.configs[bg].bankUp;
+        case BG_CTRL_ATTR_BANKDOWN:
+            return sGpuBgConfigs.configs[bg].bankDown;
         case BG_CTRL_ATTR_PRIORITY:
             return sGpuBgConfigs.configs[bg].priority;
         case BG_CTRL_ATTR_MOSAIC:
@@ -228,6 +273,11 @@ static void ShowBgInternal(u8 bg)
         SetGpuBackgroundMosaicEnabled(bg, sGpuBgConfigs.configs[bg].mosaic);
         SetGpuBackground8bppMode(bg, sGpuBgConfigs.configs[bg].paletteMode);
         SetGpuBackgroundGbaMode(bg, sGpuBgConfigs.configs[bg].gbaMode);
+        SetGpuBackgroundBankMode(bg, sGpuBgConfigs.configs[bg].bankMode);
+        SetGpuBackgroundBankLeft(bg, sGpuBgConfigs.configs[bg].bankLeft);
+        SetGpuBackgroundBankRight(bg, sGpuBgConfigs.configs[bg].bankRight);
+        SetGpuBackgroundBankUp(bg, sGpuBgConfigs.configs[bg].bankUp);
+        SetGpuBackgroundBankDown(bg, sGpuBgConfigs.configs[bg].bankDown);
         SetGpuBackgroundScreenBaseBlock(bg, sGpuBgConfigs.configs[bg].mapBaseIndex);
         SetGpuBackgroundAreaOverflowMode(bg, sGpuBgConfigs.configs[bg].wraparound);
         SetGpuBackgroundWidth(bg, sGpuBgConfigs.configs[bg].screenWidth);
@@ -344,6 +394,11 @@ void InitBgsFromTemplates(u8 bgMode, const struct BgTemplate *templates, u8 numT
                                    screenHeight,
                                    templates[i].paletteMode,
                                    1,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
                                    templates[i].priority,
                                    0,
                                    0);
@@ -379,6 +434,11 @@ void InitBgFromTemplate(const struct BgTemplate *template)
                                screenHeight,
                                template->paletteMode,
                                1,
+                               0,
+                               0,
+                               0,
+                               0,
+                               0,
                                template->priority,
                                0,
                                0);
@@ -505,6 +565,26 @@ void SetBgAttribute(u8 bg, u8 attributeId, u16 value)
         if (value != 0xFFFF)
             sGpuBgConfigs.configs[bg].gbaMode = value;
         break;
+    case BG_ATTR_BANKMODE:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].bankMode = value;
+        break;
+    case BG_ATTR_BANKLEFT:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].bankLeft = value;
+        break;
+    case BG_ATTR_BANKRIGHT:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].bankRight = value;
+        break;
+    case BG_ATTR_BANKUP:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].bankUp = value;
+        break;
+    case BG_ATTR_BANKDOWN:
+        if (value != 0xFFFF)
+            sGpuBgConfigs.configs[bg].bankDown = value;
+        break;
     case BG_ATTR_PRIORITY:
         if (value != 0xFFFF)
             sGpuBgConfigs.configs[bg].priority = value;
@@ -538,6 +618,8 @@ int GetBgAttribute(u8 bg, u8 attributeId)
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_PALETTEMODE);
     case BG_ATTR_GBAMODE:
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_GBAMODE);
+    case BG_ATTR_BANKMODE:
+        return GetBgControlAttribute(bg, BG_CTRL_ATTR_BANKMODE);
     case BG_ATTR_PRIORITY:
         return GetBgControlAttribute(bg, BG_CTRL_ATTR_PRIORITY);
     case BG_ATTR_MOSAIC:

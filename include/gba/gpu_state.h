@@ -62,6 +62,11 @@ struct GpuBgState
     u8 gbaMode:1;
     u8 hidden:1;
     u8 areaOverflowMode:1;
+    u8 bankMode:1;
+    u16 bankLeft;
+    u16 bankRight;
+    u16 bankUp;
+    u16 bankDown;
     struct GpuAffineBgState affine;
 };
 

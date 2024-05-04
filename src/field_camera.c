@@ -120,6 +120,9 @@ static void DrawMetatileAt(const struct MapLayout *mapLayout, int x, int y)
 {
     u16 metatileId;
     const u16 *metatiles;
+    int count;
+    const struct MapConnection *connection;
+    int i;
 
     if (x < 0 || x >= mapLayout->width + MAP_OFFSET_W)
         return;
@@ -135,6 +138,37 @@ static void DrawMetatileAt(const struct MapLayout *mapLayout, int x, int y)
     else
     {
         metatiles = mapLayout->secondaryTileset->metatiles;
+        
+        if (gMapHeader.connections && (x < MAP_OFFSET || x > MAP_OFFSET + mapLayout->width))
+        {
+            count = gMapHeader.connections->count;
+            connection = gMapHeader.connections->connections;
+            for (i = 0; i < count; i++, connection++)
+            {
+                struct MapHeader const *cMap = GetMapHeaderFromConnection(connection);
+                u32 offset = connection->offset;
+                switch (connection->direction)
+                {
+                case CONNECTION_SOUTH:
+
+                    break;
+                case CONNECTION_NORTH:
+
+                    break;
+                case CONNECTION_WEST:
+                    if (x < MAP_OFFSET)
+                        metatiles = cMap->mapLayout->secondaryTileset->metatiles;
+                    break;
+                case CONNECTION_EAST:
+                    if (x > MAP_OFFSET + mapLayout->width)
+                    {
+                        metatiles = cMap->mapLayout->secondaryTileset->metatiles;
+                    }
+                    break;
+                }
+            }
+        }
+        
         metatileId -= NUM_METATILES_IN_PRIMARY;
     }
 

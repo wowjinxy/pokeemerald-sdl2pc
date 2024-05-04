@@ -20,6 +20,7 @@
 #include "main.h"
 #include "palette.h"
 #include "cgb_audio.h"
+#include "gpu_main.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_GIF
@@ -1193,8 +1194,8 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
     unsigned int mapHeightInPixels = bg->screenHeight;
     unsigned int mapWidth = mapWidthInPixels / 8;
 
-    uint8_t *bgtiles = (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
-    uint16_t *pal = (uint16_t *)gpu.palette;
+    uint8_t *bgtiles; //= (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
+    uint16_t *pal; //= (uint16_t *)gpu.palette;
 
     if (InGbaRenderMode() || bg->gbaMode)
     {
@@ -1245,6 +1246,22 @@ static void RenderBGScanline(int bgNum, uint16_t hoffs, uint16_t voffs, int line
             xx = x + hoffs;
 
         xx -= lineStart;
+        
+        bgtiles = (uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock);
+        uint16_t *pal = (uint16_t *)gpu.palette; 
+        
+        if (x + hoffs < bg->bankLeft && bg->bankMode)
+        {
+            bgtiles = GetGpuBankLeftPtr();//(uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock+1);
+            pal = GetGpuBankLeftPalPtr();
+        }
+        else if(x + hoffs > bg->bankRight && bg->bankMode)
+        {
+            bgtiles = GetGpuBankRightPtr();//(uint8_t *)BG_CHAR_ADDR(bg->charBaseBlock+1);
+            pal = GetGpuBankRightPalPtr();
+        }
+
+        
 
         unsigned int yy = lineNum + voffs;
 

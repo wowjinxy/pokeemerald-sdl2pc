@@ -2,6 +2,10 @@
 #include "gpu_main.h"
 
 struct GpuState gpu;
+uint8_t* gpuLeftBankPtr = NULL;
+uint8_t* gpuRightBankPtr = NULL;
+uint16_t* gpuLeftBankPalPtr = NULL;
+uint16_t* gpuRightBankPalPtr = NULL;
 
 static void SetGpuMode(u8 mode);
 
@@ -371,6 +375,90 @@ void SetGpuBackgroundGbaMode(u8 bgNum, u32 gbaMode)
         return;
 
     gpu.bg[bgNum].gbaMode = gbaMode;
+}
+
+void SetGpuBackgroundBankMode(u8 bgNum, u32 bankMode)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].bankMode = bankMode;
+}
+
+void SetGpuBackgroundBankLeft(u8 bgNum, u32 bankLeft)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].bankLeft = bankLeft;
+}
+
+void SetGpuBackgroundBankRight(u8 bgNum, u32 bankRight)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].bankRight = bankRight;
+}
+
+void SetGpuBackgroundBankUp(u8 bgNum, u32 bankUp)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].bankUp = bankUp;
+}
+
+void SetGpuBackgroundBankDown(u8 bgNum, u32 bankDown)
+{
+    if (bgNum >= NUM_BACKGROUNDS)
+        return;
+
+    gpu.bg[bgNum].bankDown = bankDown;
+}
+
+uint8_t* GetGpuBankLeftPtr()
+{
+    return gpuLeftBankPtr;
+}
+
+uint8_t* GetGpuBankRightPtr()
+{
+    return gpuRightBankPtr;
+}
+
+uint16_t* GetGpuBankLeftPalPtr()
+{
+    return gpuLeftBankPalPtr;
+}
+
+uint16_t* GetGpuBankRightPalPtr()
+{
+    return gpuLeftBankPalPtr;
+}
+
+void SetGpuBankLeftPtr(uint8_t* tileGfx)
+{
+    if (tileGfx)
+        gpuLeftBankPtr = tileGfx;
+}
+
+void SetGpuBankRightPtr(uint8_t* tileGfx)
+{
+    if (tileGfx)
+        gpuRightBankPtr = tileGfx;
+}
+
+void SetGpuBankLeftPalPtr(uint16_t* tilePal)
+{
+    if (tilePal)
+        gpuLeftBankPalPtr = tilePal;
+}
+
+void SetGpuBankRightPalPtr(uint16_t* tilePal)
+{
+    if (tilePal)
+        gpuRightBankPalPtr = tilePal;
 }
 
 void SetGpuBackgroundAffine(u8 bgNum, u32 isAffine)

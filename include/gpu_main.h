@@ -52,6 +52,11 @@ void SetGpuBackgroundCharBaseBlock(u8 bgNum, u32 charBaseBlock);
 void SetGpuBackgroundMosaicEnabled(u8 bgNum, u32 mosaic);
 void SetGpuBackground8bppMode(u8 bgNum, u32 use8bpp);
 void SetGpuBackgroundGbaMode(u8 bgNum, u32 gbaMode);
+void SetGpuBackgroundBankMode(u8 bgNum, u32 bankMode);
+void SetGpuBackgroundBankLeft(u8 bgNum, u32 bankLeft);
+void SetGpuBackgroundBankRight(u8 bgNum, u32 bankRight);
+void SetGpuBackgroundBankUp(u8 bgNum, u32 bankUp);
+void SetGpuBackgroundBankDown(u8 bgNum, u32 bankDown);
 void SetGpuBackgroundAffine(u8 bgNum, u32 affineMode);
 void SetGpuBackgroundScreenBaseBlock(u8 bgNum, u32 screenBaseBlock);
 void SetGpuBackgroundAreaOverflowMode(u8 bgNum, u32 areaOverflowMode);
@@ -68,6 +73,15 @@ u32 GetGpuBackgroundScreenBaseBlock(u8 bgNum);
 u32 GetGpuBackgroundAreaOverflowMode(u8 bgNum);
 u32 GetGpuBackgroundWidth(u8 bgNum);
 u32 GetGpuBackgroundHeight(u8 bgNum);
+
+uint8_t* GetGpuBankLeftPtr();
+uint8_t* GetGpuBankRightPtr();
+void SetGpuBankLeftPtr(uint8_t* tileGfx);
+void SetGpuBankRightPtr(uint8_t* tileGfx);
+uint16_t* GetGpuBankLeftPalPtr();
+uint16_t* GetGpuBankRightPalPtr();
+void SetGpuBankLeftPalPtr(uint16_t* tilePal);
+void SetGpuBankRightPalPtr(uint16_t* tilePal);
 
 void ClearGpuBackgroundState(u8 bgNum);
 

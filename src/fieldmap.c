@@ -16,6 +16,7 @@
 #include "tv.h"
 #include "constants/rgb.h"
 #include "constants/metatile_behaviors.h"
+#include "gpu_main.h"
 
 struct ConnectionFlags
 {
@@ -30,6 +31,10 @@ EWRAM_DATA struct MapHeader gMapHeader = {0};
 EWRAM_DATA struct Camera gCamera = {0};
 EWRAM_DATA static struct ConnectionFlags sMapConnectionFlags = {0};
 EWRAM_DATA static u32 UNUSED sFiller = 0; // without this, the next file won't align properly
+u8 leftBankTileset[NUM_TILES_TOTAL * 32];
+u8 rightBankTileset[NUM_TILES_TOTAL * 32];
+u16 leftBankPal[PLTT_BUFFER_SIZE];
+u16 rightBankPal[PLTT_BUFFER_SIZE];
 
 struct BackupMapLayout gBackupMapLayout;
 
@@ -47,6 +52,8 @@ static bool8 SkipCopyingMetatileFromSavedMap(u16 *mapBlock, u16 mapWidth, u8 yMo
 static const struct MapConnection *GetIncomingConnection(u8 direction, int x, int y);
 static bool8 IsPosInIncomingConnectingMap(u8 direction, int x, int y, const struct MapConnection *connection);
 static bool8 IsCoordInIncomingConnectingMap(int coord, int srcMax, int destMax, int offset);
+static void CopyTilesetToPointer(struct Tileset const *tileset, u8* dest, u16 numTiles, u16 offset);
+static void LoadTilesetPaletteToPointer(struct Tileset const *tileset, u16 *dest, u16 destOffset, u16 size);
 
 #define GetBorderBlockAt(x, y)({                                                                   \
     u16 block;                                                                                     \
@@ -115,6 +122,10 @@ static void InitMapLayoutData(struct MapHeader *mapHeader)
     gBackupMapLayout.width = width;
     height = mapLayout->height + MAP_OFFSET_H;
     gBackupMapLayout.height = height;
+    SetGpuBankLeftPtr(leftBankTileset);
+    SetGpuBankRightPtr(rightBankTileset);
+    SetGpuBankLeftPalPtr(leftBankPal);
+    SetGpuBankRightPalPtr(rightBankPal);
     if (width * height <= MAX_MAP_DATA_SIZE)
     {
         InitBackupMapLayoutData(mapLayout->map, mapLayout->width, mapLayout->height);
@@ -164,10 +175,17 @@ static void InitBackupMapLayoutConnections(struct MapHeader *mapHeader)
             case CONNECTION_WEST:
                 FillWestConnection(mapHeader, cMap, offset);
                 sMapConnectionFlags.west = TRUE;
+                //static void CopyTilesetToPointer(struct Tileset const *tileset, u8* dest, u16 numTiles, u16 offset)
+                //if (cMap != NULL)
+                    LoadTilesetPaletteToPointer(cMap->mapLayout->secondaryTileset, leftBankPal, BG_PLTT_ID(NUM_PALS_IN_PRIMARY), (NUM_PALS_TOTAL - NUM_PALS_IN_PRIMARY) * PLTT_SIZE_4BPP);
+                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, leftBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
                 break;
             case CONNECTION_EAST:
                 FillEastConnection(mapHeader, cMap, offset);
                 sMapConnectionFlags.east = TRUE;
+                //if (cMap != NULL)
+                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, rightBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
+                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, leftBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
                 break;
             }
         }
@@ -856,6 +874,35 @@ static void CopyTilesetToVram(struct Tileset const *tileset, u16 numTiles, u16 o
     }
 }
 
+static void CopyTilesetToPointer(struct Tileset const *tileset, u8* dest, u16 numTiles, u16 offset)
+{
+    u32 sizeOut;
+    u32 size = numTiles * 32;
+    
+    if (tileset)
+    {
+        if (!tileset->isCompressed)
+        {
+            memcpy(dest + (offset*32), tileset->tiles, size);
+        }
+        else
+        {
+            void *ptr = malloc_and_decompress(tileset->tiles, &sizeOut);
+            if (!size)
+                size = sizeOut;
+            if (ptr)
+            {
+                // Don't copy more data than what there actually is
+                if (size > sizeOut)
+                    size = sizeOut;
+
+                memcpy(dest + (offset*32), ptr, size);
+                Free(ptr);
+            }
+        }
+    }
+}
+
 static void CopyTilesetToVramUsingHeap(struct Tileset const *tileset, u16 numTiles, u16 offset)
 {
     if (tileset)
@@ -903,9 +950,43 @@ static void LoadTilesetPalette(struct Tileset const *tileset, u16 destOffset, u1
     }
 }
 
+static void LoadTilesetPaletteToPointer(struct Tileset const *tileset, u16 *dest, u16 destOffset, u16 size)
+{
+    u16 black = RGB_BLACK;
+    u8 gPaletteDecompressionBuffer[PLTT_SIZE] = {0};
+
+    if (tileset)
+    {
+        if (tileset->isSecondary == FALSE)
+        {
+            //LoadPalette(&black, destOffset, PLTT_SIZEOF(1));
+            //LoadPalette(tileset->palettes[0] + 1, destOffset + 1, size - PLTT_SIZEOF(1));
+            memcpy(dest + destOffset, &black, PLTT_SIZEOF(1));
+            memcpy(dest + destOffset + 1, tileset->palettes[0] + 1, size - PLTT_SIZEOF(1));
+            //ApplyGlobalTintToPaletteEntries(destOffset + 1, (size - PLTT_SIZEOF(1)) >> 1);
+        }
+        else if (tileset->isSecondary == TRUE)
+        {
+            //LoadPalette(tileset->palettes[NUM_PALS_IN_PRIMARY], destOffset, size);
+            memcpy(dest + destOffset, tileset->palettes[NUM_PALS_IN_PRIMARY], size);
+            //ApplyGlobalTintToPaletteEntries(destOffset, size >> 1);
+        }
+        else
+        {
+            LZDecompressWram((const u32 *)tileset->palettes, gPaletteDecompressionBuffer);
+            memcpy(dest + destOffset, gPaletteDecompressionBuffer, size);
+            //LoadCompressedPalette((const u32 *)tileset->palettes, destOffset, size);
+            //ApplyGlobalTintToPaletteEntries(destOffset, size >> 1);
+        }
+    }
+}
+
 void CopyPrimaryTilesetToVram(struct MapLayout const *mapLayout)
 {
     CopyTilesetToVram(mapLayout->primaryTileset, NUM_TILES_IN_PRIMARY, 0);
+    CopyTilesetToPointer(mapLayout->primaryTileset, leftBankTileset, NUM_TILES_IN_PRIMARY, 0);
+    //small optimization
+    memcpy(rightBankTileset, leftBankTileset, NUM_TILES_IN_PRIMARY*32);
 }
 
 void CopySecondaryTilesetToVram(struct MapLayout const *mapLayout)
@@ -921,6 +1002,7 @@ void CopySecondaryTilesetToVramUsingHeap(struct MapLayout const *mapLayout)
 static void LoadPrimaryTilesetPalette(struct MapLayout const *mapLayout)
 {
     LoadTilesetPalette(mapLayout->primaryTileset, BG_PLTT_ID(0), NUM_PALS_IN_PRIMARY * PLTT_SIZE_4BPP);
+    LoadTilesetPaletteToPointer(mapLayout->primaryTileset, leftBankPal, BG_PLTT_ID(0), NUM_PALS_IN_PRIMARY * PLTT_SIZE_4BPP);
 }
 
 void LoadSecondaryTilesetPalette(struct MapLayout const *mapLayout)
