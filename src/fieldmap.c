@@ -175,17 +175,14 @@ static void InitBackupMapLayoutConnections(struct MapHeader *mapHeader)
             case CONNECTION_WEST:
                 FillWestConnection(mapHeader, cMap, offset);
                 sMapConnectionFlags.west = TRUE;
-                //static void CopyTilesetToPointer(struct Tileset const *tileset, u8* dest, u16 numTiles, u16 offset)
-                //if (cMap != NULL)
-                    LoadTilesetPaletteToPointer(cMap->mapLayout->secondaryTileset, leftBankPal, BG_PLTT_ID(NUM_PALS_IN_PRIMARY), (NUM_PALS_TOTAL - NUM_PALS_IN_PRIMARY) * PLTT_SIZE_4BPP);
-                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, leftBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
+                LoadTilesetPaletteToPointer(cMap->mapLayout->secondaryTileset, leftBankPal, BG_PLTT_ID(NUM_PALS_IN_PRIMARY), (NUM_PALS_TOTAL - NUM_PALS_IN_PRIMARY) * PLTT_SIZE_4BPP);
+                CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, leftBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
                 break;
             case CONNECTION_EAST:
                 FillEastConnection(mapHeader, cMap, offset);
                 sMapConnectionFlags.east = TRUE;
-                //if (cMap != NULL)
-                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, rightBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
-                    CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, leftBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
+                LoadTilesetPaletteToPointer(cMap->mapLayout->secondaryTileset, rightBankPal, BG_PLTT_ID(NUM_PALS_IN_PRIMARY), (NUM_PALS_TOTAL - NUM_PALS_IN_PRIMARY) * PLTT_SIZE_4BPP);
+                CopyTilesetToPointer(cMap->mapLayout->secondaryTileset, rightBankTileset, NUM_TILES_TOTAL - NUM_TILES_IN_PRIMARY, NUM_TILES_IN_PRIMARY);
                 break;
             }
         }
