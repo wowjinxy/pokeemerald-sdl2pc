@@ -53,7 +53,7 @@ static void PlayCryScreenCry(u16);
 static void BufferCryWaveformSegment(void);
 static void DrawWaveformFlatline(void);
 static void AdvancePlayhead(u8);
-static void DrawWaveformSegment(u8, u8);
+static void DrawWaveformSegment(u8, float);
 static void DrawWaveformWindow(u8);
 static void ShiftWaveformOver(u8, s16, bool8);
 static void SpriteCB_CryMeterNeedle(struct Sprite *);
@@ -398,7 +398,7 @@ static void DrawWaveformSegment(u8 position, float amplitude)
     u8 nybble;
     u16 offset;
     u16 temp;
-    float y;
+    u8 y;
 
     temp = (amplitude + 127) * 256;
     y = temp / 1152.0;

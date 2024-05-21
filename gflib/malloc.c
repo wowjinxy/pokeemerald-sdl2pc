@@ -5,7 +5,7 @@ static void *sHeapStart;
 static u32 sHeapSize;
 
 #ifndef PORTABLE
-EWRAM_DATA u8 gHeap[HEAP_SIZE] = {0};
+ALIGNED(4) EWRAM_DATA u8 gHeap[HEAP_SIZE] = {0};
 #endif
 
 #define MALLOC_SYSTEM_ID 0xA3A3
