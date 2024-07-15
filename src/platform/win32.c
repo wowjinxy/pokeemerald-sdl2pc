@@ -235,25 +235,25 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClass(&wcex);
 }
 
-HWND globalhwnd;
-
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     HWND hWnd;
+    RECT winSize = {0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT};
 
     hInst = hInstance; // Store instance handle in our global variable
+    
+    AdjustWindowRectEx(&winSize, WS_OVERLAPPEDWINDOW, TRUE, WS_EX_OVERLAPPEDWINDOW);
 
-    hWnd = ghwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-    CW_USEDEFAULT, 0, 640, 480, NULL, NULL, hInstance, NULL);
+    ghwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+    CW_USEDEFAULT, CW_USEDEFAULT, winSize.right - winSize.left, winSize.bottom - winSize.top, NULL, NULL, hInstance, NULL);
 
-    if (!hWnd)
+    if (!ghwnd)
     {
         return FALSE;
     }
 
-    globalhwnd = hWnd;
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+    ShowWindow(ghwnd, nCmdShow);
+    UpdateWindow(ghwnd);
 
     return TRUE;
 }
@@ -387,7 +387,7 @@ int main(int argc, char **argv)
                 memcpy(titlebar, "win32 emerald fps:  ", sizeof("win32 emerald fps: "));
                 itoa(framesDrawn,&fpscount, 10);
                 memcpy(&titlebar[sizeof("win32 emerald fps: ")-1], fpscount, 10);
-                SetWindowTextA(globalhwnd, titlebar);
+                SetWindowTextA(ghwnd, titlebar);
                 framesDrawn = 0;
                 fpsseconds = clock()+1000;
             }
