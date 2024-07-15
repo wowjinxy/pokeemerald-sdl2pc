@@ -3,12 +3,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-
-#ifdef _WIN32
 #include <windows.h>
+
 #ifdef xinputkeys
 #include <xinput.h>
-#endif
 #endif
 
 #define NO_UNDERSCORE_HACK
@@ -22,8 +20,6 @@
 #include "gba/flash_internal.h"
 #include "platform/dma.h"
 #include "platform/framedraw.h"
-
-//#define frameskip
 
 extern void (*const gIntrTable[])(void);
 
@@ -40,7 +36,6 @@ double curGameTime = 0;
 double fixedTimestep = 1.0 / 60.0; // 16.666667ms
 double timeScale = 1.0;
 struct SiiRtcInfo internalClock;
-char* debugText1[256]; //for debugging output
 char const* savePath = "pokeemerald.sav";
 
 static HANDLE sSaveFile = NULL;
@@ -49,13 +44,11 @@ extern void AgbMain(void);
 extern void DoSoftReset(void);
 
 DWORD WINAPI DoMain(LPVOID lpParam);
-//void ProcessEvents(void);
 void VDraw();
 
 static void ReadSaveFile(char *path);
 static void StoreSaveFile(void);
 static void CloseSaveFile(void);
-
 static void UpdateInternalClock(void);
 
 HINSTANCE hInst;
@@ -63,21 +56,7 @@ char const* szTitle = "win32 emerald";
 char const* szWindowClass = "pokeemerald";
 HWND ghwnd;
 
-// Key mappings
-#define KEY_A_BUTTON      (uint16_t)1
-#define KEY_B_BUTTON      (uint16_t)1 << 1
-#define KEY_START_BUTTON  (uint16_t)1 << 3
-#define KEY_SELECT_BUTTON (uint16_t)1 << 3
-#define KEY_L_BUTTON      (uint16_t)1 << 4
-#define KEY_R_BUTTON      (uint16_t)1 << 5
-#define KEY_DPAD_UP       (uint16_t)1 << 6
-#define KEY_DPAD_DOWN     (uint16_t)1 << 7
-#define KEY_DPAD_LEFT     (uint16_t)1 << 4
-#define KEY_DPAD_RIGHT    (uint16_t)1 << 5
-
 static u16 keys;
-
-int layerDebug = 0;
 
 #define IDM_SPEEDUPTOGGLE 1
 #define IDM_SPEEDUPTOGGLETEXT "&Speed up game"
@@ -127,57 +106,72 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch(wParam)
         {
             case 'Z':
-                keys |= KEY_A_BUTTON;
+                keys |= A_BUTTON;
                 break;
             case 'X':
-                keys |= KEY_B_BUTTON;
+                keys |= B_BUTTON;
+                break;
+            case 'A':
+                keys |= L_BUTTON;
+                break;
+            case 'S':
+                keys |= R_BUTTON;
                 break;
             case VK_UP:
-                keys |= KEY_DPAD_UP;
+                keys |= DPAD_UP;
                 break;
             case VK_DOWN:
-                keys |= KEY_DPAD_DOWN;
+                keys |= DPAD_DOWN;
                 break;
             case VK_RIGHT:
-                keys |= KEY_DPAD_LEFT;
+                keys |= DPAD_RIGHT;
                 break;
             case VK_LEFT:
-                keys |= KEY_DPAD_RIGHT;
+                keys |= DPAD_LEFT;
                 break;
             case VK_RETURN:
-                keys |= KEY_START_BUTTON;
+                keys |= START_BUTTON;
+                break;
+            case VK_SHIFT:
+                keys |= SELECT_BUTTON;
                 break;
             
         }
-        printf("WM_KEYDOWN: %c\n", wParam);
         break;
     case WM_KEYUP:
         switch(wParam)
         {
             case 'Z':
-                keys &= ~KEY_A_BUTTON;
+                keys &= ~A_BUTTON;
                 break;
             case 'X':
-                keys &= ~KEY_B_BUTTON;
+                keys &= ~B_BUTTON;
+                break;
+            case 'A':
+                keys &= ~L_BUTTON;
+                break;
+            case 'S':
+                keys &= ~R_BUTTON;
                 break;
             case VK_UP:
-                keys &= ~KEY_DPAD_UP;
+                keys &= ~DPAD_UP;
                 break;
             case VK_DOWN:
-                keys &= ~KEY_DPAD_DOWN;
+                keys &= ~DPAD_DOWN;
                 break;
             case VK_RIGHT:
-                keys &= ~KEY_DPAD_LEFT;
+                keys &= ~DPAD_RIGHT;
                 break;
             case VK_LEFT:
-                keys &= ~KEY_DPAD_RIGHT;
+                keys &= ~DPAD_LEFT;
                 break;
             case VK_RETURN:
-                keys &= ~KEY_START_BUTTON;
+                keys &= ~START_BUTTON;
+                break;
+            case VK_SHIFT:
+                keys &= ~SELECT_BUTTON;
                 break;
         }
-        printf("WM_KEYUP: %c\n", wParam);
-        //keys = 0;
         break;
         case WM_COMMAND:
         
