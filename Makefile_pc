@@ -20,6 +20,8 @@ GAME_CODE   := BPEE
 MAKER_CODE  := 01
 REVISION    := 0
 MODERN      := 1
+TARGET_PLATFORM := PLATFORM_SDL2
+TILE_RENDERER := RENDERER_EASY_DRAW
 
 SHELL := /bin/bash -o pipefail
 
@@ -52,9 +54,19 @@ override CFLAGS += -Wno-trigraphs -Wimplicit -Wparentheses -Wunused -m32 -std=gn
 ROM		:= pokeemerald.exe
 OBJ_DIR	:= build/pc
 
-CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHING -D PORTABLE -D MODERN=$(MODERN) -D UBFIX -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
+CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -D NONMATCHING -D PORTABLE -D $(TARGET_PLATFORM) -D $(TILE_RENDERER) -D MODERN=$(MODERN) -D UBFIX -I$(SDL_DIR)/include -L$(SDL_DIR)/lib
 
 LDFLAGS = -Map ../../$(MAP)
+
+PLATFORM_INCLUDES := 
+ifeq ($(TARGET_PLATFORM), PLATFORM_SDL2)
+	PLATFORM_INCLUDES = -lSDL2main -lSDL2.dll
+endif
+	
+ifeq ($(TARGET_PLATFORM), PLATFORM_WIN32)
+	PLATFORM_INCLUDES = -lgdi32
+endif
+
 
 LIB := $(LIBPATH) -lgcc -lc
 
@@ -169,6 +181,10 @@ ifeq ($(MODERN),0)
 	@$(MAKE) tidy MODERN=1
 endif
 
+clean-platform:
+	rm -f $(ROM)$(EXE) $(ELF) $(MAP)
+	rm -r $(OBJ_DIR)/src/platform
+
 include graphics_file_rules.mk
 include map_data_rules.mk
 include spritesheet_rules.mk
@@ -191,6 +207,10 @@ $(CRY_SUBDIR)/%.bin: $(CRY_SUBDIR)/%.aif ; $(AIF) $< $@ --compress
 sound/%.bin: sound/%.aif ; $(AIF) $< $@
 
 %src/platform/sdl2.o: CFLAGS += -fleading-underscore
+%src/platform/win32.o: CFLAGS += -fleading-underscore
+%src/platform/dma.o: CFLAGS += -fleading-underscore
+%src/platform/gba_fast_draw.o: CFLAGS += -fleading-underscore
+%src/platform/gba_easy_draw.o: CFLAGS += -fleading-underscore
 
 ifeq ($(NODEP),1)
 $(C_BUILDDIR)/%.o: c_dep :=
@@ -273,4 +293,4 @@ $(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS)
 	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 
 $(ROM): $(OBJS)
-	$(CC) $(CFLAGS) -Wl,--demangle $^ -static-libgcc -L$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2.dll -lwinmm -lxinput -o $@
+	$(CC) $(CFLAGS) -Wl,--demangle $^ -static-libgcc -L$(SDL_DIR)/lib -lmingw32 $(PLATFORM_INCLUDES) -lwinmm -lxinput -o $@

@@ -15,6 +15,7 @@
 #define INTR_CHECK     _INTR_CHECK
 #define INTR_VECTOR    _INTR_VECTOR
 #define fopen          _fopen
+#define gFlash         _gFlash
 #define fseek          _fseek
 #define fclose         _fclose
 #define fread          _fread
@@ -53,6 +54,8 @@
 #define Platform_GetTime _Platform_GetTime
 #define Platform_SetTime _Platform_SetTime
 #define Platform_SetAlarm _Platform_SetAlarm
+#define Platform_ReadFlash _Platform_ReadFlash
+#define Platform_QueueAudio _Platform_QueueAudio
 #endif
 
 #include "config.h" // we need to define config before gba headers as print stuff needs the functions nulled before defines.

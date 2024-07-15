@@ -1,6 +1,7 @@
 #include "global.h"
 #include "gba/gba.h"
 #include "gba/flash_internal.h"
+#include "platform.h"
 
 static u8 sTimerNum;
 static u16 sTimerCount;
@@ -144,24 +145,7 @@ void ReadFlash_Core(vu8 *src, u8 *dest, u32 size)
 void ReadFlash(u16 sectorNum, u32 offset, u8 *dest, u32 size)
 {
 #ifdef PORTABLE
-    printf("ReadFlash(sectorNum=0x%04X,offset=0x%08X,size=0x%02X)\n",sectorNum,offset,size);
-    FILE * savefile = fopen("pokeemerald.sav", "r+b");
-    if (savefile == NULL)
-    {
-        puts("Error opening save file.");
-        return;
-    }
-    if (fseek(savefile, (sectorNum << gFlash->sector.shift) + offset, SEEK_SET))
-    {
-        fclose(savefile);
-        return;
-    }
-    if (fread(dest, 1, size, savefile) != size)
-    {
-        fclose(savefile);
-        return;
-    }
-    fclose(savefile);
+    Platform_ReadFlash(sectorNum, offset, dest, size);
     return;
 #else
     u8 *src;
