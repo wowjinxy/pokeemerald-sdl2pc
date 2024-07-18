@@ -2312,7 +2312,7 @@ static void DrawScanline(uint16_t *pixels, uint16_t vcount)
         }
         break;
     default:
-        printf("Video mode %u is unsupported.\n", mode);
+        //printf("Video mode %u is unsupported.\n", mode);
         break;
     }
 }

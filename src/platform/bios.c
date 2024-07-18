@@ -449,7 +449,7 @@ void ObjAffineSet(struct ObjAffineSrcData *src, void *dest, s32 count, s32 offse
 void SoftReset(u32 resetFlags)
 {
     puts("Soft Reset called. Exiting.");
-    exit(0);
+    //exit(0);
 }
 
 // Following functions taken from mGBA's source

@@ -20,8 +20,8 @@ GAME_CODE   := BPEE
 MAKER_CODE  := 01
 REVISION    := 0
 MODERN      := 1
-TARGET_PLATFORM := PLATFORM_SDL2
-TILE_RENDERER := RENDERER_EASY_DRAW
+TARGET_PLATFORM := PLATFORM_WIN32
+TILE_RENDERER := RENDERER_FAST_DRAW
 
 SHELL := /bin/bash -o pipefail
 
@@ -64,7 +64,7 @@ ifeq ($(TARGET_PLATFORM), PLATFORM_SDL2)
 endif
 	
 ifeq ($(TARGET_PLATFORM), PLATFORM_WIN32)
-	PLATFORM_INCLUDES = -lgdi32
+	PLATFORM_INCLUDES = -lkernel32 -luser32 -lgdi32
 endif
 
 
@@ -211,6 +211,7 @@ sound/%.bin: sound/%.aif ; $(AIF) $< $@
 %src/platform/dma.o: CFLAGS += -fleading-underscore
 %src/platform/gba_fast_draw.o: CFLAGS += -fleading-underscore
 %src/platform/gba_easy_draw.o: CFLAGS += -fleading-underscore
+%src/platform/nostd.o: CFLAGS += -fleading-underscore
 
 ifeq ($(NODEP),1)
 $(C_BUILDDIR)/%.o: c_dep :=
@@ -293,4 +294,4 @@ $(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS)
 	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 
 $(ROM): $(OBJS)
-	$(CC) $(CFLAGS) -Wl,--demangle $^ -static-libgcc -L$(SDL_DIR)/lib -lmingw32 $(PLATFORM_INCLUDES) -lwinmm -lxinput -o $@
+	$(CC) $(CFLAGS) -Wl,--demangle -Wl,-e__main $^ -static-libgcc -L$(SDL_DIR)/lib -nostdlib $(PLATFORM_INCLUDES) -lwinmm -lxinput -o $@
