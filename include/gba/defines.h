@@ -13,7 +13,12 @@
 #define IWRAM_DATA __attribute__((section("iwram_data")))
 #define EWRAM_DATA __attribute__((section("ewram_data")))
 #endif
+
+#ifdef _MSC_VER
+#define UNUSED
+#else
 #define UNUSED __attribute__((unused))
+#endif
 
 #if MODERN
 #define NOINLINE __attribute__((noinline))
@@ -48,7 +53,11 @@ extern struct SoundInfo * SOUND_INFO_PTR;
 extern unsigned short INTR_CHECK;
 extern void * INTR_VECTOR;
 
+#ifdef _MSC_VER
+__declspec(align(4)) extern unsigned char PLTT[PLTT_SIZE];
+#else
 extern unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
+#endif
 #endif
 
 #define BG_PLTT       PLTT
@@ -57,7 +66,13 @@ extern unsigned char PLTT[PLTT_SIZE] __attribute__ ((aligned (4)));
 #ifndef PORTABLE
 #define VRAM      0x6000000
 #else
+
+#ifdef _MSC_VER
+__declspec(align(4)) extern unsigned char VRAM_[VRAM_SIZE];
+#else
 extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
+#endif
+
 #define VRAM (u32)VRAM_
 #endif
 
@@ -85,7 +100,13 @@ extern unsigned char VRAM_[VRAM_SIZE] __attribute__ ((aligned (4)));
 #ifndef PORTABLE
 #define OAM      0x7000000
 #else
+
+#ifdef _MSC_VER
+__declspec(align(4)) extern unsigned char OAM[OAM_SIZE];
+#else
 extern unsigned char OAM[OAM_SIZE] __attribute__ ((aligned (4)));
+#endif
+
 #endif
 
 #define ROM_HEADER_SIZE   0xC0
