@@ -38,3 +38,5 @@ prefabs.json
 *.diff
 *.sym
 *.js
+VisualStudio Project/.vs
+VisualStudio Project/x64

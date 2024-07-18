@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{69f31d55-ea97-4862-b03a-14647f7a174e}</ProjectGuid>
+    <RootNamespace>VisualStudioProject</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include;../src;../gflib;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include;../src;../gflib;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include;../src;../gflib;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../include;../src;../gflib;</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;BUGFIX;</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;BUGFIX;</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;BUGFIX;</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;BUGFIX;</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\gflib\bg.c" />
+    <ClCompile Include="..\gflib\blit.c" />
+    <ClCompile Include="..\gflib\dma3_manager.c" />
+    <ClCompile Include="..\gflib\gpu_regs.c" />
+    <ClCompile Include="..\gflib\io_reg.c" />
+    <ClCompile Include="..\gflib\malloc.c" />
+    <ClCompile Include="..\gflib\sprite.c" />
+    <ClCompile Include="..\gflib\string_util.c" />
+    <ClCompile Include="..\gflib\text.c" />
+    <ClCompile Include="..\gflib\window.c" />
+    <ClCompile Include="..\src\AgbRfu_LinkManager.c" />
+    <ClCompile Include="..\src\agb_flash.c" />
+    <ClCompile Include="..\src\agb_flash_1m.c" />
+    <ClCompile Include="..\src\agb_flash_dummy.c" />
+    <ClCompile Include="..\src\agb_flash_le.c" />
+    <ClCompile Include="..\src\agb_flash_mx.c" />
+    <ClCompile Include="..\src\anim_mon_front_pics.c" />
+    <ClCompile Include="..\src\apprentice.c" />
+    <ClCompile Include="..\src\bard_music.c" />
+    <ClCompile Include="..\src\battle_ai_script_commands.c" />
+    <ClCompile Include="..\src\battle_ai_switch_items.c" />
+    <ClCompile Include="..\src\battle_anim.c" />
+    <ClCompile Include="..\src\battle_anim_bug.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;MODERN;UBFIX;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;MODERN;UBFIX;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_DEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;MODERN;UBFIX;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NDEBUG;_CONSOLE;%(PreprocessorDefinitions);PORTABLE;;MODERN;UBFIX;</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\src\battle_anim_dark.c" />
+    <ClCompile Include="..\src\battle_anim_dragon.c" />
+    <ClCompile Include="..\src\battle_anim_effects_1.c" />
+    <ClCompile Include="..\src\battle_anim_effects_2.c" />
+    <ClCompile Include="..\src\battle_anim_effects_3.c" />
+    <ClCompile Include="..\src\battle_anim_electric.c" />
+    <ClCompile Include="..\src\battle_anim_fight.c" />
+    <ClCompile Include="..\src\battle_anim_fire.c" />
+    <ClCompile Include="..\src\battle_anim_flying.c" />
+    <ClCompile Include="..\src\battle_anim_ghost.c" />
+    <ClCompile Include="..\src\battle_anim_ground.c" />
+    <ClCompile Include="..\src\battle_anim_ice.c" />
+    <ClCompile Include="..\src\battle_anim_mons.c" />
+    <ClCompile Include="..\src\battle_anim_mon_movement.c" />
+    <ClCompile Include="..\src\battle_anim_normal.c" />
+    <ClCompile Include="..\src\battle_anim_poison.c" />
+    <ClCompile Include="..\src\battle_anim_psychic.c" />
+    <ClCompile Include="..\src\battle_anim_rock.c" />
+    <ClCompile Include="..\src\battle_anim_smokescreen.c" />
+    <ClCompile Include="..\src\battle_anim_sound_tasks.c" />
+    <ClCompile Include="..\src\battle_anim_status_effects.c" />
+    <ClCompile Include="..\src\battle_anim_throw.c" />
+    <ClCompile Include="..\src\battle_anim_utility_funcs.c" />
+    <ClCompile Include="..\src\battle_anim_water.c" />
+    <ClCompile Include="..\src\battle_arena.c" />
+    <ClCompile Include="..\src\battle_bg.c" />
+    <ClCompile Include="..\src\battle_controllers.c" />
+    <ClCompile Include="..\src\battle_controller_link_opponent.c" />
+    <ClCompile Include="..\src\battle_controller_link_partner.c" />
+    <ClCompile Include="..\src\battle_controller_opponent.c" />
+    <ClCompile Include="..\src\battle_controller_player.c" />
+    <ClCompile Include="..\src\battle_controller_player_partner.c" />
+    <ClCompile Include="..\src\battle_controller_recorded_opponent.c" />
+    <ClCompile Include="..\src\battle_controller_recorded_player.c" />
+    <ClCompile Include="..\src\battle_controller_safari.c" />
+    <ClCompile Include="..\src\battle_controller_wally.c" />
+    <ClCompile Include="..\src\battle_dome.c" />
+    <ClCompile Include="..\src\battle_factory.c" />
+    <ClCompile Include="..\src\battle_factory_screen.c" />
+    <ClCompile Include="..\src\battle_gfx_sfx_util.c" />
+    <ClCompile Include="..\src\battle_interface.c" />
+    <ClCompile Include="..\src\battle_intro.c" />
+    <ClCompile Include="..\src\battle_main.c" />
+    <ClCompile Include="..\src\battle_message.c" />
+    <ClCompile Include="..\src\battle_palace.c" />
+    <ClCompile Include="..\src\battle_pike.c" />
+    <ClCompile Include="..\src\battle_pyramid.c" />
+    <ClCompile Include="..\src\battle_pyramid_bag.c" />
+    <ClCompile Include="..\src\battle_records.c" />
+    <ClCompile Include="..\src\battle_script_commands.c" />
+    <ClCompile Include="..\src\battle_setup.c" />
+    <ClCompile Include="..\src\battle_tent.c" />
+    <ClCompile Include="..\src\battle_tower.c" />
+    <ClCompile Include="..\src\battle_transition.c" />
+    <ClCompile Include="..\src\battle_transition_frontier.c" />
+    <ClCompile Include="..\src\battle_tv.c" />
+    <ClCompile Include="..\src\battle_util.c" />
+    <ClCompile Include="..\src\battle_util2.c" />
+    <ClCompile Include="..\src\berry.c" />
+    <ClCompile Include="..\src\berry_blender.c" />
+    <ClCompile Include="..\src\berry_crush.c" />
+    <ClCompile Include="..\src\berry_fix_graphics.c" />
+    <ClCompile Include="..\src\berry_fix_program.c" />
+    <ClCompile Include="..\src\berry_powder.c" />
+    <ClCompile Include="..\src\berry_tag_screen.c" />
+    <ClCompile Include="..\src\bike.c" />
+    <ClCompile Include="..\src\birch_pc.c" />
+    <ClCompile Include="..\src\braille.c" />
+    <ClCompile Include="..\src\braille_puzzles.c" />
+    <ClCompile Include="..\src\cable_car.c" />
+    <ClCompile Include="..\src\cable_club.c" />
+    <ClCompile Include="..\src\clear_save_data_screen.c" />
+    <ClCompile Include="..\src\clock.c" />
+    <ClCompile Include="..\src\coins.c" />
+    <ClCompile Include="..\src\confetti_util.c" />
+    <ClCompile Include="..\src\contest.c" />
+    <ClCompile Include="..\src\contest_ai.c" />
+    <ClCompile Include="..\src\contest_effect.c" />
+    <ClCompile Include="..\src\contest_link.c" />
+    <ClCompile Include="..\src\contest_link_util.c" />
+    <ClCompile Include="..\src\contest_painting.c" />
+    <ClCompile Include="..\src\contest_util.c" />
+    <ClCompile Include="..\src\coord_event_weather.c" />
+    <ClCompile Include="..\src\credits.c" />
+    <ClCompile Include="..\src\data.c" />
+    <ClCompile Include="..\src\daycare.c" />
+    <ClCompile Include="..\src\decompress.c" />
+    <ClCompile Include="..\src\decoration.c" />
+    <ClCompile Include="..\src\decoration_inventory.c" />
+    <ClCompile Include="..\src\dewford_trend.c" />
+    <ClCompile Include="..\src\digit_obj_util.c" />
+    <ClCompile Include="..\src\diploma.c" />
+    <ClCompile Include="..\src\dodrio_berry_picking.c" />
+    <ClCompile Include="..\src\dynamic_placeholder_text_util.c" />
+    <ClCompile Include="..\src\easy_chat.c" />
+    <ClCompile Include="..\src\egg_hatch.c" />
+    <ClCompile Include="..\src\ereader_helpers.c" />
+    <ClCompile Include="..\src\ereader_screen.c" />
+    <ClCompile Include="..\src\event_data.c" />
+    <ClCompile Include="..\src\event_object_lock.c" />
+    <ClCompile Include="..\src\event_object_movement.c" />
+    <ClCompile Include="..\src\evolution_graphics.c" />
+    <ClCompile Include="..\src\evolution_scene.c" />
+    <ClCompile Include="..\src\faraway_island.c" />
+    <ClCompile Include="..\src\fieldmap.c" />
+    <ClCompile Include="..\src\field_camera.c" />
+    <ClCompile Include="..\src\field_control_avatar.c" />
+    <ClCompile Include="..\src\field_door.c" />
+    <ClCompile Include="..\src\field_effect.c" />
+    <ClCompile Include="..\src\field_effect_helpers.c" />
+    <ClCompile Include="..\src\field_message_box.c" />
+    <ClCompile Include="..\src\field_player_avatar.c" />
+    <ClCompile Include="..\src\field_poison.c" />
+    <ClCompile Include="..\src\field_region_map.c" />
+    <ClCompile Include="..\src\field_screen_effect.c" />
+    <ClCompile Include="..\src\field_specials.c" />
+    <ClCompile Include="..\src\field_special_scene.c" />
+    <ClCompile Include="..\src\field_tasks.c" />
+    <ClCompile Include="..\src\field_weather.c" />
+    <ClCompile Include="..\src\field_weather_effect.c" />
+    <ClCompile Include="..\src\fldeff_cut.c" />
+    <ClCompile Include="..\src\fldeff_dig.c" />
+    <ClCompile Include="..\src\fldeff_escalator.c" />
+    <ClCompile Include="..\src\fldeff_flash.c" />
+    <ClCompile Include="..\src\fldeff_misc.c" />
+    <ClCompile Include="..\src\fldeff_rocksmash.c" />
+    <ClCompile Include="..\src\fldeff_softboiled.c" />
+    <ClCompile Include="..\src\fldeff_strength.c" />
+    <ClCompile Include="..\src\fldeff_sweetscent.c" />
+    <ClCompile Include="..\src\fldeff_teleport.c" />
+    <ClCompile Include="..\src\fonts.c" />
+    <ClCompile Include="..\src\frontier_pass.c" />
+    <ClCompile Include="..\src\frontier_util.c" />
+    <ClCompile Include="..\src\graphics.c" />
+    <ClCompile Include="..\src\gym_leader_rematch.c" />
+    <ClCompile Include="..\src\hall_of_fame.c" />
+    <ClCompile Include="..\src\heal_location.c" />
+    <ClCompile Include="..\src\hof_pc.c" />
+    <ClCompile Include="..\src\image_processing_effects.c" />
+    <ClCompile Include="..\src\international_string_util.c" />
+    <ClCompile Include="..\src\intro.c" />
+    <ClCompile Include="..\src\intro_credits_graphics.c" />
+    <ClCompile Include="..\src\item.c" />
+    <ClCompile Include="..\src\item_icon.c" />
+    <ClCompile Include="..\src\item_menu.c" />
+    <ClCompile Include="..\src\item_menu_icons.c" />
+    <ClCompile Include="..\src\item_use.c" />
+    <ClCompile Include="..\src\landmark.c" />
+    <ClCompile Include="..\src\libisagbprn.c" />
+    <ClCompile Include="..\src\librfu_intr.c" />
+    <ClCompile Include="..\src\librfu_rfu.c" />
+    <ClCompile Include="..\src\librfu_sio32id.c" />
+    <ClCompile Include="..\src\librfu_stwi.c" />
+    <ClCompile Include="..\src\lilycove_lady.c" />
+    <ClCompile Include="..\src\link.c" />
+    <ClCompile Include="..\src\link_rfu_2.c" />
+    <ClCompile Include="..\src\link_rfu_3.c" />
+    <ClCompile Include="..\src\list_menu.c" />
+    <ClCompile Include="..\src\load_save.c" />
+    <ClCompile Include="..\src\lottery_corner.c" />
+    <ClCompile Include="..\src\m4a.c" />
+    <ClCompile Include="..\src\m4a_tables.c" />
+    <ClCompile Include="..\src\mail.c" />
+    <ClCompile Include="..\src\mail_data.c" />
+    <ClCompile Include="..\src\main.c" />
+    <ClCompile Include="..\src\main_menu.c" />
+    <ClCompile Include="..\src\map_name_popup.c" />
+    <ClCompile Include="..\src\match_call.c" />
+    <ClCompile Include="..\src\math_util.c" />
+    <ClCompile Include="..\src\mauville_old_man.c" />
+    <ClCompile Include="..\src\menu.c" />
+    <ClCompile Include="..\src\menu_helpers.c" />
+    <ClCompile Include="..\src\menu_specialized.c" />
+    <ClCompile Include="..\src\metatile_behavior.c" />
+    <ClCompile Include="..\src\minigame_countdown.c" />
+    <ClCompile Include="..\src\mini_printf.c" />
+    <ClCompile Include="..\src\mirage_tower.c" />
+    <ClCompile Include="..\src\money.c" />
+    <ClCompile Include="..\src\mon_markings.c" />
+    <ClCompile Include="..\src\move_relearner.c" />
+    <ClCompile Include="..\src\multiboot.c" />
+    <ClCompile Include="..\src\music_player.c" />
+    <ClCompile Include="..\src\mystery_event_menu.c" />
+    <ClCompile Include="..\src\mystery_event_msg.c" />
+    <ClCompile Include="..\src\mystery_event_script.c" />
+    <ClCompile Include="..\src\mystery_gift.c" />
+    <ClCompile Include="..\src\mystery_gift_client.c" />
+    <ClCompile Include="..\src\mystery_gift_link.c" />
+    <ClCompile Include="..\src\mystery_gift_menu.c" />
+    <ClCompile Include="..\src\mystery_gift_scripts.c" />
+    <ClCompile Include="..\src\mystery_gift_server.c" />
+    <ClCompile Include="..\src\mystery_gift_view.c" />
+    <ClCompile Include="..\src\naming_screen.c" />
+    <ClCompile Include="..\src\new_game.c" />
+    <ClCompile Include="..\src\option_menu.c" />
+    <ClCompile Include="..\src\overworld.c" />
+    <ClCompile Include="..\src\palette.c" />
+    <ClCompile Include="..\src\palette_util.c" />
+    <ClCompile Include="..\src\party_menu.c" />
+    <ClCompile Include="..\src\platform\bios.c" />
+    <ClCompile Include="..\src\platform\cgb_audio.c" />
+    <ClCompile Include="..\src\platform\dma.c" />
+    <ClCompile Include="..\src\platform\gba_easy_draw.c" />
+    <ClCompile Include="..\src\platform\gba_fast_draw.c" />
+    <ClCompile Include="..\src\platform\sdl2.c" />
+    <ClCompile Include="..\src\platform\win32.c" />
+    <ClCompile Include="..\src\player_pc.c" />
+    <ClCompile Include="..\src\play_time.c" />
+    <ClCompile Include="..\src\pokeball.c" />
+    <ClCompile Include="..\src\pokeblock.c" />
+    <ClCompile Include="..\src\pokeblock_feed.c" />
+    <ClCompile Include="..\src\pokedex.c" />
+    <ClCompile Include="..\src\pokedex_area_region_map.c" />
+    <ClCompile Include="..\src\pokedex_area_screen.c" />
+    <ClCompile Include="..\src\pokedex_cry_screen.c" />
+    <ClCompile Include="..\src\pokemon.c" />
+    <ClCompile Include="..\src\pokemon_animation.c" />
+    <ClCompile Include="..\src\pokemon_icon.c" />
+    <ClCompile Include="..\src\pokemon_jump.c" />
+    <ClCompile Include="..\src\pokemon_size_record.c" />
+    <ClCompile Include="..\src\pokemon_storage_system.c" />
+    <ClCompile Include="..\src\pokemon_summary_screen.c" />
+    <ClCompile Include="..\src\pokenav.c" />
+    <ClCompile Include="..\src\pokenav_conditions.c" />
+    <ClCompile Include="..\src\pokenav_conditions_gfx.c" />
+    <ClCompile Include="..\src\pokenav_conditions_search_results.c" />
+    <ClCompile Include="..\src\pokenav_list.c" />
+    <ClCompile Include="..\src\pokenav_main_menu.c" />
+    <ClCompile Include="..\src\pokenav_match_call_data.c" />
+    <ClCompile Include="..\src\pokenav_match_call_gfx.c" />
+    <ClCompile Include="..\src\pokenav_match_call_list.c" />
+    <ClCompile Include="..\src\pokenav_menu_handler.c" />
+    <ClCompile Include="..\src\pokenav_menu_handler_gfx.c" />
+    <ClCompile Include="..\src\pokenav_region_map.c" />
+    <ClCompile Include="..\src\pokenav_ribbons_list.c" />
+    <ClCompile Include="..\src\pokenav_ribbons_summary.c" />
+    <ClCompile Include="..\src\post_battle_event_funcs.c" />
+    <ClCompile Include="..\src\random.c" />
+    <ClCompile Include="..\src\rayquaza_scene.c" />
+    <ClCompile Include="..\src\recorded_battle.c" />
+    <ClCompile Include="..\src\record_mixing.c" />
+    <ClCompile Include="..\src\region_map.c" />
+    <ClCompile Include="..\src\reload_save.c" />
+    <ClCompile Include="..\src\reset_rtc_screen.c" />
+    <ClCompile Include="..\src\reshow_battle_screen.c" />
+    <ClCompile Include="..\src\roamer.c" />
+    <ClCompile Include="..\src\rom_header_gf.c" />
+    <ClCompile Include="..\src\rotating_gate.c" />
+    <ClCompile Include="..\src\rotating_tile_puzzle.c" />
+    <ClCompile Include="..\src\roulette.c" />
+    <ClCompile Include="..\src\rtc.c" />
+    <ClCompile Include="..\src\safari_zone.c" />
+    <ClCompile Include="..\src\save.c" />
+    <ClCompile Include="..\src\save_failed_screen.c" />
+    <ClCompile Include="..\src\save_location.c" />
+    <ClCompile Include="..\src\scanline_effect.c" />
+    <ClCompile Include="..\src\scrcmd.c" />
+    <ClCompile Include="..\src\script.c" />
+    <ClCompile Include="..\src\script_menu.c" />
+    <ClCompile Include="..\src\script_movement.c" />
+    <ClCompile Include="..\src\script_pokemon_util.c" />
+    <ClCompile Include="..\src\secret_base.c" />
+    <ClCompile Include="..\src\shop.c" />
+    <ClCompile Include="..\src\siirtc.c" />
+    <ClCompile Include="..\src\slot_machine.c" />
+    <ClCompile Include="..\src\sound.c" />
+    <ClCompile Include="..\src\sound_mixer.c" />
+    <ClCompile Include="..\src\starter_choose.c" />
+    <ClCompile Include="..\src\start_menu.c" />
+    <ClCompile Include="..\src\strings.c" />
+    <ClCompile Include="..\src\stub.c" />
+    <ClCompile Include="..\src\task.c" />
+    <ClCompile Include="..\src\text_input_strings.c" />
+    <ClCompile Include="..\src\text_window.c" />
+    <ClCompile Include="..\src\tilesets.c" />
+    <ClCompile Include="..\src\tileset_anims.c" />
+    <ClCompile Include="..\src\time_events.c" />
+    <ClCompile Include="..\src\title_screen.c" />
+    <ClCompile Include="..\src\trade.c" />
+    <ClCompile Include="..\src\trader.c" />
+    <ClCompile Include="..\src\trainer_card.c" />
+    <ClCompile Include="..\src\trainer_hill.c" />
+    <ClCompile Include="..\src\trainer_pokemon_sprites.c" />
+    <ClCompile Include="..\src\trainer_see.c" />
+    <ClCompile Include="..\src\trig.c" />
+    <ClCompile Include="..\src\tv.c" />
+    <ClCompile Include="..\src\union_room.c" />
+    <ClCompile Include="..\src\union_room_battle.c" />
+    <ClCompile Include="..\src\union_room_chat.c" />
+    <ClCompile Include="..\src\union_room_player_avatar.c" />
+    <ClCompile Include="..\src\use_pokeblock.c" />
+    <ClCompile Include="..\src\util.c" />
+    <ClCompile Include="..\src\walda_phrase.c" />
+    <ClCompile Include="..\src\wallclock.c" />
+    <ClCompile Include="..\src\wild_encounter.c" />
+    <ClCompile Include="..\src\wireless_communication_status_screen.c" />
+    <ClCompile Include="..\src\wonder_news.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\gflib\bg.h" />
+    <ClInclude Include="..\gflib\blit.h" />
+    <ClInclude Include="..\gflib\characters.h" />
+    <ClInclude Include="..\gflib\dma3.h" />
+    <ClInclude Include="..\gflib\gpu_regs.h" />
+    <ClInclude Include="..\gflib\io_reg.h" />
+    <ClInclude Include="..\gflib\malloc.h" />
+    <ClInclude Include="..\gflib\sprite.h" />
+    <ClInclude Include="..\gflib\string_util.h" />
+    <ClInclude Include="..\gflib\text.h" />
+    <ClInclude Include="..\gflib\window.h" />
+    <ClInclude Include="..\include\AgbRfu_LinkManager.h" />
+    <ClInclude Include="..\include\agb_flash.h" />
+    <ClInclude Include="..\include\apprentice.h" />
+    <ClInclude Include="..\include\bard_music.h" />
+    <ClInclude Include="..\include\battle.h" />
+    <ClInclude Include="..\include\battle_ai_script_commands.h" />
+    <ClInclude Include="..\include\battle_ai_switch_items.h" />
+    <ClInclude Include="..\include\battle_anim.h" />
+    <ClInclude Include="..\include\battle_arena.h" />
+    <ClInclude Include="..\include\battle_bg.h" />
+    <ClInclude Include="..\include\battle_controllers.h" />
+    <ClInclude Include="..\include\battle_dome.h" />
+    <ClInclude Include="..\include\battle_factory.h" />
+    <ClInclude Include="..\include\battle_factory_screen.h" />
+    <ClInclude Include="..\include\battle_gfx_sfx_util.h" />
+    <ClInclude Include="..\include\battle_interface.h" />
+    <ClInclude Include="..\include\battle_main.h" />
+    <ClInclude Include="..\include\battle_message.h" />
+    <ClInclude Include="..\include\battle_pike.h" />
+    <ClInclude Include="..\include\battle_pyramid.h" />
+    <ClInclude Include="..\include\battle_pyramid_bag.h" />
+    <ClInclude Include="..\include\battle_records.h" />
+    <ClInclude Include="..\include\battle_scripts.h" />
+    <ClInclude Include="..\include\battle_script_commands.h" />
+    <ClInclude Include="..\include\battle_setup.h" />
+    <ClInclude Include="..\include\battle_tent.h" />
+    <ClInclude Include="..\include\battle_tower.h" />
+    <ClInclude Include="..\include\battle_transition.h" />
+    <ClInclude Include="..\include\battle_transition_frontier.h" />
+    <ClInclude Include="..\include\battle_tv.h" />
+    <ClInclude Include="..\include\battle_util.h" />
+    <ClInclude Include="..\include\battle_util2.h" />
+    <ClInclude Include="..\include\berry.h" />
+    <ClInclude Include="..\include\berry_blender.h" />
+    <ClInclude Include="..\include\berry_crush.h" />
+    <ClInclude Include="..\include\berry_fix_program.h" />
+    <ClInclude Include="..\include\berry_powder.h" />
+    <ClInclude Include="..\include\berry_tag_screen.h" />
+    <ClInclude Include="..\include\bike.h" />
+    <ClInclude Include="..\include\braille_puzzles.h" />
+    <ClInclude Include="..\include\cable_club.h" />
+    <ClInclude Include="..\include\cgb_audio.h" />
+    <ClInclude Include="..\include\cgb_tables.h" />
+    <ClInclude Include="..\include\clear_save_data_menu.h" />
+    <ClInclude Include="..\include\clock.h" />
+    <ClInclude Include="..\include\coins.h" />
+    <ClInclude Include="..\include\confetti_util.h" />
+    <ClInclude Include="..\include\config.h" />
+    <ClInclude Include="..\include\constants\abilities.h" />
+    <ClInclude Include="..\include\constants\apprentice.h" />
+    <ClInclude Include="..\include\constants\battle.h" />
+    <ClInclude Include="..\include\constants\battle_ai.h" />
+    <ClInclude Include="..\include\constants\battle_anim.h" />
+    <ClInclude Include="..\include\constants\battle_arena.h" />
+    <ClInclude Include="..\include\constants\battle_dome.h" />
+    <ClInclude Include="..\include\constants\battle_factory.h" />
+    <ClInclude Include="..\include\constants\battle_frontier.h" />
+    <ClInclude Include="..\include\constants\battle_frontier_mons.h" />
+    <ClInclude Include="..\include\constants\battle_frontier_trainers.h" />
+    <ClInclude Include="..\include\constants\battle_move_effects.h" />
+    <ClInclude Include="..\include\constants\battle_palace.h" />
+    <ClInclude Include="..\include\constants\battle_pike.h" />
+    <ClInclude Include="..\include\constants\battle_pyramid.h" />
+    <ClInclude Include="..\include\constants\battle_script_commands.h" />
+    <ClInclude Include="..\include\constants\battle_setup.h" />
+    <ClInclude Include="..\include\constants\battle_string_ids.h" />
+    <ClInclude Include="..\include\constants\battle_tent.h" />
+    <ClInclude Include="..\include\constants\battle_tent_mons.h" />
+    <ClInclude Include="..\include\constants\battle_tent_trainers.h" />
+    <ClInclude Include="..\include\constants\battle_tower.h" />
+    <ClInclude Include="..\include\constants\berry.h" />
+    <ClInclude Include="..\include\constants\cable_club.h" />
+    <ClInclude Include="..\include\constants\coins.h" />
+    <ClInclude Include="..\include\constants\contest.h" />
+    <ClInclude Include="..\include\constants\daycare.h" />
+    <ClInclude Include="..\include\constants\decorations.h" />
+    <ClInclude Include="..\include\constants\easy_chat.h" />
+    <ClInclude Include="..\include\constants\event_bg.h" />
+    <ClInclude Include="..\include\constants\event_objects.h" />
+    <ClInclude Include="..\include\constants\event_object_movement.h" />
+    <ClInclude Include="..\include\constants\field_effects.h" />
+    <ClInclude Include="..\include\constants\field_poison.h" />
+    <ClInclude Include="..\include\constants\field_specials.h" />
+    <ClInclude Include="..\include\constants\field_tasks.h" />
+    <ClInclude Include="..\include\constants\field_weather.h" />
+    <ClInclude Include="..\include\constants\flags.h" />
+    <ClInclude Include="..\include\constants\frontier_util.h" />
+    <ClInclude Include="..\include\constants\game_stat.h" />
+    <ClInclude Include="..\include\constants\global.h" />
+    <ClInclude Include="..\include\constants\heal_locations.h" />
+    <ClInclude Include="..\include\constants\hold_effects.h" />
+    <ClInclude Include="..\include\constants\item.h" />
+    <ClInclude Include="..\include\constants\items.h" />
+    <ClInclude Include="..\include\constants\item_effects.h" />
+    <ClInclude Include="..\include\constants\layouts.h" />
+    <ClInclude Include="..\include\constants\lilycove_lady.h" />
+    <ClInclude Include="..\include\constants\maps.h" />
+    <ClInclude Include="..\include\constants\map_groups.h" />
+    <ClInclude Include="..\include\constants\map_scripts.h" />
+    <ClInclude Include="..\include\constants\map_types.h" />
+    <ClInclude Include="..\include\constants\mauville_old_man.h" />
+    <ClInclude Include="..\include\constants\metatile_behaviors.h" />
+    <ClInclude Include="..\include\constants\metatile_labels.h" />
+    <ClInclude Include="..\include\constants\moves.h" />
+    <ClInclude Include="..\include\constants\mystery_gift.h" />
+    <ClInclude Include="..\include\constants\opponents.h" />
+    <ClInclude Include="..\include\constants\party_menu.h" />
+    <ClInclude Include="..\include\constants\pokedex.h" />
+    <ClInclude Include="..\include\constants\pokemon.h" />
+    <ClInclude Include="..\include\constants\region_map_sections.h" />
+    <ClInclude Include="..\include\constants\rgb.h" />
+    <ClInclude Include="..\include\constants\roulette.h" />
+    <ClInclude Include="..\include\constants\script_menu.h" />
+    <ClInclude Include="..\include\constants\secret_bases.h" />
+    <ClInclude Include="..\include\constants\slot_machine.h" />
+    <ClInclude Include="..\include\constants\songs.h" />
+    <ClInclude Include="..\include\constants\sound.h" />
+    <ClInclude Include="..\include\constants\species.h" />
+    <ClInclude Include="..\include\constants\tms_hms.h" />
+    <ClInclude Include="..\include\constants\trade.h" />
+    <ClInclude Include="..\include\constants\trainers.h" />
+    <ClInclude Include="..\include\constants\trainer_hill.h" />
+    <ClInclude Include="..\include\constants\trainer_types.h" />
+    <ClInclude Include="..\include\constants\tv.h" />
+    <ClInclude Include="..\include\constants\union_room.h" />
+    <ClInclude Include="..\include\constants\vars.h" />
+    <ClInclude Include="..\include\constants\weather.h" />
+    <ClInclude Include="..\include\constants\wild_encounter.h" />
+    <ClInclude Include="..\include\contest.h" />
+    <ClInclude Include="..\include\contest_ai.h" />
+    <ClInclude Include="..\include\contest_effect.h" />
+    <ClInclude Include="..\include\contest_link.h" />
+    <ClInclude Include="..\include\contest_painting.h" />
+    <ClInclude Include="..\include\contest_util.h" />
+    <ClInclude Include="..\include\coord_event_weather.h" />
+    <ClInclude Include="..\include\credits.h" />
+    <ClInclude Include="..\include\crt0.h" />
+    <ClInclude Include="..\include\data.h" />
+    <ClInclude Include="..\include\daycare.h" />
+    <ClInclude Include="..\include\decompress.h" />
+    <ClInclude Include="..\include\decoration.h" />
+    <ClInclude Include="..\include\decoration_inventory.h" />
+    <ClInclude Include="..\include\dewford_trend.h" />
+    <ClInclude Include="..\include\digit_obj_util.h" />
+    <ClInclude Include="..\include\diploma.h" />
+    <ClInclude Include="..\include\dodrio_berry_picking.h" />
+    <ClInclude Include="..\include\dynamic_placeholder_text_util.h" />
+    <ClInclude Include="..\include\easy_chat.h" />
+    <ClInclude Include="..\include\egg_hatch.h" />
+    <ClInclude Include="..\include\ereader_helpers.h" />
+    <ClInclude Include="..\include\ereader_screen.h" />
+    <ClInclude Include="..\include\event_data.h" />
+    <ClInclude Include="..\include\event_object_lock.h" />
+    <ClInclude Include="..\include\event_object_movement.h" />
+    <ClInclude Include="..\include\event_scripts.h" />
+    <ClInclude Include="..\include\evolution_graphics.h" />
+    <ClInclude Include="..\include\evolution_scene.h" />
+    <ClInclude Include="..\include\faraway_island.h" />
+    <ClInclude Include="..\include\fieldmap.h" />
+    <ClInclude Include="..\include\field_camera.h" />
+    <ClInclude Include="..\include\field_control_avatar.h" />
+    <ClInclude Include="..\include\field_door.h" />
+    <ClInclude Include="..\include\field_effect.h" />
+    <ClInclude Include="..\include\field_effect_helpers.h" />
+    <ClInclude Include="..\include\field_message_box.h" />
+    <ClInclude Include="..\include\field_player_avatar.h" />
+    <ClInclude Include="..\include\field_poison.h" />
+    <ClInclude Include="..\include\field_screen_effect.h" />
+    <ClInclude Include="..\include\field_specials.h" />
+    <ClInclude Include="..\include\field_special_scene.h" />
+    <ClInclude Include="..\include\field_tasks.h" />
+    <ClInclude Include="..\include\field_weather.h" />
+    <ClInclude Include="..\include\fldeff.h" />
+    <ClInclude Include="..\include\fldeff_misc.h" />
+    <ClInclude Include="..\include\fonts.h" />
+    <ClInclude Include="..\include\frontier_pass.h" />
+    <ClInclude Include="..\include\frontier_util.h" />
+    <ClInclude Include="..\include\gba\defines.h" />
+    <ClInclude Include="..\include\gba\flash_internal.h" />
+    <ClInclude Include="..\include\gba\gba.h" />
+    <ClInclude Include="..\include\gba\io_reg.h" />
+    <ClInclude Include="..\include\gba\isagbprint.h" />
+    <ClInclude Include="..\include\gba\m4a_internal.h" />
+    <ClInclude Include="..\include\gba\macro.h" />
+    <ClInclude Include="..\include\gba\multiboot.h" />
+    <ClInclude Include="..\include\gba\syscall.h" />
+    <ClInclude Include="..\include\gba\types.h" />
+    <ClInclude Include="..\include\global.berry.h" />
+    <ClInclude Include="..\include\global.fieldmap.h" />
+    <ClInclude Include="..\include\global.h" />
+    <ClInclude Include="..\include\global.tv.h" />
+    <ClInclude Include="..\include\graphics.h" />
+    <ClInclude Include="..\include\gym_leader_rematch.h" />
+    <ClInclude Include="..\include\hall_of_fame.h" />
+    <ClInclude Include="..\include\heal_location.h" />
+    <ClInclude Include="..\include\image_processing_effects.h" />
+    <ClInclude Include="..\include\international_string_util.h" />
+    <ClInclude Include="..\include\intro.h" />
+    <ClInclude Include="..\include\intro_credits_graphics.h" />
+    <ClInclude Include="..\include\item.h" />
+    <ClInclude Include="..\include\item_icon.h" />
+    <ClInclude Include="..\include\item_menu.h" />
+    <ClInclude Include="..\include\item_menu_icons.h" />
+    <ClInclude Include="..\include\item_use.h" />
+    <ClInclude Include="..\include\landmark.h" />
+    <ClInclude Include="..\include\libgcnmultiboot.h" />
+    <ClInclude Include="..\include\librfu.h" />
+    <ClInclude Include="..\include\lilycove_lady.h" />
+    <ClInclude Include="..\include\link.h" />
+    <ClInclude Include="..\include\link_rfu.h" />
+    <ClInclude Include="..\include\list_menu.h" />
+    <ClInclude Include="..\include\load_save.h" />
+    <ClInclude Include="..\include\lottery_corner.h" />
+    <ClInclude Include="..\include\m4a.h" />
+    <ClInclude Include="..\include\mail.h" />
+    <ClInclude Include="..\include\main.h" />
+    <ClInclude Include="..\include\main_menu.h" />
+    <ClInclude Include="..\include\map_name_popup.h" />
+    <ClInclude Include="..\include\match_call.h" />
+    <ClInclude Include="..\include\math_util.h" />
+    <ClInclude Include="..\include\mauville_old_man.h" />
+    <ClInclude Include="..\include\menu.h" />
+    <ClInclude Include="..\include\menu_helpers.h" />
+    <ClInclude Include="..\include\menu_specialized.h" />
+    <ClInclude Include="..\include\metatile_behavior.h" />
+    <ClInclude Include="..\include\minigame_countdown.h" />
+    <ClInclude Include="..\include\mini_printf.h" />
+    <ClInclude Include="..\include\mirage_tower.h" />
+    <ClInclude Include="..\include\money.h" />
+    <ClInclude Include="..\include\mon_markings.h" />
+    <ClInclude Include="..\include\move_relearner.h" />
+    <ClInclude Include="..\include\mp2k_common.h" />
+    <ClInclude Include="..\include\multiboot.h" />
+    <ClInclude Include="..\include\multiboot_pokemon_colosseum.h" />
+    <ClInclude Include="..\include\music_player.h" />
+    <ClInclude Include="..\include\mystery_event_menu.h" />
+    <ClInclude Include="..\include\mystery_event_msg.h" />
+    <ClInclude Include="..\include\mystery_event_script.h" />
+    <ClInclude Include="..\include\mystery_gift.h" />
+    <ClInclude Include="..\include\mystery_gift_client.h" />
+    <ClInclude Include="..\include\mystery_gift_link.h" />
+    <ClInclude Include="..\include\mystery_gift_menu.h" />
+    <ClInclude Include="..\include\mystery_gift_server.h" />
+    <ClInclude Include="..\include\mystery_gift_view.h" />
+    <ClInclude Include="..\include\naming_screen.h" />
+    <ClInclude Include="..\include\new_game.h" />
+    <ClInclude Include="..\include\option_menu.h" />
+    <ClInclude Include="..\include\overworld.h" />
+    <ClInclude Include="..\include\palette.h" />
+    <ClInclude Include="..\include\palette_util.h" />
+    <ClInclude Include="..\include\party_menu.h" />
+    <ClInclude Include="..\include\pc_screen_effect.h" />
+    <ClInclude Include="..\include\platform.h" />
+    <ClInclude Include="..\include\platform\dma.h" />
+    <ClInclude Include="..\include\platform\framedraw.h" />
+    <ClInclude Include="..\include\player_pc.h" />
+    <ClInclude Include="..\include\play_time.h" />
+    <ClInclude Include="..\include\pokeball.h" />
+    <ClInclude Include="..\include\pokeblock.h" />
+    <ClInclude Include="..\include\pokedex.h" />
+    <ClInclude Include="..\include\pokedex_area_region_map.h" />
+    <ClInclude Include="..\include\pokedex_area_screen.h" />
+    <ClInclude Include="..\include\pokedex_cry_screen.h" />
+    <ClInclude Include="..\include\pokemon.h" />
+    <ClInclude Include="..\include\pokemon_animation.h" />
+    <ClInclude Include="..\include\pokemon_icon.h" />
+    <ClInclude Include="..\include\pokemon_jump.h" />
+    <ClInclude Include="..\include\pokemon_size_record.h" />
+    <ClInclude Include="..\include\pokemon_storage_system.h" />
+    <ClInclude Include="..\include\pokemon_summary_screen.h" />
+    <ClInclude Include="..\include\pokenav.h" />
+    <ClInclude Include="..\include\random.h" />
+    <ClInclude Include="..\include\rayquaza_scene.h" />
+    <ClInclude Include="..\include\recorded_battle.h" />
+    <ClInclude Include="..\include\record_mixing.h" />
+    <ClInclude Include="..\include\region_map.h" />
+    <ClInclude Include="..\include\reload_save.h" />
+    <ClInclude Include="..\include\reset_rtc_screen.h" />
+    <ClInclude Include="..\include\reshow_battle_screen.h" />
+    <ClInclude Include="..\include\roamer.h" />
+    <ClInclude Include="..\include\rotating_gate.h" />
+    <ClInclude Include="..\include\rotating_tile_puzzle.h" />
+    <ClInclude Include="..\include\roulette.h" />
+    <ClInclude Include="..\include\rtc.h" />
+    <ClInclude Include="..\include\safari_zone.h" />
+    <ClInclude Include="..\include\save.h" />
+    <ClInclude Include="..\include\save_location.h" />
+    <ClInclude Include="..\include\scanline_effect.h" />
+    <ClInclude Include="..\include\script.h" />
+    <ClInclude Include="..\include\script_menu.h" />
+    <ClInclude Include="..\include\script_movement.h" />
+    <ClInclude Include="..\include\script_pokemon_util.h" />
+    <ClInclude Include="..\include\secret_base.h" />
+    <ClInclude Include="..\include\shop.h" />
+    <ClInclude Include="..\include\siirtc.h" />
+    <ClInclude Include="..\include\slot_machine.h" />
+    <ClInclude Include="..\include\sound.h" />
+    <ClInclude Include="..\include\sound_mixer.h" />
+    <ClInclude Include="..\include\starter_choose.h" />
+    <ClInclude Include="..\include\start_menu.h" />
+    <ClInclude Include="..\include\strings.h" />
+    <ClInclude Include="..\include\task.h" />
+    <ClInclude Include="..\include\text_window.h" />
+    <ClInclude Include="..\include\tilesets.h" />
+    <ClInclude Include="..\include\tileset_anims.h" />
+    <ClInclude Include="..\include\time_events.h" />
+    <ClInclude Include="..\include\title_screen.h" />
+    <ClInclude Include="..\include\trade.h" />
+    <ClInclude Include="..\include\trader.h" />
+    <ClInclude Include="..\include\trainer_card.h" />
+    <ClInclude Include="..\include\trainer_hill.h" />
+    <ClInclude Include="..\include\trainer_pokemon_sprites.h" />
+    <ClInclude Include="..\include\trainer_see.h" />
+    <ClInclude Include="..\include\trig.h" />
+    <ClInclude Include="..\include\tv.h" />
+    <ClInclude Include="..\include\union_room.h" />
+    <ClInclude Include="..\include\union_room_battle.h" />
+    <ClInclude Include="..\include\union_room_chat.h" />
+    <ClInclude Include="..\include\union_room_player_avatar.h" />
+    <ClInclude Include="..\include\util.h" />
+    <ClInclude Include="..\include\walda_phrase.h" />
+    <ClInclude Include="..\include\wallclock.h" />
+    <ClInclude Include="..\include\wild_encounter.h" />
+    <ClInclude Include="..\include\wonder_news.h" />
+    <ClInclude Include="..\src\data\battle_anim.h" />
+    <ClInclude Include="..\src\data\battle_moves.h" />
+    <ClInclude Include="..\src\data\contest_moves.h" />
+    <ClInclude Include="..\src\data\contest_opponents.h" />
+    <ClInclude Include="..\src\data\contest_text_tables.h" />
+    <ClInclude Include="..\src\data\credits.h" />
+    <ClInclude Include="..\src\data\heal_locations.h" />
+    <ClInclude Include="..\src\data\items.h" />
+    <ClInclude Include="..\src\data\item_icon_table.h" />
+    <ClInclude Include="..\src\data\lilycove_lady.h" />
+    <ClInclude Include="..\src\data\party_menu.h" />
+    <ClInclude Include="..\src\data\pointillism_points.h" />
+    <ClInclude Include="..\src\data\pokedex_area_glow.h" />
+    <ClInclude Include="..\src\data\script_menu.h" />
+    <ClInclude Include="..\src\data\trade.h" />
+    <ClInclude Include="..\src\data\trainers.h" />
+    <ClInclude Include="..\src\data\trainer_parties.h" />
+    <ClInclude Include="..\src\data\union_room.h" />
+    <ClInclude Include="..\src\data\wallpapers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\crt0.s" />
+    <None Include="..\src\data\wild_encounters.json" />
+    <None Include="..\src\libgcnmultiboot.s" />
+    <None Include="..\src\m4a_1.s" />
+    <None Include="..\src\rom_header.s" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\src\data\wild_encounters.json.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
