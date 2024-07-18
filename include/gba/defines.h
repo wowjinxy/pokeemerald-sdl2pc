@@ -21,7 +21,11 @@
 #define NOINLINE
 #endif
 
-#define ALIGNED(n) __attribute__((aligned(n)))
+#ifdef _MSC_VER
+#define ALIGNED(N) __declspec(align(N))
+#else
+#define ALIGNED(N) __attribute__((aligned(N)))
+#endif
 
 #define BG_PLTT_SIZE  0x200
 #define OBJ_PLTT      (PLTT + BG_PLTT_SIZE)
