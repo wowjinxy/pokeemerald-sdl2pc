@@ -73,4 +73,9 @@ void StartTimer1(void);
 void SeedRngAndSetTrainerId(void);
 u16 GetGeneratedTrainerIdLower(void);
 
+#ifdef PORTABLE
+#define HEAP_SIZE 0x1C000
+extern u8 gHeap[HEAP_SIZE];
+#endif
+
 #endif // GUARD_MAIN_H
