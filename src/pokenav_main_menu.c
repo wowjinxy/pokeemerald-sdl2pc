@@ -120,7 +120,7 @@ static const struct SpritePalette sSpinningNavgearPalettes[] =
         .data = sSpinningPokenav_Pal,
         .tag = 0,
     },
-    {}
+    {0}
 };
 
 static const struct CompressedSpriteSheet sMenuLeftHeaderSpriteSheet =

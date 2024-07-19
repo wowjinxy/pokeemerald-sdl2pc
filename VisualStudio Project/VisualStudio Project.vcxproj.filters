@@ -31,6 +31,9 @@
     <Filter Include="GFLib">
       <UniqueIdentifier>{d3dea22a-8066-49b0-8b74-892c8624a334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Data">
+      <UniqueIdentifier>{40709011-84c6-4aa5-a1cf-0d8064a2e6c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\platform\bios.c">

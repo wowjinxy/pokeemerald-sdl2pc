@@ -178,7 +178,7 @@ static void ItemStorage_PrintMenuItem(u8, u32, u8);
 
 static EWRAM_DATA const u8 *sTopMenuOptionOrder = NULL;
 static EWRAM_DATA u8 sTopMenuNumOptions = 0;
-EWRAM_DATA struct PlayerPCItemPageStruct gPlayerPCItemPageInfo = {};
+EWRAM_DATA struct PlayerPCItemPageStruct gPlayerPCItemPageInfo = {0};
 static EWRAM_DATA struct ItemStorageMenu *sItemStorageMenu = NULL;
 
 static const u8 *const sItemStorage_OptionDescriptions[] =

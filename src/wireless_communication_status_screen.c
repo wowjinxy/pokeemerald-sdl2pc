@@ -63,7 +63,7 @@ static bool32 UpdateCommunicationCounts(u32 *, u32 *, u32 *, u8);
 
 static const u16 sPalettes[][16] = {
     INCBIN_U16("graphics/wireless_status_screen/default.gbapal"),
-    {}, // All black. Never read
+    { 0 }, // All black. Never read
     INCBIN_U16("graphics/wireless_status_screen/anim_00.gbapal"),
     INCBIN_U16("graphics/wireless_status_screen/anim_01.gbapal"),
     INCBIN_U16("graphics/wireless_status_screen/anim_02.gbapal"),

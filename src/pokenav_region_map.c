@@ -130,7 +130,7 @@ static const struct CompressedSpriteSheet sCityZoomTextSpriteSheet[1] =
 static const struct SpritePalette sCityZoomTilesSpritePalette[] =
 {
     {gRegionMapCityZoomTiles_Pal, PALTAG_CITY_ZOOM},
-    {}
+    {0}
 };
 
 static const struct WindowTemplate sMapSecInfoWindowTemplate =

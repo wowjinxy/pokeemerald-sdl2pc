@@ -1203,14 +1203,14 @@ void LoadConditionSelectionIcons(struct SpriteSheet *sheets, struct SpriteTempla
         {sConditionPokeball_Gfx, 0x100, TAG_CONDITION_BALL},
         {sConditionPokeballPlaceholder_Gfx, 0x20, TAG_CONDITION_BALL_PLACEHOLDER},
         {gPokenavConditionCancel_Gfx, 0x100, TAG_CONDITION_CANCEL},
-        {},
+        {0},
     };
 
     struct SpritePalette dataPals[] =
     {
         {gPokenavConditionCancel_Pal, TAG_CONDITION_BALL},
         {gPokenavConditionCancel_Pal + 16, TAG_CONDITION_CANCEL},
-        {},
+        {0},
     };
 
     // Tag is overwritten for the other selection icons

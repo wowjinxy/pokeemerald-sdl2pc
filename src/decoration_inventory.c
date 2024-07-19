@@ -3,7 +3,7 @@
 #include "decoration.h"
 #include "decoration_inventory.h"
 
-EWRAM_DATA struct DecorationInventory gDecorationInventories[DECORCAT_COUNT] = {};
+EWRAM_DATA struct DecorationInventory gDecorationInventories[DECORCAT_COUNT] = {0};
 
 #define SET_DECOR_INV(i, ptr) {\
     gDecorationInventories[i].items = ptr;\

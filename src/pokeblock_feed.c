@@ -1021,7 +1021,15 @@ static void UpdateMonAnim(void)
         pokeblockFeed->savedMonSprite = *pokeblockFeed->monSpritePtr;
         pokeblockFeed->animRunState = 10;
         break;
-    case 1 ... 9:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
         break;
     case 10:
         InitMonAnimStage();
@@ -1068,7 +1076,26 @@ static void UpdateMonAnim(void)
         pokeblockFeed->animId = 0;
         pokeblockFeed->animRunState = 0;
         break;
-    case 71 ... 90:
+    case 71:
+    case 72:
+    case 73:
+    case 74:
+    case 75:
+    case 76:
+    case 77:
+    case 78:
+    case 79:
+    case 80:
+    case 81:
+    case 82:
+    case 83:
+    case 84:
+    case 85:
+    case 86:
+    case 87:
+    case 88:
+    case 89:
+    case 90:
         break;
     }
 }

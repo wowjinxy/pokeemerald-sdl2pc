@@ -151,13 +151,13 @@ static const u8 sUnusedTextColors[4] = {TEXT_COLOR_RED, TEXT_COLOR_LIGHT_RED, TE
 static const struct CompressedSpriteSheet sSpriteSheet_Confetti[] =
 {
     {.data = gConfetti_Gfx, .size = 0x220, .tag = TAG_CONFETTI},
-    {},
+    {0},
 };
 
 static const struct CompressedSpritePalette sSpritePalette_Confetti[] =
 {
     {.data = gConfetti_Pal, .tag = TAG_CONFETTI},
-    {},
+    {0},
 };
 
 static const s16 sHallOfFame_MonFullTeamPositions[PARTY_SIZE][4] =

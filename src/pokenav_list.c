@@ -780,7 +780,7 @@ static const struct SpritePalette sListArrowPalettes[] =
         .data = sListArrow_Pal,
         .tag = PALTAG_ARROW
     },
-    {}
+    {0}
 };
 
 static const struct OamData sOamData_RightArrow =

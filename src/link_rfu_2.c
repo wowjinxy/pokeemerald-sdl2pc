@@ -84,10 +84,10 @@ static u8 sHeldKeyCount;
 static u8 sResendBlock8[CMD_LENGTH * 2];
 static u16 sResendBlock16[CMD_LENGTH];
 
-EWRAM_DATA struct RfuGameData gHostRfuGameData = {};
-EWRAM_DATA u8 gHostRfuUsername[RFU_USER_NAME_LENGTH] = {};
-static EWRAM_DATA INIT_PARAM sRfuReqConfig = {};
-static EWRAM_DATA struct RfuDebug sRfuDebug = {};
+EWRAM_DATA struct RfuGameData gHostRfuGameData = {0};
+EWRAM_DATA u8 gHostRfuUsername[RFU_USER_NAME_LENGTH] = {0};
+static EWRAM_DATA INIT_PARAM sRfuReqConfig = {0};
+static EWRAM_DATA struct RfuDebug sRfuDebug = {0};
 
 static void ResetSendDataManager(struct RfuBlockSend *);
 static void InitChildRecvBuffers(void);

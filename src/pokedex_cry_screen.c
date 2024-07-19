@@ -216,13 +216,13 @@ static const struct SpriteTemplate sCryMeterNeedleSpriteTemplate =
 static const struct SpriteSheet sCryMeterNeedleSpriteSheets[] =
 {
     {sCryMeterNeedle_Gfx, sizeof(sCryMeterNeedle_Gfx), TAG_NEEDLE},
-    {}
+    {0}
 };
 
 static const struct SpritePalette sCryMeterNeedleSpritePalettes[] =
 {
     {sCryMeterNeedle_Pal, TAG_NEEDLE},
-    {}
+    {0}
 };
 
 bool8 LoadCryWaveformWindow(struct CryScreenWindow *window, u8 windowId)

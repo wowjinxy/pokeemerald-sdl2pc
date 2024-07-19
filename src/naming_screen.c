@@ -2576,7 +2576,7 @@ static const struct SpriteSheet sSpriteSheets[] =
     {gNamingScreenCursorFilled_Gfx,   0x080,  GFXTAG_CURSOR_FILLED},
     {gNamingScreenInputArrow_Gfx,     0x020,  GFXTAG_INPUT_ARROW},
     {gNamingScreenUnderscore_Gfx,     0x020,  GFXTAG_UNDERSCORE},
-    {}
+    {0}
 };
 
 static const struct SpritePalette sSpritePalettes[] =
@@ -2589,7 +2589,7 @@ static const struct SpritePalette sSpritePalettes[] =
     {gNamingScreenMenu_Pal[5], PALTAG_CURSOR},
     {gNamingScreenMenu_Pal[4], PALTAG_BACK_BUTTON},
     {gNamingScreenMenu_Pal[4], PALTAG_OK_BUTTON},
-    {}
+    {0}
 };
 
 

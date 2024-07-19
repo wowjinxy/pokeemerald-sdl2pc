@@ -905,7 +905,8 @@ static void SpriteCB_Ball_Arc(struct Sprite *sprite)
             ballId = ItemIdToBallId(gLastUsedItem);
             switch (ballId)
             {
-            case 0 ... POKEBALL_COUNT - 1:
+            //case 0 ... POKEBALL_COUNT - 1:
+            default:
                 AnimateBallOpenParticles(sprite->x, sprite->y - 5, 1, 28, ballId);
                 LaunchBallFadeMonTask(FALSE, gBattleAnimTarget, 14, ballId);
                 break;
@@ -1464,7 +1465,8 @@ static void SpriteCB_Ball_Release_Step(struct Sprite *sprite)
     ballId = ItemIdToBallId(gLastUsedItem);
     switch (ballId)
     {
-    case 0 ... POKEBALL_COUNT - 1:
+    //case 0 ... POKEBALL_COUNT - 1:
+    default:
         AnimateBallOpenParticles(sprite->x, sprite->y - 5, 1, 28, ballId);
         LaunchBallFadeMonTask(TRUE, gBattleAnimTarget, 14, ballId);
         break;

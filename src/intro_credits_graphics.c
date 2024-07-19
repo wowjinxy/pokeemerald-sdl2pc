@@ -94,7 +94,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_Clouds[] =
         .size = 0x400,
         .tag = TAG_MOVING_SCENERY
     },
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_Cloud_Largest[] =
@@ -221,7 +221,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_TreesSmall[] =
         .size = 0x400,
         .tag = TAG_MOVING_SCENERY
     },
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_Trees_0[] =
@@ -368,7 +368,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_HouseSilhouette[] =
         .size = 0x400,
         .tag = TAG_MOVING_SCENERY
     },
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_HouseSilhouette[] =
@@ -583,7 +583,7 @@ const struct CompressedSpriteSheet gSpriteSheet_IntroBrendan[] =
         .size = 0x2000,
         .tag = TAG_BRENDAN
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_IntroMay[] =
@@ -593,7 +593,7 @@ const struct CompressedSpriteSheet gSpriteSheet_IntroMay[] =
         .size = 0x2000,
         .tag = TAG_MAY
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_IntroBicycle[] =
@@ -603,7 +603,7 @@ const struct CompressedSpriteSheet gSpriteSheet_IntroBicycle[] =
         .size = 0x1000,
         .tag = TAG_BICYCLE
     },
-    {}
+    {0}
 };
 
 // In RS these were Latios/Latias. In Emerald both are replaced with Flygon and now only 1 is used
@@ -614,7 +614,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_IntroFlygon_Unused[] =
         .size = 0x1000,
         .tag = TAG_FLYGON_LATIOS
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_IntroFlygon[] =
@@ -624,7 +624,7 @@ const struct CompressedSpriteSheet gSpriteSheet_IntroFlygon[] =
         .size = 0x1000,
         .tag = TAG_FLYGON_LATIAS
     },
-    {}
+    {0}
 };
 
 const struct SpritePalette gSpritePalettes_IntroPlayerFlygon[] =
@@ -633,7 +633,7 @@ const struct SpritePalette gSpritePalettes_IntroPlayerFlygon[] =
     { .data = gIntroPlayer_Pal, .tag = TAG_MAY },
     { .data = gIntroFlygon_Pal, .tag = TAG_FLYGON_LATIOS },
     { .data = gIntroFlygon_Pal, .tag = TAG_FLYGON_LATIAS },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_CreditsBrendan[] =
@@ -643,7 +643,7 @@ const struct CompressedSpriteSheet gSpriteSheet_CreditsBrendan[] =
         .size = 0x3800,
         .tag = TAG_BRENDAN
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_CreditsMay[] =
@@ -653,7 +653,7 @@ const struct CompressedSpriteSheet gSpriteSheet_CreditsMay[] =
         .size = 0x3800,
         .tag = TAG_MAY
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_CreditsBicycle[] =
@@ -663,7 +663,7 @@ const struct CompressedSpriteSheet gSpriteSheet_CreditsBicycle[] =
         .size = 0x1000,
         .tag = TAG_BICYCLE
     },
-    {}
+    {0}
 };
 
 // Unused
@@ -674,7 +674,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_Latios[] =
         .size = 0x1000,
         .tag = TAG_FLYGON_LATIOS
     },
-    {}
+    {0}
 };
 
 // Unused
@@ -685,7 +685,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_Latias[] =
         .size = 0x1000,
         .tag = TAG_FLYGON_LATIAS
     },
-    {}
+    {0}
 };
 
 const struct SpritePalette gSpritePalettes_Credits[] =
@@ -694,7 +694,7 @@ const struct SpritePalette gSpritePalettes_Credits[] =
     { .data = sMayCredits_Pal,     .tag = TAG_MAY },
     { .data = sLatios_Pal,         .tag = TAG_FLYGON_LATIOS },
     { .data = sLatias_Pal,         .tag = TAG_FLYGON_LATIAS },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_CreditsRivalBrendan[] =
@@ -704,7 +704,7 @@ const struct CompressedSpriteSheet gSpriteSheet_CreditsRivalBrendan[] =
         .size = 0x2000,
         .tag = TAG_BRENDAN
     },
-    {}
+    {0}
 };
 
 const struct CompressedSpriteSheet gSpriteSheet_CreditsRivalMay[] =
@@ -714,7 +714,7 @@ const struct CompressedSpriteSheet gSpriteSheet_CreditsRivalMay[] =
         .size = 0x2000,
         .tag = TAG_MAY
     },
-    {}
+    {0}
 };
 
 EWRAM_DATA u16 gIntroCredits_MovingSceneryVBase = 0;

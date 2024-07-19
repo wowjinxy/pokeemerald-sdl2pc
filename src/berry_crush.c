@@ -689,7 +689,7 @@ static const struct CompressedSpriteSheet sSpriteSheets[] =
     { .data = sImpact_Gfx,      .size = 0xE00, .tag = GFXTAG_IMPACT },
     { .data = sSparkle_Gfx,     .size = 0x700, .tag = GFXTAG_SPARKLE },
     { .data = sTimerDigits_Gfx, .size = 0x2C0, .tag = TAG_TIMER_DIGITS },
-    {}
+    {0}
 };
 
 
@@ -698,7 +698,7 @@ static const struct SpritePalette sSpritePals[] =
     { .data = sCrusherBase_Pal, .tag = TAG_CRUSHER_BASE },
     { .data = sEffects_Pal,     .tag = PALTAG_EFFECT }, // For the impact and sparkle effects
     { .data = sTimerDigits_Pal, .tag = TAG_TIMER_DIGITS },
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_CrusherBase[] =

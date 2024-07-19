@@ -191,7 +191,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_EmeraldVersion[] =
         .size = 0x1000,
         .tag = TAG_VERSION
     },
-    {},
+    {0},
 };
 
 static const struct OamData sOamData_CopyrightBanner =
@@ -299,7 +299,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_PressStart[] =
         .size = 0x520,
         .tag = TAG_PRESS_START_COPYRIGHT
     },
-    {},
+    {0},
 };
 
 static const struct SpritePalette sSpritePalette_PressStart[] =
@@ -308,7 +308,7 @@ static const struct SpritePalette sSpritePalette_PressStart[] =
         .data = gTitleScreenPressStartPal,
         .tag = TAG_PRESS_START_COPYRIGHT
     },
-    {},
+    {0},
 };
 
 static const struct OamData sPokemonLogoShineOamData =
@@ -357,7 +357,7 @@ static const struct CompressedSpriteSheet sPokemonLogoShineSpriteSheet[] =
         .size = 0x800,
         .tag = TAG_LOGO_SHINE
     },
-    {},
+    {0},
 };
 
 // Task data for the main title screen tasks (Task_TitleScreenPhase#)

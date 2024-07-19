@@ -907,14 +907,14 @@ static const struct ScanlineEffectParams sTourneyTreeScanlineEffectParams =
 static const struct CompressedSpriteSheet sTourneyTreeButtonsSpriteSheet[] =
 {
     {.data = gDomeTourneyTreeButtons_Gfx, .size = 0x0600, .tag = TAG_BUTTONS},
-    {},
+    {0},
 };
 
 // Unused
 static const struct CompressedSpritePalette sTourneyTreeButtonsSpritePal[] =
 {
     {.data = gDomeTourneyTreeButtons_Pal, .tag = TAG_BUTTONS},
-    {},
+    {0},
 };
 
 static const struct OamData sOamData_TourneyTreePokeball =
@@ -3490,8 +3490,14 @@ static void Task_HandleInfoCardInput(u8 taskId)
             BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
             gTasks[taskId].tState = STATE_CLOSE_CARD;
             break;
-        case TRAINERCARD_INPUT_UP ... TRAINERCARD_INPUT_RIGHT:
-        case MATCHCARD_INPUT_UP ... MATCHCARD_INPUT_RIGHT:
+        case TRAINERCARD_INPUT_UP:
+        case TRAINERCARD_INPUT_DOWN:
+        case TRAINERCARD_INPUT_LEFT:
+        case TRAINERCARD_INPUT_RIGHT:
+        case MATCHCARD_INPUT_UP:
+        case MATCHCARD_INPUT_DOWN:
+        case MATCHCARD_INPUT_LEFT:
+        case MATCHCARD_INPUT_RIGHT:
             gTasks[taskId].data[5] = i;
             if (gTasks[taskId].tUsingAlternateSlot)
                 windowId = NUM_INFO_CARD_WINDOWS;

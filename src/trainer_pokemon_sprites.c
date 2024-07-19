@@ -24,10 +24,10 @@ struct PicData
     u8 active;
 };
 
-static EWRAM_DATA struct SpriteTemplate sCreatingSpriteTemplate = {};
-static EWRAM_DATA struct PicData sSpritePics[PICS_COUNT] = {};
+static EWRAM_DATA struct SpriteTemplate sCreatingSpriteTemplate = {0};
+static EWRAM_DATA struct PicData sSpritePics[PICS_COUNT] = {0};
 
-static const struct PicData sDummyPicData = {};
+static const struct PicData sDummyPicData = {0};
 
 static const struct OamData sOamData_Normal =
 {

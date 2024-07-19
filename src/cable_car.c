@@ -141,12 +141,12 @@ static const struct CompressedSpriteSheet sSpriteSheets[] = {
     { gCableCar_Gfx,      0x800, TAG_CABLE_CAR },
     { gCableCarDoor_Gfx,   0x40, TAG_DOOR },
     { gCableCarCable_Gfx,  0x80, TAG_CABLE },
-    { },
+    { 0 },
 };
 
 static const struct SpritePalette sSpritePalettes[] = {
     { gCableCar_Pal, TAG_CABLE_CAR },
-    { }
+    { 0 }
 };
 
 static const struct OamData sOam_CableCar =

@@ -147,7 +147,7 @@ static const struct SpritePalette sSpritePalettes_Clock[] =
         .data = gWallClockFemale_Pal,
         .tag = PALTAG_WALL_CLOCK_FEMALE
     },
-    {}
+    {0}
 };
 
 static const struct OamData sOam_ClockHand =

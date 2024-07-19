@@ -1769,7 +1769,7 @@ static void LoadChooseBoxMenuGfx(struct ChooseBoxMenu *menu, u16 tileTag, u16 pa
     {
         {sChooseBoxMenuCenter_Gfx, 0x800, tileTag},
         {sChooseBoxMenuSides_Gfx,  0x180, tileTag + 1},
-        {}
+        {0}
     };
 
     if (loadPal) // Always false
@@ -1832,7 +1832,7 @@ static void ChooseBoxMenu_CreateSprites(u8 curBox)
     u16 i;
     u8 spriteId;
     struct SpriteTemplate template;
-    struct OamData oamData = {};
+    struct OamData oamData = {0};
     oamData.size = SPRITE_SIZE(64x64);
     oamData.paletteNum = 1;
     template = (struct SpriteTemplate){
@@ -5494,7 +5494,7 @@ static void InitBoxTitle(u8 boxId)
     struct SpriteSheet spriteSheet = {sStorage->boxTitleTiles, 0x200, GFXTAG_BOX_TITLE};
     struct SpritePalette palettes[] = {
         {sStorage->boxTitlePal, PALTAG_BOX_TITLE},
-        {}
+        {0}
     };
 
     u16 wallpaperId = GetBoxWallpaper(boxId);
@@ -7605,7 +7605,7 @@ static u8 HandleInput(void)
         {HandleInput_InParty,   CURSOR_AREA_IN_PARTY},
         {HandleInput_OnBox,     CURSOR_AREA_BOX_TITLE},
         {HandleInput_OnButtons, CURSOR_AREA_BUTTONS},
-        {},
+        {0},
     };
 
     u16 i = 0;
@@ -7760,13 +7760,13 @@ static void CreateCursorSprites(void)
     {
         {sHandCursor_Gfx, 0x800, GFXTAG_CURSOR},
         {sHandCursorShadow_Gfx, 0x80, GFXTAG_CURSOR_SHADOW},
-        {}
+        {0}
     };
 
     struct SpritePalette spritePalettes[] =
     {
         {sHandCursor_Pal, PALTAG_MISC_1},
-        {}
+        {0}
     };
 
     static const struct OamData sOamData_Cursor =

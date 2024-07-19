@@ -82,7 +82,7 @@ static EWRAM_DATA u16 sFindThatGamerCoinsSpent = 0;
 static EWRAM_DATA u8 sFindThatGamerWhichGame = SLOT_MACHINE;
 static EWRAM_DATA ALIGNED(4) u8 sRecordMixingPartnersWithoutShowsToShare = 0;
 static EWRAM_DATA ALIGNED(4) u8 sTVShowState = 0;
-static EWRAM_DATA u8 sTVSecretBaseSecretsRandomValues[3] = {};
+static EWRAM_DATA u8 sTVSecretBaseSecretsRandomValues[3] = {0};
 
 static void ClearPokeNews(void);
 static u8 GetTVGroupByShowId(u8);

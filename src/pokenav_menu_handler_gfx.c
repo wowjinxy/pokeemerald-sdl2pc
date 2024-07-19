@@ -171,7 +171,7 @@ static const struct SpritePalette sPokenavOptionsSpritePalettes[] =
     {&gPokenavOptions_Pal[0x30], PALTAG_OPTIONS_BEIGE},
     {&gPokenavOptions_Pal[0x40], PALTAG_OPTIONS_RED},
     {sMatchCallBlueLightPal, PALTAG_BLUE_LIGHT},
-    {}
+    {0}
 };
 
 // Tile number, palette tag offset

@@ -76,7 +76,12 @@
 
 // to help in decompiling
 #define asm_unified(x) asm(".syntax unified\n" x "\n.syntax divided")
+
+#ifdef _MSC_VER
+#define NAKED
+#else
 #define NAKED __attribute__((naked))
+#endif
 
 // IDE support
 #if defined (__APPLE__) || defined (__CYGWIN__) || defined(__INTELLISENSE__) || defined (_MSC_VER)
@@ -215,7 +220,21 @@ int strcmp(const char *, const char*);
 
 // This produces an error at compile-time if expr is zero.
 // It looks like file.c:line: size of array `id' is negative
+
+#ifdef _MSC_VER
+#if defined(__cplusplus) && __cplusplus >= 201103L
+    // C++11 or later
+#define STATIC_ASSERT(expr, id) static_assert(expr, #id)
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    // C11
+#define STATIC_ASSERT(expr, id) _Static_assert(expr, #id)
+#else
+    // Fallback for older compilers (not recommended, for compatibility only)
+#define STATIC_ASSERT(expr, id) typedef char static_assertion_##id[(expr) ? 1 : -1]
+#endif
+#else
 #define STATIC_ASSERT(expr, id) typedef char id[(expr) ? 1 : -1];
+#endif
 
 struct Coords8
 {
@@ -995,7 +1014,11 @@ struct MysteryGiftSave
 
 // For external event data storage. The majority of these may have never been used.
 // In Emerald, the only known used fields are the PokeCoupon and BoxRS ones, but hacking the distribution discs allows Emerald to receive events and set the others
+#ifdef _MSC_VER
+__declspec(align(1)) struct ExternalEventData
+#else
 struct ExternalEventData
+#endif
 {
     u8 unknownExternalDataFields1[7]; // if actually used, may be broken up into different fields.
     u32 unknownExternalDataFields2:8;
@@ -1007,11 +1030,19 @@ struct ExternalEventData
     u32 unknownExternalDataFields3:4;
     u32 totalEarnedPokeCoupons:24; // Used by the JP Colosseum bonus disc. Determines PokéCoupon rank to distribute rewards. Unread in International games. Colosseum/XD caps this at 9,999,999.
     u8 unknownExternalDataFields4[5]; // if actually used, may be broken up into different fields.
+#ifdef _MSC_VER
+}; /*size = 0x14*/
+#else
 } __attribute__((packed)); /*size = 0x14*/
+#endif
 
 // For external event flags. The majority of these may have never been used.
 // In Emerald, Jirachi cannot normally be received, but hacking the distribution discs allows Emerald to receive Jirachi and set the flag
+#ifdef _MSC_VER
+__declspec(align(1)) struct ExternalEventFlags
+#else
 struct ExternalEventFlags
+#endif
 {
     u8 usedBoxRS:1; // Set by Pokémon Box: Ruby & Sapphire; denotes whether this save has connected to it and triggered the free False Swipe Swablu Egg giveaway.
     u8 boxRSEggsUnlocked:2; // Set by Pokémon Box: Ruby & Sapphire; denotes the number of Eggs unlocked from deposits; 1 for ExtremeSpeed Zigzagoon (at 100 deposited), 2 for Pay Day Skitty (at 500 deposited), 3 for Surf Pichu (at 1499 deposited)
@@ -1037,7 +1068,11 @@ struct ExternalEventFlags
     u8 unknownFlag19;
     u8 unknownFlag20;
 
+#ifdef _MSC_VER
+};/*size = 0x15*/
+#else
 } __attribute__((packed));/*size = 0x15*/
+#endif
 
 struct SaveBlock1
 {

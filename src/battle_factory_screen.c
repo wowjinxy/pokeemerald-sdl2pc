@@ -281,13 +281,13 @@ static const struct SpriteSheet sSelect_SpriteSheets[] =
     {sMenuHighlightLeft_Gfx,  sizeof(sMenuHighlightLeft_Gfx),  GFXTAG_MENU_HIGHLIGHT_LEFT},
     {sMenuHighlightRight_Gfx, sizeof(sMenuHighlightRight_Gfx), GFXTAG_MENU_HIGHLIGHT_RIGHT},
     {sMonPicBgAnim_Gfx,       sizeof(sMonPicBgAnim_Gfx),       GFXTAG_MON_PIC_BG_ANIM},
-    {},
+    {0},
 };
 
 static const struct CompressedSpriteSheet sSelect_BallGfx[] =
 {
     {gPokeballSelection_Gfx, 0x800, GFXTAG_BALL},
-    {},
+    {0},
 };
 
 static const struct SpritePalette sSelect_SpritePalettes[] =
@@ -296,7 +296,7 @@ static const struct SpritePalette sSelect_SpritePalettes[] =
     {sPokeballSelected_Pal, PALTAG_BALL_SELECTED},
     {sInterface_Pal,        PALTAG_INTERFACE},
     {sMonPicBg_Pal,         PALTAG_MON_PIC_BG},
-    {},
+    {0},
 };
 
 u8 static (* const sSelect_MenuOptionFuncs[])(void) =
@@ -646,13 +646,13 @@ static const struct SpriteSheet sSwap_SpriteSheets[] =
     {sActionHighlightMiddle_Gfx, sizeof(sActionHighlightMiddle_Gfx), GFXTAG_ACTION_HIGHLIGHT_MIDDLE},
     {sActionHighlightRight_Gfx,  sizeof(sActionHighlightRight_Gfx),  GFXTAG_ACTION_HIGHLIGHT_RIGHT},
     {sMonPicBgAnim_Gfx,          sizeof(sMonPicBgAnim_Gfx),          GFXTAG_MON_PIC_BG_ANIM},
-    {},
+    {0},
 };
 
 static const struct CompressedSpriteSheet sSwap_BallGfx[] =
 {
     {gPokeballSelection_Gfx, 0x800, GFXTAG_BALL},
-    {},
+    {0},
 };
 
 static const struct SpritePalette sSwap_SpritePalettes[] =
@@ -661,7 +661,7 @@ static const struct SpritePalette sSwap_SpritePalettes[] =
     {sPokeballSelected_Pal, PALTAG_BALL_SELECTED},
     {sInterface_Pal,        PALTAG_INTERFACE},
     {sMonPicBg_Pal,         PALTAG_MON_PIC_BG},
-    {},
+    {0},
 };
 
 static const struct OamData sOam_Swap_Pokeball =

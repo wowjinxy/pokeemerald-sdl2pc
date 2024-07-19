@@ -370,7 +370,7 @@ static const struct CompressedSpriteSheet sCursorSpriteSheets[] =
 static const struct CompressedSpriteSheet sHeadsSpriteSheet[] =
 {
     {sHeads_Gfx, 0x100, TAG_HEAD_MALE},
-    {}
+    {0}
 };
 
 static const struct SpritePalette sSpritePalettes[] =
@@ -381,7 +381,7 @@ static const struct SpritePalette sSpritePalettes[] =
     {gFrontierPassMedalsGold_Pal,   TAG_MEDAL_GOLD},
     {sMaleHead_Pal,                 TAG_HEAD_MALE},
     {sFemaleHead_Pal,               TAG_HEAD_FEMALE},
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_Frame1_Unused[] =

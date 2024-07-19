@@ -204,12 +204,12 @@ static const u8 sUnusedData[] = {
 static const struct CompressedSpriteSheet sSpriteSheet_Sparkle[] =
 {
     {gIntroSparkle_Gfx, 0x400, TAG_SPARKLE},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalette_Sparkle[] =
 {
     {gIntroLightning_Pal, TAG_SPARKLE}, // Lightning palette re-used
-    {},
+    {0},
 };
 static const struct OamData sOamData_Sparkle =
 {
@@ -263,21 +263,21 @@ static const u8 sSparkleCoords[][2] =
     {173, 41},
     { 94, 20},
     {208, 38},
-    {},
+    {0},
 };
 static const struct CompressedSpriteSheet sSpriteSheet_RunningPokemon[] =
 {
     {gIntroVolbeat_Gfx, 0x400, TAG_VOLBEAT},
     {gIntroTorchic_Gfx, 0xC00, TAG_TORCHIC},
     {gIntroManectric_Gfx, 0x2000, TAG_MANECTRIC},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalettes_RunningPokemon[] =
 {
     {gIntroVolbeat_Pal, TAG_VOLBEAT},
     {gIntroTorchic_Pal, TAG_TORCHIC},
     {gIntroManectric_Pal, TAG_MANECTRIC},
-    {},
+    {0},
 };
 static const struct OamData sOamData_Volbeat =
 {
@@ -416,12 +416,12 @@ static const struct SpriteTemplate sSpriteTemplate_Manectric =
 static const struct CompressedSpriteSheet sSpriteSheet_Lightning[] =
 {
     {gIntroLightning_Gfx, 0xC00, TAG_LIGHTNING},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalette_Lightning[] =
 {
     {gIntroLightning_Pal, TAG_LIGHTNING},
-    {},
+    {0},
 };
 static const struct OamData sOamData_Lightning =
 {
@@ -487,12 +487,12 @@ static const s16 sGroudonRockData[][3] =
 static const struct CompressedSpriteSheet sSpriteSheet_Bubbles[] =
 {
     {gIntroBubbles_Gfx, 0x600, TAG_BUBBLES},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalette_Bubbles[] =
 {
     {gIntroBubbles_Pal, TAG_BUBBLES},
-    {},
+    {0},
 };
 #define NUM_BUBBLES_IN_SET 6
 // x coord, y coord, delay before animation
@@ -964,19 +964,19 @@ static const struct SpriteTemplate sSpriteTemplate_FlygonSilhouette =
 static const struct CompressedSpriteSheet sSpriteSheet_WaterDropsAndLogo[] =
 {
     {sIntroDropsLogo_Gfx, 0x1400, GFXTAG_DROPS_LOGO},
-    {},
+    {0},
 };
 static const struct CompressedSpriteSheet sSpriteSheet_FlygonSilhouette[] =
 {
     {gIntroFlygonSilhouette_Gfx, 0x400, TAG_FLYGON_SILHOUETTE},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalettes_Intro1[] =
 {
     {sIntroDrops_Pal, PALTAG_DROPS},
     {sIntroLogo_Pal, PALTAG_LOGO},
     {sIntroFlygonSilhouette_Pal, TAG_FLYGON_SILHOUETTE},
-    {},
+    {0},
 };
 static const struct OamData sOamData_RayquazaOrb =
 {
@@ -1016,12 +1016,12 @@ static const struct SpriteTemplate sSpriteTemplate_RayquazaOrb =
 static const struct CompressedSpriteSheet sSpriteSheet_RayquazaOrb[] =
 {
     {sIntroMisc_Gfx, 0xA00, TAG_RAYQUAZA_ORB},
-    {},
+    {0},
 };
 static const struct SpritePalette sSpritePalette_RayquazaOrb[] =
 {
     {sIntroRayquzaOrb_Pal, TAG_RAYQUAZA_ORB},
-    {},
+    {0},
 };
 
 

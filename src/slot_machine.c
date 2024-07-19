@@ -7845,7 +7845,7 @@ static const struct SpriteSheet sSlotMachineSpriteSheets[22] =
     { .data = NULL, .size = 0x200, .tag = GFXTAG_BONUS },
     { .data = NULL, .size = 0x300, .tag = GFXTAG_BIG },
     { .data = NULL, .size = 0x300, .tag = GFXTAG_REG },
-    {},
+    {0},
 };
 
 static const u8 *const sReelBackground_Tilemap = gSlotMachineReelBackground_Tilemap;
@@ -7945,7 +7945,7 @@ static const struct SpritePalette sSlotMachineSpritePalettes[] =
     { .data = gSlotMachineReelTimeExplosion_Pal, .tag = PALTAG_EXPLOSION},
     { .data = gSlotMachineDigitalDisplay_Pal,    .tag = PALTAG_DIG_DISPLAY},
     { .data = gSlotMachineMisc_Pal,              .tag = PALTAG_PIKA_AURA},
-    {}
+    {0}
 };
 
 static const u32 sReelTimeGfx[] = INCBIN_U32("graphics/slot_machine/reel_time_gfx.4bpp.lz"); // reel_time_machine and reel_time_pikachu

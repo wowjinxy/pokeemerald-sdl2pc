@@ -1087,14 +1087,14 @@ static void InitContestResources(void)
 {
     s32 i;
 
-    eContest = (struct Contest){};
+    eContest = (struct Contest){0};
     for (i = 0; i < CONTESTANT_COUNT; i++)
     {
         eContest.unk[i] = 0xFF;
     }
     for (i = 0; i < CONTESTANT_COUNT; i++)
     {
-        eContestantStatus[i] = (struct ContestantStatus){};
+        eContestantStatus[i] = (struct ContestantStatus){0};
     }
     for (i = 0; i < CONTESTANT_COUNT; i++)
     {
@@ -1102,9 +1102,9 @@ static void InitContestResources(void)
         eContestantStatus[i].effectStringId = CONTEST_STRING_NONE;
         eContestantStatus[i].effectStringId2 = CONTEST_STRING_NONE;
     }
-    eContestAppealResults = (struct ContestAppealMoveResults){};
-    eContestAI = (struct ContestAIInfo){};
-    *gContestResources->excitement = (struct ContestExcitement){};
+    eContestAppealResults = (struct ContestAppealMoveResults){0};
+    eContestAI = (struct ContestAIInfo){0};
+    *gContestResources->excitement = (struct ContestExcitement){0};
     memset(eContestGfxState, 0, CONTESTANT_COUNT * sizeof(struct ContestGraphicsState));
 
     if (!(gLinkContestFlags & LINK_CONTEST_FLAG_IS_LINK))

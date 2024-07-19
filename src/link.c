@@ -107,20 +107,20 @@ u16 gLinkSavedIme;
 static EWRAM_DATA u8 sLinkTestDebugValuesEnabled = 0;
 static EWRAM_DATA u8 sDummyFlag = FALSE;
 EWRAM_DATA u32 gBerryBlenderKeySendAttempts = 0;
-EWRAM_DATA u16 gBlockRecvBuffer[MAX_RFU_PLAYERS][BLOCK_BUFFER_SIZE / 2] = {};
-EWRAM_DATA u8 gBlockSendBuffer[BLOCK_BUFFER_SIZE] = {};
+EWRAM_DATA u16 gBlockRecvBuffer[MAX_RFU_PLAYERS][BLOCK_BUFFER_SIZE / 2] = {0};
+EWRAM_DATA u8 gBlockSendBuffer[BLOCK_BUFFER_SIZE] = {0};
 static EWRAM_DATA bool8 sLinkOpen = FALSE;
 EWRAM_DATA u16 gLinkType = 0;
 static EWRAM_DATA u16 sTimeOutCounter = 0;
-EWRAM_DATA struct LinkPlayer gLocalLinkPlayer = {};
-EWRAM_DATA struct LinkPlayer gLinkPlayers[MAX_RFU_PLAYERS] = {};
-static EWRAM_DATA struct LinkPlayer sSavedLinkPlayers[MAX_RFU_PLAYERS] = {};
+EWRAM_DATA struct LinkPlayer gLocalLinkPlayer = {0};
+EWRAM_DATA struct LinkPlayer gLinkPlayers[MAX_RFU_PLAYERS] = {0};
+static EWRAM_DATA struct LinkPlayer sSavedLinkPlayers[MAX_RFU_PLAYERS] = {0};
 static EWRAM_DATA struct {
     u32 status;
     u8 lastRecvQueueCount;
     u8 lastSendQueueCount;
     bool8 disconnected;
-} sLinkErrorBuffer = {};
+} sLinkErrorBuffer = {0};
 static EWRAM_DATA u16 sReadyCloseLinkAttempts = 0; // never read
 static EWRAM_DATA void *sLinkErrorBgTilemapBuffer = NULL;
 
@@ -928,7 +928,7 @@ void ResetLinkPlayers(void)
     int i;
 
     for (i = 0; i <= MAX_LINK_PLAYERS; i++)
-        gLinkPlayers[i] = (struct LinkPlayer){};
+        gLinkPlayers[i] = (struct LinkPlayer){0};
 }
 
 static void ResetBlockSend(void)

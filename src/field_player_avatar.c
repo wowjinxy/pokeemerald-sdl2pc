@@ -34,8 +34,8 @@
 #define NUM_ACRO_BIKE_COLLISIONS 5
 
 static EWRAM_DATA u8 sSpinStartFacingDir = 0;
-EWRAM_DATA struct ObjectEvent gObjectEvents[OBJECT_EVENTS_COUNT] = {};
-EWRAM_DATA struct PlayerAvatar gPlayerAvatar = {};
+EWRAM_DATA struct ObjectEvent gObjectEvents[OBJECT_EVENTS_COUNT] = {0};
+EWRAM_DATA struct PlayerAvatar gPlayerAvatar = {0};
 
 // static declarations
 

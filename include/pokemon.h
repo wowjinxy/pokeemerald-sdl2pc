@@ -347,7 +347,11 @@ struct SpindaSpot
     u16 image[SPINDA_SPOT_HEIGHT];
 };
 
+#ifdef _MSC_VER
+__declspec(align(1)) struct LevelUpMove
+#else
 struct __attribute__((packed)) LevelUpMove
+#endif
 {
     u16 move:9;
     u16 level:7;

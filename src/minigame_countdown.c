@@ -54,13 +54,13 @@ static const u32 s321Start_Static_Gfx[] = INCBIN_U32("graphics/link/321start_sta
 static const struct CompressedSpriteSheet sSpriteSheet_321Start_Static[] =
 {
     {s321Start_Static_Gfx, 0xC00, TAG_STATIC_COUNTDOWN},
-    {},
+    {0},
 };
 
 static const struct SpritePalette sSpritePalette_321Start_Static[] =
 {
     {s321Start_Static_Pal, TAG_STATIC_COUNTDOWN},
-    {},
+    {0},
 };
 
 static const union AnimCmd sAnim_StaticCountdown_Three[] =

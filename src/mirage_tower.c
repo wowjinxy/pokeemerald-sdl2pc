@@ -98,7 +98,7 @@ static const s16 sCeilingCrumblePositions[][3] =
 static const struct SpriteSheet sCeilingCrumbleSpriteSheets[] =
 {
     {sMirageTowerCrumbles_Gfx, sizeof(sMirageTowerCrumbles_Gfx), TAG_CEILING_CRUMBLE},
-    {}
+    {0}
 };
 
 static const struct MetatileCoords sInvisibleMirageTowerMetatiles[] =

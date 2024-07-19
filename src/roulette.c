@@ -2329,7 +2329,7 @@ static void UpdateWheelPosition(void)
     SetGpuReg(REG_OFFSET_BG2Y_H, (bg2y & 0x0fff0000) >> 16);
 }
 
-static const u8 sFiller[3] = {};
+static const u8 sFiller[3] = {0};
 static const u16 sShadow_Pal[] = INCBIN_U16("graphics/roulette/shadow.gbapal");
 static const u16 sBall_Pal[] = INCBIN_U16("graphics/roulette/ball.gbapal");
 static const u16 sBallCounter_Pal[] = INCBIN_U16("graphics/roulette/ball_counter.gbapal");
@@ -2368,7 +2368,7 @@ static const struct SpritePalette sSpritePalettes[] =
     { .data = sAzurill_Pal,     .tag = PALTAG_AZURILL },
     { .data = sSkitty_Pal,      .tag = PALTAG_SKITTY },
     { .data = sMakuhita_Pal,    .tag = PALTAG_MAKUHITA },
-    {}
+    {0}
 };
 
 static const struct OamData sOam_GridHeader =
@@ -2886,7 +2886,7 @@ static const struct CompressedSpriteSheet sSpriteSheets_Interface[] =
         .size = 0x200,
         .tag = GFXTAG_CURSOR
     },
-    {}
+    {0}
 };
 
 static const union AnimCmd sAnim_CreditDigit[] =
@@ -4420,7 +4420,7 @@ static void SetBallStuck(struct Sprite *sprite)
     u8 betSlotId = 0;
     u8 i = 0;
     u8 slotsToSkip;
-    u8 slotCandidates[NUM_ROULETTE_SLOTS - 2] = {}; // - 2 because we know at least 2 are already occupied
+    u8 slotCandidates[NUM_ROULETTE_SLOTS - 2] = {0}; // - 2 because we know at least 2 are already occupied
     u16 rand = Random();
 
     sRoulette->ballState = BALL_STATE_STUCK;

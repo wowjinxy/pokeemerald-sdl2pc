@@ -935,7 +935,7 @@ const struct BerryCrushBerryData gBerryCrush_BerryData[] = {
     [ITEM_ENIGMA_BERRY - FIRST_BERRY_INDEX] = {.difficulty = 150, .powder = 200}
 };
 
-const struct BerryTree gBlankBerryTree = {};
+const struct BerryTree gBlankBerryTree = {0};
 
 // unused
 void ClearEnigmaBerries(void)

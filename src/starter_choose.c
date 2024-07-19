@@ -288,7 +288,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_PokeballSelect[] =
         .size = 0x0800,
         .tag = TAG_POKEBALL_SELECT
     },
-    {}
+    {0}
 };
 
 static const struct CompressedSpriteSheet sSpriteSheet_StarterCircle[] =
@@ -298,7 +298,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_StarterCircle[] =
         .size = 0x0800,
         .tag = TAG_STARTER_CIRCLE
     },
-    {}
+    {0}
 };
 
 static const struct SpritePalette sSpritePalettes_StarterChoose[] =
@@ -311,7 +311,7 @@ static const struct SpritePalette sSpritePalettes_StarterChoose[] =
         .data = sStarterCircle_Pal,
         .tag = TAG_STARTER_CIRCLE
     },
-    {},
+    {0},
 };
 
 static const struct SpriteTemplate sSpriteTemplate_Hand =

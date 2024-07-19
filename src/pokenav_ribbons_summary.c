@@ -912,7 +912,7 @@ static const struct WindowTemplate sRibbonMonListIndexWindowTemplate[] =
         .paletteNum = 1,
         .baseBlock = 0x6E,
     },
-    {},
+    {0},
 };
 
 static void AddRibbonListIndexWindow(struct Pokenav_RibbonsSummaryMenu *menu)
@@ -1147,7 +1147,7 @@ static const struct SpritePalette sSpritePalettes_RibbonIcons[] =
     {sRibbonIcons3_Pal, PALTAG_RIBBON_ICONS_3},
     {sRibbonIcons4_Pal, PALTAG_RIBBON_ICONS_4},
     {sRibbonIcons5_Pal, PALTAG_RIBBON_ICONS_5},
-    {},
+    {0},
 };
 
 static const struct OamData sOamData_RibbonIconBig =

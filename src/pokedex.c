@@ -994,7 +994,7 @@ static const u8 sText_TenDashes2[] = _("----------");
 // First character in range followed by number of characters in range for upper and lowercase
 static const u8 sLetterSearchRanges[][4] =
 {
-    {}, // Name not specified, shouldn't be reached
+    {0}, // Name not specified, shouldn't be reached
     [NAME_ABC] = {CHAR_A, 3, CHAR_a, 3},
     [NAME_DEF] = {CHAR_D, 3, CHAR_d, 3},
     [NAME_GHI] = {CHAR_G, 3, CHAR_g, 3},
@@ -1331,7 +1331,7 @@ static const struct SearchOptionText sDexModeOptions[] =
 {
     [DEX_MODE_HOENN]    = {gText_DexHoennDescription, gText_DexHoennTitle},
     [DEX_MODE_NATIONAL] = {gText_DexNatDescription,   gText_DexNatTitle},
-    {},
+    {0},
 };
 
 static const struct SearchOptionText sDexOrderOptions[] =
@@ -1342,7 +1342,7 @@ static const struct SearchOptionText sDexOrderOptions[] =
     [ORDER_LIGHTEST]     = {gText_DexSortLightestDescription,  gText_DexSortLightestTitle},
     [ORDER_TALLEST]      = {gText_DexSortTallestDescription,   gText_DexSortTallestTitle},
     [ORDER_SMALLEST]     = {gText_DexSortSmallestDescription,  gText_DexSortSmallestTitle},
-    {},
+    {0},
 };
 
 static const struct SearchOptionText sDexSearchNameOptions[] =
@@ -1357,7 +1357,7 @@ static const struct SearchOptionText sDexSearchNameOptions[] =
     [NAME_STU] = {gText_DexEmptyString, gText_DexSearchAlphaSTU},
     [NAME_VWX] = {gText_DexEmptyString, gText_DexSearchAlphaVWX},
     [NAME_YZ]  = {gText_DexEmptyString, gText_DexSearchAlphaYZ},
-    {},
+    {0},
 };
 
 static const struct SearchOptionText sDexSearchColorOptions[] =
@@ -1373,7 +1373,7 @@ static const struct SearchOptionText sDexSearchColorOptions[] =
     [BODY_COLOR_GRAY + 1]   = {gText_DexEmptyString, gText_DexSearchColorGray},
     [BODY_COLOR_WHITE + 1]  = {gText_DexEmptyString, gText_DexSearchColorWhite},
     [BODY_COLOR_PINK + 1]   = {gText_DexEmptyString, gText_DexSearchColorPink},
-    {},
+    {0},
 };
 
 static const struct SearchOptionText sDexSearchTypeOptions[NUMBER_OF_MON_TYPES + 1] = // + 2 for "None" and terminator, - 1 for Mystery
@@ -1396,7 +1396,7 @@ static const struct SearchOptionText sDexSearchTypeOptions[NUMBER_OF_MON_TYPES +
     {gText_DexEmptyString, gTypeNames[TYPE_ICE]},
     {gText_DexEmptyString, gTypeNames[TYPE_DRAGON]},
     {gText_DexEmptyString, gTypeNames[TYPE_DARK]},
-    {},
+    {0},
 };
 
 static const u8 sPokedexModes[] = {DEX_MODE_HOENN, DEX_MODE_NATIONAL};
